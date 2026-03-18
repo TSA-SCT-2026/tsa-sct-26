@@ -1,0 +1,8 @@
+- create a "master" ARCHITECTURE.md: full plan and design, what to watch out for, concerns, todo. high level, entire project.
+- create a seperate md for mechanical design architecture (explains cad files and how everything physically works at a more techincal level)
+- crate a seperate md for embedded design architecture - specifics
+- create an electrical design architecture - specifics for wiring to prevent shortages, brownouts, frying, how to make everythign wired up properly and specs of every electronic part
+- the full plan should be able to be understood from the master ARCHITECTURE, the seperate md's are to read when doing an implementation since we can not fit all those techincal details in the master "ARCHITECTURE.md". so it must be higher level, the entire structure and pipeline.
+- brainstorm if a pvc pipe will work
+- brainstorm if a paddle wheel will work
+- find cam system for stepper motor cad models
