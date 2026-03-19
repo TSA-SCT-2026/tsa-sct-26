@@ -201,20 +201,38 @@ Momentary button, wired to a GPIO with internal pullup. Press starts a run from 
 
 Optional: a second button for slow demo mode (half belt speed, exaggerated animation timing). Costs nothing in firmware. Useful during judging explanations.
 
+## Test harness
+
+A serial command interface is implemented in `firmware/src/test_harness.cpp`. It injects events directly into the event queue, identically to what real hardware ISRs will do. The state machine processes both sources the same way.
+
+Connect over USB at 115200 baud. Type `help` for the full command list. Key commands:
+
+```
+test fullrun                          simulate complete 24-brick run, print summary
+test classify <r> <g> <b> <c> <gap>  classify a brick from raw sensor values
+test thermal <n>                      show heat accumulation across n firing cycles
+log csv                               switch to CSV output (paste into spreadsheet)
+status                                current state, bin counts, thermal
+```
+
+When hardware is connected, real ISRs push the same event types into the same queue. The test harness can remain active for diagnostics during calibration - the `log csv` mode is the primary source for engineering notebook data.
+
 ## Firmware checklist
 
+Key: [x] implemented  [ ] needs hardware  [-] not started
+
 State machine:
-- [ ] All states and transitions implemented
-- [ ] ERROR_HALT stops belt, stepper, and all solenoids
-- [ ] Manual button triggers IDLE -> FEEDING
-- [ ] End-of-run count verification against expected (6, 6, 4, 8)
+- [x] All states and transitions implemented (IDLE/FEEDING/SIZE_DETECT/COLOR_DETECT/ROUTING/CONFIRM/ERROR_HALT)
+- [x] ERROR_HALT stops belt, stepper, and all solenoids
+- [x] Manual button triggers IDLE -> FEEDING
+- [x] End-of-run count verification against expected (6, 6, 4, 8)
 
 Sensing:
 - [ ] Hardware timer interrupt for size detection (1us or better resolution)
 - [ ] I2C clock explicitly set to 400kHz before first sensor read
-- [ ] Color sensor: N-sample averaging over dwell window
-- [ ] Color ratio classifier with empirical threshold
-- [ ] Size threshold validated empirically during calibration
+- [x] Color sensor: N-sample averaging over dwell window with black belt filter
+- [x] Color ratio classifier with empirical threshold (R/(R+G+B), calibrate value in config.h)
+- [ ] Size threshold validated empirically during calibration (placeholder in config.h)
 - [ ] GPIO interrupt priority: size beams > bin confirmation beams
 
 Actuation:
@@ -223,24 +241,25 @@ Actuation:
 - [ ] Solenoid: PWM drop to 40% duty cycle after 20ms full extension
 - [ ] Solenoid: de-energize at calculated brick-cleared time (~280ms)
 - [ ] Solenoid: all flyback diodes confirmed in hardware before first energization
-- [ ] Bin confirmation: 500ms timeout, ERROR_HALT on miss
+- [x] Bin confirmation: 500ms timeout, ERROR_HALT on miss
 
 Thermal:
-- [ ] Exponential decay model for all solenoids and stepper
-- [ ] WARNING threshold: reduce release rate
-- [ ] DANGER threshold: reduce release rate further
-- [ ] Thermal state displayed on screen
+- [x] Exponential decay model for all solenoids and stepper
+- [x] WARNING threshold: reduce release rate
+- [x] DANGER threshold: reduce release rate further
+- [ ] Thermal state displayed on screen (display stub in place)
 
 Display:
-- [ ] Color TFT driver initialized over SPI
-- [ ] Ready screen on IDLE entry
-- [ ] Brick animation: correct color, correct aspect ratio, triggers on ROUTING
-- [ ] Bin counter flash and increment
-- [ ] Thermal bar on sidebar
-- [ ] End screen: run time, per-bin totals, accuracy
+- [-] Color TFT driver initialized over SPI
+- [-] Ready screen on IDLE entry
+- [-] Brick animation: correct color, correct aspect ratio, triggers on ROUTING
+- [-] Bin counter flash and increment
+- [-] Thermal bar on sidebar
+- [-] End screen: run time, per-bin totals, accuracy
 
 Logging:
-- [ ] Serial timestamp on every significant event
-- [ ] Per-brick log: number, size, color, bin, confirmation result
-- [ ] End-of-run summary log
-- [ ] Belt speed validation from transit time logs
+- [x] Serial timestamp on every significant event
+- [x] Per-brick log: number, size, color, bin, confirmation result, transit time
+- [x] End-of-run summary log with accuracy and thermal peak
+- [x] CSV mode: one row per brick for calibration data capture
+- [ ] Belt speed from transit time (logged, calculation needs actual sensor-to-bin distances from CAD)

@@ -15,8 +15,14 @@ Immediate and near-term action items. Keep this list short and current.
 ## This week (before March 21)
 
 - [ ] Draw top-down footprint layout: verify 610x610mm constraint before any frame CAD commits
-- [ ] Start firmware skeleton: state machine scaffold, no hardware needed
+- [x] Firmware skeleton: state machine, classifier, router, thermal model, test harness, logging suite
 - [ ] Start chute transition piece CAD: print as soon as CAD is done, iterate until reliable
+
+## Firmware - next steps (no hardware needed)
+
+- [ ] Verify firmware compiles clean: `pio run` from firmware/
+- [ ] Run `test fullrun` over serial, confirm all 24 bricks route correctly and run summary matches expected bin counts
+- [ ] Implement display module (ST7789 SPI driver, state screens, brick animation)
 
 ---
 
