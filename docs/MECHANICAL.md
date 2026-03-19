@@ -9,6 +9,18 @@
 
 Both bricks share the same width and height. Only length differs by 7.9mm. This single fact drives most mechanical and sensor decisions in the project.
 
+### Brick reference documentation
+
+Official specifications and CAD models:
+
+**2x2 Brick**
+- [BrickLink product page](https://www.bricklink.com/v2/catalog/catalogitem.page?P=3003&name=Brick%202%20x%202&category=%5BBrick%5D#T=C)
+- [TraceParts CAD model](https://www.traceparts.com/en/product/legor-legor-brick-2x2?CatalogPath=TRACEPARTS%3ATP02003002001002003&Product=10-20122010-068626)
+
+**2x3 Brick**
+- [BrickLink product page](https://www.bricklink.com/v2/catalog/catalogitem.page?P=3002#T=C)
+- [TraceParts CAD model](https://www.traceparts.com/en/product/legor-legor-brick-2x3?CatalogPath=TRACEPARTS%3ATP02003002001002003&Product=10-20122010-069842)
+
 ## Physical constants
 
 ```
