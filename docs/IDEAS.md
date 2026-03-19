@@ -15,7 +15,7 @@ Pre-set before brick arrives, actuation off critical path, spring return is pass
 Weakness: 100-150ms sweep and return time. Eats the entire inter-brick window. Throughput drops to 2-3 bricks/second. Not viable at target speed.
 
 **Solenoid puller / fast retractor**
-Instead of pushing the arm out and spring-returning it, the solenoid holds the arm retracted (in the normal/clear position) and releases it to snap forward under spring power, then re-energizes to retract again. The spring does the divert, not the solenoid. This could be fast: spring snap is faster than solenoid pull. However it means the solenoid is energized most of the time (holding retracted), inverting the heat profile. Current design has solenoids de-energized by default, which is thermally better for 33% of bricks that take the default path with zero actuation. Puller concept is interesting but thermal trade-off goes the wrong direction for this brick distribution.
+Spring does the divert, solenoid holds retracted (neutral) and releases to snap. Spring snap is faster than solenoid pull. Rejected: solenoid is energized most of the time, inverting the heat profile. Current design has solenoids off by default (thermally better for the 33% default-path bricks).
 
 **Paddle wheel / continuous rotation**
 Weakness: timing is mechanically coupled to belt speed, requires synchronization. One paddle per bin path, significant footprint. No selective control without a clutch. See ARCHITECTURE.md for full analysis.
@@ -30,7 +30,7 @@ Weakness: inertia cost on both brick and mechanism. Like a pop-up gate but large
 A short platform between belt segments that tilts to route the brick to one side. Weakness: cost of inertia (needs a lip to slow brick down before tilt), gravity-friction speed limits return, more moving mass than a plow arm. Complex to mount at belt speed.
 
 **Diagonal conveyors that reverse to collect**
-Multiple belts at angles to the main belt that can redirect by reversing direction. Weakness: inertia at belt transitions, potentially the fastest if conveyors run extremely fast, but the transition inertia cost may exceed what is saved. Footprint and complexity are significant. Worth researching if current design hits a throughput wall: specifically look at conveyor speed vs inertia cost equations before dismissing.
+Multiple angled belts that redirect by reversing. Weakness: inertia at belt transitions, significant footprint and complexity. Worth revisiting only if current design hits a throughput wall.
 
 **Omnidirectional ball / pop-up perpendicular conveyor**
 An omnidirectional wheel or roller array that activates to push bricks sideways off the main belt. Weakness: inertia, requires brick to be nearly stationary or moving slowly relative to the crossbelt. Not viable at 200mm/s on a 2ft platform.
@@ -44,16 +44,6 @@ For any solenoid-actuated mechanism, consider which direction the solenoid pushe
 For our plow: the spring returns the arm to the clear position (neutral). The solenoid pushes to the divert position. This means divert motion is solenoid speed (~10ms), clear motion is spring speed (15-20ms target). The divert is on the critical path (needs to happen before brick arrives). The clear is not critical (brick has already passed). Current design is already optimized: fast direction = solenoid, return direction = spring.
 
 If a future design needs faster return (spring) and slower extension (solenoid), invert the geometry.
-
----
-
-## Engineering notebook as a decision driver
-
-The notebook should guide decisions, not just record them. Every significant design choice should be preceded by: define the constraints, list the options, derive the winning option mathematically from the constraints. The notebook documents that derivation, not just the conclusion.
-
-Judges should be able to trace every dimension, every threshold, every timing value back to an equation with variables and constants written out. If you changed a value, the notebook explains why: what measurement or data caused the revision.
-
-Charts for everything: speed vs accuracy curve, lever geometry diagram, timing diagram for the sensing zone, power budget table, thermal model decay curve. Equations in the margin. Constants labeled.
 
 ---
 

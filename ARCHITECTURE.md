@@ -6,13 +6,7 @@ A fully automated LEGO brick sorting conveyor that classifies 24 bricks by size 
 
 Target: 24 bricks sorted in under 10 seconds, repeatedly, without operator intervention between runs.
 
-## Design philosophy
-
-Judges score on system architecture, sensor integration, control logic, feedback loops, documentation quality, and live demo reliability. The design is optimized for all of these, not just throughput. Every subsystem decision has a documented rationale. Every actuator is protected from thermal and electrical failure. The feedback loop is real, not decorative.
-
-The guiding principle: keep actuation off the critical path. Sense early, pre-set actuators while bricks are still in transit, use passive return mechanisms. This is how 5 bricks per second is achievable with commodity hardware.
-
-Default path (no actuator fires) handles the most common brick type. This minimizes actuator duty cycle across the run.
+The guiding principle: keep actuation off the critical path. Sense early, pre-set actuators while bricks are still in transit, use passive return mechanisms. Default path (no actuator fires) handles the most common brick type, minimizing duty cycle.
 
 ## Pipeline
 
@@ -58,7 +52,7 @@ This detects jams, solenoid misfires, bricks falling off the belt, and double-fe
 
 Color TFT. During sort: brick silhouette animates in actual classification color, counters update live, actuator thermal state shown as a small bar. End screen: full run stats, per-bin totals vs expected, any missed confirmations. The display is a live window into internal system state. This is what judges look for, not decoration.
 
-## Feedback loop (for judges)
+## Feedback loop
 
 The feedback loop is real and bidirectional. Sensors at each bin confirm every brick individually within a hard timeout. A mismatch halts the system rather than continuing. End-of-run count verification gives a second pass. The thermal model reduces release rate under heat load rather than failing silently. Serial output timestamps every event so the engineering notebook data writes itself during calibration.
 
@@ -161,7 +155,6 @@ April 24-27    Documentation.
                Engineering notebook from logged run data.
                Decision matrices, equations, failure mode table.
                Calibration procedures, performance test data.
-               Practice answering judge questions cold (see docs/competition/JUDGE_QA.md).
 
 April 27-29    Buffer.
                Something will break during documentation runs.
@@ -179,12 +172,3 @@ May 1          Competition.
 
 Every major design choice (sensor type, actuator type, escapement mechanism) has a documented rationale including rejected alternatives with specific failure reasons. These are in the relevant architecture files and must appear in competition documentation. Judges score decision-making, not just final choices.
 
-## Related files
-
-- docs/MECHANICAL.md: physical design, all measurements, CAD structure, fabrication order and concerns
-- docs/ELECTRICAL.md: power architecture, wiring, protection components, failure modes to avoid
-- docs/EMBEDDED.md: state machine, sensor logic, actuator control, display, thermal model, firmware checklist
-- docs/BOM.md: parts list with ordering info
-- docs/ISSUES.md: open technical questions with resolution paths
-- docs/IDEAS.md: design alternatives and exploratory concepts
-- docs/NOTEBOOK.md: engineering notebook checklist and timeline

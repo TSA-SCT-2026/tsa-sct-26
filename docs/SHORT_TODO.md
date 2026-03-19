@@ -4,7 +4,7 @@ Immediate and near-term action items. Keep this list short and current.
 
 ---
 
-## Today (March 18): urgent
+## Urgent (overdue)
 
 - [ ] Order AliExpress parts (BOM.md): 10-15 day lead time, every day of delay matters
 - [ ] Order Adafruit parts (BOM.md): ships in 2-5 days

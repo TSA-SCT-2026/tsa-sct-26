@@ -1,6 +1,6 @@
 # Bill of Materials
 
-Order today March 18 2026. AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit ships in 2-5 days. Do not wait.
+AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit ships in 2-5 days. Order immediately.
 
 ---
 
