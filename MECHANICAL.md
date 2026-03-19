@@ -113,6 +113,23 @@ Color sensor standoff: 5-10mm above belt surface
 
 The color sensor shroud is part of the channel roof geometry -- print it as one piece with the channel. Ambient light is the primary failure mode for the color sensor. The shroud must block all light except the sensor's integrated LED.
 
+### Shroud design requirements
+
+The shroud is not just a box around the sensor. It needs to:
+
+1. Seal against the belt surface (or come very close) on the leading and trailing edges so ambient light cannot enter from the direction of travel. A gap of even 2-3mm at the belt surface at this standoff distance leaks enough light to shift color readings.
+2. Allow bricks to enter and exit freely without snagging. The opening should be wider than the brick but use a labyrinth or overlapping lip geometry to block direct light paths rather than a simple open slot.
+3. Have a flat ceiling at a consistent standoff distance (5-10mm). Variation in standoff distance across the brick changes the integrated light level and potentially the ratio. Consistent geometry matters.
+4. Be CAD'd with the color sensor dimensions in mind -- mount the sensor board flush against the shroud ceiling, not floating inside it.
+
+This piece needs to be iterated. Print it early, test it with a handheld flashlight pointed at the belt from various angles while the sensor is logging readings. If the ratio shifts when ambient light changes, the shroud is not tight enough.
+
+### Brick orientation enforcement at chute entrance
+
+The chute width (17.3mm) already prevents 2x3 bricks from entering rotated 90 degrees -- 23.7mm does not fit in 17.3mm. A 2x2 is square so rotation does not matter for it. Studs up vs studs down does not affect size or color measurements.
+
+The remaining risk is a brick loaded completely on its side (11.4mm height presenting instead of 15.8mm length). Make the chute entrance opening narrow enough in the vertical dimension to prevent this. If a brick cannot enter on its side at the top of the chute, this failure mode is eliminated before it can cause a jam or misclassification.
+
 ## Plow diverters
 
 Three plows, Class 3 lever geometry, solenoid actuated, spring return.

@@ -48,7 +48,28 @@ Minimum integration time per sample: 2.4ms
 Maximum samples per brick: 79 / 2.4 = ~32 samples
 ```
 
-Average all samples taken during the dwell window. Do not rely on a single read. Classification is based on the ratio of red channel to total light (R divided by R+G+B). Red bricks will score well above 0.45 on this ratio; blue bricks will score well below it. The exact threshold must be calibrated empirically with the shroud installed and demo bricks on the actual belt. Do not assume 0.45 is the right value.
+### Sample windowing -- important
+
+The sensor runs continuously. Between bricks it reads the black GT2 belt, which will produce near-zero light readings. If you average all samples indiscriminately, belt readings dilute brick readings and shift the ratio toward zero. Do not do this.
+
+Only sample when a brick is actually under the sensor. The trigger: start sampling when beam 1 breaks (leading edge enters sensing zone), stop sampling when beam 1 restores (trailing edge has cleared). This window captures brick surface only. Samples taken outside this window should be discarded.
+
+Additionally: if a sample's raw total light level is below a floor threshold, discard it. This is a secondary guard against edge effects at the brick boundaries (the brief moment when the sensor is half over brick and half over belt). Set this floor threshold during calibration.
+
+### Classification
+
+Average all valid samples within the window. Classify using R / (R + G + B) ratio. Red LEGO bricks have a strong spectral signature and will produce a clearly high ratio. Blue LEGO bricks will produce a clearly low ratio. The gap between them is large -- this is one of the easier color classification problems you can choose. The risk is not in the classification math, it is in the windowing and shroud (see MECHANICAL.md for shroud design notes).
+
+The exact threshold (nominally ~0.45) must be calibrated empirically with the shroud installed, demo bricks, belt running, integrated LED as the only light source. Log raw R/G/B values for both brick colors during calibration to understand the actual separation. Do not assume any threshold value.
+
+### Tuning methodology
+
+During calibration, run both brick colors at multiple belt speeds and log raw channel values for each sample. Determine:
+- The actual ratio distributions for red vs blue at your operating speed
+- The optimal threshold (midpoint between distributions, or weighted toward the more common misclassification direction)
+- The minimum number of samples needed for reliable classification
+
+This produces documentation data and a principled threshold choice.
 
 ## Routing logic
 
@@ -97,6 +118,36 @@ Two thresholds:
 The model protects hardware during back-to-back demo runs, not just a single run. Between runs, while in IDLE, the model continues to update and heat values decay. The display shows the thermal state as a small bar throughout.
 
 Apply the model to all solenoids and the stepper motor. The belt motor does not need it.
+
+## Belt speed control (PI controller)
+
+Belt speed is a tunable parameter. The optimal speed balances throughput against classification accuracy. Too fast and color samples are compressed, size timing margins shrink, and bricks may jam at the taper. Too slow and the run takes longer than necessary.
+
+### Speed measurement -- no extra hardware needed
+
+The break-beams already give you per-brick speed measurements:
+
+- On 2x3 bricks: measure the time between beam 1 breaking and beam 2 breaking. Speed = 19mm / that time.
+- On 2x2 bricks: measure how long beam 1 is blocked (leading edge to trailing edge). Speed = 15.8mm / that time.
+
+Every brick is a speed sample. Feed these into a PI controller that adjusts the PWM duty cycle to the belt motor driver.
+
+If belt speed is stable enough in open loop, the PI controller still adds value as documentation: it demonstrates closed-loop control explicitly, which judges score. If speed varies under load (brick weight, motor temperature), the controller actually improves accuracy.
+
+### Tuning methodology
+
+Run the full 24-brick set at multiple belt speeds (e.g., 100, 150, 200, 250mm/s). Log per-brick classification results and confirmation outcomes at each speed. Identify:
+- The minimum speed that still produces reliable color classification
+- The maximum speed before size detection starts misclassifying
+- The accuracy vs speed tradeoff curve
+
+Set the operational setpoint to the fastest speed that still achieves target accuracy (e.g., 95%+). This methodology produces strong documentation data and a principled, defensible design choice.
+
+### PI controller notes
+
+Proportional gain controls how aggressively the controller reacts to speed error. Integral gain eliminates steady-state offset over time. Derivative is probably not needed -- belt speed is a slow, smooth process variable. Start with P only, add I if there is persistent offset.
+
+The controller update rate is limited by how often you get a speed measurement (one per brick, roughly every 140-200ms). This is a slow loop. Gains will be small. This is normal and expected.
 
 ## Display
 
