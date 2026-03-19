@@ -1,0 +1,23 @@
+# PlatformIO build artifacts
+firmware/.pio/
+firmware/.vscode/
+
+# Compiled output
+*.o
+*.elf
+*.bin
+*.hex
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# CAD swap files and autosave
+*.~lock.*
+*.bak
+
+# Logs (keep CSVs in docs/runs, not scattered elsewhere)
+*.log
+
+# Secrets / environment
+.env
