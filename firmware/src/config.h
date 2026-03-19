@@ -1,0 +1,112 @@
+#pragma once
+
+// ================================================================
+// Pin assignments
+// ================================================================
+#define PIN_BUTTON          0       // start button (GPIO0, active LOW, internal pullup)
+#define PIN_BEAM1           34      // size detection beam 1 receiver
+#define PIN_BEAM2           35      // size detection beam 2 receiver
+#define PIN_COLOR_SDA       21      // I2C SDA - color sensor
+#define PIN_COLOR_SCL       22      // I2C SCL - color sensor
+#define PIN_SOL1            25      // solenoid 1 - plow 1 (2x2 blue)
+#define PIN_SOL2            26      // solenoid 2 - plow 2 (2x2 red)
+#define PIN_SOL3            27      // solenoid 3 - plow 3 (2x3 red)
+#define PIN_BELT_PWM        32      // belt motor PWM (L298N enable pin)
+#define PIN_BELT_DIR1       33      // belt motor direction 1
+#define PIN_BELT_DIR2       14      // belt motor direction 2
+#define PIN_STEPPER_STEP    18      // A4988 STEP
+#define PIN_STEPPER_DIR     19      // A4988 DIR
+#define PIN_BIN1            36      // bin 1 confirmation beam (2x2 blue)
+#define PIN_BIN2            39      // bin 2 confirmation beam (2x2 red)
+#define PIN_BIN3            4       // bin 3 confirmation beam (2x3 red)
+#define PIN_BIN4            5       // bin 4 confirmation beam (2x3 blue)
+#define PIN_ENCODER         15      // belt speed encoder (H206 slot optocoupler)
+#define PIN_TFT_CS          13      // display chip select
+#define PIN_TFT_DC          12      // display data/command
+#define PIN_TFT_RST         2       // display reset
+
+// ================================================================
+// Belt
+// ================================================================
+#define BELT_TARGET_MM_S        200     // target operating speed
+#define BELT_PWM_FREQ_HZ        5000    // L298N PWM frequency (1-10kHz range)
+#define BELT_PWM_RESOLUTION     8       // bits (0-255)
+#define BELT_PWM_INIT_DUTY      180     // initial duty - calibrate to reach 200mm/s
+
+// ================================================================
+// Size detection  (calibrate empirically after hardware installed)
+// ================================================================
+#define BEAM_GAP_MM             19      // physical distance between size beams
+// At 200mm/s a 2x3 brick (23.7mm) reaches beam 2 in ~95ms.
+// A 2x2 brick (15.8mm) never reaches beam 2.
+#define SIZE_TIMEOUT_MS         150     // beam 2 timeout: above 95ms, below any real gap
+#define SIZE_THRESHOLD_US       50000   // gap_us below this = 2x3; 0 (timeout) = 2x2
+                                        // placeholder - calibrate from actual timing data
+
+// ================================================================
+// Color detection  (calibrate empirically with shroud installed)
+// ================================================================
+#define I2C_FREQ_HZ             400000  // must be set explicitly before any sensor read
+#define COLOR_INTEGRATION_MS    2       // TCS34725 min integration time ~2.4ms per sample
+// At 200mm/s over 15.8mm brick width, dwell window = ~79ms -> ~32 samples max
+#define COLOR_BLACK_FLOOR       50      // total (r+g+b+c) below this = bare belt, discard
+#define COLOR_RED_RATIO         0.45f   // R/(R+G+B): above = red, below = blue
+                                        // placeholder - calibrate from actual brick readings
+
+// ================================================================
+// Routing
+// ================================================================
+// Plow assignment by brick type (BrickType enum order: 2x2_BLUE, 2x2_RED, 2x3_RED, 2x3_BLUE)
+// Plow 0 = default path, no solenoid fires
+#define EXPECTED_BIN1           6       // 2x2 blue -> plow 1 -> bin 1
+#define EXPECTED_BIN2           6       // 2x2 red  -> plow 2 -> bin 2
+#define EXPECTED_BIN3           4       // 2x3 red  -> plow 3 -> bin 3
+#define EXPECTED_BIN4           8       // 2x3 blue -> default -> bin 4
+#define TOTAL_BRICKS            24
+
+// ================================================================
+// Solenoid timing
+// ================================================================
+#define SOL_FULL_PWM            255     // 8-bit full extension duty cycle
+#define SOL_HOLD_PWM            102     // ~40% hold duty - reduces heat ~60%
+#define SOL_FULL_MS             20      // full power phase duration
+#define SOL_DEENERGIZE_MS       280     // total on time: brick clears plow by this point
+#define SOL_LEAD_MS             150     // sensor-to-plow travel time (calibrate from CAD)
+
+// ================================================================
+// Stepper (escapement)
+// ================================================================
+#define STEPPER_STEPS_PER_REV   200     // full step, NEMA 11
+#define STEPPER_RPM_NORMAL      30      // normal release rate (~5 bricks/s at this RPM)
+#define STEPPER_RPM_WARNING     20      // reduced rate at thermal WARNING
+#define STEPPER_RPM_DANGER      10      // further reduced at thermal DANGER
+
+// ================================================================
+// Bin confirmation
+// ================================================================
+#define CONFIRM_TIMEOUT_MS      500     // max wait after routing before ERROR_HALT
+
+// ================================================================
+// Thermal model  (all values need calibration - tune during reliability runs)
+// ================================================================
+#define THERMAL_HEAT_PER_SOL    0.15f   // heat added per solenoid fire
+#define THERMAL_HEAT_PER_STEP   0.05f   // heat added per stepper release
+#define THERMAL_DECAY_RATE      0.5f    // exponential decay constant (per second)
+#define THERMAL_WARN_LEVEL      0.60f   // above this: reduce stepper RPM
+#define THERMAL_DANGER_LEVEL    0.85f   // above this: reduce further
+#define THERMAL_LOG_INTERVAL_MS 1000    // how often to log thermal state while idle
+
+// ================================================================
+// Display (RGB565)
+// ================================================================
+#define TFT_RED     0xF800
+#define TFT_BLUE    0x001F
+#define TFT_WHITE   0xFFFF
+#define TFT_BLACK   0x0000
+#define TFT_GREEN   0x07E0
+#define TFT_YELLOW  0xFFE0
+
+// ================================================================
+// Serial
+// ================================================================
+#define SERIAL_BAUD  115200
