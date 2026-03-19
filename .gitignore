@@ -21,3 +21,6 @@ firmware/.vscode/
 
 # Secrets / environment
 .env
+
+# Local developer notes (not for repo)
+CLAUDE.md

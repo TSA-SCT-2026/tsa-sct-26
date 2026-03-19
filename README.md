@@ -20,7 +20,6 @@ tsa-sct-26/
   ISSUES.md                open technical questions with resolution paths
   IDEAS.md                 design alternatives analysis and exploratory concepts
   NOTEBOOK.md              engineering notebook checklist and timeline
-  CLAUDE.md                instructions for AI agents working on this repo
 
   cad/                     all printable parts, organized by subsystem
   firmware/                ESP32 embedded firmware (PlatformIO project)
