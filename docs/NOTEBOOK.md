@@ -18,17 +18,17 @@ Scoring: Inventor's Log is 20 of 100 points. It is evaluated by judges reading i
 
 ### Design decisions (derive from equations, not intuition)
 
-- [ ] Size sensor selection -- IR break-beam vs ultrasonic vs ToF vs camera
+- [ ] Size sensor selection: IR break-beam vs ultrasonic vs ToF vs camera
   - Key equation: noise floor of each option vs brick length difference (7.9mm)
   - Include measurement specs for each sensor type considered
 
-- [ ] Color sensor selection -- TCS34725 vs camera vs discrete photodiodes
+- [ ] Color sensor selection: TCS34725 vs camera vs discrete photodiodes
   - Key equation: dwell time at operating speed vs minimum integration time required per sensor type
 
-- [ ] Plow actuation -- solenoid vs servo vs paddle wheel vs pop-up gate
+- [ ] Plow actuation: solenoid vs servo vs paddle wheel vs pop-up gate
   - Key equation: actuation time needed vs inter-brick window at target throughput (140ms at 5 bricks/s)
 
-- [ ] Escapement mechanism -- stepper cam vs dual-pin solenoid vs Geneva drive vs rotary servo
+- [ ] Escapement mechanism: stepper cam vs dual-pin solenoid vs Geneva drive vs rotary servo
   - Key constraint: sustained duty cycle at 5 bricks/s over multiple consecutive runs
   - Thermal analysis for each option
 

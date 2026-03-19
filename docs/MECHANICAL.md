@@ -47,9 +47,9 @@ Margin:                      ~86mm
 
 ## Parts to print (in order)
 
-1. Chute transition piece -- print and test first, before anything else
-2. Stepper cam disk -- simple geometry, early iteration is cheap
-3. Sensor shroud for color sensor -- needed for calibration validation
+1. Chute transition piece: print and test first, before anything else
+2. Stepper cam disk: simple geometry, early iteration is cheap
+3. Sensor shroud for color sensor: needed for calibration validation
 4. Everything else once the chute transition is proven
 
 Do not print the full frame until the chute transition piece reliably feeds bricks at belt speed. That piece is the gate for the entire mechanical build.
@@ -64,9 +64,9 @@ Stack height (all 2x3): 24 * 11.4mm = 273mm
 Realistic mixed stack:  ~240mm
 ```
 
-The inner profile must be rectangular to maintain brick orientation. Round pipe cannot constrain rotation -- PVC pipe is not a viable substitute. Aluminum square tube would be dimensionally more accurate than printed PLA but adds sourcing complexity and is harder to integrate with the printed frame. Printed PLA is the correct choice with proper tolerance allowance.
+The inner profile must be rectangular to maintain brick orientation. Round pipe cannot constrain rotation. PVC pipe is not a viable substitute. Aluminum square tube would be dimensionally more accurate than printed PLA but adds sourcing complexity and is harder to integrate with the printed frame. Printed PLA is the correct choice with proper tolerance allowance.
 
-A brick loaded sideways jams at the chute entrance rather than deep in the system. This is the correct failure mode -- visible, immediate, and recoverable.
+A brick loaded sideways jams at the chute entrance rather than deep in the system. This is the correct failure mode: visible, immediate, and recoverable.
 
 ### Chute transition piece (highest risk item in the project)
 
@@ -79,7 +79,7 @@ Print this first. Test with real bricks. Iterate until it works every time. Budg
 
 ## Stepper cam escapement
 
-Single-lobe cam disk mounted on the stepper motor shaft. One full rotation releases exactly one brick and blocks the queue for the remainder of the rotation. This is mechanically guaranteed -- it cannot release a partial brick.
+Single-lobe cam disk mounted on the stepper motor shaft. One full rotation releases exactly one brick and blocks the queue for the remainder of the rotation. This is mechanically guaranteed; it cannot release a partial brick.
 
 ```
 Approximate lobe dimensions: 12mm height, 15mm width
@@ -88,7 +88,7 @@ Release portion = ~50 steps (90 degrees)
 At target speed: 30ms per release
 ```
 
-The cam disk geometry does not require a reference CAD model. A single-lobe disk is trivial to draw from these dimensions -- a circle with one raised protrusion. The lobe pushes the bottom brick onto the belt as it passes; the rest of the disk holds the queue. Iterate the lobe profile with real bricks if the first print does not push cleanly.
+The cam disk geometry does not require a reference CAD model. A single-lobe disk is trivial to draw from these dimensions: a circle with one raised protrusion. The lobe pushes the bottom brick onto the belt as it passes; the rest of the disk holds the queue. Iterate the lobe profile with real bricks if the first print does not push cleanly.
 
 The stepper holds its position electrically between releases using reduced current. This means the queue cannot backdrive the escapement when the motor is stationary.
 
@@ -111,7 +111,7 @@ IR break-beam spacing: 19mm (along travel axis)
 Color sensor standoff: 5-10mm above belt surface
 ```
 
-The color sensor shroud is part of the channel roof geometry -- print it as one piece with the channel. Ambient light is the primary failure mode for the color sensor. The shroud must block all light except the sensor's integrated LED.
+The color sensor shroud is part of the channel roof geometry. Print it as one piece with the channel. Ambient light is the primary failure mode for the color sensor. The shroud must block all light except the sensor's integrated LED.
 
 ### Shroud design requirements
 
@@ -120,13 +120,13 @@ The shroud is not just a box around the sensor. It needs to:
 1. Seal against the belt surface (or come very close) on the leading and trailing edges so ambient light cannot enter from the direction of travel. A gap of even 2-3mm at the belt surface at this standoff distance leaks enough light to shift color readings.
 2. Allow bricks to enter and exit freely without snagging. The opening should be wider than the brick but use a labyrinth or overlapping lip geometry to block direct light paths rather than a simple open slot.
 3. Have a flat ceiling at a consistent standoff distance (5-10mm). Variation in standoff distance across the brick changes the integrated light level and potentially the ratio. Consistent geometry matters.
-4. Be CAD'd with the color sensor dimensions in mind -- mount the sensor board flush against the shroud ceiling, not floating inside it.
+4. Be CAD'd with the color sensor dimensions in mind. Mount the sensor board flush against the shroud ceiling, not floating inside it.
 
 This piece needs to be iterated. Print it early, test it with a handheld flashlight pointed at the belt from various angles while the sensor is logging readings. If the ratio shifts when ambient light changes, the shroud is not tight enough.
 
 ### Brick orientation enforcement at chute entrance
 
-The chute width (17.3mm) already prevents 2x3 bricks from entering rotated 90 degrees -- 23.7mm does not fit in 17.3mm. A 2x2 is square so rotation does not matter for it. Studs up vs studs down does not affect size or color measurements.
+The chute width (17.3mm) already prevents 2x3 bricks from entering rotated 90 degrees. 23.7mm does not fit in 17.3mm. A 2x2 is square so rotation does not matter for it. Studs up vs studs down does not affect size or color measurements.
 
 The remaining risk is a brick loaded completely on its side (11.4mm height presenting instead of 15.8mm length). Make the chute entrance opening narrow enough in the vertical dimension to prevent this. If a brick cannot enter on its side at the top of the chute, this failure mode is eliminated before it can cause a jam or misclassification.
 
@@ -148,9 +148,9 @@ Tip travel needed calculation:
 (belt width / 2) + (brick width / 2) + buffer = 12.5 + 7.9 + 4 = 24.4mm -> use 30mm
 ```
 
-The solenoid connects to the lever arm via a pinned connection (M2 pin through a drilled hole or small clevis). Not a hook or slot -- a pinned connection eliminates rattle, wear, and angular play at speed.
+The solenoid connects to the lever arm via a pinned connection (M2 pin through a drilled hole or small clevis). Not a hook or slot. A pinned connection eliminates rattle, wear, and angular play at speed.
 
-A slot in the channel wall accommodates the arc the solenoid rod travels. At these angles the arc is nearly linear -- this is not a fabrication problem.
+A slot in the channel wall accommodates the arc the solenoid rod travels. At these angles the arc is nearly linear. This is not a fabrication problem.
 
 Chamfer the leading face of each plow arm at 35 degrees. Slightly yawed bricks get nudged square rather than jamming against the face.
 
@@ -163,7 +163,7 @@ Footprint per plow along belt: ~32mm (lever length + 8mm safety gap)
 
 ### Spring selection
 
-The force margin is large (~94x what the spring requires to return the arm). Use the heaviest spring from the assortment that the solenoid can still reliably overcome -- heavier spring means faster retraction, which is the optimization target. Test with the actual solenoid at operating voltage before committing to a spring weight.
+The force margin is large (~94x what the spring requires to return the arm). Use the heaviest spring from the assortment that the solenoid can still reliably overcome. Heavier spring means faster retraction, which is the optimization target. Test with the actual solenoid at operating voltage before committing to a spring weight.
 
 ## Bin design
 

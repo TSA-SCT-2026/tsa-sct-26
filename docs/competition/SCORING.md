@@ -10,7 +10,7 @@ The device working is 60% of the score. This is the dominant category. Reliabili
 
 The Inventor's Log (20%) is the engineering notebook. It must show that decisions were derived from data and equations, not assumed. Judges read it without the team present. It stands alone.
 
-Programming Structure (20%) means the code is evaluated. Clean module separation, readable logic, named constants, clear state machine. This is not a bonus -- it is a fifth of the total score. Write firmware as if a judge will read it, because they will.
+Programming Structure (20%) means the code is evaluated. Clean module separation, readable logic, named constants, clear state machine. This is not a bonus: it is a fifth of the total score. Write firmware as if a judge will read it, because they will.
 
 **There is no interview. The team is not present during evaluation.** A stranger operates the device following written instructions. The system must communicate its own state clearly through the display and physical labels. The operator instructions sheet (docs/competition/OPERATOR_INSTRUCTIONS.md) is a required deliverable.
 

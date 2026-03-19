@@ -14,7 +14,7 @@ ESP32 embedded firmware for the sorting system. Written in C++, built with Platf
 firmware/
   src/
     main.cpp          entry point, hardware init, main loop
-    state/            state machine -- all states and transitions
+    state/            state machine: all states and transitions
     sensors/          size detection (break-beams) and color detection
     actuators/        stepper cam control, solenoid timing, belt motor
     display/          TFT animation and screen management
@@ -25,7 +25,7 @@ firmware/
 
 ## Architecture
 
-Read EMBEDDED.md before writing any firmware. The state machine, sensor logic, thermal model, and display spec are all documented there. Do not invent new architecture -- implement what is specified, and update the spec if you find a better approach.
+Read EMBEDDED.md before writing any firmware. The state machine, sensor logic, thermal model, and display spec are all documented there. Do not invent new architecture. Implement what is specified, and update the spec if you find a better approach.
 
 ## Programming structure is scored
 
@@ -33,7 +33,7 @@ Programming Structure is 20 of 100 competition points. Code quality, module sepa
 - Each module (state, sensors, actuators, display, thermal) does one thing and has a clear interface
 - The state machine is the obvious entry point and control flow is readable
 - Constants and thresholds are named and defined in one place, not scattered as magic numbers
-- Comments explain why, not what -- the code explains what
+- Comments explain why, not what. The code explains what
 
 Write code that a judge reading it for the first time can follow.
 
@@ -42,8 +42,8 @@ Write code that a judge reading it for the first time can follow.
 - All sensing happens via hardware interrupts, not polling
 - Display updates are asynchronous and must never block sensing or routing
 - I2C clock must be explicitly set to 400kHz before any color sensor communication
-- The thermal model is not optional -- it protects hardware during back-to-back judge demos
-- Serial output is structured logging, not debug prints -- it becomes the engineering notebook
+- The thermal model is not optional: it protects hardware during back-to-back judge demos
+- Serial output is structured logging, not debug prints. It becomes the engineering notebook
 
 ## Logging
 

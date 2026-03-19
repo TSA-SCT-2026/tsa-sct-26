@@ -7,7 +7,7 @@ Two independent power rails from a single 2S LiPo (7.4V, 2000mAh minimum), each 
 ```
 Rail 1: solenoids only (high current, noisy switching)
 Rail 2: stepper motor, belt motor, microcontroller, sensors, display (clean logic rail)
-Common ground between rails -- only the ground is shared
+Common ground between rails: only the ground is shared
 ```
 
 Separating rails keeps solenoid switching noise off the logic rail and stepper driver switching noise off the solenoid rail. Both are real failure modes on a shared rail at this current draw.
@@ -34,10 +34,10 @@ Bench supply is acceptable for early development but must not be used for any ca
 |------|---------|---------|-------------|
 | JF-0530B solenoid (x3) | plow actuation | 5V | ~500mA each |
 | NEMA 11 stepper motor | escapement | 6-8V (motor rail) | ~400mA |
-| A4988 stepper driver | stepper control | motor rail + 3.3V logic | -- |
+| A4988 stepper driver | stepper control | motor rail + 3.3V logic | (specified above) |
 | TT gearmotor (x2, one spare) | belt drive | 5V | ~400mA |
-| L298N motor driver | belt motor control | 5V | -- |
-| LM2596 buck converter (x2) | 7.4V -> 5V | -- | 3A each rated |
+| L298N motor driver | belt motor control | 5V | (specified above) |
+| LM2596 buck converter (x2) | 7.4V -> 5V | (specified above) | 3A each rated |
 | ESP32 DevKit | microcontroller | 3.3V (via onboard reg) | ~250mA |
 | Adafruit IR break-beam pairs (x6 used) | size and bin sensing | 3.3-5V | low |
 | TCS34725 color sensor | color classification | 3.3V | low |
@@ -51,7 +51,7 @@ These are not optional. Skipping any of them risks destroying hardware.
 
 ### Capacitor on stepper driver motor power input
 
-A 100uF electrolytic capacitor must be placed physically adjacent to the motor power input on the A4988 driver module. This is the single most common way the A4988 is destroyed -- back-EMF from the motor travels back up the power line on power connect. Without this capacitor, the chip dies. Place it right next to the chip, not at the power connector.
+A 100uF electrolytic capacitor must be placed physically adjacent to the motor power input on the A4988 driver module. This is the single most common way the A4988 is destroyed. Back-EMF from the motor travels back up the power line on power connect. Without this capacitor, the chip dies. Place it right next to the chip, not at the power connector.
 
 Before applying power to the stepper circuit for the first time: verify this capacitor is present and correctly oriented (negative leg to ground) with a teammate watching. Say it out loud.
 
@@ -80,13 +80,13 @@ A4988 MS1/MS2/MS3 -> all LOW (full step mode, maximum torque)
 A4988 coil pairs  -> NEMA 11 stepper coil wires (check datasheet for coil grouping)
 ```
 
-VMOT should be 6-8V for the NEMA 11. Do not run from 5V -- insufficient torque at speed. Use the dedicated motor rail from Rail 2.
+VMOT should be 6-8V for the NEMA 11. Do not run from 5V: insufficient torque at speed. Use the dedicated motor rail from Rail 2.
 
 Between releases, reduce hold current via the driver's reference voltage trim. Sufficient torque to hold against queue pressure, much lower heat. This is done once during setup, not dynamically during normal operation.
 
 ## Belt motor wiring
 
-Belt motor connects through the L298N module. The L298N enable pins accept PWM for speed control -- this is how the PI controller adjusts belt speed. No separate speed controller module is needed.
+Belt motor connects through the L298N module. The L298N enable pins accept PWM for speed control. This is how the PI controller adjusts belt speed. No separate speed controller module is needed.
 
 L298N PWM frequency: keep between 1kHz and 10kHz. Below 1kHz the motor audibly ticks. Above 25kHz the L298N's internal circuitry generates excessive heat and switching losses become significant. 5kHz is a reliable starting point.
 
@@ -96,7 +96,7 @@ Motor direction should be wired to run belt surface in the correct direction. Ve
 
 Add a 1000uF electrolytic capacitor between 5V and GND on the logic rail, physically close to the microcontroller. When solenoids fire on Rail 1, even with rail isolation, transients can couple through the common ground. The bulk cap buffers the logic supply during these events and prevents brief undervoltage that could cause a reset.
 
-This is separate from the 100uF cap on the A4988 motor power input -- that one is for the stepper driver, this one is for the microcontroller supply. Both are needed.
+This is separate from the 100uF cap on the A4988 motor power input. That one is for the stepper driver, this one is for the microcontroller supply. Both are needed.
 
 ## Solenoid control
 
@@ -115,7 +115,7 @@ Add a small aluminum heatsink (20x20mm) to each solenoid body using thermal adhe
 
 ### IR break-beams
 
-Each break-beam pair has an emitter and a receiver. The receiver output is a digital signal -- high when beam is intact, low when broken. Wire receivers to microcontroller GPIO pins configured as inputs. The emitter connects to 5V (check Adafruit datasheet for exact supply).
+Each break-beam pair has an emitter and a receiver. The receiver output is a digital signal: high when beam is intact, low when broken. Wire receivers to microcontroller GPIO pins configured as inputs. The emitter connects to 5V (check Adafruit datasheet for exact supply).
 
 Two pairs for size detection in the sensing zone. One pair per bin entrance, four pairs total for confirmation. Six pairs used, two spare.
 
@@ -125,11 +125,11 @@ Connects to the microcontroller over I2C. Set the I2C bus clock to 400kHz explic
 
 ### Display
 
-Connects to the microcontroller over SPI. Runs at 40MHz SPI clock -- verify this is within the display panel's spec (ST7789 supports it). Power at 3.3V.
+Connects to the microcontroller over SPI. Runs at 40MHz SPI clock. Verify this is within the display panel's spec (ST7789 supports it). Power at 3.3V.
 
 ### Belt speed encoder (if using slotted disk option)
 
-A photointerrupter (H206 or equivalent slot optocoupler) mounts next to the belt pulley. Its output is a digital pulse train -- one pulse per slot as the disk rotates. Wire the output to a GPIO interrupt pin on the microcontroller. Use the ESP32's hardware pulse counter peripheral for counting rather than software interrupts -- it handles high pulse rates without CPU overhead.
+A photointerrupter (H206 or equivalent slot optocoupler) mounts next to the belt pulley. Its output is a digital pulse train: one pulse per slot as the disk rotates. Wire the output to a GPIO interrupt pin on the microcontroller. Use the ESP32's hardware pulse counter peripheral for counting rather than software interrupts. It handles high pulse rates without CPU overhead.
 
 The disk can be printed directly into the belt pulley face (add 20 evenly spaced slots around the perimeter). No separate part needed.
 

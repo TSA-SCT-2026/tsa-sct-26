@@ -1,4 +1,4 @@
-# Official Problem Statement -- TSA System Control Technology 2026
+# Official Problem Statement: TSA System Control Technology 2026
 
 > Copied verbatim from the official TSA event document. Do not edit.
 
@@ -17,7 +17,7 @@ Modern distribution centers rely on highly automated system control solutions to
 
 ## DESIGN BRIEF
 
-Competitors are challenged to design, construct, and demonstrate a scaled automated warehouse sorting and conveyor system that simulates how large-scale fulfillment centers -- such as those operated by Amazon -- use system control principles to manage logistics operations efficiently. The system must detect and separate packages by characteristics, make control decisions, and activate mechanical components to route packages accurately and safely.
+Competitors are challenged to design, construct, and demonstrate a scaled automated warehouse sorting and conveyor system that simulates how large-scale fulfillment centers (such as those operated by Amazon) use system control principles to manage logistics operations efficiently. The system must detect and separate packages by characteristics, make control decisions, and activate mechanical components to route packages accurately and safely.
 
 - Your model working system should be no larger than 2ft x 2ft
 - 24 packages will be sorted by size and color
@@ -56,11 +56,11 @@ The system must include:
 ## Scoring breakdown
 
 Evaluation is based on 100 points:
-- **Inventor's Log: 20 points** -- the engineering notebook. Shows design process, decisions derived from data, iteration history. Must be brought to conference day.
-- **Solution to Problem: 60 points** -- the working device. Accuracy, reliability, sensor integration, feedback loop, sorting mechanism quality, speed as a factor within this category.
-- **Programming Structure: 20 points** -- code quality. Clean architecture, logical organization, readable structure. This is explicitly scored. The firmware module structure matters.
+- **Inventor's Log: 20 points** - the engineering notebook. Shows design process, decisions derived from data, iteration history. Must be brought to conference day.
+- **Solution to Problem: 60 points** - the working device. Accuracy, reliability, sensor integration, feedback loop, sorting mechanism quality, speed as a factor within this category.
+- **Programming Structure: 20 points** - code quality. Clean architecture, logical organization, readable structure. This is explicitly scored. The firmware module structure matters.
 
-## Event format -- critical
+## Event format: critical
 
 **No interview. No on-site work. No team presence during evaluation.**
 
@@ -76,7 +76,7 @@ Implications for design and documentation:
 ## Notes for the team
 
 - The 2ft x 2ft footprint constraint is hard. Current design targets 610mm x 610mm which is exactly 2ft x 2ft. Verify every major component placement fits before committing to frame CAD.
-- "Sorted by size into 2 containers, then by color" describes the outcome, not the mechanism. The system is not required to sort size first mechanically -- it just needs the right bricks in the right bins. Our single-pass approach (classify both attributes in one sensing zone, route directly to the correct bin) satisfies the requirement.
+- "Sorted by size into 2 containers, then by color" describes the outcome, not the mechanism. The system is not required to sort size first mechanically. It just needs the right bricks in the right bins. Our single-pass approach (classify both attributes in one sensing zone, route directly to the correct bin) satisfies the requirement.
 - "At least two sensors" is satisfied by the two IR break-beams for size alone. The color sensor and bin confirmation beams are additional. Exceeding this looks good.
 - Manual start/stop is required. A button in the firmware is not optional.
 - No school or individual names on the project. State Conference ID only on all parts (device, log, documentation).

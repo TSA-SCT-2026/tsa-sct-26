@@ -27,7 +27,7 @@ Everything else: after the chute transition is validated.
 - Export STL files alongside source files (Fusion 360 / FreeCAD / whatever you use)
 - Name files descriptively: `plow_arm_v3.stl`, `chute_transition_v1.f3d`, etc.
 - Keep version numbers in filenames during iteration so old versions are not lost
-- Critical dimensions are in MECHANICAL.md -- match them, and note any deviations
+- Critical dimensions are in MECHANICAL.md. Match them, and note any deviations
 
 ## Tolerance notes
 

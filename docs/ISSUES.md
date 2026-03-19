@@ -1,13 +1,13 @@
 # Open Issues
 
-Unresolved technical questions, decisions, and logistics that need to be addressed before specific build phases. Not the same as risks (those are in ARCHITECTURE.md) -- these are specific open items with a resolution path.
+Unresolved technical questions, decisions, and logistics that need to be addressed before specific build phases. Not the same as risks (those are in ARCHITECTURE.md). These are specific open items with a resolution path.
 
 ---
 
 ## Before frame CAD (before April 2)
 
 **Top-down footprint layout**
-Draw a to-scale top-down view of the full system: belt, bins, chute footprint, frame edges. Verify everything fits within 610mm x 610mm. This is a 30-minute task. Do not start frame CAD without it. Bins diverting sideways are the main unknown -- two bins per side, each ~80mm wide x 100mm deep, need to confirm they fit alongside the belt run.
+Draw a to-scale top-down view of the full system: belt, bins, chute footprint, frame edges. Verify everything fits within 610mm x 610mm. This is a 30-minute task. Do not start frame CAD without it. Bins diverting sideways are the main unknown. Two bins per side, each ~80mm wide x 100mm deep, need to confirm they fit alongside the belt run.
 
 **Exact bin positions**
 The exact distance from the sensing zone to each of the 4 bin entrance beams is needed for:
@@ -25,7 +25,7 @@ Determine these in dry assembly. Log them. Update EMBEDDED.md and ELECTRICAL.md 
 The TT gearmotor spec gives a no-load RPM. Actual belt speed under load at 5V with the selected PWM duty cycle is not known. Measure it during breadboard validation (run motor, manually time a brick over a known distance). If actual speed differs significantly from 200mm/s, recalculate: size detection threshold, solenoid de-energize timing, color dwell time, brick spacing.
 
 **Belt friction with bricks**
-Verify bricks do not slide sideways on the smooth GT2 belt surface during plow actuation. The plow tip pushes laterally against a moving brick -- if belt-to-brick friction is too low, the brick may spin rather than deflect cleanly. Test during first powered belt run. If sliding is a problem, lightly textured belt surface or slightly slowing the belt during plow contact are options.
+Verify bricks do not slide sideways on the smooth GT2 belt surface during plow actuation. The plow tip pushes laterally against a moving brick. If belt-to-brick friction is too low, the brick may spin rather than deflect cleanly. Test during first powered belt run. If sliding is a problem, lightly textured belt surface or slightly slowing the belt during plow contact are options.
 
 **L298N PWM frequency**
 Test at 1kHz, 5kHz, and 10kHz. Observe: motor response, audible noise, L298N temperature under sustained operation. Pick the frequency that gives smooth control with acceptable heat. Document the result.
@@ -48,7 +48,7 @@ Track which hardware timers are used as firmware is written. ESP32 has 4 hardwar
 ## Competition power source (resolve before ordering second LiPo)
 
 **AC outlet availability at the judging table**
-The scoring does not require battery power. A bench supply at competition is more reliable than LiPo -- no voltage sag, no depletion across back-to-back demos, simpler two-rail isolation. But it requires AC power at the judging table, which is not guaranteed at TSA state/nationals venues.
+The scoring does not require battery power. A bench supply at competition is more reliable than LiPo: no voltage sag, no depletion across back-to-back demos, simpler two-rail isolation. But it requires AC power at the judging table, which is not guaranteed at TSA state/nationals venues.
 
 Resolution path: contact event organizers or find a past competitor who can confirm whether outlets are available at individual judging stations. If yes, use a bench supply for competition and skip the second LiPo. If no or unknown, stick with LiPo.
 

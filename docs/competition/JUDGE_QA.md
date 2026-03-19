@@ -12,7 +12,7 @@ Point to the IR beams at each bin entrance. The controller knows the expected de
 
 **"Why IR break-beams instead of ultrasonic for size detection?"**
 
-The two brick lengths differ by 7.9mm (about 5/16 of an inch). Ultrasonic sensors have noise margins at close range that exceed this difference -- you cannot reliably distinguish two objects that close in size. IR break-beams are digital: the beam is either broken or it is not. Zero noise floor. The measurement is a timing interval between two digital events, which the microcontroller measures with microsecond resolution.
+The two brick lengths differ by 7.9mm (about 5/16 of an inch). Ultrasonic sensors have noise margins at close range that exceed this difference. You cannot reliably distinguish two objects that close in size. IR break-beams are digital: the beam is either broken or it is not. Zero noise floor. The measurement is a timing interval between two digital events, which the microcontroller measures with microsecond resolution.
 
 ---
 
@@ -24,7 +24,7 @@ A servo needs 100 to 150 milliseconds to sweep and return. At our throughput, br
 
 **"Why a stepper motor for the brick feeder instead of something simpler?"**
 
-The stepper counts its own steps, which means it counts its own rotations. One full rotation releases exactly one brick -- this is mechanically guaranteed by the cam geometry. Between releases, the coils stay energized at reduced current, so the queue of bricks cannot push back against the cam and cause a double-release. No encoder needed. No sensor needed. The motor is the sensor.
+The stepper counts its own steps, which means it counts its own rotations. One full rotation releases exactly one brick. This is mechanically guaranteed by the cam geometry. Between releases, the coils stay energized at reduced current, so the queue of bricks cannot push back against the cam and cause a double-release. No encoder needed. No sensor needed. The motor is the sensor.
 
 ---
 
@@ -36,19 +36,19 @@ Fewer moving parts means fewer failure modes. Gravity is reliable. The stepper c
 
 **"What does your display actually show?"**
 
-As each brick is classified, its silhouette animates down the chute graphic in the correct color -- red or blue -- and the correct shape -- 2x2 or 2x3 aspect ratio. The corresponding bin counter flashes and increments. A sidebar shows brick number, size, color, and destination. A small bar shows actuator thermal state in real time. At the end of the run, the screen shows total time, per-bin totals versus expected, and whether all confirmations succeeded. It is a live window into the system's internal decisions, not a decoration.
+As each brick is classified, its silhouette animates down the chute graphic in the correct color (red or blue) and the correct shape (2x2 or 2x3 aspect ratio). The corresponding bin counter flashes and increments. A sidebar shows brick number, size, color, and destination. A small bar shows actuator thermal state in real time. At the end of the run, the screen shows total time, per-bin totals versus expected, and whether all confirmations succeeded. It is a live window into the system's internal decisions, not a decoration.
 
 ---
 
 **"How does it handle back-to-back runs?"**
 
-The system tracks actuator heat state between runs using an exponential decay model. If heat approaches a threshold from repeated firing, the release rate automatically reduces to protect the hardware. The system manages itself. Heatsinks on all solenoids provide passive cooling between cycles. A judge can request a second run immediately and the system will either run normally or tell you it needs a moment -- it will not silently degrade or fail.
+The system tracks actuator heat state between runs using an exponential decay model. If heat approaches a threshold from repeated firing, the release rate automatically reduces to protect the hardware. The system manages itself. Heatsinks on all solenoids provide passive cooling between cycles. A judge can request a second run immediately and the system will either run normally or tell you it needs a moment. It will not silently degrade or fail.
 
 ---
 
 **"What is your throughput?"**
 
-Five bricks per second, limited by the stepper escapement cycle time. All sensing and routing happens while bricks are in transit -- color classification takes under 3 milliseconds, solenoid pre-set takes 10 milliseconds, microcontroller logic takes microseconds. None of these are in the critical path. The belt and escapement determine throughput.
+Five bricks per second, limited by the stepper escapement cycle time. All sensing and routing happens while bricks are in transit: color classification takes under 3 milliseconds, solenoid pre-set takes 10 milliseconds, microcontroller logic takes microseconds. None of these are in the critical path. The belt and escapement determine throughput.
 
 ---
 

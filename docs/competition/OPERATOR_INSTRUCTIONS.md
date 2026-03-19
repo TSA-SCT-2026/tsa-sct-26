@@ -4,7 +4,7 @@
 
 ---
 
-## PLACEHOLDER -- write this after the system is fully calibrated and working
+## PLACEHOLDER: write this after the system is fully calibrated and working
 
 The final version of this document should cover:
 
@@ -22,7 +22,7 @@ The final version of this document should cover:
 
 - Must fit on a single page, printed, laminated if possible
 - Font large enough to read at arm's length
-- No school names, no student names -- State Conference ID only
+- No school names, no student names. State Conference ID only
 - Steps are numbered, not paragraphs
 - Include a diagram or photo of the chute loading orientation if there is any ambiguity
 - Tested: have someone unfamiliar with the system follow these instructions cold before conference day

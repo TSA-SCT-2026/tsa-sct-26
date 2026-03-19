@@ -22,7 +22,7 @@ Transitions happen on hardware interrupt or timer expiry, not polling loops. The
 
 Two IR break-beam pairs in the sensing zone, 19mm apart along the belt axis.
 
-Use hardware timer interrupts -- not software polling, not delay-based measurement. The timer must have at least 1 microsecond resolution. This gives thousands of counts of margin on the 21ms signal window, making misclassification effectively impossible from timing alone.
+Use hardware timer interrupts, not software polling or delay-based measurement. The timer must have at least 1 microsecond resolution. This gives thousands of counts of margin on the 21ms signal window, making misclassification effectively impossible from timing alone.
 
 ```
 Beam 1 breaks:                timer starts
@@ -32,9 +32,9 @@ Beam 2 times out:             brick is 2x2 (15.8mm long)
 
 How the geometry works:
 - Beams are 19mm apart. Belt moves at 200mm/s.
-- A 2x2 brick is 15.8mm long -- shorter than the 19mm beam gap. Its trailing edge clears beam 1 before its leading edge reaches beam 2. Beam 2 never breaks.
-- A 2x3 brick is 23.7mm long -- longer than the gap. Its leading edge reaches beam 2 while the brick is still in beam 1. Time from beam 1 break to beam 2 break: 19mm / 200mm/s = 95ms.
-- Timeout should be set above 95ms (use ~150ms). The classification threshold sits anywhere between 0 and 95ms -- 50ms is a reasonable starting point. Validate empirically at actual belt speed during calibration. The margin is large enough that the exact value does not matter much.
+- A 2x2 brick is 15.8mm long: shorter than the 19mm beam gap. Its trailing edge clears beam 1 before its leading edge reaches beam 2. Beam 2 never breaks.
+- A 2x3 brick is 23.7mm long: longer than the gap. Its leading edge reaches beam 2 while the brick is still in beam 1. Time from beam 1 break to beam 2 break: 19mm / 200mm/s = 95ms.
+- Timeout should be set above 95ms (use ~150ms). The classification threshold sits anywhere between 0 and 95ms. 50ms is a reasonable starting point. Validate empirically at actual belt speed during calibration. The margin is large enough that the exact value does not matter much.
 
 ## Color detection
 
@@ -58,7 +58,7 @@ Beam 1 windowing (gate sampling on beam break/restore) can be added as a seconda
 
 ### Classification
 
-Average all valid samples within the window. Classify using R / (R + G + B) ratio. Red LEGO bricks have a strong spectral signature and will produce a clearly high ratio. Blue LEGO bricks will produce a clearly low ratio. The gap between them is large -- this is one of the easier color classification problems you can choose. The risk is not in the classification math, it is in the windowing and shroud (see MECHANICAL.md for shroud design notes).
+Average all valid samples within the window. Classify using R / (R + G + B) ratio. Red LEGO bricks have a strong spectral signature and will produce a clearly high ratio. Blue LEGO bricks will produce a clearly low ratio. The gap between them is large. This is one of the easier color classification problems you can choose. The risk is not in the classification math, it is in the windowing and shroud (see MECHANICAL.md for shroud design notes).
 
 The exact threshold (nominally ~0.45) must be calibrated empirically with the shroud installed, demo bricks, belt running, integrated LED as the only light source. Log raw R/G/B values for both brick colors during calibration to understand the actual separation. Do not assume any threshold value.
 
@@ -76,7 +76,7 @@ This produces documentation data and a principled threshold choice.
 Routing is a direct lookup from classification result to plow assignment. Optimized by brick frequency so the most common brick type fires no solenoid.
 
 ```
-2x3 blue (8/24): no solenoid fires -- default path, brick reaches end bin
+2x3 blue (8/24): no solenoid fires - default path, brick reaches end bin
 2x2 blue (6/24): plow 1 fires
 2x2 red  (6/24): plow 2 fires
 2x3 red  (4/24): plow 3 fires
@@ -84,7 +84,7 @@ Routing is a direct lookup from classification result to plow assignment. Optimi
 
 One plow fires per brick, maximum. Total solenoid fires per full run: 16.
 
-Solenoid fires immediately when classification completes. The brick is still traveling from the sensing zone to the first plow -- roughly 150ms of travel time at 200mm/s over 30mm. Solenoid actuation takes 10ms. The plow is pre-set before the brick arrives.
+Solenoid fires immediately when classification completes. The brick is still traveling from the sensing zone to the first plow: roughly 150ms of travel time at 200mm/s over 30mm. Solenoid actuation takes 10ms. The plow is pre-set before the brick arrives.
 
 PWM hold timing per solenoid:
 - Full power for the first 20ms (full extension reached)
@@ -135,13 +135,13 @@ Belt speed is a tunable parameter. Optimal speed balances throughput against cla
 - When a brick is routed, log the timestamp. When the bin confirmation beam breaks, log another.
 - Speed = known sensor-to-bin distance / elapsed time
 - Every brick gives a speed measurement, all 24 bricks per run
-- Downside: measurement is trailing -- informs the next brick, not the current one
+- Downside: measurement is trailing. It informs the next brick, not the current one
 - Each bin is at a different distance from the sensor zone, so you need exact CAD measurements for all 4 paths (determine in dry assembly, not estimated)
 
 **Option C: Slotted disk on belt pulley with photointerrupter (recommended, ~$1 extra)**
 A printed disk with radial slots mounts on the belt pulley shaft. A U-shaped light sensor (photointerrupter/optocoupler) straddles the disk edge. As the pulley spins, slots pass through the sensor gap and generate pulses. Count pulses per unit time = rotation speed = belt speed.
 
-At 200mm/s: pulley does ~5 rotations/sec. A 20-slot disk gives 100 pulses/sec -- one pulse every 10ms. This is continuous real-time feedback at high bandwidth, genuinely good for a PI controller. The disk can be printed directly as an extension of the belt pulley face. Requires adding one H206 slot sensor to the BOM (~$1).
+At 200mm/s: pulley does ~5 rotations/sec. A 20-slot disk gives 100 pulses/sec: one pulse every 10ms. This is continuous real-time feedback at high bandwidth, genuinely good for a PI controller. The disk can be printed directly as an extension of the belt pulley face. Requires adding one H206 slot sensor to the BOM (~$1).
 
 This is the cleanest option. Use A or B for validation and logging. Use C for the actual PI controller if added.
 
@@ -156,7 +156,7 @@ Set operational setpoint to the fastest speed that holds target accuracy (95%+).
 
 ### PI controller notes
 
-Start with proportional control only. Add integral if steady-state offset persists. Derivative not needed -- belt speed is slow and smooth. Gains will be small. The controller update rate is determined by whichever speed measurement option you use.
+Start with proportional control only. Add integral if steady-state offset persists. Derivative not needed: belt speed is slow and smooth. Gains will be small. The controller update rate is determined by whichever speed measurement option you use.
 
 ### Development tool: web server logging
 
@@ -164,7 +164,7 @@ The ESP32 has WiFi. During calibration and tuning, run a lightweight HTTP server
 
 ## Display
 
-Color TFT over SPI. All display updates happen asynchronously relative to the sensing and routing pipeline -- they must not block or delay state transitions.
+Color TFT over SPI. All display updates happen asynchronously relative to the sensing and routing pipeline. They must not block or delay state transitions.
 
 During sort (triggered on ROUTING state entry, not on physical bin arrival):
 - Brick silhouette animates down the chute graphic in the correct classification color (red or blue) and correct aspect ratio (2x2 or 2x3)
@@ -172,7 +172,7 @@ During sort (triggered on ROUTING state entry, not on physical bin arrival):
 - Sidebar shows brick number, size, color, destination bin
 - Thermal bar updates
 
-Render bricks as small pre-rendered bitmaps stored in flash memory. Clear the background rectangle, redraw the bitmap -- no full-screen refresh needed. Animation should complete within 150ms to avoid queuing at 5 bricks per second.
+Render bricks as small pre-rendered bitmaps stored in flash memory. Clear the background rectangle, redraw the bitmap. No full-screen refresh needed. Animation should complete within 150ms to avoid queuing at 5 bricks per second.
 
 RGB565 color format: red is 0xF800, blue is 0x001F. These are exact matches for LEGO red and blue under normal conditions.
 
@@ -197,7 +197,7 @@ The time between ROUTING timestamp and CONFIRM timestamp gives measured transit 
 
 ## Button and start/stop
 
-Momentary button, wired to a GPIO with internal pullup. Press starts a run from IDLE. The competition rules require a manual start/stop -- do not auto-run on power-up.
+Momentary button, wired to a GPIO with internal pullup. Press starts a run from IDLE. The competition rules require a manual start/stop. Do not auto-run on power-up.
 
 Optional: a second button for slow demo mode (half belt speed, exaggerated animation timing). Costs nothing in firmware. Useful during judging explanations.
 

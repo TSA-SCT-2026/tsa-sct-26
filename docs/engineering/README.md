@@ -6,7 +6,7 @@ Competition documentation goes here. Judges score this heavily. Build it from lo
 
 ```
 docs/engineering/
-  decision_matrices/    one file per subsystem -- sensor choice, actuator choice, escapement choice
+  decision_matrices/    one file per subsystem: sensor choice, actuator choice, escapement choice
   calibration/          calibration procedures for size threshold and color threshold
   equations/            all math: lever geometry, belt speed, brick spacing, thermal model
   failure_modes/        failure mode analysis table
@@ -14,7 +14,7 @@ docs/engineering/
 
 ## Decision matrices
 
-Each decision matrix documents: what options were considered, what was chosen, and why each alternative was rejected with a specific technical reason. This is the format judges look for. The rationale already exists in the architecture files -- pull it into structured tables here.
+Each decision matrix documents: what options were considered, what was chosen, and why each alternative was rejected with a specific technical reason. This is the format judges look for. The rationale already exists in the architecture files. Pull it into structured tables here.
 
 Subsystems that need matrices:
 - Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
