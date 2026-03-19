@@ -22,6 +22,8 @@ Immediate and near-term action items. Keep this list short and current.
 
 ## Open decisions
 
+- [ ] Confirm AC outlet availability at judging table -- contact event organizers or find a past competitor. Determines whether to use bench supply or LiPo at competition. See ISSUES.md for full context.
+
 - [ ] Confirm H206 optocoupler is in the AliExpress order (belt speed encoder, already in BOM)
 - [ ] Find stepper cam reference models if useful (grabcad, printables) -- geometry is simple enough to draw from scratch but a reference doesn't hurt
 

@@ -45,6 +45,15 @@ Track which hardware timers are used as firmware is written. ESP32 has 4 hardwar
 
 ---
 
+## Competition power source (resolve before ordering second LiPo)
+
+**AC outlet availability at the judging table**
+The scoring does not require battery power. A bench supply at competition is more reliable than LiPo -- no voltage sag, no depletion across back-to-back demos, simpler two-rail isolation. But it requires AC power at the judging table, which is not guaranteed at TSA state/nationals venues.
+
+Resolution path: contact event organizers or find a past competitor who can confirm whether outlets are available at individual judging stations. If yes, use a bench supply for competition and skip the second LiPo. If no or unknown, stick with LiPo.
+
+Either way, use the bench supply for all development and calibration.
+
 ## Competition logistics (before April 29)
 
 **Reload time**
