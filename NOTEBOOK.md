@@ -10,6 +10,8 @@ Every entry in this notebook should follow the same pattern:
 
 The notebook guides decisions. It does not just record them after the fact.
 
+Scoring: Inventor's Log is 20 of 100 points. It is evaluated by judges reading it without the team present. It must stand alone.
+
 ---
 
 ## Required sections (checklist)
@@ -92,6 +94,10 @@ If serial logging is implemented correctly during calibration, the following are
 Do not manually record any of this. Pipe serial to CSV and analyze from the file.
 
 ---
+
+## Operator instructions (required deliverable)
+
+docs/competition/OPERATOR_INSTRUCTIONS.md is a placeholder that must become a real document before conference day. It is what the evaluator reads. Write it late in the build process (after the system is finalized and reliable), test it by handing it to someone unfamiliar with the system, and revise until they can run it correctly on the first attempt.
 
 ## Timeline for notebook completion
 

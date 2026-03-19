@@ -53,9 +53,30 @@ The system must include:
 
 ---
 
+## Scoring breakdown
+
+Evaluation is based on 100 points:
+- **Inventor's Log: 20 points** -- the engineering notebook. Shows design process, decisions derived from data, iteration history. Must be brought to conference day.
+- **Solution to Problem: 60 points** -- the working device. Accuracy, reliability, sensor integration, feedback loop, sorting mechanism quality, speed as a factor within this category.
+- **Programming Structure: 20 points** -- code quality. Clean architecture, logical organization, readable structure. This is explicitly scored. The firmware module structure matters.
+
+## Event format -- critical
+
+**No interview. No on-site work. No team presence during evaluation.**
+
+Teams have 15 minutes to set up the completed device and leave written operator instructions. Evaluators operate the device independently using those instructions. Top three announced at awards.
+
+Implications for design and documentation:
+- The device must work from a cold start operated by a stranger following written instructions. The team is not present to intervene.
+- The display must communicate system state unambiguously without any context. "SORT COMPLETE", "ERROR", "READY" must be readable and obvious.
+- Error recovery (jam, halt) must be possible by following the written instructions alone. Design the reset procedure to be simple.
+- The operator instructions sheet is a required deliverable. It does not exist yet. See docs/competition/ for where to put it.
+- The 15-minute setup constraint means the system should require no calibration on-site. Everything is tuned and locked before conference day.
+
 ## Notes for the team
 
 - The 2ft x 2ft footprint constraint is hard. Current design targets 610mm x 610mm which is exactly 2ft x 2ft. Verify every major component placement fits before committing to frame CAD.
 - "Sorted by size into 2 containers, then by color" describes the outcome, not the mechanism. The system is not required to sort size first mechanically -- it just needs the right bricks in the right bins. Our single-pass approach (classify both attributes in one sensing zone, route directly to the correct bin) satisfies the requirement.
 - "At least two sensors" is satisfied by the two IR break-beams for size alone. The color sensor and bin confirmation beams are additional. Exceeding this looks good.
 - Manual start/stop is required. A button in the firmware is not optional.
+- No school or individual names on the project. State Conference ID only on all parts (device, log, documentation).
