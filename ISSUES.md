@@ -4,13 +4,6 @@ Unresolved technical questions, decisions, and logistics that need to be address
 
 ---
 
-## Before ordering (today, March 18)
-
-**H206 slot optocoupler: add to BOM or not?**
-Already in BOM.md. Needed for the slotted disk belt speed encoder (Option C PI controller). Cheap (~$1), no reason not to include. Consider resolved -- order it.
-
----
-
 ## Before frame CAD (before April 2)
 
 **Top-down footprint layout**
