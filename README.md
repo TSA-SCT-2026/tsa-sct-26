@@ -16,7 +16,10 @@ tsa-sct-26/
   MECHANICAL.md            physical design, all measurements, fabrication concerns
   ELECTRICAL.md            power architecture, wiring, protection components
   EMBEDDED.md              state machine, sensor logic, actuator control, firmware checklist
-  BOM.md                   parts list with ordering info
+  BOM.md                   parts list with ordering info (order today)
+  ISSUES.md                open technical questions with resolution paths
+  IDEAS.md                 design alternatives analysis and exploratory concepts
+  NOTEBOOK.md              engineering notebook checklist and timeline
   CLAUDE.md                instructions for AI agents working on this repo
 
   cad/                     all printable parts, organized by subsystem

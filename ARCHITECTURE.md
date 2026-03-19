@@ -117,21 +117,24 @@ March 21-24    Chute transition iteration.
                Iterate until bricks flow smoothly every time.
                This is the gate. Do not proceed until it passes.
 
-March 24-28    Parts arrive. Validate everything on breadboard immediately.
+March 28 - April 2    Parts arrive (AliExpress ordered March 18, 10-15 day window).
+               Validate everything on breadboard immediately on arrival.
                IR break-beams: 2x2 vs 2x3 at 19mm spacing, multiple speeds.
-               Color sensor: red vs blue under shroud, log raw readings.
-               Solenoid: stroke force vs spring candidates.
+               Color sensor: red vs blue under shroud LED, log raw R/G/B values.
+               Belt black filter threshold: log bare belt vs brick surface totals.
+               Solenoid: stroke force vs spring candidates from assortment.
                Stepper + driver: get motor spinning, verify step counting.
+               Encoder disk: verify H206 pulse output at motor speed.
                Display: driver working, test animation loop.
 
-March 28 - April 4    Full frame CAD and print.
+April 2-9     Full frame CAD and print.
                Use validated chute geometry from earlier iteration.
                All channel sections, plow arms, escapement housing,
                sensor mounts, bin guides.
                Dry assembly: no wiring, verify bricks flow end to end.
                Fix print tolerance issues before wiring anything.
 
-April 4-10     Wiring and firmware integration.
+April 9-14     Wiring and firmware integration.
                All solenoids with flyback diodes.
                Stepper driver with 100uF cap on motor power input.
                Both power rails, verify isolation.
@@ -139,7 +142,7 @@ April 4-10     Wiring and firmware integration.
                All sensors: color sensor on I2C, break-beams, display on SPI.
                First end-to-end test with real bricks.
 
-April 10-17    Calibration.
+April 14-20    Calibration.
                Set size threshold empirically from break-beam data.
                Set color threshold empirically under shroud with demo bricks.
                Tune belt speed, brick spacing, stepper release timing.
@@ -148,19 +151,19 @@ April 10-17    Calibration.
                Validate thermal model triggers correctly.
                Log everything to serial, save CSV files.
 
-April 17-22    Reliability runs.
+April 20-24    Reliability runs.
                10 full 24-brick runs minimum, all logged.
                Back-to-back runs to stress-test thermal management.
                Fix anything that fails more than once.
                Test on LiPo, not bench supply.
 
-April 22-26    Documentation.
+April 24-27    Documentation.
                Engineering notebook from logged run data.
                Decision matrices, equations, failure mode table.
                Calibration procedures, performance test data.
                Practice answering judge questions cold (see docs/competition/JUDGE_QA.md).
 
-April 26-29    Buffer.
+April 27-29    Buffer.
                Something will break during documentation runs.
                This time is not optional. Fix it here, not at competition.
 

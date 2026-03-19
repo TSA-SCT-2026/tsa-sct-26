@@ -42,6 +42,7 @@ Bench supply is acceptable for early development but must not be used for any ca
 | Adafruit IR break-beam pairs (x6 used) | size and bin sensing | 3.3-5V | low |
 | TCS34725 color sensor | color classification | 3.3V | low |
 | ST7789 color TFT display | live status display | 3.3V | ~80mA |
+| H206 slot optocoupler | belt speed encoder | 3.3-5V | low |
 | 2S LiPo 7.4V 2000mAh | main power source | 7.4V nominal | 2A continuous |
 
 ## Critical protection components
@@ -85,9 +86,17 @@ Between releases, reduce hold current via the driver's reference voltage trim. S
 
 ## Belt motor wiring
 
-Belt motor connects through the L298N module. The L298N enable pins accept PWM for speed control -- belt speed is set as a fixed value during calibration and held constant during operation. There is no separate speed controller module needed; the L298N provides this natively via its enable input.
+Belt motor connects through the L298N module. The L298N enable pins accept PWM for speed control -- this is how the PI controller adjusts belt speed. No separate speed controller module is needed.
+
+L298N PWM frequency: keep between 1kHz and 10kHz. Below 1kHz the motor audibly ticks. Above 25kHz the L298N's internal circuitry generates excessive heat and switching losses become significant. 5kHz is a reliable starting point.
 
 Motor direction should be wired to run belt surface in the correct direction. Verify this before installing sensors or plows by running a brick manually.
+
+## Bulk capacitor on logic rail
+
+Add a 1000uF electrolytic capacitor between 5V and GND on the logic rail, physically close to the microcontroller. When solenoids fire on Rail 1, even with rail isolation, transients can couple through the common ground. The bulk cap buffers the logic supply during these events and prevents brief undervoltage that could cause a reset.
+
+This is separate from the 100uF cap on the A4988 motor power input -- that one is for the stepper driver, this one is for the microcontroller supply. Both are needed.
 
 ## Solenoid control
 
@@ -118,9 +127,16 @@ Connects to the microcontroller over I2C. Set the I2C bus clock to 400kHz explic
 
 Connects to the microcontroller over SPI. Runs at 40MHz SPI clock -- verify this is within the display panel's spec (ST7789 supports it). Power at 3.3V.
 
+### Belt speed encoder (if using slotted disk option)
+
+A photointerrupter (H206 or equivalent slot optocoupler) mounts next to the belt pulley. Its output is a digital pulse train -- one pulse per slot as the disk rotates. Wire the output to a GPIO interrupt pin on the microcontroller. Use the ESP32's hardware pulse counter peripheral for counting rather than software interrupts -- it handles high pulse rates without CPU overhead.
+
+The disk can be printed directly into the belt pulley face (add 20 evenly spaced slots around the perimeter). No separate part needed.
+
 ## Wiring checklist before first power-on
 
 - [ ] 100uF capacitor adjacent to A4988 motor power input, correctly oriented
+- [ ] 1000uF capacitor on logic rail 5V supply, close to microcontroller
 - [ ] All three solenoid flyback diodes installed, orientation verified with multimeter
 - [ ] Rail 1 and Rail 2 separated, common ground only
 - [ ] Both LM2596 outputs measured at 5V before connecting anything
@@ -129,6 +145,7 @@ Connects to the microcontroller over SPI. Runs at 40MHz SPI clock -- verify this
 - [ ] Microcontroller powered from clean rail, not motor rail
 - [ ] All I2C devices on same bus with shared SDA, SCL, and ground
 - [ ] Display SPI connections correct (MOSI, SCLK, CS, DC, RST)
+- [ ] Photointerrupter output connected to GPIO interrupt pin (if using slotted disk encoder)
 
 ## Common failure modes
 

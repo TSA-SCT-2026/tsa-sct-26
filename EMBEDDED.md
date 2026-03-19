@@ -48,13 +48,13 @@ Minimum integration time per sample: 2.4ms
 Maximum samples per brick: 79 / 2.4 = ~32 samples
 ```
 
-### Sample windowing -- important
+### Black belt filter
 
-The sensor runs continuously. Between bricks it reads the black GT2 belt, which will produce near-zero light readings. If you average all samples indiscriminately, belt readings dilute brick readings and shift the ratio toward zero. Do not do this.
+The GT2 belt is black rubber. When the sensor reads bare belt (between bricks, or at brick edges), total raw light across all channels is near zero. Black is trivially easy to detect: if the sum of all raw channels is below a floor threshold, discard the sample.
 
-Only sample when a brick is actually under the sensor. The trigger: start sampling when beam 1 breaks (leading edge enters sensing zone), stop sampling when beam 1 restores (trailing edge has cleared). This window captures brick surface only. Samples taken outside this window should be discarded.
+Set the floor threshold during calibration by logging raw totals for bare belt and brick surface separately. The gap between them will be obvious. This single filter cleanly handles all belt readings without any timing-based windowing logic.
 
-Additionally: if a sample's raw total light level is below a floor threshold, discard it. This is a secondary guard against edge effects at the brick boundaries (the brief moment when the sensor is half over brick and half over belt). Set this floor threshold during calibration.
+Beam 1 windowing (gate sampling on beam break/restore) can be added as a secondary layer but should not be the primary mechanism. The black filter is simpler and more robust.
 
 ### Classification
 
@@ -121,33 +121,46 @@ Apply the model to all solenoids and the stepper motor. The belt motor does not 
 
 ## Belt speed control (PI controller)
 
-Belt speed is a tunable parameter. The optimal speed balances throughput against classification accuracy. Too fast and color samples are compressed, size timing margins shrink, and bricks may jam at the taper. Too slow and the run takes longer than necessary.
+Belt speed is a tunable parameter. Optimal speed balances throughput against classification accuracy. Too fast: color samples compress, size timing margins shrink, bricks may jam the taper. Too slow: run takes longer than needed.
 
-### Speed measurement -- no extra hardware needed
+### Three speed measurement options
 
-The break-beams already give you per-brick speed measurements:
+**Option A: Reuse size detection break-beams (no extra hardware)**
+- 2x3 bricks: time from beam 1 to beam 2 break = 19mm / speed
+- 2x2 bricks: duration beam 1 is blocked = 15.8mm / speed
+- Every brick gives a speed sample (~5 per second)
+- Update rate is limited but workable for a slow process variable like belt speed
 
-- On 2x3 bricks: measure the time between beam 1 breaking and beam 2 breaking. Speed = 19mm / that time.
-- On 2x2 bricks: measure how long beam 1 is blocked (leading edge to trailing edge). Speed = 15.8mm / that time.
+**Option B: Bin confirmation transit time (no extra hardware, already happening)**
+- When a brick is routed, log the timestamp. When the bin confirmation beam breaks, log another.
+- Speed = known sensor-to-bin distance / elapsed time
+- Every brick gives a speed measurement, all 24 bricks per run
+- Downside: measurement is trailing -- informs the next brick, not the current one
+- Each bin is at a different distance from the sensor zone, so you need exact CAD measurements for all 4 paths (determine in dry assembly, not estimated)
 
-Every brick is a speed sample. Feed these into a PI controller that adjusts the PWM duty cycle to the belt motor driver.
+**Option C: Slotted disk on belt pulley with photointerrupter (recommended, ~$1 extra)**
+A printed disk with radial slots mounts on the belt pulley shaft. A U-shaped light sensor (photointerrupter/optocoupler) straddles the disk edge. As the pulley spins, slots pass through the sensor gap and generate pulses. Count pulses per unit time = rotation speed = belt speed.
 
-If belt speed is stable enough in open loop, the PI controller still adds value as documentation: it demonstrates closed-loop control explicitly, which judges score. If speed varies under load (brick weight, motor temperature), the controller actually improves accuracy.
+At 200mm/s: pulley does ~5 rotations/sec. A 20-slot disk gives 100 pulses/sec -- one pulse every 10ms. This is continuous real-time feedback at high bandwidth, genuinely good for a PI controller. The disk can be printed directly as an extension of the belt pulley face. Requires adding one H206 slot sensor to the BOM (~$1).
+
+This is the cleanest option. Use A or B for validation and logging. Use C for the actual PI controller if added.
 
 ### Tuning methodology
 
-Run the full 24-brick set at multiple belt speeds (e.g., 100, 150, 200, 250mm/s). Log per-brick classification results and confirmation outcomes at each speed. Identify:
-- The minimum speed that still produces reliable color classification
-- The maximum speed before size detection starts misclassifying
-- The accuracy vs speed tradeoff curve
+Run the full 24-brick set at multiple belt speeds (e.g., 100, 150, 200, 250mm/s). Log all per-brick classification results and confirmation outcomes. Identify:
+- Minimum speed for reliable color classification
+- Maximum speed before size detection degrades
+- The accuracy vs speed curve
 
-Set the operational setpoint to the fastest speed that still achieves target accuracy (e.g., 95%+). This methodology produces strong documentation data and a principled, defensible design choice.
+Set operational setpoint to the fastest speed that holds target accuracy (95%+). This generates strong documentation data and a principled, equation-backed design choice.
 
 ### PI controller notes
 
-Proportional gain controls how aggressively the controller reacts to speed error. Integral gain eliminates steady-state offset over time. Derivative is probably not needed -- belt speed is a slow, smooth process variable. Start with P only, add I if there is persistent offset.
+Start with proportional control only. Add integral if steady-state offset persists. Derivative not needed -- belt speed is slow and smooth. Gains will be small. The controller update rate is determined by whichever speed measurement option you use.
 
-The controller update rate is limited by how often you get a speed measurement (one per brick, roughly every 140-200ms). This is a slow loop. Gains will be small. This is normal and expected.
+### Development tool: web server logging
+
+The ESP32 has WiFi. During calibration and tuning, run a lightweight HTTP server that serves a live JSON feed of brick events, speed measurements, and classification results. Connect a laptop to the same network and log directly in the browser or with a simple script. This is faster and more convenient than serial + CSV piping for iterative tuning sessions. Disable or make it optional in competition firmware (adds latency).
 
 ## Display
 
