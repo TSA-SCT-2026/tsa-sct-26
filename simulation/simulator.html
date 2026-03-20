@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brick Sorter Simulator - TSA SCT 2026</title>
+<style>
+:root {
+  --bg: #111827;
+  --bg2: #1f2937;
+  --bg3: #374151;
+  --bg4: #4b5563;
+  --text: #f9fafb;
+  --text2: #9ca3af;
+  --text3: #6b7280;
+  --border: #374151;
+  --accent: #60a5fa;
+  --green: #4ade80;
+  --yellow: #fbbf24;
+  --red: #f87171;
+  --orange: #fb923c;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f3f4f6;
+    --bg2: #ffffff;
+    --bg3: #e5e7eb;
+    --bg4: #d1d5db;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --border: #d1d5db;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+    --orange: #ea580c;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+#header h1 { font-size: 14px; font-weight: 700; }
+#header .sub { font-size: 11px; color: var(--text2); }
+.hdr-controls { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.btn {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: 500;
+  transition: background 0.12s;
+}
+.btn:hover { background: var(--bg4); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { opacity: 0.88; }
+.btn.active { outline: 2px solid var(--accent); }
+.btn.danger { background: var(--red); color: #fff; border-color: var(--red); }
+#main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ---- CONTROLS ---- */
+#controls {
+  width: 282px;
+  min-width: 282px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.section { border-bottom: 1px solid var(--border); }
+.sec-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px; cursor: pointer; user-select: none;
+  background: var(--bg2);
+}
+.sec-hdr:hover { background: var(--bg3); }
+.sec-hdr .sec-title {
+  font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2);
+}
+.sec-hdr .chev { font-size: 9px; transition: transform 0.18s; color: var(--text3); }
+.sec-hdr.closed .chev { transform: rotate(-90deg); }
+.sec-body { padding: 8px 12px 12px; }
+.sec-body.hidden { display: none; }
+.ctrl { margin-bottom: 11px; }
+.ctrl:last-of-type { margin-bottom: 2px; }
+.ctrl-top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 2px;
+}
+.ctrl-name { font-size: 12px; font-weight: 500; }
+.ctrl-val { font-family: monospace; font-size: 12px; color: var(--accent); }
+.ctrl-desc { font-size: 10px; color: var(--text3); line-height: 1.4; margin-top: 2px; }
+input[type=range] { width: 100%; height: 4px; accent-color: var(--accent); cursor: pointer; margin-top: 4px; }
+input[type=range]:disabled { opacity: 0.38; cursor: not-allowed; }
+.sec-reset { width: 100%; margin-top: 10px; font-size: 11px; }
+select {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 100%; margin-top: 4px;
+}
+input[type=number] {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 60px;
+}
+
+/* ---- CENTER ---- */
+#center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+#belt-wrap {
+  flex-shrink: 0;
+  position: relative;
+  background: #141414;
+  border-bottom: 1px solid var(--border);
+}
+#belt-canvas { display: block; width: 100%; height: 240px; }
+
+/* ---- BOTTOM TABS ---- */
+#bottom {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg2); min-height: 0;
+}
+#tab-bar {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
+.tab {
+  padding: 6px 16px; cursor: pointer; font-size: 12px;
+  color: var(--text2); border-bottom: 2px solid transparent;
+  user-select: none;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--text); }
+#tab-content { flex: 1; overflow: hidden; position: relative; min-height: 0; }
+.tab-panel {
+  position: absolute; inset: 0; overflow-y: auto;
+  padding: 8px 12px; display: none;
+}
+.tab-panel.active { display: block; }
+.event-row {
+  display: flex; gap: 8px; padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-family: monospace; align-items: baseline;
+}
+.ev-t { color: var(--text3); min-width: 68px; }
+.ev-type { min-width: 150px; color: var(--accent); font-size: 10px; }
+.ev-detail { color: var(--text2); }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th {
+  text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border);
+  color: var(--text2); font-weight: 600; position: sticky; top: 0;
+  background: var(--bg2); font-size: 10px;
+}
+td { padding: 3px 6px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:hover td { background: var(--bg3); }
+.warn-row {
+  padding: 7px 10px; border-radius: 4px; margin-bottom: 5px;
+  font-size: 12px; line-height: 1.4;
+}
+.warn-row.w { background: rgba(251,191,36,0.12); border-left: 3px solid var(--yellow); color: var(--yellow); }
+.warn-row.e { background: rgba(248,113,113,0.12); border-left: 3px solid var(--red); color: var(--red); }
+.warn-row.ok { background: rgba(74,222,128,0.1); border-left: 3px solid var(--green); color: var(--green); }
+
+/* ---- METRICS ---- */
+#metrics {
+  width: 282px; min-width: 282px;
+  background: var(--bg2); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 10px 12px; flex-shrink: 0;
+}
+.msec { margin-bottom: 14px; }
+.msec-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text2); margin-bottom: 7px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.mrow {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px; font-size: 12px;
+}
+.ml { color: var(--text2); }
+.mv { font-family: monospace; font-weight: 600; }
+.mv.g { color: var(--green); }
+.mv.y { color: var(--yellow); }
+.mv.r { color: var(--red); }
+.tbar-row { margin-bottom: 6px; }
+.tbar-top {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--text2); margin-bottom: 2px;
+}
+.tbar-bg {
+  height: 7px; background: var(--bg3); border-radius: 3px;
+  overflow: hidden; position: relative;
+}
+.tbar-fill { height: 100%; border-radius: 3px; transition: width 0.15s, background 0.2s; }
+.tbar-warn, .tbar-danger {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+}
+.tbar-warn { background: var(--yellow); opacity: 0.6; }
+.tbar-danger { background: var(--red); opacity: 0.6; }
+.bins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.bin-box {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 5px; padding: 7px 8px; text-align: center;
+}
+.bin-name { font-size: 9px; color: var(--text2); margin-bottom: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.bin-cnt { font-size: 24px; font-weight: 700; font-family: monospace; line-height: 1; }
+.bin-exp { font-size: 9px; color: var(--text3); margin-top: 1px; }
+.bin-box.match { border-color: var(--green); }
+.bin-box.over { border-color: var(--red); }
+.bin-box.flash { background: var(--accent); transition: background 0.08s; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Brick Sorter Simulator</h1>
+  <span class="sub">TSA SCT 2026 - defaults from firmware/src/config.h</span>
+  <div class="hdr-controls">
+    <span style="font-size:11px;color:var(--text2);">Speed:</span>
+    <button class="btn active" id="spd1" onclick="setSpeed(1)">1x</button>
+    <button class="btn" id="spd2" onclick="setSpeed(2)">2x</button>
+    <button class="btn" id="spd5" onclick="setSpeed(5)">5x</button>
+    <button class="btn" id="spd10" onclick="setSpeed(10)">10x</button>
+    <button class="btn primary" id="runBtn" onclick="handleRunBtn()">Run Simulation</button>
+    <button class="btn" id="resetBtn" onclick="resetSim()" style="display:none">Reset</button>
+  </div>
+</div>
+
+<div id="main">
+  <!-- Controls -->
+  <div id="controls">
+    <!-- Built by JS -->
+  </div>
+
+  <!-- Center: belt + bottom tabs -->
+  <div id="center">
+    <div id="belt-wrap">
+      <canvas id="belt-canvas" width="800" height="240"></canvas>
+    </div>
+    <div id="bottom">
+      <div id="tab-bar">
+        <div class="tab active" onclick="switchTab('timeline')">Timeline</div>
+        <div class="tab" onclick="switchTab('bricks')">Per-Brick Log</div>
+        <div class="tab" onclick="switchTab('warnings')">Warnings</div>
+      </div>
+      <div id="tab-content">
+        <div class="tab-panel active" id="panel-timeline">
+          <div id="timeline-log" style="color:var(--text3);font-size:12px;padding:4px 0;">
+            Run a simulation to see events here.
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-bricks">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Type</th><th>Size</th><th>Color</th>
+                <th>Samples</th><th>Plow</th><th>Bin</th>
+                <th>Transit ms</th><th>Thermal</th>
+              </tr>
+            </thead>
+            <tbody id="brick-log-body">
+              <tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-panel" id="panel-warnings">
+          <div id="warnings-content">
+            <div class="warn-row ok">No warnings - run a simulation or adjust parameters to see analysis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div id="metrics">
+    <div class="msec">
+      <div class="msec-title">Throughput</div>
+      <div class="mrow"><span class="ml">Escapement rate</span><span class="mv" id="m-esc-rate">-</span></div>
+      <div class="mrow"><span class="ml">Belt speed</span><span class="mv" id="m-belt-spd">-</span></div>
+      <div class="mrow"><span class="ml">Belt capacity</span><span class="mv" id="m-belt-cap">-</span></div>
+      <div class="mrow"><span class="ml">Bottleneck</span><span class="mv" id="m-bottleneck">-</span></div>
+      <div class="mrow"><span class="ml">Belt margin</span><span class="mv" id="m-margin">-</span></div>
+      <div class="mrow"><span class="ml">Est. run time</span><span class="mv" id="m-runtime">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Sensing</div>
+      <div class="mrow"><span class="ml">Color dwell (2x2)</span><span class="mv" id="m-dwell">-</span></div>
+      <div class="mrow"><span class="ml">Color samples</span><span class="mv" id="m-samples">-</span></div>
+      <div class="mrow"><span class="ml">2x3 signal window</span><span class="mv" id="m-sig-win">-</span></div>
+      <div class="mrow"><span class="ml">Size timeout</span><span class="mv" id="m-timeout">-</span></div>
+      <div class="mrow"><span class="ml">Timeout margin</span><span class="mv" id="m-tmarg">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Thermal (live)</div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 1</span><span id="th-sol1-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol1-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw1"></div><div class="tbar-danger" id="td1"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 2</span><span id="th-sol2-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol2-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw2"></div><div class="tbar-danger" id="td2"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 3</span><span id="th-sol3-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol3-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw3"></div><div class="tbar-danger" id="td3"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Stepper</span><span id="th-step-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-step-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw4"></div><div class="tbar-danger" id="td4"></div></div>
+      </div>
+      <div class="mrow" style="margin-top:6px"><span class="ml">State</span><span class="mv" id="m-thermal-state">NORMAL</span></div>
+      <div class="mrow"><span class="ml">Active sps</span><span class="mv" id="m-active-sps">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Bin Counts</div>
+      <div class="bins-grid">
+        <div class="bin-box" id="bin-0">
+          <div class="bin-name">2x2 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-0">0</div>
+          <div class="bin-exp">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-1">
+          <div class="bin-name">2x2 RED</div>
+          <div class="bin-cnt" id="bin-cnt-1">0</div>
+          <div class="bin-exp">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-2">
+          <div class="bin-name">2x3 RED</div>
+          <div class="bin-cnt" id="bin-cnt-2">0</div>
+          <div class="bin-exp">expected: 4</div>
+        </div>
+        <div class="bin-box" id="bin-3">
+          <div class="bin-name">2x3 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-3">0</div>
+          <div class="bin-exp">expected: 8</div>
+        </div>
+      </div>
+    </div>
+    <div class="msec" id="run-summary" style="display:none">
+      <div class="msec-title">Run Complete</div>
+      <div class="mrow"><span class="ml">Total time</span><span class="mv" id="m-total-time">-</span></div>
+      <div class="mrow"><span class="ml">Bricks sorted</span><span class="mv" id="m-bricks-sorted">-</span></div>
+      <div class="mrow"><span class="ml">Bin accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Peak heat</span><span class="mv" id="m-peak-heat">-</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// DEFAULTS - mirrors firmware/src/config.h exactly
+// ============================================================
+const DEFAULTS = {
+  // Escapement
+  stepper_sps:          800,
+  stepper_steps_per_rev: 200,
+
+  // Belt
+  belt_target_mm_s:     200,
+  motor_noload_rpm:     600,
+  motor_load_factor:    0.65,
+
+  // Sensing
+  beam_gap_mm:          19,
+  size_timeout_ms:      150,
+  color_integration_ms: 2,
+
+  // Solenoid
+  sol_full_ms:          20,
+  sol_hold_pct:         40,
+  sol_deenergize_ms:    280,
+  sol_lead_ms:          150,
+
+  // Thermal
+  thermal_heat_per_sol:    0.15,
+  thermal_heat_per_step:   0.05,
+  thermal_decay_rate:      0.5,
+  thermal_warn_level:      0.60,
+  thermal_danger_level:    0.85,
+
+  // Geometry (from MECHANICAL.md / EMBEDDED.md)
+  brick_2x2_mm:         15.8,
+  brick_2x3_mm:         23.7,
+  brick_spacing_mm:     28,
+  total_bricks:         24,
+
+  // Bin distances from sensing zone (estimates - update from CAD)
+  bin_distances_mm:     [250, 280, 310, 360],
+
+  // Brick counts by type (bin order: 2x2_blue, 2x2_red, 2x3_red, 2x3_blue)
+  counts: { '2x2_blue': 6, '2x2_red': 6, '2x3_red': 4, '2x3_blue': 8 },
+
+  // Plow assignment: 0 = default path (no fire)
+  plow_map: { '2x2_blue': 1, '2x2_red': 2, '2x3_red': 3, '2x3_blue': 0 },
+
+  // Run settings
+  num_runs:   1,
+  sequence:   'interleaved',  // 'interleaved' | 'worst_case' | 'default_last'
+  interrun_gap_ms: 5000,
+};
+
+// ============================================================
+// CONTROL SECTION DEFINITIONS
+// ============================================================
+const SECTIONS = [
+  {
+    id: 'escapement', label: 'Escapement',
+    controls: [
+      { id:'stepper_sps', label:'Release speed', unit:'sps', min:200, max:2000, step:50,
+        desc:'How fast the stepper spins to release one brick. Higher = more bricks/sec but fewer color samples.' },
+      { id:'stepper_steps_per_rev', label:'Steps per revolution', unit:'steps', min:200, max:200, step:1, locked:true,
+        desc:'Full-step NEMA 11 (1.8 deg/step). Fixed - shown for reference only.' },
+    ]
+  },
+  {
+    id: 'belt', label: 'Belt',
+    controls: [
+      { id:'belt_target_mm_s', label:'Belt speed', unit:'mm/s', min:50, max:400, step:10,
+        desc:'How fast bricks travel from sensor to bins. Must stay ahead of the escapement rate.' },
+      { id:'motor_load_factor', label:'Motor load factor', unit:'%', min:40, max:95, step:1,
+        desc:'How much the motor slows under real load vs no-load spec. 65% is a realistic starting estimate.',
+        scale:100 },
+      { id:'motor_noload_rpm', label:'Motor no-load RPM', unit:'RPM', min:100, max:1000, step:50,
+        desc:'JGB37-520 at 6V is rated 600 RPM no-load. Used to compute belt speed at load.' },
+    ]
+  },
+  {
+    id: 'sensing', label: 'Sensing Zone',
+    controls: [
+      { id:'beam_gap_mm', label:'Beam spacing', unit:'mm', min:10, max:30, step:1,
+        desc:'Physical distance between the two size detection beams. Fixed in CAD.' },
+      { id:'size_timeout_ms', label:'Size timeout', unit:'ms', min:50, max:300, step:5,
+        desc:'If beam 2 does not break within this window the brick is classified 2x2. Must be above 95ms at 200mm/s.' },
+      { id:'color_integration_ms', label:'Color integration time', unit:'ms', min:2, max:10, step:1,
+        desc:'How long the color sensor takes per reading. TCS34725 minimum is ~2.4ms. Longer = fewer total samples.' },
+    ]
+  },
+  {
+    id: 'solenoid', label: 'Solenoid Timing',
+    controls: [
+      { id:'sol_full_ms', label:'Full power duration', unit:'ms', min:5, max:50, step:5,
+        desc:'How long the solenoid gets full voltage to reach full extension. Too short = incomplete stroke.' },
+      { id:'sol_hold_pct', label:'Hold duty cycle', unit:'%', min:20, max:100, step:5,
+        desc:'PWM level to hold plow in position after full extension. 40% holds against spring, reduces heat.' },
+      { id:'sol_deenergize_ms', label:'De-energize time', unit:'ms', min:100, max:500, step:10,
+        desc:'Total time solenoid stays on before turning off. Must be long enough for brick to fully clear plow.' },
+      { id:'sol_lead_ms', label:'Sensor-to-plow travel', unit:'ms', min:50, max:300, step:10,
+        desc:'How long it takes a brick to travel from sensing zone to plow 1. Solenoid fires immediately on classification.' },
+    ]
+  },
+  {
+    id: 'thermal', label: 'Thermal Model',
+    controls: [
+      { id:'thermal_heat_per_sol', label:'Heat per solenoid fire', unit:'', min:0.01, max:0.5, step:0.01, dec:2,
+        desc:'How much heat accumulates each time a plow fires. Tune after measuring real solenoid temperature.' },
+      { id:'thermal_heat_per_step', label:'Heat per stepper release', unit:'', min:0.01, max:0.2, step:0.01, dec:2,
+        desc:'Heat added each time the escapement releases a brick.' },
+      { id:'thermal_decay_rate', label:'Cooling rate (per sec)', unit:'', min:0.1, max:2.0, step:0.1, dec:1,
+        desc:'How fast heat dissipates when actuators are idle. 0.5 = heat halves every second.' },
+      { id:'thermal_warn_level', label:'Warning threshold', unit:'', min:0.3, max:0.9, step:0.05, dec:2,
+        desc:'Heat level at which escapement slows to WARNING rate (~2.7 bricks/sec).' },
+      { id:'thermal_danger_level', label:'Danger threshold', unit:'', min:0.5, max:1.0, step:0.05, dec:2,
+        desc:'Heat level at which escapement slows to DANGER rate (~1.3 bricks/sec).' },
+    ]
+  },
+  {
+    id: 'run', label: 'Run Settings',
+    controls: [] // special: handled as selects/inputs
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let params = JSON.parse(JSON.stringify(DEFAULTS));
+let speedMultiplier = 1;
+let animRunning = false;
+let animPaused = false;
+let animStartWallMs = null;
+let animOffsetSimMs = 0;
+let simData = null;       // result of computeSimulation()
+let animFrameId = null;
+let liveThermal = {sol1:0, sol2:0, sol3:0, stepper:0};
+let liveBinCounts = [0, 0, 0, 0];
+let liveEventIdx = 0;     // next event to process in animation
+let animBricks = [];      // bricks currently visible on canvas
+let pendingFlashes = [];  // [{binIdx, untilWallMs}]
+let plowStates = [
+  null,
+  {phase:'idle', phaseStartSim:0, angle:0},
+  {phase:'idle', phaseStartSim:0, angle:0},
+  {phase:'idle', phaseStartSim:0, angle:0},
+];
+
+// ============================================================
+// CANVAS LAYOUT CONSTANTS
+// ============================================================
+const CY = 120;     // belt center Y in canvas pixels
+const BT = 100;     // belt top Y
+const BB = 140;     // belt bottom Y
+// X positions as fractions [0..1] of canvas width
+const FX = {
+  chute:       0.03,
+  taperStart:  0.07,
+  taperEnd:    0.17,
+  beam1:       0.24,
+  beam2:       0.28,  // approx at 19mm gap / 500mm total
+  color:       0.26,
+  bufferEnd:   0.35,
+  plow1:       0.42,
+  plow2:       0.57,
+  plow3:       0.72,
+  end:         0.90,
+};
+// Bin Y positions (where bricks exit to)
+const BIN_Y = [30, 210, 30, CY]; // bin0=upper, bin1=lower, bin2=upper, bin3=right
+// Which plows go up vs down
+const PLOW_DIR = [null, 'up', 'down', 'up']; // plow 1 up, plow 2 down, plow 3 up
+
+// Plow X fractions: plow 1,2,3
+const PLOW_FX = [null, FX.plow1, FX.plow2, FX.plow3];
+
+// Map brick type to bin index (0-based)
+const BRICK_TO_BIN = {'2x2_blue': 0, '2x2_red': 1, '2x3_red': 2, '2x3_blue': 3};
+// Brick colors
+const BRICK_COLOR = {'2x2_blue': '#185FA5', '2x2_red': '#E24B4A', '2x3_red': '#E24B4A', '2x3_blue': '#185FA5'};
+
+// ============================================================
+// BUILD CONTROLS
+// ============================================================
+function buildControls() {
+  const panel = document.getElementById('controls');
+  panel.innerHTML = '';
+
+  for (const sec of SECTIONS) {
+    const div = document.createElement('div');
+    div.className = 'section';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'sec-hdr';
+    hdr.innerHTML = `<span class="sec-title">${sec.label}</span><span class="chev">&#9660;</span>`;
+    hdr.onclick = () => {
+      hdr.classList.toggle('closed');
+      body.classList.toggle('hidden');
+    };
+    div.appendChild(hdr);
+
+    const body = document.createElement('div');
+    body.className = 'sec-body';
+
+    if (sec.id === 'run') {
+      body.innerHTML = `
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Number of runs</span></div>
+          <div class="ctrl-desc">Simulate back-to-back runs to see thermal accumulation across runs.</div>
+          <input type="number" id="ctrl-num_runs" min="1" max="10" value="${params.num_runs}"
+            style="margin-top:4px" onchange="setParam('num_runs', parseInt(this.value)||1)">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Brick sequence</span></div>
+          <div class="ctrl-desc">Order bricks are released. Worst-case concentrates solenoid fires together for maximum thermal stress.</div>
+          <select id="ctrl-sequence" onchange="setParam('sequence', this.value)">
+            <option value="interleaved">Interleaved (round-robin by type)</option>
+            <option value="worst_case">Worst-case (all plow bricks first)</option>
+            <option value="default_last">Default-last (default-path bricks last)</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Inter-run gap</span><span class="ctrl-val">${params.interrun_gap_ms/1000}s</span></div>
+          <div class="ctrl-desc">Cooldown time between runs (reload time). Thermal model keeps decaying.</div>
+          <input type="range" id="ctrl-interrun_gap_ms" min="1000" max="30000" step="1000"
+            value="${params.interrun_gap_ms}"
+            oninput="setParamSlider('interrun_gap_ms', this.value, 'ctrl-val-interrun_gap_ms', 1000, 's')">
+        </div>`;
+    } else {
+      for (const ctrl of sec.controls) {
+        const scale = ctrl.scale || 1;
+        const raw = params[ctrl.id];
+        const display = Math.round(raw * scale * 100) / 100;
+        const dec = ctrl.dec || 0;
+        const valStr = display.toFixed(dec) + (ctrl.unit ? ' ' + ctrl.unit : '');
+
+        const cdiv = document.createElement('div');
+        cdiv.className = 'ctrl';
+        cdiv.innerHTML = `
+          <div class="ctrl-top">
+            <span class="ctrl-name">${ctrl.label}</span>
+            <span class="ctrl-val" id="cv-${ctrl.id}">${valStr}</span>
+          </div>
+          <input type="range"
+            id="ctrl-${ctrl.id}"
+            min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step || 1}"
+            value="${raw * scale}"
+            ${ctrl.locked ? 'disabled' : ''}
+            oninput="onSlider('${ctrl.id}', this.value)">
+          <div class="ctrl-desc">${ctrl.desc}</div>`;
+        body.appendChild(cdiv);
+      }
+
+      const resetBtn = document.createElement('button');
+      resetBtn.className = 'btn sec-reset';
+      resetBtn.textContent = 'Reset ' + sec.label + ' to defaults';
+      resetBtn.onclick = () => resetSection(sec);
+      body.appendChild(resetBtn);
+    }
+
+    div.appendChild(body);
+    panel.appendChild(div);
+  }
+}
+
+function onSlider(id, rawVal) {
+  const ctrl = findCtrl(id);
+  const scale = ctrl ? (ctrl.scale || 1) : 1;
+  const dec = ctrl ? (ctrl.dec || 0) : 0;
+  const unit = ctrl ? (ctrl.unit || '') : '';
+  const val = parseFloat(rawVal) / scale;
+  params[id] = val;
+  const display = (parseFloat(rawVal)).toFixed(dec) + (unit ? ' ' + unit : '');
+  const el = document.getElementById('cv-' + id);
+  if (el) el.textContent = display;
+  updateMetrics();
+  updateWarnings();
+}
+
+function setParam(id, val) {
+  params[id] = val;
+  updateMetrics();
+  updateWarnings();
+}
+
+function setParamSlider(id, rawVal, valElId, divisor, unit) {
+  params[id] = parseFloat(rawVal);
+  const el = document.getElementById('cv-' + id);
+  if (el) el.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+  const valEl = document.getElementById(valElId);
+  if (valEl) valEl.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+  updateMetrics();
+}
+
+function findCtrl(id) {
+  for (const sec of SECTIONS) {
+    for (const c of (sec.controls || [])) {
+      if (c.id === id) return c;
+    }
+  }
+  return null;
+}
+
+function resetSection(sec) {
+  for (const ctrl of (sec.controls || [])) {
+    if (ctrl.locked) continue;
+    params[ctrl.id] = DEFAULTS[ctrl.id];
+    const scale = ctrl.scale || 1;
+    const dec = ctrl.dec || 0;
+    const unit = ctrl.unit || '';
+    const el = document.getElementById('ctrl-' + ctrl.id);
+    if (el) el.value = DEFAULTS[ctrl.id] * scale;
+    const velEl = document.getElementById('cv-' + ctrl.id);
+    if (velEl) velEl.textContent = (DEFAULTS[ctrl.id] * scale).toFixed(dec) + (unit ? ' ' + unit : '');
+  }
+  updateMetrics();
+  updateWarnings();
+}
+
+// ============================================================
+// METRICS (computed from params, no simulation needed)
+// ============================================================
+function updateMetrics() {
+  const p = params;
+  const escRate = p.stepper_sps / p.stepper_steps_per_rev;  // bricks/sec
+  const beltCap = p.belt_target_mm_s / p.brick_spacing_mm;  // bricks/sec
+  const margin = (beltCap - escRate) / escRate * 100;
+  const isBelt = beltCap < escRate;
+  const estTime = p.total_bricks / escRate; // seconds at normal thermal
+
+  setText('m-esc-rate', escRate.toFixed(2) + ' bricks/s');
+  setText('m-belt-spd', p.belt_target_mm_s + ' mm/s');
+  setTextClass('m-belt-cap', beltCap.toFixed(2) + ' bricks/s', isBelt ? 'r' : '');
+  setTextClass('m-bottleneck', isBelt ? 'BELT' : 'ESCAPEMENT', isBelt ? 'r' : 'g');
+  setTextClass('m-margin', (margin >= 0 ? '+' : '') + margin.toFixed(0) + '%', margin < 0 ? 'r' : margin < 20 ? 'y' : 'g');
+  setText('m-runtime', '~' + estTime.toFixed(1) + 's');
+
+  const dwell2x2 = p.brick_2x2_mm / p.belt_target_mm_s * 1000;
+  const samples = Math.floor(dwell2x2 / p.color_integration_ms);
+  const sigWin = p.beam_gap_mm / p.belt_target_mm_s * 1000;
+  const tmarg = p.size_timeout_ms - sigWin;
+
+  setText('m-dwell', dwell2x2.toFixed(1) + ' ms');
+  setTextClass('m-samples', samples + ' samples', samples < 4 ? 'r' : samples < 8 ? 'y' : 'g');
+  setText('m-sig-win', '0 - ' + sigWin.toFixed(0) + ' ms');
+  setText('m-timeout', p.size_timeout_ms + ' ms');
+  setTextClass('m-tmarg', tmarg.toFixed(0) + ' ms', tmarg < 0 ? 'r' : tmarg < 20 ? 'y' : 'g');
+
+  // Thermal bar markers (warn/danger lines)
+  for (let i = 1; i <= 4; i++) {
+    const wEl = document.getElementById('tw' + i);
+    const dEl = document.getElementById('td' + i);
+    if (wEl) wEl.style.left = (p.thermal_warn_level * 100) + '%';
+    if (dEl) dEl.style.left = (p.thermal_danger_level * 100) + '%';
+  }
+
+  if (!animRunning) {
+    setText('m-active-sps', p.stepper_sps + ' sps');
+    setText('m-thermal-state', 'NORMAL');
+  }
+}
+
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function setTextClass(id, text, cls) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = text; el.className = 'mv ' + (cls || ''); }
+}
+
+// ============================================================
+// WARNINGS (computed from params)
+// ============================================================
+function updateWarnings() {
+  const p = params;
+  const warnings = [];
+
+  const escRate = p.stepper_sps / p.stepper_steps_per_rev;
+  const beltCap = p.belt_target_mm_s / p.brick_spacing_mm;
+  if (beltCap < escRate) {
+    warnings.push({
+      level: 'e',
+      msg: `Belt is the bottleneck: belt capacity (${beltCap.toFixed(2)} bricks/s) is below ` +
+           `escapement rate (${escRate.toFixed(2)} bricks/s). Bricks will pile up and jam.`
+    });
+  }
+
+  const dwell2x2 = p.brick_2x2_mm / p.belt_target_mm_s * 1000;
+  const samples = Math.floor(dwell2x2 / p.color_integration_ms);
+  if (samples < 4) {
+    warnings.push({ level:'e', msg:`Only ${samples} color samples for a 2x2 brick. Minimum for reliable classification is 8. Reduce belt speed or color integration time.` });
+  } else if (samples < 8) {
+    warnings.push({ level:'w', msg:`Only ${samples} color samples for a 2x2 brick. Classification may be unreliable. Target is 8+ samples.` });
+  }
+
+  const sigWin = p.beam_gap_mm / p.belt_target_mm_s * 1000;
+  const tmarg = p.size_timeout_ms - sigWin;
+  if (tmarg < 0) {
+    warnings.push({ level:'e', msg:`Size timeout (${p.size_timeout_ms}ms) is BELOW the 2x3 signal window (${sigWin.toFixed(0)}ms). 2x3 bricks will be misclassified as 2x2.` });
+  } else if (tmarg < 20) {
+    warnings.push({ level:'w', msg:`Size timeout margin is only ${tmarg.toFixed(0)}ms (timeout: ${p.size_timeout_ms}ms, 2x3 signal: ${sigWin.toFixed(0)}ms). Recommend at least 20ms margin.` });
+  }
+
+  const brickClearTime = p.sol_lead_ms + (p.brick_2x3_mm / p.belt_target_mm_s * 1000);
+  if (p.sol_deenergize_ms < brickClearTime) {
+    warnings.push({ level:'e', msg:`Solenoid de-energizes at ${p.sol_deenergize_ms}ms but a 2x3 brick needs ${brickClearTime.toFixed(0)}ms to fully clear the plow (lead ${p.sol_lead_ms}ms + transit ${(p.brick_2x3_mm/p.belt_target_mm_s*1000).toFixed(0)}ms). Plow will retract under the brick.` });
+  } else if (p.sol_deenergize_ms < brickClearTime + 5) {
+    warnings.push({ level:'w', msg:`Solenoid de-energize margin is only ${(p.sol_deenergize_ms - brickClearTime).toFixed(0)}ms. Tighter than 5ms risks plow retracting before brick fully clears.` });
+  }
+
+  // Plow overlap: check if same plow must fire again before de-energizing from previous fire.
+  // Generate the sequence and find minimum gap between consecutive fires on the same plow.
+  const releaseInterval = (p.stepper_steps_per_rev / p.stepper_sps) * 1000;
+  const seqForWarning = generateSequence(p);
+  const lastFireBrickIdx = {};
+  let minSamePlowGap = Infinity;
+  for (let i = 0; i < seqForWarning.length; i++) {
+    const pl = p.plow_map[seqForWarning[i]];
+    if (pl > 0) {
+      if (lastFireBrickIdx[pl] !== undefined) {
+        const gap = (i - lastFireBrickIdx[pl]) * releaseInterval;
+        if (gap < minSamePlowGap) minSamePlowGap = gap;
+      }
+      lastFireBrickIdx[pl] = i;
+    }
+  }
+  if (isFinite(minSamePlowGap) && minSamePlowGap < p.sol_deenergize_ms) {
+    warnings.push({ level:'w', msg:`Plow overlap: with the current sequence, plow fires again after ${minSamePlowGap.toFixed(0)}ms but solenoid is still energized for ${p.sol_deenergize_ms}ms. Different plows are independent - only a problem if the same plow fires twice. Change sequence or increase sps to widen the gap.` });
+  }
+
+  if (warnings.length === 0) {
+    warnings.push({ level:'ok', msg:'All parameters within acceptable ranges. No issues detected at these settings.' });
+  }
+
+  // Also add simulation-derived thermal warning if sim has run
+  if (simData && simData.thermalDangerReached) {
+    warnings.push({ level:'w', msg:'Thermal DANGER level was reached during the simulated run. System would throttle to 1.3 bricks/sec.' });
+  }
+
+  const container = document.getElementById('warnings-content');
+  container.innerHTML = warnings.map(w =>
+    `<div class="warn-row ${w.level}">${w.msg}</div>`
+  ).join('');
+}
+
+// ============================================================
+// SIMULATION LOGIC
+// ============================================================
+function generateSequence(p) {
+  const types = ['2x2_blue', '2x2_red', '2x3_red', '2x3_blue'];
+  const seq = [];
+  if (p.sequence === 'worst_case') {
+    for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+  } else if (p.sequence === 'default_last') {
+    for (const t of ['2x2_blue', '2x2_red', '2x3_red']) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+    for (let i = 0; i < p.counts['2x3_blue']; i++) seq.push('2x3_blue');
+  } else {
+    // interleaved: round-robin
+    const rem = Object.fromEntries(types.map(t => [t, p.counts[t]]));
+    let safety = 200;
+    while (seq.length < p.total_bricks && safety-- > 0) {
+      for (const t of types) {
+        if (rem[t] > 0 && seq.length < p.total_bricks) { seq.push(t); rem[t]--; }
+      }
+    }
+  }
+  return seq;
+}
+
+function decayHeat(heat, elapsedSec, rate) {
+  return heat * Math.pow(rate, elapsedSec);
+}
+
+function computeSimulation(p) {
+  const events = [];
+  const brickLog = [];
+  const DIST_CHUTE_TO_SENSOR_MM = 100; // visual estimate
+
+  let thermal = {sol1:0, sol2:0, sol3:0, stepper:0};
+  let lastReleaseT = 0;
+  let binCounts = [0, 0, 0, 0];
+  let thermalDangerReached = false;
+  let peakHeat = 0;
+  let runBrickLog = [];
+
+  // Run brick logs across all runs
+  const allBrickLog = [];
+  const allEvents = [];
+  let globalBrickNum = 0;
+
+  for (let run = 0; run < p.num_runs; run++) {
+    const seq = generateSequence(p);
+    if (run > 0) {
+      // Inter-run gap: decay thermal
+      const gapSec = p.interrun_gap_ms / 1000;
+      thermal.sol1 = decayHeat(thermal.sol1, gapSec, p.thermal_decay_rate);
+      thermal.sol2 = decayHeat(thermal.sol2, gapSec, p.thermal_decay_rate);
+      thermal.sol3 = decayHeat(thermal.sol3, gapSec, p.thermal_decay_rate);
+      thermal.stepper = decayHeat(thermal.stepper, gapSec, p.thermal_decay_rate);
+      lastReleaseT += p.interrun_gap_ms;
+      allEvents.push({ t: lastReleaseT - p.interrun_gap_ms, type:'INTER_RUN_GAP', run: run - 1, gapMs: p.interrun_gap_ms });
+    }
+
+    for (let i = 0; i < seq.length; i++) {
+      const brickType = seq[i];
+      globalBrickNum++;
+
+      // Determine sps (thermal throttle)
+      const maxHeat = Math.max(thermal.sol1, thermal.sol2, thermal.sol3, thermal.stepper);
+      let sps = p.stepper_sps;
+      let thermalState = 'NORMAL';
+      if (maxHeat > p.thermal_danger_level) { sps = 267; thermalState = 'DANGER'; thermalDangerReached = true; }
+      else if (maxHeat > p.thermal_warn_level) { sps = 533; thermalState = 'WARNING'; }
+
+      const releaseInterval = (p.stepper_steps_per_rev / sps) * 1000;
+      const T_release = lastReleaseT + releaseInterval;
+
+      // Decay thermal from lastReleaseT to T_release
+      const dtSec = (T_release - lastReleaseT) / 1000;
+      thermal.sol1 = decayHeat(thermal.sol1, dtSec, p.thermal_decay_rate);
+      thermal.sol2 = decayHeat(thermal.sol2, dtSec, p.thermal_decay_rate);
+      thermal.sol3 = decayHeat(thermal.sol3, dtSec, p.thermal_decay_rate);
+      thermal.stepper = decayHeat(thermal.stepper, dtSec, p.thermal_decay_rate);
+
+      // Stepper fires
+      thermal.stepper = Math.min(thermal.stepper + p.thermal_heat_per_step, 1.0);
+      peakHeat = Math.max(peakHeat, thermal.stepper);
+
+      allEvents.push({
+        t: T_release, type:'BRICK_RELEASED', brickNum: globalBrickNum, brickType, run,
+        sps, thermalState, thermal: {...thermal}
+      });
+
+      // Brick travels to sensor
+      const T_sense = T_release + (DIST_CHUTE_TO_SENSOR_MM / p.belt_target_mm_s) * 1000;
+      allEvents.push({ t: T_sense, type:'BRICK_AT_SENSOR', brickNum: globalBrickNum, brickType });
+
+      // Size detection
+      const brickLen = brickType.includes('2x3') ? p.brick_2x3_mm : p.brick_2x2_mm;
+      const is2x3 = brickType.includes('2x3');
+      let sizeResolveMs, gapUs;
+      if (is2x3) {
+        gapUs = Math.round((p.beam_gap_mm / p.belt_target_mm_s) * 1e6);
+        sizeResolveMs = (p.beam_gap_mm / p.belt_target_mm_s) * 1000;
+      } else {
+        gapUs = 0;
+        sizeResolveMs = p.size_timeout_ms;
+      }
+
+      // Color detection (parallel from beam1 break)
+      const dwellMs = (brickLen / p.belt_target_mm_s) * 1000;
+      const samples = Math.max(1, Math.floor(dwellMs / p.color_integration_ms));
+
+      const T_classified = T_sense + Math.max(sizeResolveMs, dwellMs);
+      allEvents.push({
+        t: T_classified, type:'BRICK_CLASSIFIED', brickNum: globalBrickNum, brickType,
+        sizeResult: is2x3 ? '2x3' : '2x2',
+        colorResult: brickType.includes('red') ? 'RED' : 'BLUE',
+        gapUs, samples
+      });
+
+      // Plow routing
+      const plowNum = p.plow_map[brickType];
+      const binIdx = plowNum === 0 ? 3 : plowNum - 1;
+
+      if (plowNum > 0) {
+        const solKey = 'sol' + plowNum;
+        // Decay thermal to classify time
+        const dt2 = (T_classified - T_release) / 1000;
+        thermal[solKey] = decayHeat(thermal[solKey], dt2, p.thermal_decay_rate);
+        thermal[solKey] = Math.min(thermal[solKey] + p.thermal_heat_per_sol, 1.0);
+        peakHeat = Math.max(peakHeat, thermal[solKey]);
+
+        allEvents.push({ t: T_classified, type:'PLOW_FIRE', plow: plowNum, brickNum: globalBrickNum, thermal: {...thermal} });
+        allEvents.push({ t: T_classified + p.sol_full_ms, type:'PLOW_HOLD', plow: plowNum, brickNum: globalBrickNum });
+        allEvents.push({ t: T_classified + p.sol_deenergize_ms, type:'PLOW_RELEASE', plow: plowNum, brickNum: globalBrickNum });
+      } else {
+        allEvents.push({ t: T_classified, type:'PLOW_SKIP', brickNum: globalBrickNum, msg: 'default path - no solenoid' });
+      }
+
+      // Bin confirmation
+      const binDist = p.bin_distances_mm[binIdx];
+      const T_confirm = T_sense + (binDist / p.belt_target_mm_s) * 1000;
+      allEvents.push({ t: T_confirm, type:'BIN_CONFIRM', brickNum: globalBrickNum, binIdx, brickType });
+
+      binCounts[binIdx]++;
+      const transitMs = Math.round(T_confirm - T_release);
+
+      allBrickLog.push({
+        num: globalBrickNum, run: run + 1, type: brickType,
+        sizeResult: is2x3 ? '2x3' : '2x2',
+        colorResult: brickType.includes('red') ? 'RED' : 'BLUE',
+        samples, plow: plowNum, binIdx, transitMs, thermalState, correct: true
+      });
+
+      lastReleaseT = T_release;
+    }
+
+    allEvents.push({ t: lastReleaseT + 2000, type:'RUN_COMPLETE', run, binCounts: [...binCounts], totalMs: lastReleaseT });
+    // Reset bin counts per run (cumulative across runs tracked separately)
+    binCounts = [0, 0, 0, 0];
+  }
+
+  // Sort all events by time
+  allEvents.sort((a, b) => a.t - b.t);
+
+  const totalSimMs = allEvents[allEvents.length - 1]?.t || 0;
+  return { events: allEvents, brickLog: allBrickLog, thermalDangerReached, peakHeat, totalSimMs };
+}
+
+// ============================================================
+// RUN SIMULATION + ANIMATION
+// ============================================================
+function handleRunBtn() {
+  if (animRunning) {
+    animPaused = !animPaused;
+    document.getElementById('runBtn').textContent = animPaused ? 'Resume' : 'Pause';
+    return;
+  }
+  startSim();
+}
+
+function startSim() {
+  if (animRunning) return;
+
+  // Compute
+  simData = computeSimulation(params);
+
+  // Reset animation state
+  liveThermal = {sol1:0, sol2:0, sol3:0, stepper:0};
+  liveBinCounts = [0, 0, 0, 0];
+  liveEventIdx = 0;
+  animBricks = [];
+  pendingFlashes = [];
+  plowStates = [
+    null,
+    {phase:'idle', phaseStartSim:0, angle:0},
+    {phase:'idle', phaseStartSim:0, angle:0},
+    {phase:'idle', phaseStartSim:0, angle:0},
+  ];
+
+  // Reset UI
+  for (let i = 0; i < 4; i++) {
+    setBinCount(i, 0);
+    document.getElementById('bin-' + i).className = 'bin-box';
+  }
+  document.getElementById('timeline-log').innerHTML = '';
+  document.getElementById('brick-log-body').innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
+  document.getElementById('run-summary').style.display = 'none';
+
+  // Populate warnings + static per-brick log immediately
+  updateWarnings();
+  populateBrickTable(simData.brickLog);
+
+  animRunning = true;
+  animPaused = false;
+  animStartWallMs = performance.now();
+  animOffsetSimMs = 0;
+
+  document.getElementById('runBtn').textContent = 'Pause';
+  document.getElementById('resetBtn').style.display = 'inline-block';
+
+  requestAnimationFrame(animFrame);
+}
+
+function resetSim() {
+  animRunning = false;
+  animPaused = false;
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  animBricks = [];
+  pendingFlashes = [];
+  simData = null;
+  liveEventIdx = 0;
+  liveThermal = {sol1:0, sol2:0, sol3:0, stepper:0};
+  liveBinCounts = [0, 0, 0, 0];
+  plowStates = [null,
+    {phase:'idle', phaseStartSim:0, angle:0},
+    {phase:'idle', phaseStartSim:0, angle:0},
+    {phase:'idle', phaseStartSim:0, angle:0}
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    setBinCount(i, 0);
+    document.getElementById('bin-' + i).className = 'bin-box';
+  }
+  updateThermalUI();
+  document.getElementById('runBtn').textContent = 'Run Simulation';
+  document.getElementById('resetBtn').style.display = 'none';
+  document.getElementById('run-summary').style.display = 'none';
+  document.getElementById('timeline-log').innerHTML = '<span style="color:var(--text3);font-size:12px">Run a simulation to see events here.</span>';
+  document.getElementById('brick-log-body').innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
+
+  const canvas = document.getElementById('belt-canvas');
+  const ctx = canvas.getContext('2d');
+  drawBelt(ctx, canvas.width, canvas.height, 0);
+}
+
+function animFrame(wallMs) {
+  if (!animRunning) return;
+  animFrameId = animFrame;
+
+  if (!animPaused) {
+    const wallElapsed = wallMs - animStartWallMs;
+    const simMs = animOffsetSimMs + wallElapsed * speedMultiplier;
+
+    // Process events up to simMs
+    while (liveEventIdx < simData.events.length && simData.events[liveEventIdx].t <= simMs) {
+      processEvent(simData.events[liveEventIdx], simMs);
+      liveEventIdx++;
+    }
+
+    // Update plow angles
+    updatePlowAngles(simMs);
+
+    // Update anim bricks
+    updateAnimBricks(simMs);
+
+    // Draw
+    const canvas = document.getElementById('belt-canvas');
+    const ctx = canvas.getContext('2d');
+    drawBelt(ctx, canvas.width, canvas.height, simMs);
+
+    // Update thermal UI
+    updateThermalUI();
+
+    // Check if done
+    if (liveEventIdx >= simData.events.length) {
+      animRunning = false;
+      document.getElementById('runBtn').textContent = 'Run Simulation';
+      showRunSummary(simData);
+      // Final bin state
+      for (let i = 0; i < 4; i++) {
+        const exp = [6, 6, 4, 8][i];
+        const box = document.getElementById('bin-' + i);
+        box.className = 'bin-box ' + (liveBinCounts[i] === exp ? 'match' : 'over');
+      }
+    }
+  }
+
+  if (animRunning) {
+    animFrameId = requestAnimationFrame(animFrame);
+  }
+}
+
+function processEvent(ev, simMs) {
+  const tStr = ev.t.toFixed(0) + 'ms';
+
+  switch (ev.type) {
+    case 'BRICK_RELEASED': {
+      addEvent(tStr, 'RELEASED', `Brick #${ev.brickNum} (${ev.brickType}) at ${ev.sps}sps [${ev.thermalState}]`);
+      if (ev.thermal) {
+        liveThermal = {...ev.thermal};
+      }
+      setText('m-thermal-state', ev.thermalState);
+      setText('m-active-sps', ev.sps + ' sps');
+      // Spawn anim brick
+      const canvas = document.getElementById('belt-canvas');
+      animBricks.push({
+        id: ev.brickNum,
+        type: ev.brickType,
+        spawnSim: ev.t,
+        is2x3: ev.brickType.includes('2x3'),
+        color: BRICK_COLOR[ev.brickType],
+        plow: params.plow_map[ev.brickType],
+        binIdx: params.plow_map[ev.brickType] === 0 ? 3 : params.plow_map[ev.brickType] - 1,
+        classified: false,
+        classifySimMs: null,
+        plowFireSimMs: null,
+        binConfirmSimMs: null,
+        done: false,
+        flashBorder: 0,
+      });
+      break;
+    }
+    case 'BRICK_CLASSIFIED': {
+      addEvent(tStr, 'CLASSIFIED', `#${ev.brickNum}: ${ev.sizeResult} ${ev.colorResult} | gap=${ev.gapUs}us | ${ev.samples} samples`);
+      const ab = animBricks.find(b => b.id === ev.brickNum);
+      if (ab) { ab.classified = true; ab.classifySimMs = ev.t; ab.flashBorder = 200; }
+      break;
+    }
+    case 'PLOW_FIRE': {
+      addEvent(tStr, 'PLOW_FIRE', `Plow ${ev.plow} fires for brick #${ev.brickNum}`);
+      if (ev.thermal) liveThermal = {...ev.thermal};
+      const ps = plowStates[ev.plow];
+      if (ps) { ps.phase = 'fire'; ps.phaseStartSim = ev.t; ps.angle = 0; }
+      const ab = animBricks.find(b => b.id === ev.brickNum);
+      if (ab) ab.plowFireSimMs = ev.t;
+      break;
+    }
+    case 'PLOW_HOLD': {
+      addEvent(tStr, 'PLOW_HOLD', `Plow ${ev.plow} holding (40% PWM)`);
+      const ps = plowStates[ev.plow];
+      if (ps) { ps.phase = 'hold'; ps.phaseStartSim = ev.t; }
+      break;
+    }
+    case 'PLOW_RELEASE': {
+      addEvent(tStr, 'PLOW_RELEASE', `Plow ${ev.plow} de-energized, spring return`);
+      const ps = plowStates[ev.plow];
+      if (ps) { ps.phase = 'retract'; ps.phaseStartSim = ev.t; }
+      break;
+    }
+    case 'PLOW_SKIP':
+      addEvent(tStr, 'PLOW_SKIP', ev.msg);
+      break;
+    case 'BIN_CONFIRM': {
+      addEvent(tStr, 'BIN_CONFIRM', `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${['2x2 BLUE','2x2 RED','2x3 RED','2x3 BLUE'][ev.binIdx]})`);
+      liveBinCounts[ev.binIdx]++;
+      setBinCount(ev.binIdx, liveBinCounts[ev.binIdx]);
+      flashBin(ev.binIdx);
+      const ab = animBricks.find(b => b.id === ev.brickNum);
+      if (ab) ab.binConfirmSimMs = ev.t;
+      break;
+    }
+    case 'RUN_COMPLETE':
+      addEvent(tStr, 'RUN_COMPLETE', `Run ${ev.run + 1} done. Bin counts: ${ev.binCounts.join(', ')}`);
+      break;
+    case 'INTER_RUN_GAP':
+      addEvent(tStr, 'INTER_RUN_GAP', `${ev.gapMs/1000}s cooldown between runs`);
+      break;
+  }
+}
+
+function updatePlowAngles(simMs) {
+  for (let p = 1; p <= 3; p++) {
+    const ps = plowStates[p];
+    if (!ps) continue;
+    const elapsed = simMs - ps.phaseStartSim;
+    if (ps.phase === 'fire') {
+      ps.angle = Math.min(35, elapsed / params.sol_full_ms * 35);
+    } else if (ps.phase === 'hold') {
+      ps.angle = 35;
+    } else if (ps.phase === 'retract') {
+      ps.angle = Math.max(0, 35 - elapsed / 20 * 35);
+      if (ps.angle <= 0) { ps.phase = 'idle'; ps.angle = 0; }
+    } else {
+      ps.angle = 0;
+    }
+  }
+}
+
+function updateAnimBricks(simMs) {
+  animBricks = animBricks.filter(b => !b.done);
+  for (const b of animBricks) {
+    if (b.flashBorder > 0) b.flashBorder -= 16;
+  }
+}
+
+// ============================================================
+// CANVAS DRAWING
+// ============================================================
+function drawBelt(ctx, W, H, simMs) {
+  const p = params;
+
+  // Belt speed in px/ms for animation
+  const pxPerMm = W * (FX.end - FX.chute) / 500; // 500mm = viz belt total
+  const beltPxPerMs = p.belt_target_mm_s * pxPerMm / 1000;
+
+  const x = f => W * f; // fraction to pixel
+
+  // Background
+  ctx.fillStyle = '#141414';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw belt surface (dark strip)
+  ctx.fillStyle = '#222';
+  ctx.fillRect(x(FX.chute), BT, x(FX.end) - x(FX.chute), BB - BT);
+
+  // Belt rails
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x(FX.chute), BT); ctx.lineTo(x(FX.end), BT); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x(FX.chute), BB); ctx.lineTo(x(FX.end), BB); ctx.stroke();
+
+  // Belt motion lines (conveyor ridges)
+  ctx.strokeStyle = '#2a2a2a';
+  ctx.lineWidth = 1;
+  const ridgeSpacing = 20;
+  const ridgeOffset = (simMs * beltPxPerMs) % ridgeSpacing;
+  for (let rx = x(FX.chute) + ridgeOffset - ridgeSpacing; rx < x(FX.end); rx += ridgeSpacing) {
+    if (rx < x(FX.chute)) continue;
+    ctx.beginPath(); ctx.moveTo(rx, BT + 2); ctx.lineTo(rx, BB - 2); ctx.stroke();
+  }
+
+  // Taper channel (converging lines showing narrowing)
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 2;
+  const taperY1 = BT - 18, taperY2 = BT;
+  ctx.beginPath();
+  ctx.moveTo(x(FX.taperStart), taperY1);
+  ctx.lineTo(x(FX.taperEnd), taperY2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x(FX.taperStart), BB + 18);
+  ctx.lineTo(x(FX.taperEnd), BB);
+  ctx.stroke();
+
+  // Taper label
+  drawLabel(ctx, x(FX.taperStart) + (x(FX.taperEnd) - x(FX.taperStart)) / 2, BT - 24, 'TAPER', 9, '#666');
+
+  // Chute box
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 1;
+  const chuteW = x(FX.taperStart) - x(FX.chute);
+  const chuteH = 60;
+  drawHatched(ctx, x(FX.chute), CY - chuteH / 2, chuteW, chuteH, '#333', '#444');
+  drawLabel(ctx, x(FX.chute) + chuteW / 2, CY + 28, 'CHUTE', 8, '#888');
+
+  // Sensing zone background
+  const senseX = x(FX.beam1) - 4;
+  const senseW = x(FX.beam2) + 4 - senseX;
+  ctx.fillStyle = 'rgba(26,80,120,0.25)';
+  ctx.fillRect(senseX, BT, senseW, BB - BT);
+
+  // Sensing zone border
+  ctx.strokeStyle = '#1a6080';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(senseX, BT, senseW, BB - BT);
+
+  // Beam 1 line
+  ctx.strokeStyle = '#ff6666';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 2]);
+  ctx.beginPath(); ctx.moveTo(x(FX.beam1), BT - 8); ctx.lineTo(x(FX.beam1), BB + 8); ctx.stroke();
+  ctx.setLineDash([]);
+  drawLabel(ctx, x(FX.beam1), BT - 14, 'B1', 8, '#ff6666');
+
+  // Beam 2 line
+  ctx.strokeStyle = '#ff9944';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 2]);
+  ctx.beginPath(); ctx.moveTo(x(FX.beam2), BT - 8); ctx.lineTo(x(FX.beam2), BB + 8); ctx.stroke();
+  ctx.setLineDash([]);
+  drawLabel(ctx, x(FX.beam2), BT - 14, 'B2', 8, '#ff9944');
+
+  // Beam gap label
+  const gapPx = x(FX.beam2) - x(FX.beam1);
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x(FX.beam1), BB + 14); ctx.lineTo(x(FX.beam2), BB + 14); ctx.stroke();
+  drawLabel(ctx, x(FX.beam1) + gapPx / 2, BB + 22, `${p.beam_gap_mm}mm`, 8, '#888');
+
+  // Color sensor (small circle)
+  ctx.fillStyle = '#4fc3f7';
+  ctx.beginPath(); ctx.arc(x(FX.color), BT - 10, 5, 0, Math.PI * 2); ctx.fill();
+  drawLabel(ctx, x(FX.color), BT - 22, 'COLOR', 7, '#4fc3f7');
+
+  // Sensing zone label
+  drawLabel(ctx, senseX + senseW / 2, CY, 'SIZE + COLOR', 8, '#4fc3f7');
+
+  // SOL_LEAD buffer label
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(x(FX.beam2), CY); ctx.lineTo(x(FX.plow1) - 2, CY); ctx.stroke();
+  ctx.setLineDash([]);
+  drawLabel(ctx, x(FX.beam2) + (x(FX.plow1) - x(FX.beam2)) / 2, CY - 14, `lead: ${p.sol_lead_ms}ms`, 8, '#555');
+
+  // Draw plows
+  drawPlow(ctx, 1, W, H, simMs);
+  drawPlow(ctx, 2, W, H, simMs);
+  drawPlow(ctx, 3, W, H, simMs);
+
+  // Bin 4 (default - right end)
+  drawBinBox(ctx, x(FX.end) + 4, CY - 18, 50, 36, '2x3 BLUE', 3, liveBinCounts[3]);
+
+  // Draw animated bricks (below plows so plows overlay)
+  for (const b of animBricks) {
+    drawAnimBrick(ctx, b, simMs, beltPxPerMs, W, H);
+  }
+
+  // Flash pending
+  // (bin boxes already handle flash via CSS)
+}
+
+function drawPlow(ctx, plowNum, W, H, simMs) {
+  const ps = plowStates[plowNum];
+  if (!ps) return;
+  const bx = W * PLOW_FX[plowNum];
+  const angle = ps.angle; // 0 = idle, 35 = extended
+  const dir = PLOW_DIR[plowNum]; // 'up' or 'down'
+
+  // Plow color based on phase
+  let armColor = '#555';
+  if (ps.phase === 'fire') armColor = '#fb923c'; // orange
+  else if (ps.phase === 'hold') armColor = '#fbbf24'; // yellow
+  else if (ps.phase === 'retract') armColor = '#888';
+
+  // Arm: diagonal line from one rail corner toward center-across
+  // When idle: line lies flat against rail
+  // When extended: line crosses belt diagonally
+  const rad = angle * Math.PI / 180;
+  const armLength = (BB - BT) * 0.85;
+
+  ctx.save();
+  if (dir === 'up') {
+    // Pivot at bottom-rail of belt, arm sweeps up-left
+    ctx.translate(bx, BB);
+    ctx.rotate(-rad);
+    ctx.strokeStyle = armColor;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-armLength * Math.sin(rad * 0.3 + 0.1), -armLength); ctx.stroke();
+    // Tip circle
+    ctx.fillStyle = armColor;
+    ctx.beginPath(); ctx.arc(-armLength * Math.sin(rad * 0.3 + 0.1), -armLength, 3, 0, Math.PI * 2); ctx.fill();
+  } else {
+    // Pivot at top-rail, arm sweeps down-left
+    ctx.translate(bx, BT);
+    ctx.rotate(rad);
+    ctx.strokeStyle = armColor;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-armLength * Math.sin(rad * 0.3 + 0.1), armLength); ctx.stroke();
+    ctx.fillStyle = armColor;
+    ctx.beginPath(); ctx.arc(-armLength * Math.sin(rad * 0.3 + 0.1), armLength, 3, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+
+  // Bin label at plow
+  const binIdx = plowNum - 1;
+  const binLabels = ['2x2 BLUE', '2x2 RED', '2x3 RED'];
+  const byOffset = dir === 'up' ? BT - 50 : BB + 14;
+  const boxH = 30;
+  drawBinBox(ctx, bx - 30, byOffset - (dir === 'up' ? boxH : 0), 60, boxH, binLabels[binIdx], binIdx, liveBinCounts[binIdx]);
+
+  // Plow label below belt
+  const lbl = ['P1', 'P2', 'P3'][plowNum - 1];
+  drawLabel(ctx, bx, dir === 'up' ? BB + 10 : BT - 10, lbl, 8, armColor === '#555' ? '#555' : armColor);
+}
+
+function drawBinBox(ctx, bx, by, bw, bh, label, binIdx, count) {
+  const exp = [6, 6, 4, 8][binIdx];
+  const isMatch = count === exp && animRunning === false;
+  ctx.fillStyle = isMatch ? 'rgba(74,222,128,0.1)' : 'rgba(50,50,60,0.8)';
+  ctx.strokeStyle = isMatch ? '#4ade80' : '#555';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, 3);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '7px system-ui';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, bx + bw / 2, by + 10);
+  ctx.fillStyle = '#f9fafb';
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText(count, bx + bw / 2, by + bh - 7);
+}
+
+function drawAnimBrick(ctx, b, simMs, beltPxPerMs, W, H) {
+  const elapsed = simMs - b.spawnSim;
+  if (elapsed < 0) return;
+
+  const pxPerMm = W * (FX.end - FX.chute) / 500;
+  const beltMm = elapsed * params.belt_target_mm_s / 1000;
+  const chuteX = W * FX.chute;
+
+  const brickW = b.is2x3 ? 15 : 10;
+  const brickH = 10;
+
+  // Plow positions in mm (viz scale)
+  const plowMmPositions = [null, 210, 285, 360]; // plow 1,2,3 in viz mm
+  const endMm = 480; // default bin
+
+  const plowMm = b.plow > 0 ? plowMmPositions[b.plow] : endMm;
+  const deflectDist = 55; // mm past plow to fully exit
+
+  if (beltMm > plowMm + deflectDist) {
+    b.done = true;
+    return;
+  }
+
+  let drawX, drawY;
+
+  if (beltMm < plowMm) {
+    // On belt, traveling
+    drawX = chuteX + beltMm * pxPerMm;
+    drawY = CY;
+
+    // Flash white border in sensing zone
+    const beam1Mm = 116;
+    const beam2Mm = beam1Mm + params.beam_gap_mm;
+    if (b.flashBorder > 0 && beltMm > beam1Mm) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(drawX - brickW / 2 - 1, drawY - brickH / 2 - 1, brickW + 2, brickH + 2);
+    }
+  } else {
+    // Deflecting off belt
+    const t = Math.min((beltMm - plowMm) / deflectDist, 1.0);
+    drawX = chuteX + (plowMm + t * 15) * pxPerMm;
+    const targetY = BIN_Y[b.binIdx];
+    drawY = CY + (targetY - CY) * t;
+
+    ctx.globalAlpha = 1.0 - t * 0.5;
+  }
+
+  // Draw brick
+  ctx.fillStyle = b.color;
+  ctx.fillRect(drawX - brickW / 2, drawY - brickH / 2, brickW, brickH);
+
+  // Stud dots
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  if (b.is2x3) {
+    ctx.beginPath(); ctx.arc(drawX - 4, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(drawX, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(drawX + 4, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(drawX - 2, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(drawX + 2, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.globalAlpha = 1.0;
+}
+
+function drawLabel(ctx, cx, cy, text, size, color) {
+  ctx.fillStyle = color;
+  ctx.font = `${size}px system-ui`;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, cx, cy);
+}
+
+function drawHatched(ctx, x, y, w, h, bg, line) {
+  ctx.fillStyle = bg;
+  ctx.fillRect(x, y, w, h);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  ctx.strokeStyle = line;
+  ctx.lineWidth = 1;
+  for (let i = -h; i < w + h; i += 8) {
+    ctx.beginPath();
+    ctx.moveTo(x + i, y);
+    ctx.lineTo(x + i + h, y + h);
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, w, h);
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function setBinCount(idx, count) {
+  liveBinCounts[idx] = count;
+  document.getElementById('bin-cnt-' + idx).textContent = count;
+}
+
+function flashBin(idx) {
+  const box = document.getElementById('bin-' + idx);
+  box.classList.add('flash');
+  setTimeout(() => box.classList.remove('flash'), 120);
+}
+
+function updateThermalUI() {
+  const p = params;
+  const bars = [
+    ['sol1', 'th-sol1-bar', 'th-sol1-val'],
+    ['sol2', 'th-sol2-bar', 'th-sol2-val'],
+    ['sol3', 'th-sol3-bar', 'th-sol3-val'],
+    ['stepper', 'th-step-bar', 'th-step-val'],
+  ];
+  const maxHeat = Math.max(liveThermal.sol1, liveThermal.sol2, liveThermal.sol3, liveThermal.stepper);
+  for (const [key, barId, valId] of bars) {
+    const h = liveThermal[key] || 0;
+    const bar = document.getElementById(barId);
+    const val = document.getElementById(valId);
+    if (bar) {
+      bar.style.width = (h * 100) + '%';
+      bar.style.background = h > p.thermal_danger_level ? 'var(--red)' : h > p.thermal_warn_level ? 'var(--yellow)' : 'var(--green)';
+    }
+    if (val) val.textContent = h.toFixed(2);
+  }
+  if (!animRunning) {
+    const stateEl = document.getElementById('m-thermal-state');
+    if (stateEl) {
+      const state = maxHeat > p.thermal_danger_level ? 'DANGER' : maxHeat > p.thermal_warn_level ? 'WARNING' : 'NORMAL';
+      stateEl.textContent = state;
+      stateEl.className = 'mv ' + (state === 'DANGER' ? 'r' : state === 'WARNING' ? 'y' : 'g');
+    }
+  }
+}
+
+function addEvent(t, type, detail) {
+  const log = document.getElementById('timeline-log');
+  const row = document.createElement('div');
+  row.className = 'event-row';
+  row.innerHTML = `<span class="ev-t">${t}</span><span class="ev-type">${type}</span><span class="ev-detail">${detail}</span>`;
+  log.appendChild(row);
+  // Auto-scroll if near bottom
+  if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) {
+    log.scrollTop = log.scrollHeight;
+  }
+}
+
+function populateBrickTable(brickLog) {
+  const thermalColors = {NORMAL:'', WARNING:'y', DANGER:'r'};
+  const body = document.getElementById('brick-log-body');
+  body.innerHTML = brickLog.map(b => {
+    const tc = thermalColors[b.thermalState] || '';
+    const typeLabel = b.type.replace('_', ' ').toUpperCase();
+    return `<tr>
+      <td>${b.num}</td>
+      <td>${typeLabel}</td>
+      <td>${b.sizeResult}</td>
+      <td>${b.colorResult}</td>
+      <td><span class="${b.samples < 4 ? 'r' : b.samples < 8 ? 'y' : ''}" style="color:${b.samples < 4 ? 'var(--red)' : b.samples < 8 ? 'var(--yellow)' : 'var(--green)'}">${b.samples}</span></td>
+      <td>${b.plow === 0 ? 'none' : b.plow}</td>
+      <td>${b.binIdx + 1}</td>
+      <td>${b.transitMs}</td>
+      <td><span style="color:${tc === 'r' ? 'var(--red)' : tc === 'y' ? 'var(--yellow)' : 'var(--green)'}">${b.thermalState}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function showRunSummary(sd) {
+  document.getElementById('run-summary').style.display = 'block';
+  const totalSec = sd.totalSimMs / 1000;
+  setText('m-total-time', totalSec.toFixed(2) + 's');
+  const totalBricks = sd.brickLog.length;
+  setText('m-bricks-sorted', totalBricks + ' / ' + (params.total_bricks * params.num_runs));
+  setText('m-accuracy', '100% (sim always classifies correctly)');
+  setTextClass('m-peak-heat', sd.peakHeat.toFixed(3), sd.peakHeat > params.thermal_danger_level ? 'r' : sd.peakHeat > params.thermal_warn_level ? 'y' : 'g');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    const ids = ['timeline', 'bricks', 'warnings'];
+    el.classList.toggle('active', ids[i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ============================================================
+// SPEED
+// ============================================================
+function setSpeed(s) {
+  if (animRunning && !animPaused) {
+    const wallNow = performance.now();
+    const wallElapsed = wallNow - animStartWallMs;
+    animOffsetSimMs += wallElapsed * speedMultiplier;
+    animStartWallMs = wallNow;
+  }
+  speedMultiplier = s;
+  ['spd1','spd2','spd5','spd10'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('spd' + s).classList.add('active');
+}
+
+// ============================================================
+// CANVAS RESIZE
+// ============================================================
+function resizeCanvas() {
+  const canvas = document.getElementById('belt-canvas');
+  const wrap = document.getElementById('belt-wrap');
+  canvas.width = wrap.clientWidth;
+  canvas.height = 240;
+  if (!animRunning) {
+    const ctx = canvas.getContext('2d');
+    drawBelt(ctx, canvas.width, canvas.height, 0);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  buildControls();
+  updateMetrics();
+  updateWarnings();
+
+  // Initial belt draw
+  const canvas = document.getElementById('belt-canvas');
+  resizeCanvas();
+
+  window.addEventListener('resize', resizeCanvas);
+}
+
+init();
+</script>
+</body>
+</html>

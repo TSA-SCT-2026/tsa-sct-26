@@ -16,6 +16,9 @@ tsa-sct-26/
 
   cad/                     all printable parts, organized by subsystem
   firmware/                ESP32 embedded firmware (PlatformIO project)
+  simulation/              browser-based system simulator (no server needed)
+    simulator.html         open this directly - interactive parameter tuning
+    CONFIG_REFERENCE.md    explanation of every parameter, timing math, warnings
   docs/
     MECHANICAL.md          physical design, all measurements, fabrication concerns
     ELECTRICAL.md          power architecture, wiring, protection components
@@ -30,6 +33,10 @@ tsa-sct-26/
     engineering/           decision matrices, calibration procedures, performance data
     runs/                  CSV logs from calibration and reliability runs
 ```
+
+## Development tools
+
+Open `simulation/simulator.html` in a browser for an interactive system simulator. No server needed. Defaults match `firmware/src/config.h`. Controls let you tune every parameter and see the effect on throughput, sensing, and thermal behavior before touching hardware. See `simulation/CONFIG_REFERENCE.md` for a full explanation of every parameter.
 
 ## Competition requirements summary
 
