@@ -26,8 +26,11 @@ public:
     float stepperHeat() const;
     float maxHeat() const;
 
-    // Stepper RPM adjusted down for thermal state.
+    // Stepper speed adjusted down for thermal state.
+    // Use adjustedStepperSps() for hardware timer intervals.
+    // adjustedStepperRpm() is kept for log message readability only.
     uint16_t adjustedStepperRpm() const;
+    uint16_t adjustedStepperSps() const;
 
     const char* stateName() const;
 

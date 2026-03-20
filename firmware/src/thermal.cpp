@@ -57,6 +57,14 @@ uint16_t ThermalModel::adjustedStepperRpm() const {
     }
 }
 
+uint16_t ThermalModel::adjustedStepperSps() const {
+    switch (state()) {
+        case ThermalState::WARNING: return STEPPER_SPS_WARNING;
+        case ThermalState::DANGER:  return STEPPER_SPS_DANGER;
+        default:                    return STEPPER_SPS_NORMAL;
+    }
+}
+
 const char* ThermalModel::stateName() const {
     switch (state()) {
         case ThermalState::WARNING: return "WARNING";

@@ -172,3 +172,17 @@ May 1          Competition.
 
 Every major design choice (sensor type, actuator type, escapement mechanism) has a documented rationale including rejected alternatives with specific failure reasons. These are in the relevant architecture files and must appear in competition documentation. Judges score decision-making, not just final choices.
 
+### Key decisions locked (do not revisit without strong reason)
+
+**Stepper driver: TMC2209 over A4988**
+TMC2209 handles 2000+ steps/sec cleanly vs A4988 degrading above ~1000 sps. Current regulation is more precise, reducing heat during extended calibration. StallGuard provides passive step-skip detection. Wiring is nearly identical in standalone mode. No reason to use A4988.
+
+**Belt motor: JGB37-520 6V over TT gearmotor**
+TT motors at 1:48 (the only ratio readily available) give ~107mm/s under load, below the escapement rate at target sps. JGB37-520 at 300-520RPM gives 200-330mm/s under load with comfortable headroom. 6mm D-shaft accepts standard GT2 pulleys. Higher gearbox torque than TT or N20 at comparable speeds.
+
+**Stepper speed: firmware-controlled sps, not motor choice**
+Escapement rate is set entirely via STEPPER_SPS_* in config.h. No motor change is needed to go faster. Start at 800 sps (4 bricks/sec), validate reliability, increment by 200 sps. Color sensor sample floor is 8 samples per brick - that is the practical ceiling, not the motor or driver.
+
+**Color sampling: parallel from beam 1 break**
+Color sampling begins when beam 1 breaks, not after size detection resolves. The black belt filter discards early samples taken before the brick reaches the sensor. By the time size classification completes (~95-150ms), 30-40 samples are already banked. Both size and color classification are available simultaneously with no sequential wait. This is implemented in onFeeding() in state_machine.cpp.
+
