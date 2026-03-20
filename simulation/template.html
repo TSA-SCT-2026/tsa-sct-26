@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brick Sorter Simulator - TSA SCT 2026</title>
+<!-- INLINE_CSS -->
+</head>
+<body>
+
+<div id="header">
+  <h1>Brick Sorter Simulator</h1>
+  <span class="sub">TSA SCT 2026 - defaults from firmware/src/config.h</span>
+  <span id="replay-label" class="replay-badge">REPLAY</span>
+  <div class="hdr-controls">
+    <span style="font-size:11px;color:var(--text2);">Speed:</span>
+    <button class="btn active" id="spd1" onclick="setSpeed(1)">1x</button>
+    <button class="btn" id="spd2" onclick="setSpeed(2)">2x</button>
+    <button class="btn" id="spd5" onclick="setSpeed(5)">5x</button>
+    <button class="btn" id="spd10" onclick="setSpeed(10)">10x</button>
+    <button class="btn" id="loadCsvBtn">Load CSV</button>
+    <button class="btn primary" id="runBtn" onclick="handleRunBtn()">Run Simulation</button>
+    <button class="btn" id="resetBtn" onclick="resetSim()" style="display:none">Reset</button>
+  </div>
+</div>
+
+<div id="main">
+  <!-- Controls -->
+  <div id="controls">
+    <!-- Built by JS -->
+  </div>
+
+  <!-- Center: belt + bottom tabs -->
+  <div id="center">
+    <div id="belt-wrap">
+      <canvas id="belt-canvas" width="800" height="240"></canvas>
+    </div>
+    <div id="bottom">
+      <div id="tab-bar">
+        <div class="tab active" onclick="switchTab('timeline')">Timeline</div>
+        <div class="tab" onclick="switchTab('bricks')">Per-Brick Log</div>
+        <div class="tab" onclick="switchTab('warnings')">Warnings</div>
+      </div>
+      <div id="tab-content">
+        <div class="tab-panel active" id="panel-timeline">
+          <div id="timeline-log" style="color:var(--text3);font-size:12px;padding:4px 0;">
+            Run a simulation to see events here.
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-bricks">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Type</th><th>Size</th><th>Color</th>
+                <th>Samples</th><th>Plow</th><th>Bin</th>
+                <th>Transit ms</th><th>Thermal</th>
+              </tr>
+            </thead>
+            <tbody id="brick-log-body">
+              <tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-panel" id="panel-warnings">
+          <div id="warnings-content">
+            <div class="warn-row ok">No warnings - run a simulation or adjust parameters to see analysis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div id="metrics">
+    <div class="msec">
+      <div class="msec-title">Throughput</div>
+      <div class="mrow"><span class="ml">Escapement rate</span><span class="mv" id="m-esc-rate">-</span></div>
+      <div class="mrow"><span class="ml">Belt speed</span><span class="mv" id="m-belt-spd">-</span></div>
+      <div class="mrow"><span class="ml">Belt capacity</span><span class="mv" id="m-belt-cap">-</span></div>
+      <div class="mrow"><span class="ml">Bottleneck</span><span class="mv" id="m-bottleneck">-</span></div>
+      <div class="mrow"><span class="ml">Belt margin</span><span class="mv" id="m-margin">-</span></div>
+      <div class="mrow"><span class="ml">Est. run time</span><span class="mv" id="m-runtime">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Sensing</div>
+      <div class="mrow"><span class="ml">Color dwell (2x2)</span><span class="mv" id="m-dwell">-</span></div>
+      <div class="mrow"><span class="ml">Color samples</span><span class="mv" id="m-samples">-</span></div>
+      <div class="mrow"><span class="ml">2x3 signal window</span><span class="mv" id="m-sig-win">-</span></div>
+      <div class="mrow"><span class="ml">Size timeout</span><span class="mv" id="m-timeout">-</span></div>
+      <div class="mrow"><span class="ml">Timeout margin</span><span class="mv" id="m-tmarg">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Thermal (live)</div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 1</span><span id="th-sol1-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol1-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw1"></div><div class="tbar-danger" id="td1"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 2</span><span id="th-sol2-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol2-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw2"></div><div class="tbar-danger" id="td2"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 3</span><span id="th-sol3-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol3-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw3"></div><div class="tbar-danger" id="td3"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Stepper</span><span id="th-step-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-step-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw4"></div><div class="tbar-danger" id="td4"></div></div>
+      </div>
+      <div class="mrow" style="margin-top:6px"><span class="ml">State</span><span class="mv" id="m-thermal-state">NORMAL</span></div>
+      <div class="mrow"><span class="ml">Active sps</span><span class="mv" id="m-active-sps">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Bin Counts</div>
+      <div class="bins-grid">
+        <div class="bin-box" id="bin-0">
+          <div class="bin-name">2x2 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-0">0</div>
+          <div class="bin-exp" id="bin-exp-0">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-1">
+          <div class="bin-name">2x2 RED</div>
+          <div class="bin-cnt" id="bin-cnt-1">0</div>
+          <div class="bin-exp" id="bin-exp-1">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-2">
+          <div class="bin-name">2x3 RED</div>
+          <div class="bin-cnt" id="bin-cnt-2">0</div>
+          <div class="bin-exp" id="bin-exp-2">expected: 4</div>
+        </div>
+        <div class="bin-box" id="bin-3">
+          <div class="bin-name">2x3 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-3">0</div>
+          <div class="bin-exp" id="bin-exp-3">expected: 8</div>
+        </div>
+      </div>
+    </div>
+    <div class="msec" id="run-summary" style="display:none">
+      <div class="msec-title">Run Complete</div>
+      <div class="mrow"><span class="ml">Total time</span><span class="mv" id="m-total-time">-</span></div>
+      <div class="mrow"><span class="ml">Bricks sorted</span><span class="mv" id="m-bricks-sorted">-</span></div>
+      <div class="mrow"><span class="ml">Bin accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Peak heat</span><span class="mv" id="m-peak-heat">-</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- INLINE_JS -->
+</body>
+</html>
