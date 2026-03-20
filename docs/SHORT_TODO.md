@@ -4,68 +4,81 @@ Immediate and near-term action items. Keep this list short and current.
 
 ---
 
-## Urgent: order now (every day of delay costs schedule margin)
+## Right now: hardware you already have (no parts needed)
 
-- [ ] AliExpress: finalize cart with all corrections from BOM.md and order
-  - NEMA 11 stepper (28-40 body preferred, 4-wire bipolar, 5mm shaft)
-  - TMC2209 x2
-  - JGB37-520 6V 300-520RPM x2 (confirm RPM variant before checkout)
-  - JF-0530B solenoid 5V x4 (buy 4, need 3, one spare)
-  - TCS34725 x2 (buy spare, calibration-sensitive part)
-  - GT2 400mm belt x2, GT2 20-tooth 5mm bore pulley x4
-  - LM2596 x2, H206 x2
-  - IR break-beams x4 pairs (bin confirmation only)
-  - Torsion spring assortment, heatsinks, thermal tape
-  - Perfboard x3, 22AWG wire kit
-- [ ] Adafruit: IR break-beam #2168 x2 packs (size detection only), display (ST7789 color)
+- [ ] Flash firmware to ESP32, confirm serial output at 115200 baud
+- [ ] `help` in serial monitor - verify test harness responds
+- [ ] `test fullrun` - verify run summary shows bins = (6, 6, 4, 8)
+- [ ] `test thermal 20` - verify WARNING then DANGER trigger in output
+- [ ] `sim jam` - verify ERROR_HALT, then `sim reset` - verify recovery to IDLE
+- [ ] Walk one brick manually: `sim start`, `sim beam1`, `sim timeout`, `sim color 240 18 20 278`, `sim colordone`, `sim bin 2` - watch state transitions
+- [ ] Wire available solenoid to ESP32 GPIO with flyback diode across terminals
+  - Override actuators::plowFire() temporarily to drive real GPIO
+  - Fire 20 back-to-back, touch solenoid body - validates thermal constants
+  - Confirm 20ms full / 40% hold / de-energize sequence on real hardware
+- [ ] Nichibo 23022 motor: tape paper flag to shaft, run at 6V or 12V, count rotations for 10s
+  - RPM = rotations x 6; belt speed = (RPM / 60) x 40mm
+  - If above 200mm/s: usable as dev stand-in for wiring/firmware validation
+  - Do not build final system around it - JGB37 is the real part
+
+---
+
+## Urgent: order now
+
+- [ ] AliExpress - confirm before checkout:
+  - Remove MX1508 from cart (redundant, L298N covers belt motor)
+  - GT2 belt: 400mm closed loop variant selected
+  - Solenoid: 5V variant selected, quantity 4 (need 3, 1 spare)
+  - JGB37-520: 300 or 520 RPM at 6V selected (not 100RPM, not 30RPM)
+  - H206 optocoupler: buy 2
+  - TCS34725: buy 2 (calibration-sensitive, spare is essential)
+  - LM2596: buy 2 units
+  - Perfboard: buy 3 not 2
+  - TMC2209: confirm getting TMC2209 not A4988 from dollar express listing
+- [ ] AliExpress - add to cart:
+  - NEMA 11 stepper: 28-40 or 28-50mm body, 4-wire bipolar, 5mm shaft
+  - GT2 20-tooth pulley 5mm bore x4
+- [ ] Adafruit: IR break-beam #2168 x2 packs (size detection only), ST7789 color display
 - [ ] Amazon: 2S LiPo 7.4V 2000mAh x2 (Zeee/Ovonic/Gens Ace), 2S balance charger
 
 ---
 
-## This week: firmware (unblocked, do now)
+## This week: firmware (unblocked now)
 
-- [ ] Flash existing firmware to ESP32, verify serial output and test harness over USB
-- [ ] Run `test fullrun` over serial, confirm all 24 bricks route correctly, summary = (6,6,4,8)
-- [ ] Run `test thermal 20`, verify WARNING and DANGER thresholds trigger
-- [ ] Inject `sim jam`, verify ERROR_HALT halts and `sim reset` recovers
-- [ ] Implement real solenoid timer sequence in actuators.cpp (esp_timer, no delay())
-  - Wire available solenoid to ESP32 GPIO, flyback diode across terminals
-  - Verify 20ms full / 40% hold / de-energize sequence fires correctly on real hardware
-  - Touch solenoid after 20 back-to-back fires: validate thermal constants are reasonable
+- [ ] Implement real solenoid timer sequence in actuators.cpp using esp_timer (no delay())
+  - t=0: GPIO high (SOL_FULL_PWM)
+  - t=SOL_FULL_MS: drop to SOL_HOLD_PWM
+  - t=SOL_DEENERGIZE_MS: GPIO low
 - [ ] Implement real stepper sequencer in actuators.cpp
-  - STEPPER_SPS_NORMAL pulses on PIN_STEPPER_STEP via esp_timer
+  - esp_timer firing STEPPER_SPS_NORMAL pulses on PIN_STEPPER_STEP
   - Pull PIN_STEPPER_EN LOW in begin() to enable TMC2209
-  - Verify 200 pulses = 1 rotation when hardware arrives
-- [ ] Implement hardware timer ISR stubs in sensors.cpp (write the ISR logic now, attach later)
-  - onBeam1Break: start 64-bit hardware timer, push BEAM1_BREAK
-  - onBeam2Break: read timer, push BEAM2_BREAK with gap_us
+  - Use gThermal.adjustedStepperSps() for thermal-throttled rate
+- [ ] Implement hardware timer ISR logic in sensors.cpp (write now, attach when hardware arrives)
+  - onBeam1Break: start 64-bit hardware timer, push BEAM1_BREAK event
+  - onBeam2Break: read timer, push BEAM2_BREAK with gap_us filled
   - Timer overflow at SIZE_TIMEOUT_MS: push SIZE_TIMEOUT
-- [ ] Update thermal.cpp: adjustedStepperRpm() returns RPM but actuators need SPS
-  - Add adjustedStepperSps() using STEPPER_SPS_* constants from config.h
-- [ ] Display module: implement ST7789 SPI driver (can stub render calls, get init working)
+- [ ] Display module: ST7789 SPI driver init, state screens (READY/SORTING/COMPLETE/ERROR)
 
 ---
 
 ## This week: CAD (unblocked in parallel)
 
-- [ ] Draw top-down footprint layout: verify full system fits 610x610mm before any frame CAD
-- [ ] Chute transition piece CAD: print iteration 1 as soon as drawn
-- [ ] Test chute transition with real bricks before any other structural CAD
+- [ ] Top-down footprint layout: verify full system fits 610x610mm before any frame CAD
+- [ ] Chute transition piece: CAD and print iteration 1, test with real bricks
+- [ ] Gate: do not proceed to full frame CAD until chute transition is reliable
 
 ---
 
-## Open decisions (resolve before ordering second round)
+## Open decisions
 
-- [ ] Confirm AC outlet availability at judging table (determines LiPo vs bench supply at competition)
-  - Contact event organizers or find past TSA SCT competitor
-  - See ISSUES.md for full context
+- [ ] Confirm AC outlet at judging table (determines LiPo vs bench supply at competition)
 
 ---
 
 ## Waiting on parts (~April 1)
 
-- Validate actual belt speed under load at operating PWM
-- Validate color sensor readings under shroud LED, log R/G/B for all 4 brick types
+- Measure actual belt speed under load at operating PWM duty cycle
+- Log color sensor R/G/B for all 4 brick types under shroud LED
 - Confirm break-beam size detection geometry at actual belt speed
 - Select final spring weight from assortment against actual solenoid
-- Measure exact sensor-to-bin distances for timing constants in config.h
+- Measure exact sensor-to-bin distances, update timing constants in config.h
