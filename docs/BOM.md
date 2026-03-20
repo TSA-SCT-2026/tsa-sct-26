@@ -11,8 +11,8 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 | JF-0530B solenoid 5V | JF-0530B solenoid | 3 | $6-9 | plow actuation |
 | NEMA 11 stepper motor | NEMA 11 stepper 28mm 4-wire bipolar | 1 | $5-8 | escapement drive; 28mm body, 5mm shaft, 1.8 deg/step, 200 steps/rev |
 | TMC2209 stepper driver module | TMC2209 stepper driver | 2 | $3-5 | 1 primary, 1 spare; use in standalone mode (no UART); handles 2000+ sps cleanly, silent stepping, better thermal than A4988 |
-| TT gearmotor 1:20 ratio | TT gearmotor 1:20 300RPM | 2 | $3-5 | 1 belt drive, 1 spare; must be 1:20 ratio (~300 RPM no-load at 5V); do NOT order 1:48 (too slow under load) |
-| L298N motor driver | L298N module | 1 | $1-2 | belt speed control via PWM |
+| JGB37-520 gearmotor 6V | JGB37-520 6V 300RPM | 2 | $8-12 | 1 belt drive, 1 spare; confirm 300 or 520 RPM variant at 6V; 6mm D-shaft fits standard GT2 pulleys; do NOT order 30 or 100 RPM variant |
+| L298N motor driver | L298N module | 1 | $1-2 | belt speed control via PWM; do NOT substitute MX1508 (wrong pin interface, insufficient current headroom for JGB37) |
 | LM2596 buck converter | LM2596 step down | 2 | $2-3 | one per power rail |
 | GT2 belt 400mm closed loop 6mm | GT2 400mm belt 6mm | 2 | $3-4 | 1 primary, 1 spare |
 | GT2 20-tooth pulley 5mm bore | GT2 20 tooth pulley 5mm | 4 | $3-4 | 2 primary, 2 spare |
@@ -83,7 +83,7 @@ Order one spare display if budget allows. A dead panel during calibration costs 
 
 **TMC2209 vs A4988:** TMC2209 chosen over A4988 for three reasons: handles 2000+ steps/sec cleanly (headroom for future speed tuning), better current regulation reduces heat during sustained operation, and StallGuard provides passive step-skip detection. Use in standalone mode (MS pins, no UART). Wiring is nearly identical to A4988.
 
-**TT motor ratio matters:** 1:20 ratio gives ~300 RPM no-load at 5V, ~195 RPM under belt load. Belt speed at 195 RPM loaded = ~246 mm/s, comfortably above the escapement rate at any firmware sps setting up to ~1600 sps. 1:48 (the default shipped variant) only gives ~107 mm/s loaded, which is below the escapement rate at target speed.
+**JGB37-520 over TT gearmotor:** TT motors at 1:48 (only ratio readily available) give ~107mm/s belt speed under load, below the escapement rate at target sps. JGB37-520 at 300-520 RPM gives 200-330mm/s loaded with comfortable headroom. 6mm D-shaft accepts standard GT2 pulleys without hunting for rare bore sizes. Higher gearbox torque than TT or N20 at comparable speeds. L298N is the correct driver: firmware uses one PWM enable pin + two direction pins matching L298N's interface. MX1508 uses two PWM inputs and cannot be substituted without rewriting belt control logic.
 
 **IR break-beam split:** Adafruit #2168 for size detection only. The 19mm dual-beam timing method requires consistent emitter/receiver response characteristics. AliExpress pairs are fine for bin confirmation, which is binary detection with a 500ms timeout window.
 
