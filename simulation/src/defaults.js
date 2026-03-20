@@ -28,7 +28,7 @@ export const DEFAULTS = {
   // Thermal
   thermal_heat_per_sol:    0.15,
   thermal_heat_per_step:   0.05,
-  thermal_decay_rate:      0.5,
+  thermal_cooling_pct:     50,
   thermal_warn_level:      0.60,
   thermal_danger_level:    0.85,
 
@@ -106,8 +106,8 @@ export const SECTIONS = [
         desc:'How much heat accumulates each time a plow fires. Tune after measuring real solenoid temperature.' },
       { id:'thermal_heat_per_step', label:'Heat per stepper release', unit:'', min:0.01, max:0.2, step:0.01, dec:2,
         desc:'Heat added each time the escapement releases a brick.' },
-      { id:'thermal_decay_rate', label:'Cooling rate (per sec)', unit:'', min:0.1, max:2.0, step:0.1, dec:1,
-        desc:'How fast heat dissipates when actuators are idle. 0.5 = heat halves every second.' },
+      { id:'thermal_cooling_pct', label:'Cooling rate', unit:'%', min:0, max:100, step:1, dec:0,
+        desc:'How fast heat dissipates when idle. 0% = no cooling (heat stays). 100% = instant. 50% = heat halves every second.' },
       { id:'thermal_warn_level', label:'Warning threshold', unit:'', min:0.3, max:0.9, step:0.05, dec:2,
         desc:'Heat level at which escapement slows to WARNING rate (~2.7 bricks/sec).' },
       { id:'thermal_danger_level', label:'Danger threshold', unit:'', min:0.5, max:1.0, step:0.05, dec:2,
