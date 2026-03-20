@@ -61,6 +61,12 @@ void StateMachine::onFeeding(const Event& e) {
         _brick.number    = _brickCount + 1;
         _brick.tsEnterMs = e.timestamp_ms;
         gLogger.brickEnter(_brick.number);
+        // Start color sampling immediately on beam 1 break, not after size resolves.
+        // The black belt filter discards any samples taken before the brick reaches
+        // the color sensor. By the time size classification completes (~95-150ms),
+        // samples are already banked and classification fires immediately.
+        resetColorAccumulator();
+        sensors::startColorSampling();
         transition(State::SIZE_DETECT);
     }
 }
@@ -70,16 +76,14 @@ void StateMachine::onSizeDetect(const Event& e) {
         _brick.gap_us = e.gap_us;
         _brick.size   = classifySize(e.gap_us);
         gLogger.sizeDetected(_brick.number, _brick.gap_us, _brick.size);
-        resetColorAccumulator();
-        sensors::startColorSampling();
+        // Color sampling already running since BEAM1_BREAK. Do not restart.
         transition(State::COLOR_DETECT);
 
     } else if (e.type == EventType::SIZE_TIMEOUT) {
-        _brick.gap_us = 0;  // 0 signals timeout
+        _brick.gap_us = 0;
         _brick.size   = classifySize(0);
         gLogger.sizeDetected(_brick.number, 0, _brick.size);
-        resetColorAccumulator();
-        sensors::startColorSampling();
+        // Color sampling already running since BEAM1_BREAK. Do not restart.
         transition(State::COLOR_DETECT);
     }
 }

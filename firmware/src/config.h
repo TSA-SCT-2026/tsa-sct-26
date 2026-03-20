@@ -14,8 +14,11 @@
 #define PIN_BELT_PWM        32      // belt motor PWM (L298N enable pin)
 #define PIN_BELT_DIR1       33      // belt motor direction 1
 #define PIN_BELT_DIR2       14      // belt motor direction 2
-#define PIN_STEPPER_STEP    18      // A4988 STEP
-#define PIN_STEPPER_DIR     19      // A4988 DIR
+#define PIN_STEPPER_STEP    18      // TMC2209 STEP
+#define PIN_STEPPER_DIR     19      // TMC2209 DIR
+// TMC2209 EN pin: wire to GPIO and pull LOW in begin() to enable driver
+// EN is active-low on TMC2209 (opposite of A4988 SLEEP which was active-high)
+#define PIN_STEPPER_EN      23      // TMC2209 EN (pull LOW to enable)
 #define PIN_BIN1            36      // bin 1 confirmation beam (2x2 blue)
 #define PIN_BIN2            39      // bin 2 confirmation beam (2x2 red)
 #define PIN_BIN3            4       // bin 3 confirmation beam (2x3 red)
@@ -76,10 +79,22 @@
 // ================================================================
 // Stepper (escapement)
 // ================================================================
-#define STEPPER_STEPS_PER_REV   200     // full step, NEMA 11
-#define STEPPER_RPM_NORMAL      30      // normal release rate (~5 bricks/s at this RPM)
-#define STEPPER_RPM_WARNING     20      // reduced rate at thermal WARNING
-#define STEPPER_RPM_DANGER      10      // further reduced at thermal DANGER
+#define STEPPER_STEPS_PER_REV   200     // full step, NEMA 11 1.8 deg/step
+
+// Speed is set in steps/sec (sps). RPM = sps / STEPPER_STEPS_PER_REV * 60.
+// Start at 800 sps (4 bricks/sec, ~9s run). Tune up in 200 sps increments
+// after reliability is proven at each level. Stop when accuracy degrades
+// or step-skipping is audible. Document the accuracy vs sps curve.
+// TMC2209 handles 2000+ sps. NEMA 11 torque curve limits reliable speed
+// to ~1200-1600 sps under load. 8 color samples per brick is the floor.
+#define STEPPER_SPS_NORMAL      800     // 4.0 bricks/sec - starting point
+#define STEPPER_SPS_WARNING     533     // 2.7 bricks/sec - thermal WARNING rate
+#define STEPPER_SPS_DANGER      267     // 1.3 bricks/sec - thermal DANGER rate
+
+// Legacy RPM defines kept for reference (used in log messages only, not hardware)
+#define STEPPER_RPM_NORMAL      30      // = 800 sps / 200 steps * 60
+#define STEPPER_RPM_WARNING     20
+#define STEPPER_RPM_DANGER      10
 
 // ================================================================
 // Bin confirmation
