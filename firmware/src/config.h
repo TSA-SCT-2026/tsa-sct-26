@@ -112,8 +112,22 @@
 #define THERMAL_LOG_INTERVAL_MS 1000    // how often to log thermal state while idle
 
 // ================================================================
-// Display (RGB565)
+// Display (Waveshare 1.69in ST7789V2, 240x280 IPS, SPI)
 // ================================================================
+// Driver: TFT_eSPI library. Set in User_Setup.h:
+//   #define ST7789_DRIVER
+//   #define TFT_WIDTH  240
+//   #define TFT_HEIGHT 280
+//   #define TFT_MOSI   PIN_TFT_MOSI  (default SPI MOSI - check ESP32 pinout)
+//   #define TFT_SCLK   PIN_TFT_SCLK  (default SPI SCLK)
+//   #define TFT_CS     PIN_TFT_CS
+//   #define TFT_DC     PIN_TFT_DC
+//   #define TFT_RST    PIN_TFT_RST
+//   #define SPI_FREQUENCY 40000000
+#define DISPLAY_WIDTH   240
+#define DISPLAY_HEIGHT  280
+
+// RGB565 colors
 #define TFT_RED     0xF800
 #define TFT_BLUE    0x001F
 #define TFT_WHITE   0xFFFF
