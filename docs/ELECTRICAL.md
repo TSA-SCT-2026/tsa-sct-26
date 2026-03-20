@@ -34,7 +34,7 @@ Bench supply is acceptable for early development but must not be used for any ca
 |------|---------|---------|-------------|
 | JF-0530B solenoid (x3) | plow actuation | 5V | ~500mA each |
 | NEMA 11 stepper motor | escapement | 6-8V (motor rail) | ~400mA |
-| A4988 stepper driver | stepper control | motor rail + 3.3V logic | (specified above) |
+| TMC2209 stepper driver | stepper control | motor rail + 3.3V logic | (specified above) |
 | TT gearmotor (x2, one spare) | belt drive | 5V | ~400mA |
 | L298N motor driver | belt motor control | 5V | (specified above) |
 | LM2596 buck converter (x2) | 7.4V -> 5V | (specified above) | 3A each rated |
@@ -51,7 +51,7 @@ These are not optional. Skipping any of them risks destroying hardware.
 
 ### Capacitor on stepper driver motor power input
 
-A 100uF electrolytic capacitor must be placed physically adjacent to the motor power input on the A4988 driver module. This is the single most common way the A4988 is destroyed. Back-EMF from the motor travels back up the power line on power connect. Without this capacitor, the chip dies. Place it right next to the chip, not at the power connector.
+A 100uF electrolytic capacitor must be placed physically adjacent to the motor power input on the TMC2209 driver module. This is the single most common way stepper drivers are destroyed. Back-EMF from the motor travels back up the power line on power connect. Without this capacitor, the chip dies. Place it right next to the chip, not at the power connector.
 
 Before applying power to the stepper circuit for the first time: verify this capacitor is present and correctly oriented (negative leg to ground) with a teammate watching. Say it out loud.
 
@@ -69,20 +69,23 @@ If the color sensor drops reads during high-speed polling, add 4.7k resistors fr
 
 ## Stepper driver wiring
 
+TMC2209 in standalone mode (no UART). Wiring is nearly identical to A4988.
+
 ```
-A4988 VMOT + GND  -> motor rail (6-8V from LM2596)
-A4988 VDD + GND   -> microcontroller 3.3V, shared ground
-A4988 STEP        -> microcontroller GPIO
-A4988 DIR         -> microcontroller GPIO (set once at startup)
-A4988 SLEEP       -> pull HIGH (enables the driver)
-A4988 RESET       -> tie to SLEEP pin
-A4988 MS1/MS2/MS3 -> all LOW (full step mode, maximum torque)
-A4988 coil pairs  -> NEMA 11 stepper coil wires (check datasheet for coil grouping)
+TMC2209 VMOT + GND  -> motor rail (6-8V from LM2596)
+TMC2209 VDD + GND   -> microcontroller 3.3V, shared ground
+TMC2209 STEP        -> microcontroller GPIO
+TMC2209 DIR         -> microcontroller GPIO (set once at startup)
+TMC2209 EN          -> pull LOW (enables the driver; opposite polarity to A4988 SLEEP)
+TMC2209 MS1/MS2     -> both LOW for full step mode (maximum torque)
+TMC2209 coil pairs  -> NEMA 11 stepper coil wires (check datasheet for coil grouping)
 ```
 
-VMOT should be 6-8V for the NEMA 11. Do not run from 5V: insufficient torque at speed. Use the dedicated motor rail from Rail 2.
+VMOT should be 6-8V for the NEMA 11. Do not run from 5V: insufficient torque at speed.
 
-Between releases, reduce hold current via the driver's reference voltage trim. Sufficient torque to hold against queue pressure, much lower heat. This is done once during setup, not dynamically during normal operation.
+**Speed headroom:** TMC2209 handles 2000+ steps/sec cleanly. At 200 steps/rev, that is 10 rev/sec = 10 bricks/sec theoretical maximum. In practice the NEMA 11 torque curve limits reliable speed to around 1200-1600 sps before step-skipping risk appears. Start at 800 sps (4 bricks/sec), validate reliability, then push up in firmware increments of 200 sps during calibration. Do not change the motor or driver to go faster - change the sps value in config.h.
+
+Between releases, reduce hold current via the driver's current trim pot. Sufficient torque to hold against queue pressure, much lower heat.
 
 ## Belt motor wiring
 
@@ -135,13 +138,13 @@ The disk can be printed directly into the belt pulley face (add 20 evenly spaced
 
 ## Wiring checklist before first power-on
 
-- [ ] 100uF capacitor adjacent to A4988 motor power input, correctly oriented
+- [ ] 100uF capacitor adjacent to TMC2209 motor power input, correctly oriented
 - [ ] 1000uF capacitor on logic rail 5V supply, close to microcontroller
 - [ ] All three solenoid flyback diodes installed, orientation verified with multimeter
 - [ ] Rail 1 and Rail 2 separated, common ground only
 - [ ] Both LM2596 outputs measured at 5V before connecting anything
-- [ ] Stepper SLEEP pulled HIGH
-- [ ] RESET tied to SLEEP
+- [ ] Stepper EN pulled LOW (TMC2209 enable is active-low, opposite of A4988)
+- [ ] MS1 and MS2 both LOW (full step mode)
 - [ ] Microcontroller powered from clean rail, not motor rail
 - [ ] All I2C devices on same bus with shared SDA, SCL, and ground
 - [ ] Display SPI connections correct (MOSI, SCLK, CS, DC, RST)

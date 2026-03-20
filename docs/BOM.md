@@ -9,9 +9,9 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 | Part | Search term | Qty | Est. cost | Notes |
 |------|-------------|-----|-----------|-------|
 | JF-0530B solenoid 5V | JF-0530B solenoid | 3 | $6-9 | plow actuation |
-| NEMA 11 stepper motor | NEMA 11 stepper 28mm | 1 | $5-8 | escapement drive |
-| A4988 stepper driver module | A4988 stepper driver | 2 | $2-3 | 1 primary, 1 spare; these die easily |
-| TT gearmotor 6V | TT motor gearmotor 6V | 2 | $3-4 | 1 belt drive, 1 spare |
+| NEMA 11 stepper motor | NEMA 11 stepper 28mm 4-wire bipolar | 1 | $5-8 | escapement drive; 28mm body, 5mm shaft, 1.8 deg/step, 200 steps/rev |
+| TMC2209 stepper driver module | TMC2209 stepper driver | 2 | $3-5 | 1 primary, 1 spare; use in standalone mode (no UART); handles 2000+ sps cleanly, silent stepping, better thermal than A4988 |
+| TT gearmotor 1:20 ratio | TT gearmotor 1:20 300RPM | 2 | $3-5 | 1 belt drive, 1 spare; must be 1:20 ratio (~300 RPM no-load at 5V); do NOT order 1:48 (too slow under load) |
 | L298N motor driver | L298N module | 1 | $1-2 | belt speed control via PWM |
 | LM2596 buck converter | LM2596 step down | 2 | $2-3 | one per power rail |
 | GT2 belt 400mm closed loop 6mm | GT2 400mm belt 6mm | 2 | $3-4 | 1 primary, 1 spare |
@@ -21,6 +21,8 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 | Torsion spring assortment | torsion spring assortment small | 1 | $3-4 | plow arm return: test with actual solenoid |
 | 100uF 25V electrolytic capacitor | 100uf 25v electrolytic capacitor | 10 | $1 | A4988 motor input cap (critical) + spares |
 | 1000uF 25V electrolytic capacitor | 1000uf 25v electrolytic | 5 | $1-2 | bulk cap for logic rail ESP32 supply |
+| IR break-beam sensor pairs (AliExpress) | IR break beam sensor pair | 4 | $4-6 | bin confirmation only (4 pairs used, 0 spare); binary detection, no timing precision needed |
+| TCS34725 RGB color sensor | TCS34725 color sensor module | 1 | $3-5 | verify LED and INT pin broken out on board; same IC as Adafruit #1334 at lower cost |
 | H206 slot optocoupler | H206 optocoupler slot sensor | 2 | $1-2 | belt speed encoder (1 primary, 1 spare) |
 | Small aluminum heatsink kit | aluminum heatsink kit small | 1 | $2-3 | solenoid bodies |
 | Thermal adhesive tape | thermal adhesive tape | 1 | $2 | attaching heatsinks |
@@ -33,12 +35,13 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 
 ## Adafruit (ships fast, order same day)
 
-| Part | Part # | Qty | Cost |
-|------|--------|-----|------|
-| IR break-beam 3mm pair | #2168 | 4 packs | ~$16 |
-| TCS34725 RGB color sensor | #1334 | 1 | ~$7 |
+| Part | Part # | Qty | Cost | Notes |
+|------|--------|-----|------|-------|
+| IR break-beam 3mm pair | #2168 | 2 packs | ~$8 | size detection only (2 pairs used, 2 spare); precision timing requires known-good parts |
 
-4 packs = 8 pairs. 6 needed (2 size sensing + 4 bin confirmation). 2 spare.
+Size detection beams must be Adafruit. Bin confirmation beams are AliExpress (see AliExpress section). The 19mm dual-beam timing method is sensitive to response consistency; generic beams are not acceptable for this function.
+
+TCS34725 moved to AliExpress - same IC, saves ~$3, no functional difference.
 
 ---
 
@@ -78,6 +81,12 @@ Order one spare display if budget allows. A dead panel during calibration costs 
 
 ## Notes
 
+**TMC2209 vs A4988:** TMC2209 chosen over A4988 for three reasons: handles 2000+ steps/sec cleanly (headroom for future speed tuning), better current regulation reduces heat during sustained operation, and StallGuard provides passive step-skip detection. Use in standalone mode (MS pins, no UART). Wiring is nearly identical to A4988.
+
+**TT motor ratio matters:** 1:20 ratio gives ~300 RPM no-load at 5V, ~195 RPM under belt load. Belt speed at 195 RPM loaded = ~246 mm/s, comfortably above the escapement rate at any firmware sps setting up to ~1600 sps. 1:48 (the default shipped variant) only gives ~107 mm/s loaded, which is below the escapement rate at target speed.
+
+**IR break-beam split:** Adafruit #2168 for size detection only. The 19mm dual-beam timing method requires consistent emitter/receiver response characteristics. AliExpress pairs are fine for bin confirmation, which is binary detection with a 500ms timeout window.
+
 **Why 2 LiPo batteries?** Competition day power failure with no spare is unrecoverable. Judges may request multiple consecutive demos. Two batteries = peace of mind.
 
 **Why perfboard and hookup wire?** Breadboard jumpers vibrate out. For the final assembled system, everything solenoid-carrying and sensor-carrying needs to be soldered to perfboard. Do not skip this.
@@ -90,4 +99,4 @@ Order one spare display if budget allows. A dead panel during calibration costs 
 
 ## Total estimated cost
 
-$110-135 (up from earlier estimate due to second LiPo, encoder, and permanent wiring materials)
+$105-130 (TMC2209 slightly more than A4988, offset by moving TCS34725 and 2 Adafruit beam packs to AliExpress)

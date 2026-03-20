@@ -54,6 +54,12 @@ The GT2 belt is black rubber. When the sensor reads bare belt (between bricks, o
 
 Set the floor threshold during calibration by logging raw totals for bare belt and brick surface separately. The gap between them will be obvious. This single filter cleanly handles all belt readings without any timing-based windowing logic.
 
+### Parallel sampling from beam 1 break
+
+Color sampling starts the moment beam 1 breaks, not after size classification resolves. Beam 1 breaking is also the brick entering the color sensor's field. Running both in parallel means that by the time size classification resolves (~95ms for 2x3, or ~150ms timeout for 2x2), 30-40 color samples are already banked. Classification can fire immediately with no additional wait.
+
+This is the correct implementation. Do not sample sequentially (size then color). Sample color from beam 1 break continuously, discard belt readings with the black filter, classify size when the timer resolves. Both results are available simultaneously.
+
 Beam 1 windowing (gate sampling on beam break/restore) can be added as a secondary layer but should not be the primary mechanism. The black filter is simpler and more robust.
 
 ### Classification
@@ -119,7 +125,26 @@ The model protects hardware during back-to-back demo runs, not just a single run
 
 Apply the model to all solenoids and the stepper motor. The belt motor does not need it.
 
-## Belt speed control (PI controller)
+## Stepper speed tuning
+
+The escapement rate is set entirely in firmware via the steps/sec (sps) value in config.h. No hardware change is needed to go faster.
+
+```
+STEPPER_SPS default: 800    (4 bricks/sec, 9s run, 32 color samples per brick)
+STEPPER_SPS mid:    1200    (6 bricks/sec, 6s run, ~21 color samples per brick)
+STEPPER_SPS max:    1600    (8 bricks/sec, 4.5s run, ~16 color samples per brick)
+```
+
+The TMC2209 handles 2000+ sps without issue. The practical ceiling is the NEMA 11 torque curve under queue load and the color sensor sample count. Below ~8 samples per brick, color classification becomes unreliable.
+
+**Tuning procedure during calibration:**
+1. Start at 800 sps. Run 3 full 24-brick sets. Log accuracy.
+2. If accuracy is 95%+, increase to 1000 sps. Repeat.
+3. Continue in 200 sps increments until accuracy degrades or step-skipping is audible.
+4. Set operational sps to the last value that held 95%+ accuracy.
+5. Document the accuracy vs sps curve. This is engineering notebook data and demonstrates principled design.
+
+Do not push sps before reliability is established at 800 sps. Speed is the tiebreaker, not the primary objective.
 
 Belt speed is a tunable parameter. Optimal speed balances throughput against classification accuracy. Too fast: color samples compress, size timing margins shrink, bricks may jam the taper. Too slow: run takes longer than needed.
 
