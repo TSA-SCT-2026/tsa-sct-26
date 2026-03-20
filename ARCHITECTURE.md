@@ -186,3 +186,4 @@ Escapement rate is set entirely via STEPPER_SPS_* in config.h. No motor change i
 **Color sampling: parallel from beam 1 break**
 Color sampling begins when beam 1 breaks, not after size detection resolves. The black belt filter discards early samples taken before the brick reaches the sensor. By the time size classification completes (~95-150ms), 30-40 samples are already banked. Both size and color classification are available simultaneously with no sequential wait. This is implemented in onFeeding() in state_machine.cpp.
 
+

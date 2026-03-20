@@ -35,7 +35,7 @@ Bench supply is acceptable for early development but must not be used for any ca
 | JF-0530B solenoid (x3) | plow actuation | 5V | ~500mA each |
 | NEMA 11 stepper motor | escapement | 6-8V (motor rail) | ~400mA |
 | TMC2209 stepper driver | stepper control | motor rail + 3.3V logic | (specified above) |
-| TT gearmotor (x2, one spare) | belt drive | 5V | ~400mA |
+| JGB37-520 gearmotor 6V (x2, one spare) | belt drive | 6V (motor rail) | ~500mA |
 | L298N motor driver | belt motor control | 5V | (specified above) |
 | LM2596 buck converter (x2) | 7.4V -> 5V | (specified above) | 3A each rated |
 | ESP32 DevKit | microcontroller | 3.3V (via onboard reg) | ~250mA |

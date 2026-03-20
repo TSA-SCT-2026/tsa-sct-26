@@ -16,7 +16,7 @@ Check items off as you go. This file is the source of truth for build status.
 - [ ] TMC2209 stepper driver: confirm buying 2 units
 - [ ] H206 slot optocoupler: confirm buying 2 units
 - [ ] TCS34725 color sensor: confirm LED and INT pin are broken out on the board
-- [ ] TT gearmotor: confirm 1:20 ratio or ~300 RPM no-load at 5V (not 1:48, not 1:30)
+- [ ] JGB37-520 gearmotor: confirm 6V variant, 600 RPM no-load, 6mm D-shaft (same listing sells 7-960 RPM - select carefully)
 - [ ] IR break-beams (AliExpress): 4 pairs, bin confirmation only
 - [ ] Torsion springs: assortment with multiple stiffness values
 - [ ] Aluminum heatsinks: small enough to fit solenoid body (~20x20mm)
@@ -112,7 +112,7 @@ Do every one of these on breadboard before any integration. Log everything.
 - [ ] Step counting verified: 200 steps = 1 full rotation
 
 ### Belt motor
-- [ ] TT gearmotor runs at target speed under load (time a brick over 100mm, calculate mm/s)
+- [ ] JGB37-520 runs at target speed under load (time a brick over 100mm, calculate mm/s)
 - [ ] Direction correct: belt surface moves away from chute
 - [ ] L298N PWM tested at 1kHz, 5kHz, 10kHz: pick frequency, log result
 - [ ] Actual belt speed at operating PWM measured and recorded
@@ -247,7 +247,7 @@ Complete the wiring checklist from ELECTRICAL.md verbatim before first power-on:
   - Sensor type for size detection (break-beam vs ultrasonic)
   - Sensor type for color (TCS34725 vs alternatives)
   - Actuator type (solenoid vs servo)
-  - Motor type (TT gearmotor vs alternatives)
+  - Motor type (JGB37-520 vs TT gearmotor and other alternatives)
 - [ ] Each matrix includes: alternatives considered, criteria, selection rationale
 - [ ] Calibration procedures documented in docs/engineering/calibration/
 - [ ] Performance test data in docs/runs/ with analysis
