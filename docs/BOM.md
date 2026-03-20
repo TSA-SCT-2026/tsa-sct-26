@@ -10,7 +10,7 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 |------|-------------|-----|-----------|-------|
 | JF-0530B solenoid 5V | "0520 0530 Electric Magnet Push Pull Linear Solenoid" ZYT Premium Selection Store | 4 | $4.36 | plow actuation; confirm 5V variant at checkout; buy 4 (3 used, 1 spare) |
 | NEMA 11 stepper 34mm | "Nema 11 step motor 2phase 4 lead 1.8 degree 34mm" MannHwa Smart Home Electrical | 1 | $5.83 + $6.58 ship | 34mm body, 4-wire bipolar, 5mm shaft, 200 steps/rev; check Usongshine store for free shipping alternative before ordering |
-| JGB37-520 gearmotor 6V | "6V/12V/24V DC Gear Motor JGB37-520" Tungfull Office Store | 2 | $9.56 | belt drive (1 primary, 1 spare); confirm 300 or 520 RPM variant at 6V; do NOT order 30 or 100 RPM |
+| JGB37-520 gearmotor 6V | "6V/12V/24V DC Gear Motor JGB37-520" Tungfull Office Store | 2 | $9.56 | belt drive (1 primary, 1 spare); 600 RPM variant at 6V selected; loaded at 65% = ~390 RPM = ~260 mm/s belt speed; throttle down via L298N PWM |
 | GT2 belt 400mm | "2MGT 2GT Belt Width 6/10/15mm Rubber Closed Loop" YuRu Parts Store | 2 | $2.71 | confirm 400mm closed loop at checkout; 1 primary, 1 spare |
 | IR break-beam pairs (bin confirmation) | "4 Pairs Infrared Circuit Breaker Sensor 3mm LED" Hello Hello Home Store | 1 pack (4 pairs) | $6.78 | bin confirmation only; binary detection, no timing precision needed |
 | H206 slot optocoupler | "Slot Type IR Optocoupler Speed Sensor Module 3.3V-5V" DIY-Victor Store | 2 | $0.95 | belt speed encoder (1 primary, 1 spare) |
@@ -25,7 +25,7 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 
 | Part | Cart listing | Qty | Est. cost | Notes |
 |------|-------------|-----|-----------|-------|
-| GT2 20-tooth pulley | "2GT 20Teeth Synchronous Wheel Belt Width 6/9/10/15mm" | 4 | $1.51 | CRITICAL: select correct bore; NEMA 11 shaft = 5mm bore; JGB37 output shaft = 6mm bore; verify JGB37 shaft diameter before ordering |
+| GT2 20-tooth pulley | "2GT 20Teeth Synchronous Wheel Belt Width 6/9/10/15mm" | 4 | $1.51 | 6mm bore selected to match JGB37-520 output shaft; belt drive only - stepper does not use a GT2 pulley (cam disk mounts directly on stepper shaft) |
 | 22AWG stranded wire | "10 Colors Silicone Electrical Wire 22 AWG Stranded Tinned Copper" | 1 | $3.19 | permanent wiring; breadboard jumpers vibrate out |
 | LM2596 buck converter | "LM2596 DC to DC Buck Converter 3.0-40V to 1.5-35V" | 2 | $1.58 | one per power rail; confirm buying 2 units |
 | TMC2209 stepper driver | "TMC2209 A4988 Nema 17 Stepper Motor driver TMC2209" | 2 | $3.39 | 1 primary, 1 spare; confirm TMC2209 ships (not A4988); use standalone mode (MS1/MS2 pins, no UART); EN pin is active-low |
@@ -37,7 +37,7 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 | Part | Part # | Qty | Cost | Notes |
 |------|--------|-----|------|-------|
 | IR break-beam 3mm pair | #2168 | 2 packs | ~$8 | size detection ONLY; 2 pairs used, 2 spare; precision timing requires known-good parts; do not substitute AliExpress for this function |
-| ST7789 color TFT display | Pimoroni 1.3in or Waveshare 1.69in | 1 (+1 spare if budget) | $8-12 | must be ST7789, must be color; do NOT order SSD1306 (monochrome, animation requires color); spare prevents week-long delay if panel dies during calibration |
+| ST7789 color TFT display | Pimoroni 1.3in or Waveshare 1.69in | 1 (+1 spare if budget) | $8-12 | must be ST7789, must be color; existing display too small (1.25 in²); judges need to read from arm's length; do NOT order SSD1306 (monochrome) |
 
 ---
 
