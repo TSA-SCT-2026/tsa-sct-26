@@ -1,6 +1,35 @@
 # Simulator TODO
 
-All items from this list have been implemented. File kept for reference.
+---
+
+## Pending
+
+**[TODO] Test suite for routing engine**
+
+A dedicated agent should write `simulation/tests/simulator.test.js` (ES module,
+run with `node tests/simulator.test.js` after adding `{"type":"module"}` to
+`simulation/package.json`). Minimum test coverage needed:
+
+- `coolingPctToRate(0) === 1.0`, `coolingPctToRate(50) === 0.5`, `coolingPctToRate(100) === 0.0`
+- `decayHeat(1.0, 1, 0.5)` approx 0.5
+- `generateSequence` with 'random' returns exactly 24 bricks with correct type counts
+- `generateSequence` with 'worst_case_accuracy' starts with a plow-using brick
+- `computeSimulation` at 800sps interleaved: 0 routing errors (same-plow re-fire is NOT an error)
+- `computeSimulation` at 800sps worst_case: 0 routing errors (consecutive same-type fine at 800sps)
+- `computeSimulation` at 1600sps worst_case_accuracy: routing errors present
+- `computeSimulation` num_runs=2 with gap emits THERMAL_UPDATE events during gap
+- `computeSimulation` num_runs=100 random: no crash, brickLog.length=2400
+- Thermal misfire probability = 0 below warn, > 0 above warn, > 0.10 above danger
+- Same-type fast-release: consecutive same-type bricks at 400sps release faster than normal interval
+
+Root cause of the original false-positive HALT bug (now fixed): the old code used
+`plowDeenergizeAt` to detect same-plow re-fires as conflicts. Same-plow re-fire is
+NOT a routing error - the plow is already extended to the correct position. The real
+conflict is when a brick passes through a DIFFERENT plow that is still extended.
+
+---
+
+## Completed
 
 ---
 

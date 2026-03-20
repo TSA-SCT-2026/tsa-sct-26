@@ -120,6 +120,19 @@ body {
 }
 .ctrl-name { font-size: 12px; font-weight: 500; }
 .ctrl-val { font-family: monospace; font-size: 12px; color: var(--accent); }
+.ctrl-val-input {
+  font-family: monospace; font-size: 12px; color: var(--accent);
+  background: transparent; border: none; border-bottom: 1px solid transparent;
+  width: 68px; text-align: right; padding: 0 2px; outline: none; cursor: text;
+  -moz-appearance: textfield;
+}
+.ctrl-val-input::-webkit-outer-spin-button,
+.ctrl-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ctrl-val-input:focus {
+  border-bottom-color: var(--accent);
+  background: var(--bg3); border-radius: 2px 2px 0 0;
+}
+.ctrl-val-input:disabled { color: var(--text3); cursor: default; }
 .ctrl-desc { font-size: 10px; color: var(--text3); line-height: 1.4; margin-top: 2px; }
 input[type=range] { width: 100%; height: 4px; accent-color: var(--accent); cursor: pointer; margin-top: 4px; }
 input[type=range]:disabled { opacity: 0.38; cursor: not-allowed; }
@@ -258,6 +271,7 @@ tr:hover td { background: var(--bg3); }
     <button class="btn" id="spd2" onclick="setSpeed(2)">2x</button>
     <button class="btn" id="spd5" onclick="setSpeed(5)">5x</button>
     <button class="btn" id="spd10" onclick="setSpeed(10)">10x</button>
+    <button class="btn" id="spdInstant" onclick="runInstant()">Instant</button>
     <button class="btn" id="loadCsvBtn">Load CSV</button>
     <button class="btn primary" id="runBtn" onclick="handleRunBtn()">Run Simulation</button>
     <button class="btn" id="resetBtn" onclick="resetSim()" style="display:none">Reset</button>
@@ -293,7 +307,7 @@ tr:hover td { background: var(--bg3); }
               <tr>
                 <th>#</th><th>Type</th><th>Size</th><th>Color</th>
                 <th>Samples</th><th>Plow</th><th>Bin</th>
-                <th>Transit ms</th><th>Thermal</th>
+                <th>Transit ms</th><th>Thermal</th><th>Result</th>
               </tr>
             </thead>
             <tbody id="brick-log-body">
@@ -383,8 +397,13 @@ tr:hover td { background: var(--bg3); }
       <div class="msec-title">Run Complete</div>
       <div class="mrow"><span class="ml">Total time</span><span class="mv" id="m-total-time">-</span></div>
       <div class="mrow"><span class="ml">Bricks sorted</span><span class="mv" id="m-bricks-sorted">-</span></div>
-      <div class="mrow"><span class="ml">Bin accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Routing accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Routing errors</span><span class="mv" id="m-error-detail">-</span></div>
+      <div class="mrow"><span class="ml">Avg throughput</span><span class="mv" id="m-avg-bps">-</span></div>
       <div class="mrow"><span class="ml">Peak heat</span><span class="mv" id="m-peak-heat">-</span></div>
+      <div class="mrow"><span class="ml">Throttled bricks</span><span class="mv" id="m-throttle-count">-</span></div>
+      <div class="mrow"><span class="ml">Time throttled</span><span class="mv" id="m-throttled-ms">-</span></div>
+      <div id="m-diagnosis" style="display:none;font-size:10px;color:var(--yellow);margin-top:6px;line-height:1.5;padding:4px 0;border-top:1px solid var(--border)"></div>
     </div>
   </div>
 </div>
@@ -412,7 +431,7 @@ tr:hover td { background: var(--bg3); }
     // Thermal
     thermal_heat_per_sol: 0.15,
     thermal_heat_per_step: 0.05,
-    thermal_decay_rate: 0.5,
+    thermal_cooling_pct: 50,
     thermal_warn_level: 0.6,
     thermal_danger_level: 0.85,
     // Geometry (from MECHANICAL.md / EMBEDDED.md)
@@ -429,7 +448,7 @@ tr:hover td { background: var(--bg3); }
     // Run settings
     num_runs: 1,
     sequence: "interleaved",
-    // 'interleaved' | 'worst_case' | 'default_last'
+    // 'interleaved' | 'worst_case' | 'default_first' | 'random'
     interrun_gap_ms: 5e3
   };
   var SECTIONS = [
@@ -592,14 +611,14 @@ tr:hover td { background: var(--bg3); }
           desc: "Heat added each time the escapement releases a brick."
         },
         {
-          id: "thermal_decay_rate",
-          label: "Cooling rate (per sec)",
-          unit: "",
-          min: 0.1,
-          max: 2,
-          step: 0.1,
-          dec: 1,
-          desc: "How fast heat dissipates when actuators are idle. 0.5 = heat halves every second."
+          id: "thermal_cooling_pct",
+          label: "Cooling rate",
+          unit: "%",
+          min: 0,
+          max: 100,
+          step: 1,
+          dec: 0,
+          desc: "How fast heat dissipates when idle. 0% = no cooling (heat stays). 100% = instant. 50% = heat halves every second."
         },
         {
           id: "thermal_warn_level",
@@ -635,16 +654,63 @@ tr:hover td { background: var(--bg3); }
   function decayHeat(heat, elapsedSec, rate) {
     return heat * Math.pow(rate, elapsedSec);
   }
+  function coolingPctToRate(pct) {
+    return (100 - pct) / 100;
+  }
+  function misfireProbability(heat, warnLevel, dangerLevel) {
+    if (heat <= warnLevel) return 0;
+    if (heat <= dangerLevel) {
+      return (heat - warnLevel) / (dangerLevel - warnLevel) * 0.1;
+    }
+    return 0.1 + (heat - dangerLevel) / (1 - dangerLevel) * 0.3;
+  }
 
   // src/simulation.js
+  var RETRACT_MS = 20;
   function generateSequence(p) {
     const types = ["2x2_blue", "2x2_red", "2x3_red", "2x3_blue"];
     const seq = [];
-    if (p.sequence === "worst_case") {
+    if (p.sequence === "worst_case" || p.sequence === "worst_case_thermal") {
       for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+    } else if (p.sequence === "worst_case_accuracy") {
+      const plowTypes = ["2x2_blue", "2x2_red", "2x3_red"];
+      const rem = Object.fromEntries(types.map((t) => [t, p.counts[t]]));
+      let pi = 0;
+      while (true) {
+        let added = false;
+        for (let k = 0; k < plowTypes.length; k++) {
+          const t = plowTypes[(pi + k) % plowTypes.length];
+          if (rem[t] > 0) {
+            seq.push(t);
+            rem[t]--;
+            pi = (pi + k + 1) % plowTypes.length;
+            added = true;
+            break;
+          }
+        }
+        if (!added || seq.length >= p.total_bricks) break;
+        if (rem["2x3_blue"] > 0) {
+          seq.push("2x3_blue");
+          rem["2x3_blue"]--;
+        }
+        if (seq.length >= p.total_bricks) break;
+      }
+      for (const t of types) while (rem[t] > 0 && seq.length < p.total_bricks) {
+        seq.push(t);
+        rem[t]--;
+      }
     } else if (p.sequence === "default_last") {
       for (const t of ["2x2_blue", "2x2_red", "2x3_red"]) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
       for (let i = 0; i < p.counts["2x3_blue"]; i++) seq.push("2x3_blue");
+    } else if (p.sequence === "default_first") {
+      for (let i = 0; i < p.counts["2x3_blue"]; i++) seq.push("2x3_blue");
+      for (const t of ["2x2_blue", "2x2_red", "2x3_red"]) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+    } else if (p.sequence === "random") {
+      for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+      for (let i = seq.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [seq[i], seq[j]] = [seq[j], seq[i]];
+      }
     } else {
       const rem = Object.fromEntries(types.map((t) => [t, p.counts[t]]));
       let safety = 200;
@@ -659,8 +725,15 @@ tr:hover td { background: var(--bg3); }
     }
     return seq;
   }
+  function plowArrivalMs(T_classified, plowIdx, p) {
+    const extraMm = p.bin_distances_mm[plowIdx - 1] - p.bin_distances_mm[0];
+    return T_classified + p.sol_lead_ms + extraMm / p.belt_target_mm_s * 1e3;
+  }
   function computeSimulation(p) {
     const DIST_CHUTE_TO_SENSOR_MM = 100;
+    const rate = coolingPctToRate(p.thermal_cooling_pct);
+    const normalReleaseInterval = p.stepper_steps_per_rev / p.stepper_sps * 1e3;
+    const minSameTypeInterval = p.brick_spacing_mm / p.belt_target_mm_s * 1e3;
     let thermal = { sol1: 0, sol2: 0, sol3: 0, stepper: 0 };
     let lastReleaseT = 0;
     let binCounts = [0, 0, 0, 0];
@@ -669,19 +742,42 @@ tr:hover td { background: var(--bg3); }
     const allBrickLog = [];
     const allEvents = [];
     let globalBrickNum = 0;
-    const plowDeenergizeAt = [0, 0, 0, 0];
-    let haltEvent = null;
+    const plowExtendedUntil = [0, 0, 0, 0];
+    let throttleCount = 0;
+    let throttledMs = 0;
+    let pureRunMs = 0;
+    let totalErrors = 0;
+    const errorCauses = { plow_conflict: 0, thermal_misfire: 0, sol_retract_early: 0 };
+    const THERMAL_UPDATE_INTERVAL_MS = 500;
     for (let run = 0; run < p.num_runs; run++) {
       const seq = generateSequence(p);
       if (run > 0) {
+        const gapStartT = lastReleaseT;
+        allEvents.push({ t: gapStartT, type: "INTER_RUN_GAP", run: run - 1, gapMs: p.interrun_gap_ms });
+        const thermalAtGapStart = { ...thermal };
+        for (let dt = THERMAL_UPDATE_INTERVAL_MS; dt <= p.interrun_gap_ms; dt += THERMAL_UPDATE_INTERVAL_MS) {
+          const elapsed = dt / 1e3;
+          allEvents.push({
+            t: gapStartT + dt,
+            type: "THERMAL_UPDATE",
+            thermal: {
+              sol1: decayHeat(thermalAtGapStart.sol1, elapsed, rate),
+              sol2: decayHeat(thermalAtGapStart.sol2, elapsed, rate),
+              sol3: decayHeat(thermalAtGapStart.sol3, elapsed, rate),
+              stepper: decayHeat(thermalAtGapStart.stepper, elapsed, rate)
+            }
+          });
+        }
         const gapSec = p.interrun_gap_ms / 1e3;
-        thermal.sol1 = decayHeat(thermal.sol1, gapSec, p.thermal_decay_rate);
-        thermal.sol2 = decayHeat(thermal.sol2, gapSec, p.thermal_decay_rate);
-        thermal.sol3 = decayHeat(thermal.sol3, gapSec, p.thermal_decay_rate);
-        thermal.stepper = decayHeat(thermal.stepper, gapSec, p.thermal_decay_rate);
+        thermal.sol1 = decayHeat(thermal.sol1, gapSec, rate);
+        thermal.sol2 = decayHeat(thermal.sol2, gapSec, rate);
+        thermal.sol3 = decayHeat(thermal.sol3, gapSec, rate);
+        thermal.stepper = decayHeat(thermal.stepper, gapSec, rate);
         lastReleaseT += p.interrun_gap_ms;
-        allEvents.push({ t: lastReleaseT - p.interrun_gap_ms, type: "INTER_RUN_GAP", run: run - 1, gapMs: p.interrun_gap_ms });
       }
+      let runStartT = 0;
+      let runLastConfirmT = 0;
+      let prevBrickType = null;
       for (let i = 0; i < seq.length; i++) {
         const brickType = seq[i];
         globalBrickNum++;
@@ -696,13 +792,29 @@ tr:hover td { background: var(--bg3); }
           sps = 533;
           thermalState = "WARNING";
         }
-        const releaseInterval = p.stepper_steps_per_rev / sps * 1e3;
+        let releaseInterval = p.stepper_steps_per_rev / sps * 1e3;
+        const plowNumForType = p.plow_map[brickType];
+        const prevPlowNum = prevBrickType ? p.plow_map[prevBrickType] : -1;
+        if (brickType === prevBrickType && plowNumForType > 0 && lastReleaseT + minSameTypeInterval + plowNumForType > 0) {
+          const estT_classified_min = lastReleaseT + minSameTypeInterval + DIST_CHUTE_TO_SENSOR_MM / p.belt_target_mm_s * 1e3 + p.brick_2x3_mm / p.belt_target_mm_s * 1e3;
+          if (estT_classified_min < plowExtendedUntil[plowNumForType]) {
+            releaseInterval = Math.max(minSameTypeInterval, releaseInterval);
+            if (minSameTypeInterval < releaseInterval) {
+              releaseInterval = minSameTypeInterval;
+            }
+          }
+        }
+        if (thermalState !== "NORMAL") {
+          throttleCount++;
+          throttledMs += releaseInterval - normalReleaseInterval;
+        }
         const T_release = lastReleaseT + releaseInterval;
-        const dtSec = (T_release - lastReleaseT) / 1e3;
-        thermal.sol1 = decayHeat(thermal.sol1, dtSec, p.thermal_decay_rate);
-        thermal.sol2 = decayHeat(thermal.sol2, dtSec, p.thermal_decay_rate);
-        thermal.sol3 = decayHeat(thermal.sol3, dtSec, p.thermal_decay_rate);
-        thermal.stepper = decayHeat(thermal.stepper, dtSec, p.thermal_decay_rate);
+        if (i === 0) runStartT = T_release;
+        const dtSec = releaseInterval / 1e3;
+        thermal.sol1 = decayHeat(thermal.sol1, dtSec, rate);
+        thermal.sol2 = decayHeat(thermal.sol2, dtSec, rate);
+        thermal.sol3 = decayHeat(thermal.sol3, dtSec, rate);
+        thermal.stepper = decayHeat(thermal.stepper, dtSec, rate);
         thermal.stepper = Math.min(thermal.stepper + p.thermal_heat_per_step, 1);
         peakHeat = Math.max(peakHeat, thermal.stepper);
         allEvents.push({
@@ -741,37 +853,89 @@ tr:hover td { background: var(--bg3); }
           samples
         });
         const plowNum = p.plow_map[brickType];
-        const binIdx = plowNum === 0 ? 3 : plowNum - 1;
+        let hasMisfire = false;
         if (plowNum > 0) {
-          if (T_classified < plowDeenergizeAt[plowNum]) {
-            haltEvent = { brickNum: globalBrickNum, plow: plowNum, simMs: T_classified };
-            allEvents.push({
-              t: T_classified,
-              type: "ERROR_HALT",
-              brickNum: globalBrickNum,
-              plow: plowNum,
-              msg: `Plow ${plowNum} still energized (until ${plowDeenergizeAt[plowNum].toFixed(0)}ms) when brick #${globalBrickNum} fires at ${T_classified.toFixed(0)}ms`
-            });
-            allEvents.sort((a, b) => a.t - b.t);
-            const totalSimMs2 = allEvents[allEvents.length - 1]?.t || 0;
-            return { events: allEvents, brickLog: allBrickLog, thermalDangerReached, peakHeat, totalSimMs: totalSimMs2, haltEvent };
-          }
           const solKey = "sol" + plowNum;
           const dt2 = (T_classified - T_release) / 1e3;
-          thermal[solKey] = decayHeat(thermal[solKey], dt2, p.thermal_decay_rate);
-          thermal[solKey] = Math.min(thermal[solKey] + p.thermal_heat_per_sol, 1);
-          peakHeat = Math.max(peakHeat, thermal[solKey]);
-          plowDeenergizeAt[plowNum] = T_classified + p.sol_deenergize_ms;
-          allEvents.push({ t: T_classified, type: "PLOW_FIRE", plow: plowNum, brickNum: globalBrickNum, thermal: { ...thermal } });
-          allEvents.push({ t: T_classified + p.sol_full_ms, type: "PLOW_HOLD", plow: plowNum, brickNum: globalBrickNum });
-          allEvents.push({ t: T_classified + p.sol_deenergize_ms, type: "PLOW_RELEASE", plow: plowNum, brickNum: globalBrickNum });
+          const heatAtFire = decayHeat(thermal[solKey], dt2, rate);
+          const prob = misfireProbability(heatAtFire, p.thermal_warn_level, p.thermal_danger_level);
+          hasMisfire = Math.random() < prob;
+        }
+        let actualBin = 3;
+        let routingCorrect = true;
+        let errorCause = null;
+        for (let px = 1; px <= 3; px++) {
+          const arrT = plowArrivalMs(T_classified, px, p);
+          const plowExtended = arrT < plowExtendedUntil[px];
+          if (px === plowNum && !hasMisfire) {
+            const newExtUntil = T_classified + p.sol_deenergize_ms + RETRACT_MS;
+            if (arrT < newExtUntil) {
+              actualBin = px - 1;
+            } else {
+              routingCorrect = false;
+              errorCause = "sol_retract_early";
+              actualBin = 3;
+            }
+            break;
+          } else if (plowExtended) {
+            actualBin = px - 1;
+            if (px !== plowNum) {
+              routingCorrect = false;
+              if (hasMisfire && px > plowNum) {
+                errorCause = "thermal_misfire";
+              } else {
+                errorCause = "plow_conflict";
+              }
+            }
+            break;
+          }
+        }
+        if (plowNum > 0 && actualBin === 3) {
+          if (hasMisfire) {
+            routingCorrect = false;
+            errorCause = "thermal_misfire";
+          }
+        }
+        if (plowNum > 0) {
+          if (!hasMisfire) {
+            const solKey = "sol" + plowNum;
+            const dt2 = (T_classified - T_release) / 1e3;
+            thermal[solKey] = decayHeat(thermal[solKey], dt2, rate);
+            thermal[solKey] = Math.min(thermal[solKey] + p.thermal_heat_per_sol, 1);
+            peakHeat = Math.max(peakHeat, thermal[solKey]);
+            plowExtendedUntil[plowNum] = T_classified + p.sol_deenergize_ms + RETRACT_MS;
+            allEvents.push({ t: T_classified, type: "PLOW_FIRE", plow: plowNum, brickNum: globalBrickNum, thermal: { ...thermal } });
+            allEvents.push({ t: T_classified + p.sol_full_ms, type: "PLOW_HOLD", plow: plowNum, brickNum: globalBrickNum });
+            allEvents.push({ t: T_classified + p.sol_deenergize_ms, type: "PLOW_RELEASE", plow: plowNum, brickNum: globalBrickNum });
+          } else {
+            allEvents.push({
+              t: T_classified,
+              type: "PLOW_MISFIRE",
+              plow: plowNum,
+              brickNum: globalBrickNum,
+              msg: `Plow ${plowNum} misfire (thermal heat too high) on brick #${globalBrickNum}`
+            });
+          }
         } else {
           allEvents.push({ t: T_classified, type: "PLOW_SKIP", brickNum: globalBrickNum, msg: "default path - no solenoid" });
         }
-        const binDist = p.bin_distances_mm[binIdx];
-        const T_confirm = T_sense + binDist / p.belt_target_mm_s * 1e3;
-        allEvents.push({ t: T_confirm, type: "BIN_CONFIRM", brickNum: globalBrickNum, binIdx, brickType });
-        binCounts[binIdx]++;
+        if (!routingCorrect) {
+          totalErrors++;
+          errorCauses[errorCause] = (errorCauses[errorCause] || 0) + 1;
+          allEvents.push({
+            t: T_classified,
+            type: "ROUTING_ERROR",
+            brickNum: globalBrickNum,
+            cause: errorCause,
+            expectedBin: plowNum === 0 ? 3 : plowNum - 1,
+            actualBin,
+            msg: `Brick #${globalBrickNum} (${brickType}) misrouted to bin ${actualBin + 1} [${errorCause}]`
+          });
+        }
+        const T_confirm = T_sense + p.bin_distances_mm[actualBin] / p.belt_target_mm_s * 1e3;
+        allEvents.push({ t: T_confirm, type: "BIN_CONFIRM", brickNum: globalBrickNum, binIdx: actualBin, brickType, correct: routingCorrect });
+        runLastConfirmT = T_confirm;
+        binCounts[actualBin]++;
         const transitMs = Math.round(T_confirm - T_release);
         allBrickLog.push({
           num: globalBrickNum,
@@ -781,19 +945,40 @@ tr:hover td { background: var(--bg3); }
           colorResult: brickType.includes("red") ? "RED" : "BLUE",
           samples,
           plow: plowNum,
-          binIdx,
+          binIdx: actualBin,
           transitMs,
           thermalState,
-          correct: true
+          correct: routingCorrect,
+          errorCause: errorCause || null
         });
         lastReleaseT = T_release;
+        prevBrickType = brickType;
       }
+      if (seq.length > 0) pureRunMs += runLastConfirmT - runStartT;
       allEvents.push({ t: lastReleaseT + 2e3, type: "RUN_COMPLETE", run, binCounts: [...binCounts], totalMs: lastReleaseT });
       binCounts = [0, 0, 0, 0];
     }
     allEvents.sort((a, b) => a.t - b.t);
     const totalSimMs = allEvents[allEvents.length - 1]?.t || 0;
-    return { events: allEvents, brickLog: allBrickLog, thermalDangerReached, peakHeat, totalSimMs, haltEvent: null };
+    const totalGapMs = (p.num_runs - 1) * p.interrun_gap_ms;
+    const avgBps = pureRunMs > 0 ? allBrickLog.length / (pureRunMs / 1e3) : 0;
+    const accuracy = allBrickLog.length > 0 ? allBrickLog.filter((b) => b.correct).length / allBrickLog.length * 100 : 100;
+    return {
+      events: allEvents,
+      brickLog: allBrickLog,
+      thermalDangerReached,
+      peakHeat,
+      totalSimMs,
+      haltEvent: null,
+      throttleCount,
+      throttledMs,
+      pureRunMs,
+      totalGapMs,
+      avgBps,
+      totalErrors,
+      errorCauses,
+      accuracy
+    };
   }
 
   // src/warnings.js
@@ -879,7 +1064,6 @@ tr:hover td { background: var(--bg3); }
     speedMultiplier: 1,
     replayMode: false,
     haltOverlay: null
-    // {msg} when ERROR_HALT is active
   };
   var cb = {
     updateWarnings: null,
@@ -921,7 +1105,7 @@ tr:hover td { background: var(--bg3); }
     const tlEl = document.getElementById("timeline-log");
     if (tlEl) tlEl.innerHTML = "";
     const blEl = document.getElementById("brick-log-body");
-    if (blEl) blEl.innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
+    if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
     const rsEl = document.getElementById("run-summary");
     if (rsEl) rsEl.style.display = "none";
     if (updateWarnings2) updateWarnings2();
@@ -939,6 +1123,45 @@ tr:hover td { background: var(--bg3); }
     state.simData = computeSimulation2(params2);
     state.replayMode = false;
     _launchAnimLoop(updateWarnings2, populateBrickTable2);
+  }
+  function runInstant(computeSimulationFn, params2, updateWarnings2, populateBrickTable2) {
+    if (state.animRunning) return;
+    const sd = computeSimulationFn(params2);
+    state.simData = sd;
+    state.replayMode = false;
+    resetAnimState();
+    for (let i = 0; i < 4; i++) {
+      if (cb.setBinCount) cb.setBinCount(i, 0);
+      const box = document.getElementById("bin-" + i);
+      if (box) box.className = "bin-box";
+    }
+    const tlEl = document.getElementById("timeline-log");
+    if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Instant mode - no timeline.</span>';
+    const rsEl = document.getElementById("run-summary");
+    if (rsEl) rsEl.style.display = "none";
+    for (const ev of sd.events) {
+      switch (ev.type) {
+        case "BIN_CONFIRM":
+          state.liveBinCounts[ev.binIdx]++;
+          if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
+          break;
+        case "BRICK_RELEASED":
+        case "PLOW_FIRE":
+          if (ev.thermal) state.liveThermal = { ...ev.thermal };
+          break;
+        case "THERMAL_UPDATE":
+          if (ev.thermal) state.liveThermal = { ...ev.thermal };
+          break;
+      }
+    }
+    if (cb.updateThermalUI) cb.updateThermalUI();
+    if (cb.showRunSummary) cb.showRunSummary(sd);
+    if (cb.updateBinMatchState) cb.updateBinMatchState();
+    if (populateBrickTable2) populateBrickTable2(sd.brickLog);
+    if (updateWarnings2) updateWarnings2();
+    document.getElementById("runBtn").textContent = "Run Simulation";
+    const rstBtn = document.getElementById("resetBtn");
+    if (rstBtn) rstBtn.style.display = "inline-block";
   }
   function resetSim(params2, drawBeltFn) {
     state.animRunning = false;
@@ -960,7 +1183,7 @@ tr:hover td { background: var(--bg3); }
     const tlEl = document.getElementById("timeline-log");
     if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Run a simulation to see events here.</span>';
     const blEl = document.getElementById("brick-log-body");
-    if (blEl) blEl.innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
+    if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
     const rlEl = document.getElementById("replay-label");
     if (rlEl) rlEl.style.display = "none";
     const canvas = document.getElementById("belt-canvas");
@@ -977,27 +1200,15 @@ tr:hover td { background: var(--bg3); }
       while (state.liveEventIdx < state.simData.events.length && state.simData.events[state.liveEventIdx].t <= simMs) {
         processEvent(state.simData.events[state.liveEventIdx], simMs);
         state.liveEventIdx++;
-        if (state.haltOverlay) break;
       }
       updatePlowAngles(simMs);
       updateAnimBricks(simMs);
       const canvas = document.getElementById("belt-canvas");
       if (canvas) {
         const ctx = canvas.getContext("2d");
-        if (cb.drawBelt) {
-          cb.drawBelt(ctx, canvas.width, canvas.height, simMs);
-        }
-        if (state.haltOverlay && cb.drawErrorHaltOverlay) {
-          cb.drawErrorHaltOverlay(ctx, canvas.width, canvas.height, state.haltOverlay.msg);
-        }
+        if (cb.drawBelt) cb.drawBelt(ctx, canvas.width, canvas.height, simMs);
       }
       if (cb.updateThermalUI) cb.updateThermalUI();
-      if (state.haltOverlay) {
-        state.animRunning = false;
-        document.getElementById("runBtn").textContent = "Run Simulation";
-        document.getElementById("resetBtn").style.display = "inline-block";
-        return;
-      }
       if (state.liveEventIdx >= state.simData.events.length) {
         state.animRunning = false;
         document.getElementById("runBtn").textContent = "Run Simulation";
@@ -1008,6 +1219,15 @@ tr:hover td { background: var(--bg3); }
     if (state.animRunning) {
       state.animFrameId = requestAnimationFrame(animFrame);
     }
+  }
+  function addColoredEvent(tStr, type, detail, color) {
+    const log = document.getElementById("timeline-log");
+    if (!log) return;
+    const row = document.createElement("div");
+    row.className = "event-row";
+    row.innerHTML = `<span class="ev-t" style="color:${color}">${tStr}</span><span class="ev-type" style="color:${color}">${type}</span><span class="ev-detail" style="color:${color}">${detail}</span>`;
+    log.appendChild(row);
+    if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) log.scrollTop = log.scrollHeight;
   }
   function processEvent(ev, simMs) {
     const tStr = ev.t.toFixed(0) + "ms";
@@ -1035,7 +1255,8 @@ tr:hover td { background: var(--bg3); }
           plowFireSimMs: null,
           binConfirmSimMs: null,
           done: false,
-          flashBorder: 0
+          flashBorder: 0,
+          routingError: false
         });
         break;
       }
@@ -1055,7 +1276,7 @@ tr:hover td { background: var(--bg3); }
         const ps = state.plowStates[ev.plow];
         if (ps) {
           ps.phase = "fire";
-          ps.phaseStartSim = ev.t;
+          ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
           ps.angle = 0;
         }
         const ab = state.animBricks.find((b) => b.id === ev.brickNum);
@@ -1067,7 +1288,7 @@ tr:hover td { background: var(--bg3); }
         const ps = state.plowStates[ev.plow];
         if (ps) {
           ps.phase = "hold";
-          ps.phaseStartSim = ev.t;
+          ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
         }
         break;
       }
@@ -1080,11 +1301,28 @@ tr:hover td { background: var(--bg3); }
         }
         break;
       }
+      case "PLOW_MISFIRE":
+        addColoredEvent(tStr, "PLOW_MISFIRE", ev.msg, "var(--orange)");
+        break;
+      case "ROUTING_ERROR": {
+        addColoredEvent(tStr, "ROUTING_ERROR", ev.msg, "var(--red)");
+        const ab = state.animBricks.find((b) => b.id === ev.brickNum);
+        if (ab) {
+          ab.routingError = true;
+          ab.binIdx = ev.actualBin;
+        }
+        break;
+      }
       case "PLOW_SKIP":
         if (cb.addEvent) cb.addEvent(tStr, "PLOW_SKIP", ev.msg);
         break;
       case "BIN_CONFIRM": {
-        if (cb.addEvent) cb.addEvent(tStr, "BIN_CONFIRM", `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${["2x2 BLUE", "2x2 RED", "2x3 RED", "2x3 BLUE"][ev.binIdx]})`);
+        const label = ev.correct === false ? " [WRONG BIN]" : "";
+        if (cb.addEvent) cb.addEvent(
+          tStr,
+          "BIN_CONFIRM",
+          `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${["2x2 BLUE", "2x2 RED", "2x3 RED", "2x3 BLUE"][ev.binIdx]})${label}`
+        );
         state.liveBinCounts[ev.binIdx]++;
         if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
         if (cb.flashBin) cb.flashBin(ev.binIdx);
@@ -1098,24 +1336,13 @@ tr:hover td { background: var(--bg3); }
       case "INTER_RUN_GAP":
         if (cb.addEvent) cb.addEvent(tStr, "INTER_RUN_GAP", `${ev.gapMs / 1e3}s cooldown between runs`);
         break;
-      case "ERROR_HALT": {
-        if (cb.addEvent) cb.addEvent(tStr, "ERROR_HALT", `Plow ${ev.plow} conflict on brick #${ev.brickNum}`);
-        state.haltOverlay = {
-          msg: `Plow ${ev.plow} conflict on brick #${ev.brickNum} at ${ev.t.toFixed(0)}ms`
-        };
+      case "THERMAL_UPDATE":
+        if (ev.thermal) state.liveThermal = { ...ev.thermal };
+        if (cb.updateThermalUI) cb.updateThermalUI();
         break;
-      }
-      case "DRIFT_DETECTED": {
-        const log = document.getElementById("timeline-log");
-        if (log) {
-          const row = document.createElement("div");
-          row.className = "event-row";
-          row.innerHTML = `<span class="ev-t" style="color:var(--yellow)">${tStr}</span><span class="ev-type" style="color:var(--yellow)">DRIFT</span><span class="ev-detail" style="color:var(--yellow)">${ev.msg}</span>`;
-          log.appendChild(row);
-          if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) log.scrollTop = log.scrollHeight;
-        }
+      case "DRIFT_DETECTED":
+        addColoredEvent(tStr, "DRIFT", ev.msg, "var(--yellow)");
         break;
-      }
     }
   }
   function updatePlowAngles(simMs) {
@@ -1125,7 +1352,7 @@ tr:hover td { background: var(--bg3); }
       if (!ps) continue;
       const elapsed = simMs - ps.phaseStartSim;
       if (ps.phase === "fire") {
-        ps.angle = Math.min(35, elapsed / p.sol_full_ms * 35);
+        ps.angle = Math.max(0, Math.min(35, elapsed / p.sol_full_ms * 35));
       } else if (ps.phase === "hold") {
         ps.angle = 35;
       } else if (ps.phase === "retract") {
@@ -1157,6 +1384,7 @@ tr:hover td { background: var(--bg3); }
       const el = document.getElementById(id);
       if (el) el.classList.remove("active");
     });
+    document.getElementById("spdInstant")?.classList.remove("active");
     const activeEl = document.getElementById("spd" + s);
     if (activeEl) activeEl.classList.add("active");
   }
@@ -1560,8 +1788,53 @@ tr:hover td { background: var(--bg3); }
     setText("m-total-time", totalSec.toFixed(2) + "s");
     const totalBricks = sd.brickLog.length;
     setText("m-bricks-sorted", totalBricks + " / " + p.total_bricks * p.num_runs);
-    setText("m-accuracy", "100% (sim always classifies correctly)");
+    const accuracy = sd.accuracy != null ? sd.accuracy : 100;
+    const correctCount = sd.brickLog.filter((b) => b.correct !== false).length;
+    const accStr = accuracy.toFixed(1) + "% (" + correctCount + "/" + totalBricks + " correct)";
+    setTextClass("m-accuracy", accStr, accuracy < 90 ? "r" : accuracy < 100 ? "y" : "g");
     setTextClass("m-peak-heat", sd.peakHeat.toFixed(3), sd.peakHeat > p.thermal_danger_level ? "r" : sd.peakHeat > p.thermal_warn_level ? "y" : "g");
+    const pureRunSec = (sd.pureRunMs || 0) / 1e3;
+    const avgBps = pureRunSec > 0 ? totalBricks / pureRunSec : 0;
+    setText("m-avg-bps", avgBps.toFixed(2) + " bricks/s");
+    const tc = sd.throttleCount || 0;
+    setTextClass("m-throttle-count", tc + " bricks", tc > 0 ? "y" : "g");
+    const throttledSec = ((sd.throttledMs || 0) / 1e3).toFixed(2);
+    setText("m-throttled-ms", throttledSec + "s");
+    const errs = sd.errorCauses || {};
+    const totalErrs = sd.totalErrors || 0;
+    const errParts = [];
+    if (errs.plow_conflict) errParts.push(`${errs.plow_conflict} plow conflicts`);
+    if (errs.thermal_misfire) errParts.push(`${errs.thermal_misfire} thermal misfires`);
+    if (errs.sol_retract_early) errParts.push(`${errs.sol_retract_early} retract-too-early`);
+    const errEl = document.getElementById("m-error-detail");
+    if (errEl) {
+      if (totalErrs === 0) {
+        errEl.textContent = "none";
+        errEl.className = "mv g";
+      } else {
+        errEl.textContent = errParts.join(", ");
+        errEl.className = "mv r";
+      }
+    }
+    const diagEl = document.getElementById("m-diagnosis");
+    if (diagEl) {
+      const lines = [];
+      if (errs.plow_conflict > 0) {
+        const conflictSps = Math.floor(p.stepper_steps_per_rev / p.sol_deenergize_ms * 1e3);
+        lines.push(`Plow conflicts: reduce sps below ~${conflictSps} or increase de-energize time`);
+      }
+      if (errs.thermal_misfire > 0) {
+        lines.push(`Thermal misfires: heat exceeded danger threshold - reduce heat per fire or increase cooling`);
+      }
+      if (errs.sol_retract_early > 0) {
+        lines.push(`Retract-too-early: sol_deenergize_ms too short for belt speed - increase to >${Math.ceil(p.sol_lead_ms + p.brick_2x3_mm / p.belt_target_mm_s * 1e3)}ms`);
+      }
+      if (tc > 0) {
+        lines.push(`Thermal throttling added ${((sd.throttledMs || 0) / 1e3).toFixed(1)}s to run time`);
+      }
+      diagEl.textContent = lines.length > 0 ? lines.join(" | ") : "";
+      diagEl.style.display = lines.length > 0 ? "block" : "none";
+    }
   }
   function setBinCount(idx, count) {
     state.liveBinCounts[idx] = count;
@@ -1613,47 +1886,59 @@ tr:hover td { background: var(--bg3); }
       };
       div.appendChild(hdr);
       if (sec.id === "run") {
+        const gapSec = (params2.interrun_gap_ms / 1e3).toFixed(1);
         body.innerHTML = `
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Number of runs</span></div>
-          <div class="ctrl-desc">Simulate back-to-back runs to see thermal accumulation across runs.</div>
-          <input type="number" id="ctrl-num_runs" min="1" max="10" value="${params2.num_runs}"
-            style="margin-top:4px" onchange="window._setParam('num_runs', parseInt(this.value)||1)">
+          <div class="ctrl-desc">Simulate back-to-back runs to see thermal accumulation.</div>
+          <input type="number" id="ctrl-num_runs" min="1" max="100" value="${params2.num_runs}"
+            style="margin-top:4px" onchange="window._setParam('num_runs', Math.max(1,parseInt(this.value)||1))">
         </div>
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Brick sequence</span></div>
-          <div class="ctrl-desc">Order bricks are released. Worst-case concentrates solenoid fires together for maximum thermal stress.</div>
+          <div class="ctrl-desc">Order bricks are released. Affects thermal stress and plow conflict risk at high speed.</div>
           <select id="ctrl-sequence" onchange="window._setParam('sequence', this.value)">
-            <option value="interleaved">Interleaved (round-robin by type)</option>
-            <option value="worst_case">Worst-case (all plow bricks first)</option>
-            <option value="default_last">Default-last (default-path bricks last)</option>
+            <option value="interleaved">Default order (interleaved round-robin)</option>
+            <option value="worst_case">Worst-case: heat (group all same-type together)</option>
+            <option value="worst_case_accuracy">Worst-case: accuracy (alternate plow/default bricks)</option>
+            <option value="default_first">Default-path bricks first</option>
+            <option value="random">Random (shuffled independently each run)</option>
           </select>
         </div>
         <div class="ctrl">
-          <div class="ctrl-top"><span class="ctrl-name">Inter-run gap</span><span class="ctrl-val">${params2.interrun_gap_ms / 1e3}s</span></div>
-          <div class="ctrl-desc">Cooldown time between runs (reload time). Thermal model keeps decaying.</div>
-          <input type="range" id="ctrl-interrun_gap_ms" min="1000" max="30000" step="1000"
+          <div class="ctrl-top">
+            <span class="ctrl-name">Inter-run gap</span>
+            <input type="number" class="ctrl-val-input" id="ctrl-val-interrun_gap_ms"
+              value="${gapSec}" min="0" max="60" step="0.5"
+              onchange="window._setInterrunGapSec(parseFloat(this.value))">
+          </div>
+          <div class="ctrl-desc">Cooldown between runs (0-60s). Thermal bars animate the decay smoothly.</div>
+          <input type="range" id="ctrl-interrun_gap_ms" min="0" max="60000" step="500"
             value="${params2.interrun_gap_ms}"
             oninput="window._setParamSlider('interrun_gap_ms', this.value, 'ctrl-val-interrun_gap_ms', 1000, 's')">
         </div>`;
+        body.querySelector("#ctrl-sequence").value = params2.sequence;
       } else {
         for (const ctrl of sec.controls) {
           const scale = ctrl.scale || 1;
           const raw = params2[ctrl.id];
-          const display = Math.round(raw * scale * 100) / 100;
-          const dec = ctrl.dec || 0;
-          const valStr = display.toFixed(dec) + (ctrl.unit ? " " + ctrl.unit : "");
+          const display = raw * scale;
+          const dec = ctrl.dec ?? 0;
           const cdiv = document.createElement("div");
           cdiv.className = "ctrl";
           cdiv.innerHTML = `
           <div class="ctrl-top">
-            <span class="ctrl-name">${ctrl.label}</span>
-            <span class="ctrl-val" id="cv-${ctrl.id}">${valStr}</span>
+            <span class="ctrl-name">${ctrl.label}${ctrl.unit ? ' <span style="color:var(--text3);font-size:10px">(${ctrl.unit})</span>' : ""}</span>
+            <input type="number" class="ctrl-val-input" id="cv-${ctrl.id}"
+              value="${display.toFixed(dec)}"
+              min="${ctrl.min * scale}" max="${ctrl.max * scale}" step="${ctrl.step * scale}"
+              ${ctrl.locked ? "disabled" : ""}
+              onchange="window._onSliderInput('${ctrl.id}', parseFloat(this.value))">
           </div>
           <input type="range"
             id="ctrl-${ctrl.id}"
-            min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step || 1}"
-            value="${raw * scale}"
+            min="${ctrl.min * scale}" max="${ctrl.max * scale}" step="${ctrl.step * scale}"
+            value="${display}"
             ${ctrl.locked ? "disabled" : ""}
             oninput="window._onSlider('${ctrl.id}', this.value)">
           <div class="ctrl-desc">${ctrl.desc}</div>`;
@@ -1672,13 +1957,26 @@ tr:hover td { background: var(--bg3); }
   function onSlider(id, rawVal, params2) {
     const ctrl = findCtrl(id);
     const scale = ctrl ? ctrl.scale || 1 : 1;
-    const dec = ctrl ? ctrl.dec || 0 : 0;
-    const unit = ctrl ? ctrl.unit || "" : "";
-    const val = parseFloat(rawVal) / scale;
-    params2[id] = val;
-    const display = parseFloat(rawVal).toFixed(dec) + (unit ? " " + unit : "");
-    const el = document.getElementById("cv-" + id);
-    if (el) el.textContent = display;
+    const dec = ctrl ? ctrl.dec ?? 0 : 0;
+    params2[id] = parseFloat(rawVal) / scale;
+    const inputEl = document.getElementById("cv-" + id);
+    if (inputEl) inputEl.value = parseFloat(rawVal).toFixed(dec);
+    if (_updateMetrics) _updateMetrics();
+    if (_updateWarnings) _updateWarnings();
+  }
+  function onSliderInput(id, displayVal, params2) {
+    const ctrl = findCtrl(id);
+    if (!ctrl || ctrl.locked) return;
+    const scale = ctrl.scale || 1;
+    const dec = ctrl.dec ?? 0;
+    const minV = ctrl.min * scale;
+    const maxV = ctrl.max * scale;
+    const clamped = Math.max(minV, Math.min(maxV, isNaN(displayVal) ? minV : displayVal));
+    params2[id] = clamped / scale;
+    const sliderEl = document.getElementById("ctrl-" + id);
+    if (sliderEl) sliderEl.value = clamped;
+    const inputEl = document.getElementById("cv-" + id);
+    if (inputEl) inputEl.value = clamped.toFixed(dec);
     if (_updateMetrics) _updateMetrics();
     if (_updateWarnings) _updateWarnings();
   }
@@ -1689,10 +1987,18 @@ tr:hover td { background: var(--bg3); }
   }
   function setParamSlider(id, rawVal, valElId, divisor, unit, params2) {
     params2[id] = parseFloat(rawVal);
-    const el = document.getElementById("cv-" + id);
-    if (el) el.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+    const display = (parseFloat(rawVal) / divisor).toFixed(1);
     const valEl = document.getElementById(valElId);
-    if (valEl) valEl.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+    if (valEl) valEl.value = display;
+    if (_updateMetrics) _updateMetrics();
+  }
+  function setInterrunGapSec(sec, params2) {
+    const ms = Math.max(0, Math.min(6e4, (isNaN(sec) ? 0 : sec) * 1e3));
+    params2.interrun_gap_ms = ms;
+    const sliderEl = document.getElementById("ctrl-interrun_gap_ms");
+    if (sliderEl) sliderEl.value = ms;
+    const valEl = document.getElementById("ctrl-val-interrun_gap_ms");
+    if (valEl) valEl.value = (ms / 1e3).toFixed(1);
     if (_updateMetrics) _updateMetrics();
   }
   function findCtrl(id) {
@@ -1708,12 +2014,11 @@ tr:hover td { background: var(--bg3); }
       if (ctrl.locked) continue;
       params2[ctrl.id] = DEFAULTS[ctrl.id];
       const scale = ctrl.scale || 1;
-      const dec = ctrl.dec || 0;
-      const unit = ctrl.unit || "";
+      const dec = ctrl.dec ?? 0;
       const el = document.getElementById("ctrl-" + ctrl.id);
       if (el) el.value = DEFAULTS[ctrl.id] * scale;
-      const velEl = document.getElementById("cv-" + ctrl.id);
-      if (velEl) velEl.textContent = (DEFAULTS[ctrl.id] * scale).toFixed(dec) + (unit ? " " + unit : "");
+      const inputEl = document.getElementById("cv-" + ctrl.id);
+      if (inputEl) inputEl.value = (DEFAULTS[ctrl.id] * scale).toFixed(dec);
     }
     if (_updateMetrics) _updateMetrics();
     if (_updateWarnings) _updateWarnings();
@@ -1747,7 +2052,8 @@ tr:hover td { background: var(--bg3); }
     body.innerHTML = brickLog.map((b) => {
       const tc = thermalColors[b.thermalState] || "";
       const typeLabel = b.type.replace("_", " ").toUpperCase();
-      return `<tr>
+      const resultStr = b.correct === false ? `<span style="color:var(--red)">${b.errorCause || "error"}</span>` : `<span style="color:var(--green)">OK</span>`;
+      return `<tr${b.correct === false ? ' style="background:rgba(248,113,113,0.07)"' : ""}>
       <td>${b.num}</td>
       <td>${typeLabel}</td>
       <td>${b.sizeResult}</td>
@@ -1757,6 +2063,7 @@ tr:hover td { background: var(--bg3); }
       <td>${b.binIdx + 1}</td>
       <td>${b.transitMs}</td>
       <td><span style="color:${tc === "r" ? "var(--red)" : tc === "y" ? "var(--yellow)" : "var(--green)"}">${b.thermalState}</span></td>
+      <td>${resultStr}</td>
     </tr>`;
     }).join("");
   }
@@ -1949,10 +2256,15 @@ tr:hover td { background: var(--bg3); }
     updateWarnings
   });
   window._onSlider = (id, val) => onSlider(id, val, params);
+  window._onSliderInput = (id, val) => onSliderInput(id, val, params);
   window._setParam = (id, val) => setParam(id, val, params);
   window._setParamSlider = (id, rawVal, valElId, divisor, unit) => setParamSlider(id, rawVal, valElId, divisor, unit, params);
+  window._setInterrunGapSec = (sec) => setInterrunGapSec(sec, params);
   window.switchTab = switchTab;
   window.setSpeed = (s) => setSpeed(s);
+  window.runInstant = function() {
+    runInstant(computeSimulation, params, updateWarnings, populateBrickTable);
+  };
   window.handleRunBtn = function() {
     if (state.animRunning) {
       state.animPaused = !state.animPaused;

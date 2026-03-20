@@ -17,6 +17,7 @@
     <button class="btn" id="spd2" onclick="setSpeed(2)">2x</button>
     <button class="btn" id="spd5" onclick="setSpeed(5)">5x</button>
     <button class="btn" id="spd10" onclick="setSpeed(10)">10x</button>
+    <button class="btn" id="spdInstant" onclick="runInstant()">Instant</button>
     <button class="btn" id="loadCsvBtn">Load CSV</button>
     <button class="btn primary" id="runBtn" onclick="handleRunBtn()">Run Simulation</button>
     <button class="btn" id="resetBtn" onclick="resetSim()" style="display:none">Reset</button>
@@ -52,7 +53,7 @@
               <tr>
                 <th>#</th><th>Type</th><th>Size</th><th>Color</th>
                 <th>Samples</th><th>Plow</th><th>Bin</th>
-                <th>Transit ms</th><th>Thermal</th>
+                <th>Transit ms</th><th>Thermal</th><th>Result</th>
               </tr>
             </thead>
             <tbody id="brick-log-body">
@@ -142,8 +143,13 @@
       <div class="msec-title">Run Complete</div>
       <div class="mrow"><span class="ml">Total time</span><span class="mv" id="m-total-time">-</span></div>
       <div class="mrow"><span class="ml">Bricks sorted</span><span class="mv" id="m-bricks-sorted">-</span></div>
-      <div class="mrow"><span class="ml">Bin accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Routing accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Routing errors</span><span class="mv" id="m-error-detail">-</span></div>
+      <div class="mrow"><span class="ml">Avg throughput</span><span class="mv" id="m-avg-bps">-</span></div>
       <div class="mrow"><span class="ml">Peak heat</span><span class="mv" id="m-peak-heat">-</span></div>
+      <div class="mrow"><span class="ml">Throttled bricks</span><span class="mv" id="m-throttle-count">-</span></div>
+      <div class="mrow"><span class="ml">Time throttled</span><span class="mv" id="m-throttled-ms">-</span></div>
+      <div id="m-diagnosis" style="display:none;font-size:10px;color:var(--yellow);margin-top:6px;line-height:1.5;padding:4px 0;border-top:1px solid var(--border)"></div>
     </div>
   </div>
 </div>

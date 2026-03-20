@@ -31,7 +31,10 @@ export function populateBrickTable(brickLog) {
   body.innerHTML = brickLog.map(b => {
     const tc = thermalColors[b.thermalState] || '';
     const typeLabel = b.type.replace('_', ' ').toUpperCase();
-    return `<tr>
+    const resultStr = b.correct === false
+      ? `<span style="color:var(--red)">${b.errorCause || 'error'}</span>`
+      : `<span style="color:var(--green)">OK</span>`;
+    return `<tr${b.correct === false ? ' style="background:rgba(248,113,113,0.07)"' : ''}>
       <td>${b.num}</td>
       <td>${typeLabel}</td>
       <td>${b.sizeResult}</td>
@@ -41,6 +44,7 @@ export function populateBrickTable(brickLog) {
       <td>${b.binIdx + 1}</td>
       <td>${b.transitMs}</td>
       <td><span style="color:${tc === 'r' ? 'var(--red)' : tc === 'y' ? 'var(--yellow)' : 'var(--green)'}">${b.thermalState}</span></td>
+      <td>${resultStr}</td>
     </tr>`;
   }).join('');
 }

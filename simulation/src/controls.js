@@ -34,54 +34,61 @@ export function buildControls(params) {
     div.appendChild(hdr);
 
     if (sec.id === 'run') {
+      const gapSec = (params.interrun_gap_ms / 1000).toFixed(1);
       body.innerHTML = `
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Number of runs</span></div>
-          <div class="ctrl-desc">Simulate back-to-back runs to see thermal accumulation across runs.</div>
-          <input type="number" id="ctrl-num_runs" min="1" max="10" value="${params.num_runs}"
-            style="margin-top:4px" onchange="window._setParam('num_runs', parseInt(this.value)||1)">
+          <div class="ctrl-desc">Simulate back-to-back runs to see thermal accumulation.</div>
+          <input type="number" id="ctrl-num_runs" min="1" max="100" value="${params.num_runs}"
+            style="margin-top:4px" onchange="window._setParam('num_runs', Math.max(1,parseInt(this.value)||1))">
         </div>
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Brick sequence</span></div>
-          <div class="ctrl-desc">Order bricks are released. Worst-case concentrates solenoid fires for maximum thermal stress. Random shuffles each run independently.</div>
+          <div class="ctrl-desc">Order bricks are released. Affects thermal stress and plow conflict risk at high speed.</div>
           <select id="ctrl-sequence" onchange="window._setParam('sequence', this.value)">
             <option value="interleaved">Default order (interleaved round-robin)</option>
-            <option value="worst_case">Worst-case: plow bricks first</option>
-            <option value="default_first">Worst-case: default-path bricks first</option>
-            <option value="random">Random (shuffled each run)</option>
+            <option value="worst_case">Worst-case: heat (group all same-type together)</option>
+            <option value="worst_case_accuracy">Worst-case: accuracy (alternate plow/default bricks)</option>
+            <option value="default_first">Default-path bricks first</option>
+            <option value="random">Random (shuffled independently each run)</option>
           </select>
         </div>
         <div class="ctrl">
           <div class="ctrl-top">
             <span class="ctrl-name">Inter-run gap</span>
-            <input type="number" class="ctrl-val-input" id="cv-interrun_gap_ms"
-              value="${params.interrun_gap_ms/1000}" min="0" max="60" step="1"
+            <input type="number" class="ctrl-val-input" id="ctrl-val-interrun_gap_ms"
+              value="${gapSec}" min="0" max="60" step="0.5"
               onchange="window._setInterrunGapSec(parseFloat(this.value))">
           </div>
-          <div class="ctrl-desc">Cooldown time between runs (reload time). 0 = back-to-back with no gap. Thermal model keeps decaying. Max 60s.</div>
-          <input type="range" id="ctrl-interrun_gap_ms" min="0" max="60000" step="1000"
+          <div class="ctrl-desc">Cooldown between runs (0-60s). Thermal bars animate the decay smoothly.</div>
+          <input type="range" id="ctrl-interrun_gap_ms" min="0" max="60000" step="500"
             value="${params.interrun_gap_ms}"
-            oninput="window._setParamSlider('interrun_gap_ms', this.value, 'cv-interrun_gap_ms', 1000, 's')">
+            oninput="window._setParamSlider('interrun_gap_ms', this.value, 'ctrl-val-interrun_gap_ms', 1000, 's')">
         </div>`;
+      // Restore selected value after innerHTML assignment
+      body.querySelector('#ctrl-sequence').value = params.sequence;
     } else {
       for (const ctrl of sec.controls) {
         const scale = ctrl.scale || 1;
         const raw = params[ctrl.id];
-        const display = Math.round(raw * scale * 100) / 100;
-        const dec = ctrl.dec || 0;
-        const valStr = display.toFixed(dec) + (ctrl.unit ? ' ' + ctrl.unit : '');
+        const display = raw * scale;
+        const dec = ctrl.dec ?? 0;
 
         const cdiv = document.createElement('div');
         cdiv.className = 'ctrl';
         cdiv.innerHTML = `
           <div class="ctrl-top">
-            <span class="ctrl-name">${ctrl.label}</span>
-            <span class="ctrl-val" id="cv-${ctrl.id}">${valStr}</span>
+            <span class="ctrl-name">${ctrl.label}${ctrl.unit ? ' <span style="color:var(--text3);font-size:10px">(${ctrl.unit})</span>' : ''}</span>
+            <input type="number" class="ctrl-val-input" id="cv-${ctrl.id}"
+              value="${display.toFixed(dec)}"
+              min="${ctrl.min * scale}" max="${ctrl.max * scale}" step="${ctrl.step * scale}"
+              ${ctrl.locked ? 'disabled' : ''}
+              onchange="window._onSliderInput('${ctrl.id}', parseFloat(this.value))">
           </div>
           <input type="range"
             id="ctrl-${ctrl.id}"
-            min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step || 1}"
-            value="${raw * scale}"
+            min="${ctrl.min * scale}" max="${ctrl.max * scale}" step="${ctrl.step * scale}"
+            value="${display}"
             ${ctrl.locked ? 'disabled' : ''}
             oninput="window._onSlider('${ctrl.id}', this.value)">
           <div class="ctrl-desc">${ctrl.desc}</div>`;
@@ -103,13 +110,27 @@ export function buildControls(params) {
 export function onSlider(id, rawVal, params) {
   const ctrl = findCtrl(id);
   const scale = ctrl ? (ctrl.scale || 1) : 1;
-  const dec = ctrl ? (ctrl.dec || 0) : 0;
-  const unit = ctrl ? (ctrl.unit || '') : '';
-  const val = parseFloat(rawVal) / scale;
-  params[id] = val;
-  const display = (parseFloat(rawVal)).toFixed(dec) + (unit ? ' ' + unit : '');
-  const el = document.getElementById('cv-' + id);
-  if (el) el.textContent = display;
+  const dec = ctrl ? (ctrl.dec ?? 0) : 0;
+  params[id] = parseFloat(rawVal) / scale;
+  const inputEl = document.getElementById('cv-' + id);
+  if (inputEl) inputEl.value = parseFloat(rawVal).toFixed(dec);
+  if (_updateMetrics) _updateMetrics();
+  if (_updateWarnings) _updateWarnings();
+}
+
+export function onSliderInput(id, displayVal, params) {
+  const ctrl = findCtrl(id);
+  if (!ctrl || ctrl.locked) return;
+  const scale = ctrl.scale || 1;
+  const dec = ctrl.dec ?? 0;
+  const minV = ctrl.min * scale;
+  const maxV = ctrl.max * scale;
+  const clamped = Math.max(minV, Math.min(maxV, isNaN(displayVal) ? minV : displayVal));
+  params[id] = clamped / scale;
+  const sliderEl = document.getElementById('ctrl-' + id);
+  if (sliderEl) sliderEl.value = clamped;
+  const inputEl = document.getElementById('cv-' + id);
+  if (inputEl) inputEl.value = clamped.toFixed(dec);
   if (_updateMetrics) _updateMetrics();
   if (_updateWarnings) _updateWarnings();
 }
@@ -122,29 +143,20 @@ export function setParam(id, val, params) {
 
 export function setParamSlider(id, rawVal, valElId, divisor, unit, params) {
   params[id] = parseFloat(rawVal);
-  const displayVal = (parseFloat(rawVal) / divisor).toFixed(0);
-  const el = document.getElementById('cv-' + id);
-  if (el) {
-    if (el.tagName === 'INPUT') el.value = displayVal;
-    else el.textContent = displayVal + unit;
-  }
+  const display = (parseFloat(rawVal) / divisor).toFixed(1);
   const valEl = document.getElementById(valElId);
-  if (valEl) {
-    if (valEl.tagName === 'INPUT') valEl.value = displayVal;
-    else valEl.textContent = displayVal + unit;
-  }
+  if (valEl) valEl.value = display;
   if (_updateMetrics) _updateMetrics();
 }
 
 export function setInterrunGapSec(sec, params) {
-  const clampedSec = Math.max(0, Math.min(60, parseFloat(sec) || 0));
-  params.interrun_gap_ms = clampedSec * 1000;
+  const ms = Math.max(0, Math.min(60000, (isNaN(sec) ? 0 : sec) * 1000));
+  params.interrun_gap_ms = ms;
   const sliderEl = document.getElementById('ctrl-interrun_gap_ms');
-  if (sliderEl) sliderEl.value = params.interrun_gap_ms;
-  const inputEl = document.getElementById('cv-interrun_gap_ms');
-  if (inputEl) inputEl.value = clampedSec.toFixed(0);
+  if (sliderEl) sliderEl.value = ms;
+  const valEl = document.getElementById('ctrl-val-interrun_gap_ms');
+  if (valEl) valEl.value = (ms / 1000).toFixed(1);
   if (_updateMetrics) _updateMetrics();
-  if (_updateWarnings) _updateWarnings();
 }
 
 export function findCtrl(id) {
@@ -161,12 +173,11 @@ export function resetSection(sec, params) {
     if (ctrl.locked) continue;
     params[ctrl.id] = DEFAULTS[ctrl.id];
     const scale = ctrl.scale || 1;
-    const dec = ctrl.dec || 0;
-    const unit = ctrl.unit || '';
+    const dec = ctrl.dec ?? 0;
     const el = document.getElementById('ctrl-' + ctrl.id);
     if (el) el.value = DEFAULTS[ctrl.id] * scale;
-    const velEl = document.getElementById('cv-' + ctrl.id);
-    if (velEl) velEl.textContent = (DEFAULTS[ctrl.id] * scale).toFixed(dec) + (unit ? ' ' + unit : '');
+    const inputEl = document.getElementById('cv-' + ctrl.id);
+    if (inputEl) inputEl.value = (DEFAULTS[ctrl.id] * scale).toFixed(dec);
   }
   if (_updateMetrics) _updateMetrics();
   if (_updateWarnings) _updateWarnings();
