@@ -259,6 +259,10 @@ function processEvent(ev, simMs) {
     case 'INTER_RUN_GAP':
       if (cb.addEvent) cb.addEvent(tStr, 'INTER_RUN_GAP', `${ev.gapMs/1000}s cooldown between runs`);
       break;
+    case 'THERMAL_UPDATE':
+      if (ev.thermal) state.liveThermal = {...ev.thermal};
+      if (cb.updateThermalUI) cb.updateThermalUI();
+      break;
     case 'ERROR_HALT': {
       if (cb.addEvent) cb.addEvent(tStr, 'ERROR_HALT', `Plow ${ev.plow} conflict on brick #${ev.brickNum}`);
       state.haltOverlay = {

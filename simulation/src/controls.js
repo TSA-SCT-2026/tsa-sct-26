@@ -52,11 +52,16 @@ export function buildControls(params) {
           </select>
         </div>
         <div class="ctrl">
-          <div class="ctrl-top"><span class="ctrl-name">Inter-run gap</span><span class="ctrl-val">${params.interrun_gap_ms/1000}s</span></div>
-          <div class="ctrl-desc">Cooldown time between runs (reload time). Thermal model keeps decaying.</div>
-          <input type="range" id="ctrl-interrun_gap_ms" min="1000" max="30000" step="1000"
+          <div class="ctrl-top">
+            <span class="ctrl-name">Inter-run gap</span>
+            <input type="number" class="ctrl-val-input" id="cv-interrun_gap_ms"
+              value="${params.interrun_gap_ms/1000}" min="0" max="60" step="1"
+              onchange="window._setInterrunGapSec(parseFloat(this.value))">
+          </div>
+          <div class="ctrl-desc">Cooldown time between runs (reload time). 0 = back-to-back with no gap. Thermal model keeps decaying. Max 60s.</div>
+          <input type="range" id="ctrl-interrun_gap_ms" min="0" max="60000" step="1000"
             value="${params.interrun_gap_ms}"
-            oninput="window._setParamSlider('interrun_gap_ms', this.value, 'ctrl-val-interrun_gap_ms', 1000, 's')">
+            oninput="window._setParamSlider('interrun_gap_ms', this.value, 'cv-interrun_gap_ms', 1000, 's')">
         </div>`;
     } else {
       for (const ctrl of sec.controls) {
@@ -117,11 +122,29 @@ export function setParam(id, val, params) {
 
 export function setParamSlider(id, rawVal, valElId, divisor, unit, params) {
   params[id] = parseFloat(rawVal);
+  const displayVal = (parseFloat(rawVal) / divisor).toFixed(0);
   const el = document.getElementById('cv-' + id);
-  if (el) el.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+  if (el) {
+    if (el.tagName === 'INPUT') el.value = displayVal;
+    else el.textContent = displayVal + unit;
+  }
   const valEl = document.getElementById(valElId);
-  if (valEl) valEl.textContent = (parseFloat(rawVal) / divisor).toFixed(0) + unit;
+  if (valEl) {
+    if (valEl.tagName === 'INPUT') valEl.value = displayVal;
+    else valEl.textContent = displayVal + unit;
+  }
   if (_updateMetrics) _updateMetrics();
+}
+
+export function setInterrunGapSec(sec, params) {
+  const clampedSec = Math.max(0, Math.min(60, parseFloat(sec) || 0));
+  params.interrun_gap_ms = clampedSec * 1000;
+  const sliderEl = document.getElementById('ctrl-interrun_gap_ms');
+  if (sliderEl) sliderEl.value = params.interrun_gap_ms;
+  const inputEl = document.getElementById('cv-interrun_gap_ms');
+  if (inputEl) inputEl.value = clampedSec.toFixed(0);
+  if (_updateMetrics) _updateMetrics();
+  if (_updateWarnings) _updateWarnings();
 }
 
 export function findCtrl(id) {
