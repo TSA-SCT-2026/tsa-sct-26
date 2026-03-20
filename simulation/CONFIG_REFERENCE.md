@@ -226,15 +226,15 @@ Heat accumulates on every fire and decays exponentially when idle.
 
 ```
 on fire:         heat += heat_per_fire (clamped at 1.0)
-each second idle: heat = heat * decay_rate^1 = heat * 0.5
+each second idle: heat = heat * (1 - cooling_pct/100)
 ```
 
-With `decay_rate = 0.5`, heat halves every second. A solenoid firing
+With `cooling_pct = 50`, heat halves every second. A solenoid firing
 at 4 bricks/sec (4 fires per 6 seconds, interleaved) reaches roughly:
 
 ```
-steady-state heat ≈ heat_per_fire / (1 - decay_rate^(interval_sec))
-with interval ~1sec between same-plow fires:
+steady-state heat ≈ heat_per_fire / (1 - (1 - cooling_pct/100)^interval_sec)
+with cooling_pct=50 and interval ~1sec between same-plow fires:
 ≈ 0.15 / (1 - 0.5) = 0.30
 ```
 
@@ -248,10 +248,16 @@ simulator with `num_runs = 3` and `sequence = worst_case` to see it.
 
 **Heat per stepper release** - `THERMAL_HEAT_PER_STEP` - default 0.05
 
-**Cooling rate** - `THERMAL_DECAY_RATE` - default 0.5 per second
+**Cooling percent** - `thermal_cooling_pct` (simulator only) - default 50%
 
-Heat halves every second at 0.5. Increase this if real hardware runs
-cooler than expected; decrease if it runs hotter.
+0% = no cooling at all (heat only accumulates). 50% = heat halves every
+second. 100% = instant reset to zero every second. This replaced the old
+`THERMAL_DECAY_RATE` parameter which had confusing behavior above 1.0.
+The underlying decay rate passed to `decayHeat()` is `(100 - pct) / 100`.
+
+Note: `thermal_cooling_pct` is a simulator-only tuning parameter. The
+firmware uses `THERMAL_DECAY_RATE` in config.h. Map between them:
+`THERMAL_DECAY_RATE = (100 - thermal_cooling_pct) / 100`.
 
 **Warning threshold** - `THERMAL_WARN_LEVEL` - default 0.60
 
@@ -314,6 +320,37 @@ Default path carries the most common type. 16 total solenoid fires per run.
 Per solenoid: 6, 6, 4. Heat distribution is uneven but within thermal budget.
 
 Expected end-of-run bin counts: **6, 6, 4, 8**.
+
+---
+
+### Sequence options
+
+Controls the order bricks are released per run. The 24 bricks are always the
+same set (6 + 6 + 4 + 8); only their order changes.
+
+**random** - Fisher-Yates shuffle of the 24-brick set each run. Use with
+`num_runs = 100` to sample outliers. brickLog will have 2400 entries; the
+worst-case routing error count across 100 shuffles shows up in warnings.
+
+**default_order** - 2x2 BLUE, 2x2 RED, 2x3 RED, 2x3 BLUE in blocks. Same
+as what you would get loading bins by type. Mostly tests nominal operation.
+
+**worst_case** (default) - Groups all same-type bricks consecutively:
+all 8 x 2x3 BLUE, then 6 x 2x2 BLUE, then 6 x 2x2 RED, then 4 x 2x3 RED.
+The active solenoid fires repeatedly with no cooling time between same-type
+runs. Maximizes heat accumulation. Use to find the thermal ceiling at a given
+sps before throttling kicks in.
+
+**worst_case_accuracy** - Alternates plow-diverting bricks with default-path
+bricks: [plow1, default, plow2, default, plow3, default, ...]. The plow fires,
+then the very next brick is a default-path brick arriving before the plow has
+fully retracted. At high sps (> ~714) the default brick arrives while the plow
+is still extended and gets caught by it - a routing error. Use this sequence
+to find the maximum sps where cross-plow conflicts appear.
+
+The two worst-case sequences stress different failure modes:
+- `worst_case` -> thermal throttling, solenoid heat
+- `worst_case_accuracy` -> routing conflicts, retract timing margin
 
 ---
 
