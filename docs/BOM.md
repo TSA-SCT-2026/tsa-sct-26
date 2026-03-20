@@ -37,7 +37,7 @@ AliExpress lead time is 10-15 days (expect arrival March 28 - April 2). Adafruit
 | Part | Part # | Qty | Cost | Notes |
 |------|--------|-----|------|-------|
 | IR break-beam 3mm pair | #2168 | 2 packs | ~$8 | size detection ONLY; 2 pairs used, 2 spare; precision timing requires known-good parts; do not substitute AliExpress for this function |
-| ST7789 color TFT display | Pimoroni 1.3in or Waveshare 1.69in | 1 (+1 spare if budget) | $8-12 | must be ST7789, must be color; existing display too small (1.25 in²); judges need to read from arm's length; do NOT order SSD1306 (monochrome) |
+| ST7789V2 color TFT display | **OWNED** Waveshare 1.69in 240x280 IPS ST7789V2 SPI | 1 | $0 | confirmed correct; ST7789V2 is same register set as ST7789, works with TFT_eSPI and Adafruit libraries; do not replace or order spare unless it dies |
 
 ---
 
