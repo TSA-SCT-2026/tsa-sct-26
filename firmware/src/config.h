@@ -99,7 +99,17 @@
 // ================================================================
 // Bin confirmation
 // ================================================================
-#define CONFIRM_TIMEOUT_MS      500     // max wait after routing before ERROR_HALT
+// Timeout starts when routing fires (solenoid command or skip for default path).
+// At 200mm/s the brick still needs to travel from its classified position to
+// the bin entrance. Max path (bin 4, default): ~330mm remaining at classify time.
+// 330mm / 200mm/s = 1650ms. Add 350ms belt speed variation margin = 2000ms.
+//
+// Tuning: after dry assembly, measure sensor-to-bin-entrance for all 4 bins.
+// Compute: max(bin_dist_mm) / belt_speed_mm_s * 1000 + 400ms margin.
+// The 400ms accounts for speed variation and actuation timing. Tighten it
+// if you want faster ERROR_HALT on genuine jams. Do not go below 200ms margin
+// or you will see false halts on normal belt speed variation.
+#define CONFIRM_TIMEOUT_MS      2000    // calibrate from actual bin distances after dry assembly
 
 // ================================================================
 // Thermal model  (all values need calibration - tune during reliability runs)

@@ -101,12 +101,20 @@ This is implemented as a timer-based state transition in firmware. The de-energi
 
 ## Bin confirmation
 
-Four break-beams, one at each bin entrance. After a brick is routed, start a 500ms countdown for the expected bin beam.
+Four break-beams, one at each bin entrance. After a brick is routed, start a countdown for the expected bin beam. Timeout value is `CONFIRM_TIMEOUT_MS` in config.h (currently 2000ms conservative placeholder).
 
 On beam break within window: log success, increment bin counter, trigger display update, transition back to FEEDING.
 On timeout: transition to ERROR_HALT.
 
 GPIO interrupt priority: size detection beams are highest priority. Bin confirmation beams are lower priority. Do not allow a bin confirmation interrupt to delay a size detection measurement.
+
+**Tuning note:** After dry assembly, measure the physical distance from the sensing zone center to each bin entrance beam. Compute:
+
+```
+CONFIRM_TIMEOUT_MS = ceil(max_bin_dist_mm / belt_speed_mm_s * 1000) + 400
+```
+
+The 400ms margin covers belt speed variation and actuation jitter. Tighten the margin if faster jam detection is wanted; do not go below 200ms or normal speed variation causes false ERROR_HALTs. Update config.h with the calculated value. This is a minor calibration step during Phase 6.
 
 ## Thermal model
 

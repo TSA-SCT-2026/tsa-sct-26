@@ -13,7 +13,7 @@ Draw a to-scale top-down view of the full system: belt, bins, chute footprint, f
 The exact distance from the sensing zone to each of the 4 bin entrance beams is needed for:
 1. PI controller Option B (transit time / distance = speed)
 2. Solenoid de-energize timing (currently estimated at 280ms, needs actual measurement)
-3. Bin confirmation timeout (currently 500ms estimate, needs to be set from measured transit times)
+3. Bin confirmation timeout (currently 2000ms conservative placeholder - compute from measured bin distances: max_dist/belt_speed*1000 + 400ms margin)
 
 Determine these in dry assembly. Log them. Update EMBEDDED.md and ELECTRICAL.md with actual values.
 
@@ -22,7 +22,7 @@ Determine these in dry assembly. Log them. Update EMBEDDED.md and ELECTRICAL.md 
 ## During sensor validation (early April)
 
 **Belt speed at operating voltage**
-The TT gearmotor spec gives a no-load RPM. Actual belt speed under load at 5V with the selected PWM duty cycle is not known. Measure it during breadboard validation (run motor, manually time a brick over a known distance). If actual speed differs significantly from 200mm/s, recalculate: size detection threshold, solenoid de-energize timing, color dwell time, brick spacing.
+The JGB37-520 is rated 600 RPM no-load at 6V. Actual belt speed under load with belt tension and brick weight is not known. Measure it during breadboard validation (run motor at operating PWM duty cycle, time a brick over a known distance, calculate mm/s). If actual speed differs significantly from 200mm/s, recalculate: size detection threshold, solenoid de-energize timing, color dwell time, brick spacing.
 
 **Belt friction with bricks**
 Verify bricks do not slide sideways on the smooth GT2 belt surface during plow actuation. The plow tip pushes laterally against a moving brick. If belt-to-brick friction is too low, the brick may spin rather than deflect cleanly. Test during first powered belt run. If sliding is a problem, lightly textured belt surface or slightly slowing the belt during plow contact are options.
