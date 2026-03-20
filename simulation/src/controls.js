@@ -43,11 +43,12 @@ export function buildControls(params) {
         </div>
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Brick sequence</span></div>
-          <div class="ctrl-desc">Order bricks are released. Worst-case concentrates solenoid fires together for maximum thermal stress.</div>
+          <div class="ctrl-desc">Order bricks are released. Worst-case concentrates solenoid fires for maximum thermal stress. Random shuffles each run independently.</div>
           <select id="ctrl-sequence" onchange="window._setParam('sequence', this.value)">
-            <option value="interleaved">Interleaved (round-robin by type)</option>
-            <option value="worst_case">Worst-case (all plow bricks first)</option>
-            <option value="default_last">Default-last (default-path bricks last)</option>
+            <option value="interleaved">Default order (interleaved round-robin)</option>
+            <option value="worst_case">Worst-case: plow bricks first</option>
+            <option value="default_first">Worst-case: default-path bricks first</option>
+            <option value="random">Random (shuffled each run)</option>
           </select>
         </div>
         <div class="ctrl">

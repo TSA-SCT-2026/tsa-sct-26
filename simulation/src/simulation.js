@@ -12,6 +12,17 @@ export function generateSequence(p) {
   } else if (p.sequence === 'default_last') {
     for (const t of ['2x2_blue', '2x2_red', '2x3_red']) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
     for (let i = 0; i < p.counts['2x3_blue']; i++) seq.push('2x3_blue');
+  } else if (p.sequence === 'random') {
+    // All bricks in array then Fisher-Yates shuffle
+    for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+    for (let i = seq.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seq[i], seq[j]] = [seq[j], seq[i]];
+    }
+  } else if (p.sequence === 'default_first') {
+    // Default path (2x3_blue, no plow) first, then plow bricks last
+    for (let i = 0; i < p.counts['2x3_blue']; i++) seq.push('2x3_blue');
+    for (const t of ['2x2_blue', '2x2_red', '2x3_red']) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
   } else {
     // interleaved: round-robin
     const rem = Object.fromEntries(types.map(t => [t, p.counts[t]]));

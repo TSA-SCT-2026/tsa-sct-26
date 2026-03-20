@@ -49,7 +49,7 @@ export const DEFAULTS = {
 
   // Run settings
   num_runs:   1,
-  sequence:   'interleaved',  // 'interleaved' | 'worst_case' | 'default_last'
+  sequence:   'interleaved',  // 'interleaved' | 'worst_case' | 'default_first' | 'random'
   interrun_gap_ms: 5000,
 };
 
