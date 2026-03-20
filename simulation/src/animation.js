@@ -2,7 +2,6 @@
 
 'use strict';
 
-// Shared state object - all modules import this and read/write its properties
 export const state = {
   params: null,
   animRunning: false,
@@ -24,10 +23,9 @@ export const state = {
   ],
   speedMultiplier: 1,
   replayMode: false,
-  haltOverlay: null, // {msg} when ERROR_HALT is active
+  haltOverlay: null,
 };
 
-// Callbacks registered from main.js
 const cb = {
   updateWarnings: null,
   showRunSummary: null,
@@ -48,7 +46,6 @@ export function registerCallbacks(cbs) {
 
 import { BRICK_COLOR } from './canvas.js';
 
-// Reset animation UI state without recomputing sim
 function resetAnimState() {
   state.liveThermal = {sol1:0, sol2:0, sol3:0, stepper:0};
   state.liveBinCounts = [0, 0, 0, 0];
@@ -64,7 +61,6 @@ function resetAnimState() {
   ];
 }
 
-// Used by both startSim and startReplay - launches the rAF loop after state.simData is set
 export function _launchAnimLoop(updateWarnings, populateBrickTable) {
   resetAnimState();
 
@@ -76,7 +72,7 @@ export function _launchAnimLoop(updateWarnings, populateBrickTable) {
   const tlEl = document.getElementById('timeline-log');
   if (tlEl) tlEl.innerHTML = '';
   const blEl = document.getElementById('brick-log-body');
-  if (blEl) blEl.innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
+  if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
   const rsEl = document.getElementById('run-summary');
   if (rsEl) rsEl.style.display = 'none';
 
@@ -101,6 +97,51 @@ export function startSim(computeSimulation, params, updateWarnings, populateBric
   _launchAnimLoop(updateWarnings, populateBrickTable);
 }
 
+// Instant mode: compute and display results without animation
+export function runInstant(computeSimulationFn, params, updateWarnings, populateBrickTable) {
+  if (state.animRunning) return;
+  const sd = computeSimulationFn(params);
+  state.simData = sd;
+  state.replayMode = false;
+
+  resetAnimState();
+  for (let i = 0; i < 4; i++) {
+    if (cb.setBinCount) cb.setBinCount(i, 0);
+    const box = document.getElementById('bin-' + i);
+    if (box) box.className = 'bin-box';
+  }
+  const tlEl = document.getElementById('timeline-log');
+  if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Instant mode - no timeline.</span>';
+  const rsEl = document.getElementById('run-summary');
+  if (rsEl) rsEl.style.display = 'none';
+
+  for (const ev of sd.events) {
+    switch (ev.type) {
+      case 'BIN_CONFIRM':
+        state.liveBinCounts[ev.binIdx]++;
+        if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
+        break;
+      case 'BRICK_RELEASED':
+      case 'PLOW_FIRE':
+        if (ev.thermal) state.liveThermal = {...ev.thermal};
+        break;
+      case 'THERMAL_UPDATE':
+        if (ev.thermal) state.liveThermal = {...ev.thermal};
+        break;
+    }
+  }
+
+  if (cb.updateThermalUI) cb.updateThermalUI();
+  if (cb.showRunSummary) cb.showRunSummary(sd);
+  if (cb.updateBinMatchState) cb.updateBinMatchState();
+  if (populateBrickTable) populateBrickTable(sd.brickLog);
+  if (updateWarnings) updateWarnings();
+
+  document.getElementById('runBtn').textContent = 'Run Simulation';
+  const rstBtn = document.getElementById('resetBtn');
+  if (rstBtn) rstBtn.style.display = 'inline-block';
+}
+
 export function resetSim(params, drawBeltFn) {
   state.animRunning = false;
   state.animPaused = false;
@@ -122,7 +163,7 @@ export function resetSim(params, drawBeltFn) {
   const tlEl = document.getElementById('timeline-log');
   if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Run a simulation to see events here.</span>';
   const blEl = document.getElementById('brick-log-body');
-  if (blEl) blEl.innerHTML = '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
+  if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
 
   const rlEl = document.getElementById('replay-label');
   if (rlEl) rlEl.style.display = 'none';
@@ -144,7 +185,6 @@ function animFrame(wallMs) {
     while (state.liveEventIdx < state.simData.events.length && state.simData.events[state.liveEventIdx].t <= simMs) {
       processEvent(state.simData.events[state.liveEventIdx], simMs);
       state.liveEventIdx++;
-      if (state.haltOverlay) break;
     }
 
     updatePlowAngles(simMs);
@@ -153,22 +193,10 @@ function animFrame(wallMs) {
     const canvas = document.getElementById('belt-canvas');
     if (canvas) {
       const ctx = canvas.getContext('2d');
-      if (cb.drawBelt) {
-        cb.drawBelt(ctx, canvas.width, canvas.height, simMs);
-      }
-      if (state.haltOverlay && cb.drawErrorHaltOverlay) {
-        cb.drawErrorHaltOverlay(ctx, canvas.width, canvas.height, state.haltOverlay.msg);
-      }
+      if (cb.drawBelt) cb.drawBelt(ctx, canvas.width, canvas.height, simMs);
     }
 
     if (cb.updateThermalUI) cb.updateThermalUI();
-
-    if (state.haltOverlay) {
-      state.animRunning = false;
-      document.getElementById('runBtn').textContent = 'Run Simulation';
-      document.getElementById('resetBtn').style.display = 'inline-block';
-      return;
-    }
 
     if (state.liveEventIdx >= state.simData.events.length) {
       state.animRunning = false;
@@ -181,6 +209,16 @@ function animFrame(wallMs) {
   if (state.animRunning) {
     state.animFrameId = requestAnimationFrame(animFrame);
   }
+}
+
+function addColoredEvent(tStr, type, detail, color) {
+  const log = document.getElementById('timeline-log');
+  if (!log) return;
+  const row = document.createElement('div');
+  row.className = 'event-row';
+  row.innerHTML = `<span class="ev-t" style="color:${color}">${tStr}</span><span class="ev-type" style="color:${color}">${type}</span><span class="ev-detail" style="color:${color}">${detail}</span>`;
+  log.appendChild(row);
+  if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) log.scrollTop = log.scrollHeight;
 }
 
 function processEvent(ev, simMs) {
@@ -211,6 +249,7 @@ function processEvent(ev, simMs) {
         binConfirmSimMs: null,
         done: false,
         flashBorder: 0,
+        routingError: false,
       });
       break;
     }
@@ -224,7 +263,14 @@ function processEvent(ev, simMs) {
       if (cb.addEvent) cb.addEvent(tStr, 'PLOW_FIRE', `Plow ${ev.plow} fires for brick #${ev.brickNum}`);
       if (ev.thermal) state.liveThermal = {...ev.thermal};
       const ps = state.plowStates[ev.plow];
-      if (ps) { ps.phase = 'fire'; ps.phaseStartSim = ev.t; ps.angle = 0; }
+      if (ps) {
+        ps.phase = 'fire';
+        // Offset so plow visually reaches full extension as the brick arrives at the plow,
+        // not when the solenoid fires electrically. The brick arrives sol_lead_ms after
+        // classification; full extension takes sol_full_ms; so start animation early.
+        ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
+        ps.angle = 0;
+      }
       const ab = state.animBricks.find(b => b.id === ev.brickNum);
       if (ab) ab.plowFireSimMs = ev.t;
       break;
@@ -232,7 +278,10 @@ function processEvent(ev, simMs) {
     case 'PLOW_HOLD': {
       if (cb.addEvent) cb.addEvent(tStr, 'PLOW_HOLD', `Plow ${ev.plow} holding (40% PWM)`);
       const ps = state.plowStates[ev.plow];
-      if (ps) { ps.phase = 'hold'; ps.phaseStartSim = ev.t; }
+      if (ps) {
+        ps.phase = 'hold';
+        ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
+      }
       break;
     }
     case 'PLOW_RELEASE': {
@@ -241,11 +290,25 @@ function processEvent(ev, simMs) {
       if (ps) { ps.phase = 'retract'; ps.phaseStartSim = ev.t; }
       break;
     }
+    case 'PLOW_MISFIRE':
+      addColoredEvent(tStr, 'PLOW_MISFIRE', ev.msg, 'var(--orange)');
+      break;
+    case 'ROUTING_ERROR': {
+      addColoredEvent(tStr, 'ROUTING_ERROR', ev.msg, 'var(--red)');
+      const ab = state.animBricks.find(b => b.id === ev.brickNum);
+      if (ab) {
+        ab.routingError = true;
+        ab.binIdx = ev.actualBin;
+      }
+      break;
+    }
     case 'PLOW_SKIP':
       if (cb.addEvent) cb.addEvent(tStr, 'PLOW_SKIP', ev.msg);
       break;
     case 'BIN_CONFIRM': {
-      if (cb.addEvent) cb.addEvent(tStr, 'BIN_CONFIRM', `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${['2x2 BLUE','2x2 RED','2x3 RED','2x3 BLUE'][ev.binIdx]})`);
+      const label = ev.correct === false ? ' [WRONG BIN]' : '';
+      if (cb.addEvent) cb.addEvent(tStr, 'BIN_CONFIRM',
+        `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${['2x2 BLUE','2x2 RED','2x3 RED','2x3 BLUE'][ev.binIdx]})${label}`);
       state.liveBinCounts[ev.binIdx]++;
       if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
       if (cb.flashBin) cb.flashBin(ev.binIdx);
@@ -263,25 +326,9 @@ function processEvent(ev, simMs) {
       if (ev.thermal) state.liveThermal = {...ev.thermal};
       if (cb.updateThermalUI) cb.updateThermalUI();
       break;
-    case 'ERROR_HALT': {
-      if (cb.addEvent) cb.addEvent(tStr, 'ERROR_HALT', `Plow ${ev.plow} conflict on brick #${ev.brickNum}`);
-      state.haltOverlay = {
-        msg: `Plow ${ev.plow} conflict on brick #${ev.brickNum} at ${ev.t.toFixed(0)}ms`
-      };
+    case 'DRIFT_DETECTED':
+      addColoredEvent(tStr, 'DRIFT', ev.msg, 'var(--yellow)');
       break;
-    }
-    case 'DRIFT_DETECTED': {
-      // Yellow timeline entry for belt drift
-      const log = document.getElementById('timeline-log');
-      if (log) {
-        const row = document.createElement('div');
-        row.className = 'event-row';
-        row.innerHTML = `<span class="ev-t" style="color:var(--yellow)">${tStr}</span><span class="ev-type" style="color:var(--yellow)">DRIFT</span><span class="ev-detail" style="color:var(--yellow)">${ev.msg}</span>`;
-        log.appendChild(row);
-        if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) log.scrollTop = log.scrollHeight;
-      }
-      break;
-    }
   }
 }
 
@@ -292,7 +339,8 @@ function updatePlowAngles(simMs) {
     if (!ps) continue;
     const elapsed = simMs - ps.phaseStartSim;
     if (ps.phase === 'fire') {
-      ps.angle = Math.min(35, elapsed / p.sol_full_ms * 35);
+      // Clamp to 0 so plow doesn't go negative before it starts sweeping
+      ps.angle = Math.max(0, Math.min(35, elapsed / p.sol_full_ms * 35));
     } else if (ps.phase === 'hold') {
       ps.angle = 35;
     } else if (ps.phase === 'retract') {
@@ -323,6 +371,7 @@ export function setSpeed(s) {
     const el = document.getElementById(id);
     if (el) el.classList.remove('active');
   });
+  document.getElementById('spdInstant')?.classList.remove('active');
   const activeEl = document.getElementById('spd' + s);
   if (activeEl) activeEl.classList.add('active');
 }
