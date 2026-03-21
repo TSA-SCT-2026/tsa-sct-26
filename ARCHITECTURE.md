@@ -2,188 +2,155 @@
 
 ## What this builds
 
-A fully automated LEGO brick sorting conveyor that classifies 24 bricks by size and color and routes them into 4 bins. Built for TSA System Control Technology nationals, May 1 2026.
+A fully automated LEGO brick sorting conveyor that classifies 24 bricks by size and color
+and routes them into 4 labeled bins. Built for TSA System Control Technology nationals,
+May 1 2026. The evaluator loads all 24 bricks, presses start, and does nothing else.
+Target: 24 bricks sorted correctly in under 10 seconds, every time.
 
-Target: 24 bricks sorted in under 10 seconds, repeatedly, without operator intervention between runs.
+The guiding principle: classify early, before the brick ever touches the belt. Sensing
+happens while the brick is stationary in the chute. The belt is pure transport.
 
-The guiding principle: keep actuation off the critical path. Sense early, pre-set actuators while bricks are still in transit, use passive return mechanisms. Default path (no actuator fires) handles the most common brick type, minimizing duty cycle.
+## Scoring
+
+100 points total: 60 solution, 20 inventor's log, 20 programming structure.
+Reliability beats speed. 24/24 at 14 seconds beats 23/24 at 9 seconds. Speed only
+matters as a tiebreaker when reliability is equal.
 
 ## Pipeline
 
 ```
-[chute] -> [escapement] -> [taper channel] -> [sensing zone] -> [routing] -> [bin confirmation] -> [display]
+[chute] -> [escapement + sensing] -> [belt] -> [pushers] -> [bins]
 ```
 
-### Feed: near-vertical gravity chute
+All 24 bricks load into the chute before the run starts. The stepper escapement
+releases one brick per cam rotation. While each brick sits stationary on the cam chord,
+both size and color are read. The brick is classified before it touches the belt. The belt
+carries it to the correct pusher position, which fires at a pre-calculated delay.
 
-Bricks stack at roughly 75 degrees in a printed rectangular channel. Gravity does the feeding. The stepper escapement at the base meters release rate precisely. No active feed mechanism is needed above the escapement. All 24 bricks load before the run starts.
+## Sensing (in chute, brick stationary)
 
-The chute must maintain brick orientation (studs up, length along travel axis) through to the escapement. A round pipe cannot do this. The channel must be rectangular. This is why PVC pipe is not a viable substitute despite its smooth interior.
+**Size:** Single IR break-beam crosses the 27mm chute dimension at 20mm from the wall.
+A 2x3 brick (23.7mm) blocks the beam. A 2x2 brick (15.8mm) does not. Binary result,
+no timing measurement, no speed dependency.
 
-### Escapement: stepper cam
+**Color:** TCS34725 mounted on the chute wall exterior, looking through a 12mm x 12mm
+window. A black PLA shroud blocks ambient light. The sensor's onboard LED is the only
+light source. At 24ms integration time, the cam dwell window (~260ms) yields 10+ samples
+from a stationary brick. Classification uses R/(R+G+B) ratio averaged over all samples.
 
-A stepper motor with a printed single-lobe cam disk releases exactly one brick per full rotation. Step counting makes it self-indexing. It cannot release a partial brick or double-feed. Current reduction between releases handles thermal management without additional hardware. No solenoids at the escapement means no heat accumulation at sustained 5 bricks per second.
+Both reads complete before the cam releases the brick. The belt speed has zero effect
+on classification quality.
 
-### Taper channel
+## Belt
 
-A printed channel that narrows from 30mm to 17.3mm over 60mm, positioned between the chute exit and the sensing zone. Forces bricks square before they reach sensors or plows. A severely yawed brick jams here rather than deep in the system: visible, immediately recoverable, not catastrophic.
+640mm GT2 closed-loop belt, 20mm wide, flat side up. Positive drive (no slip).
+Active transport length: 290mm. Belt speed: 200mm/s.
 
-### Sensing zone
+Pusher positions from chute exit:
+- Pusher 1 (2x2 red): 75mm - fires at 375ms after chute exit
+- Pusher 2 (2x2 blue): 150mm - fires at 750ms after chute exit
+- Pusher 3 (2x3 blue): 225mm - fires at 1125ms after chute exit
+- Belt end (2x3 red, DEFAULT): 290mm - no pusher fires
 
-Two sensor systems operate in the same zone:
+## Bin assignment
 
-Size detection: two IR break-beams spaced 19mm apart. A hardware timer measures the interval between beam breaks. A 2x2 brick (15.8mm) never reaches the second beam, triggering a timeout. A 2x3 brick (23.7mm) breaks both beams with a measurable gap. The length difference between bricks is only 7.9mm. Ultrasonic sensing was rejected because noise margins at close range exceed this difference. Break-beams give a binary digital result with no noise floor.
+| Bin | Category | Count | Pusher | Rationale |
+|-----|----------|-------|--------|-----------|
+| 1 | 2x2 red | 6 | Solenoid 1 | -- |
+| 2 | 2x2 blue | 6 | Solenoid 2 | -- |
+| 3 | 2x3 blue | 8 | Solenoid 3 | -- |
+| 4 | 2x3 red | 4 | DEFAULT | Rarest category as default. Any classifier failure lands in the lowest-count bin, making contamination visible. Minimizes total misroute count if the classifier degrades. |
 
-Color detection: a color sensor facing down through a printed shroud. It samples repeatedly over the full brick dwell time and averages all readings. The shroud blocks ambient light, which is the primary failure mode for this sensor. Calibration must happen with the shroud installed and the sensor's integrated LED as the only light source.
+Total pusher fires per run: 20 (6+6+8). Default path fires 0 times.
 
-### Routing: plow diverters
+## Key decisions locked
 
-Three solenoid-actuated plows with a lever arm geometry and spring return. Solenoids pre-set before bricks arrive. There is roughly 150ms of brick travel time between sensor classification and plow position, and actuation takes about 10ms. Actuation is entirely off the critical path. Servos were rejected because their sweep and return time would cut throughput to 2-3 bricks per second.
+Do not revisit without a strong reason. Rationale for each is in the subsystem docs.
 
-PWM hold after full extension reduces heat by roughly 60% per actuation. De-energize once the brick has cleared the plow. Passive spring return is fast and requires no firmware timing.
-
-### Bin confirmation
-
-An IR break-beam at each bin entrance. After routing, the controller waits up to 500ms for the expected bin beam to break. On miss: halt belt, stop escapement, de-energize all solenoids, display error state. On success: increment bin counter, proceed. End of run: verify all four bin totals against expected counts (6, 6, 4, 8).
-
-This detects jams, solenoid misfires, bricks falling off the belt, and double-feeds. It does not detect sensor misclassification (brick routed to wrong bin but physically arrived somewhere). Misclassification is mitigated by averaging color readings and empirical threshold calibration.
-
-### Display
-
-Color TFT. During sort: brick silhouette animates in actual classification color, counters update live, actuator thermal state shown as a small bar. End screen: full run stats, per-bin totals vs expected, any missed confirmations. The display is a live window into internal system state. This is what judges look for, not decoration.
-
-## Feedback loop
-
-The feedback loop is real and bidirectional. Sensors at each bin confirm every brick individually within a hard timeout. A mismatch halts the system rather than continuing. End-of-run count verification gives a second pass. The thermal model reduces release rate under heat load rather than failing silently. Serial output timestamps every event so the engineering notebook data writes itself during calibration.
-
-## Key risks
-
-### Chute transition geometry: highest fabrication risk
-
-The curve from near-vertical to horizontal at the chute base is the hardest piece to print correctly. FDM tolerances compound here. This piece must be printed and tested with real bricks before any other structural CAD work proceeds. Budget at least 3 print iterations. If bricks do not flow reliably through this transition, the entire feed concept fails and needs a design change before the frame exists. Everything else in the build schedule gates on this.
-
-### Stepper driver wiring
-
-If nobody on the team has wired a stepper driver before, budget a dedicated session for this before any integration work. The most common failure point is a missing or incorrectly placed bulk capacitor on the motor power input. Verify this physically before applying power.
-
-### Calibration time
-
-Size and color thresholds must be set empirically with all hardware installed and the shroud in place. This takes time and real bricks. The schedule has dedicated calibration windows. Do not allow earlier phases to slip into them.
-
-### LiPo vs bench supply
-
-The system must be tested on battery before the competition. A bench supply that current-limits during solenoid firing will cause a controller brownout. This is unrecoverable in front of judges. Test on LiPo before April 20.
-
-## Plow routing by brick frequency
-
-Three plows on a single belt. All bricks travel the full belt length. Each plow fires independently based on classification. Only one plow fires per brick. The default path (no plow fires) handles the most frequent brick type to minimize total solenoid actuation.
-
-Brick frequencies:
-```
-2x3 blue: 8 bricks (33%) - DEFAULT, zero solenoids fire
-2x2 blue: 6 bricks (25%) - plow 1
-2x2 red:  6 bricks (25%) - plow 2
-2x3 red:  4 bricks (17%) - plow 3
-```
-
-Total solenoid fires per run: 16 (6 + 6 + 4). Per solenoid: roughly 5 fires each, evenly distributed. Routing is a simple lookup. Classify both attributes, fire the corresponding plow or nothing.
-
-The physical plow order along the belt is flexible since they fire independently. Place them to optimize the sensor-to-plow travel distances for pre-set timing. See MECHANICAL.md for lever geometry and EMBEDDED.md for timing details.
+- **Stepper escapement:** NEMA 11 + TMC2209 + single-lobe cam. Self-indexing. Step
+  counting provides exact brick position. StallGuard detects jams passively.
+- **Sensing in chute:** eliminates sensing timing entirely, decouples belt speed from
+  classification quality, eliminates belt-mounted sensor bridges.
+- **Direct solenoid pusher:** no lever arm, no pivot. Face plate on rod, spring return.
+  Solenoid on-time 40ms, spring returns fast. Lower part count than lever design.
+- **GT2 positive drive:** no slip. Belt speed is exactly motor RPM x pulley circumference.
+  No encoder needed for steady-state speed. Simplifies firmware.
+- **TCS34725 + shroud:** integrated white LED, known I2C interface. Shroud is mandatory
+  for calibration and operation. Open-air calibration is meaningless.
+- **3S LiPo 11.1V:** LM2596 handles up to 40V input. Runs Buck1 to 6V (belt, solenoids)
+  and Buck2 to 5V (ESP32, sensors, display). TMC2209 takes 11.1V direct.
+- **Default = rarest:** 2x3 red (4 bricks) as default bin minimizes classifier failure damage.
+- **JGB37-520 belt motor:** 6mm D-shaft, 600 RPM at 6V, high gearbox torque. TT motors
+  at available ratios are too slow under load.
 
 ## Build schedule
 
 ```
-March 16-18    Order everything. AliExpress first (10-15 day lead time).
-               Adafruit same day. Display decision and order same day.
-
-March 17-21    Firmware skeleton (no hardware needed).
-               State machine scaffold, hardware timer handler stub,
-               color sensor driver stub, display driver, stepper control stub,
-               solenoid PWM hold logic.
-
-March 17-21    CAD in parallel with firmware.
-               Chute transition piece only. Nothing else.
-               Stepper cam disk second (simple geometry, iterate early).
-               Do not CAD the full frame until transition piece validates.
+March 16-21    Order parts (AliExpress first - 10-15 day lead time).
+               Firmware skeleton: state machine, stub modules, config.h.
+               CAD: chute transition piece only. Nothing else.
 
 March 21-24    Chute transition iteration.
-               Print, test with real bricks, no electronics needed.
-               Iterate until bricks flow smoothly every time.
-               This is the gate. Do not proceed until it passes.
+               Print, test with real bricks, no electronics.
+               This is the gate. Do not proceed until reliable.
 
-March 28 - April 2    Parts arrive (AliExpress ordered March 18, 10-15 day window).
-               Validate everything on breadboard immediately on arrival.
-               IR break-beams: 2x2 vs 2x3 at 19mm spacing, multiple speeds.
-               Color sensor: red vs blue under shroud LED, log raw R/G/B values.
-               Belt black filter threshold: log bare belt vs brick surface totals.
-               Solenoid: stroke force vs spring candidates from assortment.
-               Stepper + driver: get motor spinning, verify step counting.
-               Encoder disk: verify H206 pulse output at motor speed.
-               Display: driver working, test animation loop.
+March 28-Apr 2 Parts arrive. Validate everything on breadboard:
+               - IR beam: 2x2 vs 2x3 at 20mm position
+               - Color sensor: red vs blue under shroud, log R/G/B
+               - Solenoid: stroke force vs spring candidates
+               - Stepper + driver: spinning, step counting verified
+               - Display: driver working, animation test
 
-April 2-9     Full frame CAD and print.
-               Use validated chute geometry from earlier iteration.
-               All channel sections, plow arms, escapement housing,
-               sensor mounts, bin guides.
-               Dry assembly: no wiring, verify bricks flow end to end.
+Apr 2-9        Full frame CAD and print.
+               Use validated chute geometry. Dry assembly first.
                Fix print tolerance issues before wiring anything.
 
-April 9-14     Wiring and firmware integration.
+Apr 9-14       Wiring and firmware integration.
                All solenoids with flyback diodes.
                Stepper driver with 100uF cap on motor power input.
-               Both power rails, verify isolation.
-               Belt motor via L298N.
-               All sensors: color sensor on I2C, break-beams, display on SPI.
                First end-to-end test with real bricks.
 
-April 14-20    Calibration.
-               Set size threshold empirically from break-beam data.
-               Set color threshold empirically under shroud with demo bricks.
-               Tune belt speed, brick spacing, stepper release timing.
-               Full 24-brick runs, target 95%+ accuracy.
-               Validate feedback loop halts on induced jam.
-               Validate thermal model triggers correctly.
-               Log everything to serial, save CSV files.
+Apr 14-20      Calibration.
+               Color thresholds empirically from shroud + demo bricks.
+               Full 24-brick runs, target 100% accuracy.
+               All on LiPo, not bench supply.
+               Log everything to serial -> CSV files.
 
-April 20-24    Reliability runs.
-               10 full 24-brick runs minimum, all logged.
-               Back-to-back runs to stress-test thermal management.
+Apr 20-24      Reliability runs.
+               10 full runs minimum, all logged.
+               Back-to-back stress test for thermal management.
                Fix anything that fails more than once.
-               Test on LiPo, not bench supply.
 
-April 24-27    Documentation.
-               Engineering notebook from logged run data.
-               Decision matrices, equations, failure mode table.
-               Calibration procedures, performance test data.
+Apr 24-27      Documentation.
+               Engineering notebook from run data.
+               Decision matrices, equations, calibration procedures.
 
-April 27-29    Buffer.
-               Something will break during documentation runs.
-               This time is not optional. Fix it here, not at competition.
+Apr 27-29      Buffer. Something will need fixing here. This is not optional.
 
-April 29-30    Final prep.
-               Full run on LiPo.
-               Pack: system, laptop for serial monitor, spare bricks, charger.
-               Sleep.
+Apr 29-30      Final prep. Full run on LiPo. Pack system.
 
 May 1          Competition.
 ```
 
-## Subsystem decision summaries
+## Top risks
 
-Every major design choice (sensor type, actuator type, escapement mechanism) has a documented rationale including rejected alternatives with specific failure reasons. These are in the relevant architecture files and must appear in competition documentation. Judges score decision-making, not just final choices.
+| Risk | Mitigation |
+|------|------------|
+| Chute transition geometry | Print first, test with real bricks before any other CAD. Budget 3 iterations. This gates everything. |
+| Color sensor window alignment | Calibrate only with shroud installed. Log raw R/G/B, set thresholds from data. |
+| Solenoid spring tension | Order spring assortment. Test tension vs solenoid force before assembly. |
+| Belt/brick interface | Flat rubber side up. PTFE tape on belt bed if friction is excessive. |
+| Stepper driver wiring | Bulk capacitor on VM input is non-negotiable. Verify before power-on. |
+| LiPo vs bench supply | All calibration and testing on LiPo after April 9. Bench supply current-limits and masks real behavior. |
 
-### Key decisions locked (do not revisit without strong reason)
+## Subsystem docs
 
-**Stepper driver: TMC2209 over A4988**
-TMC2209 handles 2000+ steps/sec cleanly vs A4988 degrading above ~1000 sps. Current regulation is more precise, reducing heat during extended calibration. StallGuard provides passive step-skip detection. Wiring is nearly identical in standalone mode. No reason to use A4988.
-
-**Belt motor: JGB37-520 6V over TT gearmotor**
-TT motors at 1:48 (the only ratio readily available) give ~107mm/s under load, below the escapement rate at target sps. JGB37-520 at 300-520RPM gives 200-330mm/s under load with comfortable headroom. 6mm D-shaft accepts standard GT2 pulleys. Higher gearbox torque than TT or N20 at comparable speeds.
-
-**Stepper speed: firmware-controlled sps, not motor choice**
-Escapement rate is set entirely via STEPPER_SPS_* in config.h. No motor change is needed to go faster. Start at 800 sps (4 bricks/sec), validate reliability, increment by 200 sps. Color sensor sample floor is 8 samples per brick - that is the practical ceiling, not the motor or driver.
-
-**Color sampling: parallel from beam 1 break**
-Color sampling begins when beam 1 breaks, not after size detection resolves. The black belt filter discards early samples taken before the brick reaches the sensor. By the time size classification completes (~95-150ms), 30-40 samples are already banked. Both size and color classification are available simultaneously with no sequential wait. This is implemented in onFeeding() in state_machine.cpp.
-
-
+- Physical design: docs/MECHANICAL.md
+- Wiring and power: docs/ELECTRICAL.md
+- Firmware architecture: docs/EMBEDDED.md
+- Parts list: docs/BOM.md
+- All critical dimensions: docs/DIMENSIONS.md
+- Color calibration procedure: docs/CALIBRATION.md
+- Pass/fail acceptance criteria: docs/TEST_PROTOCOL.md
+- Engineering notebook: docs/NOTEBOOK.md
+- Competition run notes: docs/competition/
