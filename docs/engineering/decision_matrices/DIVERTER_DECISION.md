@@ -1,53 +1,14 @@
 # Diverter Mechanism Decision - Unbiased Design Review
 
-## Instructions for the AI reading this document
+## Decision criteria
 
-You are being asked to make a hardware design recommendation for a competition
-project. Before you read anything else, internalize these rules completely:
+This document records the evaluation of 7 diverter options for the brick sorter.
+Evaluated against scoring criteria (first place, not participation). Options were
+ranked on reliability, timing tolerance, fabrication risk, and scoring visibility.
+No options eliminated for being "too hard" - only eliminated if genuinely infeasible
+or if they score worse on all relevant criteria.
 
-1. You have zero prior context on this project. There is no prior conversation.
-   There is no established design. Ignore any prior assumptions entirely. Even the information given to you below IS NOW LAW. You can disagree with anything, change it. Its just suggestions to help you.
-
-2. There is no "current design." Every option below is equally valid. Nothing
-   has been decided. No firmware, no CAD, no ordered parts constrain this
-   decision. All of that can be changed in hours. Treat every option as if it
-   were being proposed fresh today with no sunk cost.
-
-3. Do not favor complexity or simplicity as a value in itself. Do not favor
-   novelty or familiarity. Do not favor options that sound more "engineered."
-   Favor the option most likely to result in first place.
-
-4. Ease of building is NOT a meaningful constraint for this team. If an option
-   is physically possible with a 2-person team in 4 weeks, it is on the table.
-   The team is willing to do difficult work to win. Do not eliminate options
-   because they seem hard. Eliminate them only if they are genuinely infeasible
-   within the constraints or if they score worse.
-
-5. Every option in this document was proposed seriously. None of them are
-   obviously wrong. Evaluate each one on actual merits against actual scoring
-   criteria. If an option you or I might instinctively dismiss 
-
-6. You are not limited to the options listed. If you see a better design that
-   combines elements of multiple options, or a modification to one of the
-   options that makes it significantly better, propose it. Your job is to find
-   the highest-scoring solution, not to pick from a menu.
-
-7. Your output must include:
-   - A clear final ranking of ALL options from most likely to win first place
-     to least likely, with a one-line reason for each ranking position
-   - A clear single winner with full justification
-   - A decision tree: if the winner is infeasible for any reason, what is the
-     fallback, and the fallback after that
-   - What to order tonight that is not already available
-   - What the team does in the first 48 hours
-
-8. You must not stay undecided. You must produce a final ranking and a winner.
-   If two options are genuinely close, say so but still pick one and explain
-   why that one rather than the other given the tiebreaker criteria.
-
-9. Do not reference any prior conversation, any prior design history, or any
-   assumption about what this team has already decided. Reason entirely from
-   the constraints and options in this document.
+Decision: direct solenoid pusher. See ranking section at end of document.
 
 ---
 

@@ -17,23 +17,24 @@ See docs/BOM.md. Key things to verify before checkout:
 
 ## This week: firmware (unblocked)
 
-Give docs/TASK_FIRMWARE_FIX.md to a Claude Code instance.
-Goal: firmware compiles clean with pio run.
-Priority: actuators.cpp, events.cpp, test_harness.cpp, then logger, main.
+Fix firmware compilation after design switch. Does not require hardware.
+Priority order: actuators.cpp, events.cpp, test_harness.cpp, then logger, main.
+Delete classifier.cpp/h and router.cpp/h (replaced by state_machine routing table).
+Goal: pio run compiles clean with zero errors.
 
 ---
 
 ## This week: docs restructure (parallel)
 
-Give docs/TASK_DOCS_RESTRUCTURE.md to a Claude Code instance.
-Goal: clean ARCHITECTURE.md, DIMENSIONS.md, CALIBRATION.md, TEST_PROTOCOL.md.
+Rewrite ARCHITECTURE.md for new design. Create DIMENSIONS.md, CALIBRATION.md, TEST_PROTOCOL.md.
+Update MECHANICAL, ELECTRICAL, EMBEDDED, BOM for direct pusher and chute sensing.
 
 ---
 
 ## This week: simulator update (parallel, lower priority)
 
-Give docs/TASK_SIMULATOR_UPDATE.md to a Claude Code instance.
-Goal: simulator reflects new escapement-sensing design.
+Update simulator defaults for escapement cycle (280ms), new pusher positions.
+Replace belt-mounted color dwell model with stationary chute sensing model.
 
 ---
 
