@@ -1,45 +1,41 @@
 #pragma once
 #include <Arduino.h>
+#include "sensors.h"
 
-// All events that drive the state machine. Hardware ISRs and the serial
-// test harness both produce events of these types. The state machine
-// processes them identically regardless of source.
+// All events that drive the state machine.
+// Hardware ISRs and the test harness produce events of these types.
+// The state machine processes them identically regardless of source.
+
 enum class EventType : uint8_t {
     NONE = 0,
     START_BUTTON,     // operator pressed start
-    BEAM1_BREAK,      // size beam 1 broken: brick entered sensing zone
-    BEAM2_BREAK,      // size beam 2 broken: gap_us contains elapsed time from beam 1
-    SIZE_TIMEOUT,     // beam 2 never broke within SIZE_TIMEOUT_MS: brick is 2x2
-    COLOR_SAMPLE,     // one TCS34725 reading: color field contains r, g, b, c
-    COLOR_DONE,       // dwell window complete: state machine should classify now
+    SENSING_DONE,     // senseBrickInChute() complete: senseResult contains result
+    CHUTE_EXIT,       // chute exit beam broke: brick confirmed on belt
+    PUSHER_FIRED,     // pusher solenoid fired (from timer callback)
     BIN1_CONFIRM,     // bin 1 confirmation beam broke
     BIN2_CONFIRM,     // bin 2 confirmation beam broke
     BIN3_CONFIRM,     // bin 3 confirmation beam broke
     BIN4_CONFIRM,     // bin 4 confirmation beam broke
     CONFIRM_TIMEOUT,  // no bin confirmed within CONFIRM_TIMEOUT_MS
     RESET,            // operator reset from ERROR_HALT
-    ENCODER_PULSE,    // belt speed encoder tick (H206 slotted disk)
-};
-
-struct ColorReading {
-    uint16_t r, g, b, c;
+    ENCODER_PULSE,    // belt speed encoder tick (Hall sensor on idler roller)
 };
 
 struct Event {
-    EventType  type;
-    uint32_t   timestamp_ms;
+    EventType   type;
+    uint32_t    timestamp_ms;
     union {
-        uint32_t     gap_us;   // BEAM2_BREAK: microseconds since beam 1 broke
-        ColorReading color;    // COLOR_SAMPLE: raw TCS34725 channels
+        SenseResult senseResult;   // SENSING_DONE
+        uint8_t     pusherIdx;     // PUSHER_FIRED: which pusher (1-3)
     };
 
-    Event() : type(EventType::NONE), timestamp_ms(0), gap_us(0) {}
+    Event() : type(EventType::NONE), timestamp_ms(0) {
+        senseResult = SenseResult{};
+    }
 };
 
 // Ring buffer queue. ISRs and test harness push events here.
-// State machine pops from here. Single consumer, multiple producers.
-// NOTE: push() must be called with interrupts disabled when used from ISRs.
-// Use portENTER_CRITICAL_ISR(&evtMux) when adding real ISR producers.
+// State machine pops in the main loop. Single consumer, multiple producers.
 class EventQueue {
 public:
     static constexpr uint8_t CAPACITY = 64;
@@ -57,7 +53,7 @@ private:
 
 extern EventQueue gEventQueue;
 
-// Convenience: build and push an event in one call.
+// Convenience helpers for test harness
 void pushEvent(EventType type);
-void pushEventGap(uint32_t gap_us);          // BEAM2_BREAK
-void pushEventColor(uint16_t r, uint16_t g, uint16_t b, uint16_t c); // COLOR_SAMPLE
+void pushEventSensingDone(const SenseResult& result);
+void pushEventPusherFired(uint8_t pusherIdx);

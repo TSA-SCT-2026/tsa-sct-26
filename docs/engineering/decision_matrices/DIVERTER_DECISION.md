@@ -6,7 +6,7 @@ You are being asked to make a hardware design recommendation for a competition
 project. Before you read anything else, internalize these rules completely:
 
 1. You have zero prior context on this project. There is no prior conversation.
-   There is no established design. Ignore any prior assumptions entirely.
+   There is no established design. Ignore any prior assumptions entirely. Even the information given to you below IS NOW LAW. You can disagree with anything, change it. Its just suggestions to help you.
 
 2. There is no "current design." Every option below is equally valid. Nothing
    has been decided. No firmware, no CAD, no ordered parts constrain this
@@ -25,9 +25,7 @@ project. Before you read anything else, internalize these rules completely:
 
 5. Every option in this document was proposed seriously. None of them are
    obviously wrong. Evaluate each one on actual merits against actual scoring
-   criteria. If an option you might instinctively dismiss - like glued blocks
-   on a belt, or a zig-zag multi-belt layout, or a rotary disk selector - is
-   actually the right answer, say so explicitly.
+   criteria. If an option you or I might instinctively dismiss 
 
 6. You are not limited to the options listed. If you see a better design that
    combines elements of multiple options, or a modification to one of the
@@ -79,17 +77,16 @@ Brick distribution per run:
   engineering quality, decision documentation with rejected alternatives)
 - Programming Structure: 20 points (code organization, readability)
 
-Speed is NOT explicitly in the rubric. The assumption that speed is a
-tiebreaker is the team's own inference, not stated by the competition.
-A 12-second reliable sort may score identically to an 8-second reliable sort.
-Do not optimize speed at the expense of reliability or build feasibility.
+Speed is NOT explicitly in the rubric. We assume that a faster sorter will stand out, making them think it is a better engineered design, but it is only an assumption
+
+A 12-second reliable sort may score identically to an 8-second reliable sort, or the 8 second could score better. If they think the speed was good engineering, I believe they will reward it. Thats why I want to run the belt fast and escapement fast.
 
 ---
 
 ## Hard constraints
 
 - Footprint: 610mm x 610mm maximum, cannot exceed this
-- Power: 2S LiPo 7.4V, stepped to 5V via buck converters, ~3A available
+- Power: LiPo battery
 - Microcontroller: ESP32
 - Competition date: May 1 2026
 - Parts order deadline: tonight (March 21 2026)
@@ -100,33 +97,38 @@ Do not optimize speed at the expense of reliability or build feasibility.
     in approximately 30-60 minutes once design is decided
   - Person B: CAD/mechanical focus, availability this week is uncertain,
     which is part of why this decision is open
-- Budget: approximately $130-150 total, most already spent on common parts
+- Budget: approximately $130-150 total
 
 ---
 
 ## Parts already in cart (these are sunk costs, ignore them as a constraint)
 
-The following are already ordered or in cart but should NOT bias the decision.
-If the right answer requires different parts, order them. These are listed only
-so you know what is available without additional cost:
+The following are already in the cart but should NOT bias the decision.
+If the right answer requires different parts, order them or remove parts. All parts are aliexpress except high accuracy like LiPo, the break beams used to measure brick size, etc. These are listed only
+so you know what is available without additional shopping:
 
 - JF-0530B solenoids 5V x4 (~$1.10 each)
 - Torsion spring assortment
-- NEMA 11 stepper + TMC2209 (escapement, decided separately)
-- JGB37-520 6V 600RPM gearmotor (belt drive, decided separately)
+- NEMA 11 stepper + TMC2209 (escapement)
+- JGB37-520 6V 600RPM gearmotor (belt drive)
 - L298N motor driver
 - TCS34725 color sensor
 - IR break-beams x6 pairs
 - LM2596 buck converters x2
-- GT2 timing belt + pulleys (for encoder only)
-- Wide flat rubber belt (for brick transport surface)
+- GT2 timing belt + pulleys (could get more depending on the method, not ordered yet)
+- Wide flat rubber belt (for brick transport surface, we havent added this to cart yet, how wide? it depends on the method, we could also get multiple depending on the method)
 - ESP32, caps, wire, perfboard
+- Wires, solder, perf board, other misc
 
 Parts NOT in cart that could be added tonight at low cost:
 - MG996R servo: ~$3-4 each (metal gear, 0.17s per 60 degrees at 6V)
 - Additional small DC gearmotors: ~$3-6 each
 - Additional belt/roller materials: ~$3-5
 - Additional L298N or MX1508 drivers: ~$1-2 each
+- Adafruit break beams for accurate size measurement
+- LiPo(s)
+- LiPo charger
+- Anything else you want
 
 ---
 
@@ -405,4 +407,4 @@ but "CAD the lever arm: 24mm output arm, 8mm input arm, 3mm pivot hole, print
 in this orientation." That level of specificity.
 
 Hard constraint on your output: you must not be undecided. You must produce a
-ranked list and a winner. If options are close, break the tie and explain why.
+ranked list and a winner. If options are close, break the tie and explain why, but allow a decision tree to adapt to team constraints.

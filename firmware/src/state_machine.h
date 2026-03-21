@@ -1,89 +1,85 @@
 #pragma once
 #include <Arduino.h>
 #include "events.h"
-#include "classifier.h"
+#include "sensors.h"
+
+// State machine for escapement-based sensing design (Addendum A).
+//
+// New flow:
+//   IDLE -> SENSING -> RELEASING -> TRANSIT -> CONFIRM -> (next brick or COMPLETE)
+//
+// SENSING: cam at dwell, senseBrickInChute() called, blocks ~280ms.
+// RELEASING: cam rotates, brick enters belt, pusher timer scheduled.
+// TRANSIT: brick traveling belt. Timer fires pusher at computed delay.
+// CONFIRM: waiting for expected bin beam within timeout.
+//
+// The belt carries bricks from chute exit to bins.
+// Classification is COMPLETE before the brick touches the belt.
 
 enum class State : uint8_t {
-    IDLE,         // waiting for start button
-    FEEDING,      // stepper releasing one brick, waiting for beam 1
-    SIZE_DETECT,  // waiting for beam 2 break or timeout
-    COLOR_DETECT, // accumulating color samples, waiting for COLOR_DONE
-    ROUTING,      // plow set, transitioning to CONFIRM (no wait)
-    CONFIRM,      // waiting for expected bin beam within timeout
-    ERROR_HALT,   // belt/stepper stopped, waiting for RESET
+    IDLE,       // waiting for start, display READY
+    SENSING,    // brick stationary on cam chord, senseBrickInChute() running
+    RELEASING,  // cam rotating, brick entering belt, pusher timer armed
+    TRANSIT,    // brick on belt traveling toward pusher/bin end
+    CONFIRM,    // waiting for bin beam confirmation within timeout
+    COMPLETE,   // all 24 bricks done, display results
+    ERROR_HALT, // halted on jam/miss, waiting for RESET
 };
 
-// Snapshot of one brick's journey through the pipeline.
-// Populated incrementally as the brick moves through each state.
+// Record of one brick's journey.
 struct BrickRecord {
-    uint8_t  number       = 0;
-    uint32_t tsEnterMs    = 0;    // when beam 1 broke
-    uint32_t tsConfirmMs  = 0;    // when bin beam broke
-
-    uint32_t  gap_us      = 0;    // 0 = timeout (2x2)
-    BrickSize size        = BrickSize::UNKNOWN;
-
-    uint32_t colorSumR    = 0;
-    uint32_t colorSumG    = 0;
-    uint32_t colorSumB    = 0;
-    uint16_t validSamples = 0;
-    uint16_t totalSamples = 0;
-    float    avgRatio     = 0.0f;
-    BrickColor color      = BrickColor::UNKNOWN;
-
-    BrickType type        = BrickType::UNKNOWN;
-    uint8_t   plow        = 0;
-    uint8_t   targetBin   = 0;
-    bool      confirmed   = false;
+    uint8_t       number     = 0;
+    uint32_t      releaseMs  = 0;   // when cam released the brick
+    uint32_t      confirmMs  = 0;   // when bin beam confirmed arrival
+    SenseResult   sense;            // full sensing result from chute
+    uint8_t       targetBin  = 0;   // 1-4
+    uint8_t       pusherIdx  = 0;   // 0=no pusher (default path), 1-3=pusher
+    bool          confirmed  = false;
 };
 
 class StateMachine {
 public:
     void begin();
-
-    // Process one event. Call from the main loop whenever gEventQueue has events.
     void process(const Event& e);
 
-    State   currentState()  const { return _state; }
-    uint8_t brickCount()    const { return _brickCount; }
-    uint8_t binCount(uint8_t bin) const;  // bin 1-4
+    State   currentState() const { return _state; }
+    uint8_t brickCount()   const { return _brickCount; }
+    uint8_t binCount(uint8_t bin) const;
 
     const char* stateName() const;
 
 private:
     State       _state      = State::IDLE;
-    BrickRecord _brick;                     // current in-flight brick
+    BrickRecord _brick;
     uint8_t     _brickCount = 0;
     uint8_t     _binCounts[4] = {0,0,0,0};
     uint8_t     _errorCount   = 0;
     uint32_t    _runStartMs   = 0;
     uint32_t    _confirmDeadlineMs = 0;
-    uint32_t    _transitSum   = 0;          // sum of transit times for averaging
+    uint32_t    _transitSum   = 0;
 
     void transition(State next);
     void startRun();
     void endRun();
-    void resetBrick();
-    void resetColorAccumulator();
+    void startNextBrick();
 
-    // Per-state event handlers
     void onIdle(const Event& e);
-    void onFeeding(const Event& e);
-    void onSizeDetect(const Event& e);
-    void onColorDetect(const Event& e);
-    void onRouting();
+    void onSensing(const Event& e);
+    void onReleasing(const Event& e);
+    void onTransit(const Event& e);
     void onConfirm(const Event& e);
+    void onComplete(const Event& e);
     void onErrorHalt(const Event& e);
 
-    // Returns true if event e is a bin confirmation for the expected bin.
-    bool isExpectedBinConfirm(const Event& e) const;
-    // Returns bin number if event is any bin confirm, else 0.
-    uint8_t binFromEvent(const Event& e) const;
-
-    // Poll for confirm timeout. Call every loop when in CONFIRM.
     void checkConfirmTimeout();
-
+    uint8_t binFromEvent(const Event& e) const;
     void haltSystem();
+
+    // Compute pusher index and target bin from sense result.
+    // Pusher 0 = default path (no push).
+    static uint8_t pusherFor(BrickCategory cat);
+    static uint8_t binFor(BrickCategory cat);
+
     static const char* stateNameFor(State s);
 };
 
