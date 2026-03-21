@@ -13,7 +13,7 @@ Order tonight. AliExpress: 7-20 day lead time. Amazon: 2-3 days.
 | NEMA 11 stepper 34mm | 1 | $12 | 4-wire, 5mm shaft, 1.8 deg/step. |
 | JGB37-520 gearmotor | 1 | $10 | SELECT 6V, 600 RPM. Same listing sells 7-960 RPM. 6mm D-shaft. |
 | IR break-beam 3mm (4-pack) | 2 packs | $14 | 8 pairs total. Need 6 installed + 2 spare. |
-| GT2 20-tooth pulley 5mm bore | 2 | $3 | Belt drive and idler. Verify 20mm belt width compatible. |
+| GT2 20-tooth pulley 6mm bore | 2 | $8 | Belt drive and idler. Must be 6mm bore for JGB37-520 D-shaft. Verify 20mm belt width compatible. |
 | TCS34725 color sensor | 1 | $4 | Must have onboard white LED. |
 | TMC2209 stepper driver | 1 | $3 | Verify UART-capable variant. |
 | LM2596 buck converter | 2 | $3 | One to 6V (belt+solenoids), one to 5V (logic). |
@@ -33,11 +33,10 @@ Order tonight. AliExpress: 7-20 day lead time. Amazon: 2-3 days.
 | LiPo 3S 11.1V 1300mAh XT60 | 1 | $15 | Main power. Must be 3S (11.1V), NOT 2S (7.4V). |
 | LiPo 3S balance charger | 1 | $10 | Required for safe charging. |
 | IRLZ44N MOSFET | 10 | $8 | Logic-level MOSFET for solenoid drivers. 3 used + spares. |
-| 1N4007 diodes | 100 | $4 | Flyback diodes on solenoids + spares. |
 | Resistor assortment (10k, 1k, 220 ohm) | 1 | $6 | Pull-ups for break-beams, gate resistors. |
 | Passive piezo buzzers | 2 | $3 | Audio feedback. |
 | M2 + M3 screw assortment | 1 | $8 | Frame and mount fasteners. |
-| Display (SSD1306 OLED 0.96" I2C) | 1 | $4 | Status display. Must have I2C interface. |
+| Waveshare 1.69in IPS LCD (ST7789V2, 240x280, SPI) | 1 | $12 | Color display for brick animation. Must match config.h: ST7789V2 driver, 240x280. |
 
 **Amazon subtotal: ~$58**
 
