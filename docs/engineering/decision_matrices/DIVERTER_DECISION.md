@@ -3,27 +3,53 @@
 ## Instructions for the AI reading this document
 
 You are being asked to make a hardware design recommendation for a competition
-project. Before you read anything else, internalize these rules:
+project. Before you read anything else, internalize these rules completely:
 
-1. You have no prior context on this project. Ignore any assumptions.
+1. You have zero prior context on this project. There is no prior conversation.
+   There is no established design. Ignore any prior assumptions entirely.
 
 2. There is no "current design." Every option below is equally valid. Nothing
    has been decided. No firmware, no CAD, no ordered parts constrain this
    decision. All of that can be changed in hours. Treat every option as if it
-   were being proposed fresh today.
+   were being proposed fresh today with no sunk cost.
 
 3. Do not favor complexity or simplicity as a value in itself. Do not favor
    novelty or familiarity. Do not favor options that sound more "engineered."
-   Favor the option most likely to result in first place given real constraints.
+   Favor the option most likely to result in first place.
 
-4. Every option in this document was proposed seriously by someone. None of
-   them are obviously dumb. Evaluate each one on its actual merits against the
-   actual scoring criteria. If an option you might instinctively dismiss (like
-   glued blocks on a belt, or a zig-zag multi-belt layout) is actually the
-   right answer given the constraints, say so.
+4. Ease of building is NOT a meaningful constraint for this team. If an option
+   is physically possible with a 2-person team in 4 weeks, it is on the table.
+   The team is willing to do difficult work to win. Do not eliminate options
+   because they seem hard. Eliminate them only if they are genuinely infeasible
+   within the constraints or if they score worse.
 
-5. Your recommendation must be direct. Name the option. Give the reason it
-   wins. Give the reason each other option loses. Do not hedge.
+5. Every option in this document was proposed seriously. None of them are
+   obviously wrong. Evaluate each one on actual merits against actual scoring
+   criteria. If an option you might instinctively dismiss - like glued blocks
+   on a belt, or a zig-zag multi-belt layout, or a rotary disk selector - is
+   actually the right answer, say so explicitly.
+
+6. You are not limited to the options listed. If you see a better design that
+   combines elements of multiple options, or a modification to one of the
+   options that makes it significantly better, propose it. Your job is to find
+   the highest-scoring solution, not to pick from a menu.
+
+7. Your output must include:
+   - A clear final ranking of ALL options from most likely to win first place
+     to least likely, with a one-line reason for each ranking position
+   - A clear single winner with full justification
+   - A decision tree: if the winner is infeasible for any reason, what is the
+     fallback, and the fallback after that
+   - What to order tonight that is not already available
+   - What the team does in the first 48 hours
+
+8. You must not stay undecided. You must produce a final ranking and a winner.
+   If two options are genuinely close, say so but still pick one and explain
+   why that one rather than the other given the tiebreaker criteria.
+
+9. Do not reference any prior conversation, any prior design history, or any
+   assumption about what this team has already decided. Reason entirely from
+   the constraints and options in this document.
 
 ---
 
@@ -346,30 +372,37 @@ CAD complexity: moderate to high. Two complete belt frames plus the diverter.
 
 ---
 
-## What Opus is being asked to do
+## What Opus is being asked to produce
 
-Rank the options. Recommend the best one. Be specific about:
+Read all options above fully before forming any opinion.
 
-1. Which option gives the highest probability of scoring first place given
-   the 4-week build window, 2-person team, and real scoring rubric.
+Then produce the following, in this exact order:
 
-2. For each option you reject, state the specific failure mode or constraint
-   that eliminates it.
+### 1. Full ranking (all options, best to worst for winning first place)
+One line per option. Format: "Rank N: [Option name] - [one sentence reason]"
+Include any hybrid or modified option you think is better than what is listed.
 
-3. For your recommended option, state the single biggest risk and how to
-   mitigate it.
+### 2. Winner
+State the winner clearly. Full justification covering:
+- Why it scores best against the scoring rubric
+- Why each other option scores lower (specific reason per option)
+- The single biggest risk with the winner and exactly how to mitigate it
 
-4. What should be ordered tonight that is not already in the cart.
+### 3. Decision tree
+If the winner turns out to be infeasible after trying, what is the fallback.
+If that fallback is also infeasible, what is the fallback after that.
+Be specific about what "infeasible" means for each - what specific failure
+condition triggers the fallback.
 
-5. What should the team do in the first 48 hours after making this decision.
+### 4. What to order tonight
+Specific parts not in the available parts list that are needed for the winner.
+Name, quantity, approximate cost, and why each is needed.
 
-Constraints on your answer:
-- Do not recommend an option just because it sounds impressive.
-- Do not recommend an option just because it sounds simple.
-- Do not penalize options for using unconventional approaches if those
-  approaches actually solve the problem within the constraints.
-- Do not reference any prior conversation or design history.
-  Reason entirely from the constraints and options presented here.
-- Speed optimization is secondary to reliability and build feasibility.
-  A 12-second sort that works every time beats an 8-second sort with
-  a 10% failure rate.
+### 5. First 48 hours
+Concrete tasks for Person A (firmware) and Person B (CAD/mechanical) in the
+first 48 hours after this decision is made. Be specific - not "start the CAD"
+but "CAD the lever arm: 24mm output arm, 8mm input arm, 3mm pivot hole, print
+in this orientation." That level of specificity.
+
+Hard constraint on your output: you must not be undecided. You must produce a
+ranked list and a winner. If options are close, break the tie and explain why.
