@@ -8,30 +8,24 @@ Check items off as you go. This file is the source of truth for build status.
 ## Phase 0: Ordering (gate: all parts in transit before March 26)
 
 ### AliExpress cart - verify before checkout
-- [ ] GT2 belt: confirm 400mm closed loop is the selected variant
-- [ ] 0530 solenoid: confirm 5V variant selected (not 12V or 24V)
-- [ ] NEMA 11 stepper: confirm 28mm body, 4-wire bipolar, 5mm shaft
-- [ ] GT2 20-tooth pulley: confirm 5mm bore
+- [ ] GT2 belt: confirm 640mm closed loop, 20mm wide (NOT 400mm, NOT 6mm wide)
+- [ ] 0530 solenoid: confirm 6V variant selected (not 12V or 24V)
+- [ ] NEMA 11 stepper: confirm 34mm body, 4-wire bipolar, 5mm shaft
+- [ ] GT2 20-tooth pulley: confirm 5mm bore, 20mm wide belt compatible
 - [ ] LM2596 buck converter: confirm buying 2 units
-- [ ] TMC2209 stepper driver: confirm buying 2 units
-- [ ] H206 slot optocoupler: confirm buying 2 units
+- [ ] TMC2209 stepper driver: confirm UART-capable variant, buying 1 (+ 1 spare recommended)
 - [ ] TCS34725 color sensor: confirm LED and INT pin are broken out on the board
 - [ ] JGB37-520 gearmotor: confirm 6V variant, 600 RPM no-load, 6mm D-shaft (same listing sells 7-960 RPM - select carefully)
-- [ ] IR break-beams (AliExpress): 4 pairs, bin confirmation only
-- [ ] Torsion springs: assortment with multiple stiffness values
-- [ ] Aluminum heatsinks: small enough to fit solenoid body (~20x20mm)
-- [ ] Thermal adhesive tape: in cart
-- [ ] PCB protoboard: in cart
-- [ ] 22AWG stranded wire kit: in cart
-
-### Adafruit - order same session as AliExpress
-- [ ] IR break-beam 3mm pairs #2168: 2 packs (4 pairs total, 2 used for size detection, 2 spare)
-- [ ] Display ordered: ST7789 color TFT (Pimoroni 1.3in or Waveshare 1.69in)
-- [ ] Display is NOT SSD1306 (monochrome, incompatible with animation requirement)
+- [ ] IR break-beams: 2 packs of 4-pair (8 total: 1 size beam + 1 chute exit + 4 bin confirms + 2 spare)
+- [ ] Torsion springs: assortment for pusher spring return
+- [ ] Perfboard, 22AWG wire, L298N: in cart
 
 ### Amazon
-- [ ] 2S LiPo 7.4V 2000mAh: 2 units ordered (Zeee, Ovonic, or Gens Ace)
-- [ ] 2S balance charger ordered
+- [ ] LiPo 3S 11.1V 1300mAh XT60: 1 unit ordered (NOT 2S - design uses 3S)
+- [ ] 3S balance charger ordered
+- [ ] IRLZ44N MOSFETs: 10-pack ordered (solenoid drivers)
+- [ ] 1N4007 diodes: 100-pack ordered (flyback diodes)
+- [ ] Display (SSD1306 OLED 0.96" I2C or equivalent): ordered
 
 ### Already owned - verify quantities now
 - [ ] ESP32 DevKit: present and functional
@@ -49,24 +43,23 @@ Check items off as you go. This file is the source of truth for build status.
 
 ## Phase 1: Firmware skeleton (March 17-21, no hardware needed)
 
-- [x] State machine scaffold: IDLE/FEEDING/SIZE_DETECT/COLOR_DETECT/ROUTING/CONFIRM/ERROR_HALT
+- [x] State machine scaffold: IDLE/SENSING/RELEASING/TRANSIT/CONFIRM/COMPLETE/ERROR_HALT
 - [x] ERROR_HALT stops belt, stepper, all solenoids
-- [x] Button triggers IDLE to FEEDING
-- [x] End-of-run count verification against expected (6, 6, 4, 8)
-- [x] Color sensor: N-sample averaging with black belt filter
+- [x] Button triggers IDLE to SENSING
+- [x] End-of-run count verification against expected (6, 6, 8, 4)
+- [x] Color sensor: N-sample averaging in chute (stationary brick, no belt filter needed)
 - [x] Color ratio classifier with threshold placeholder in config.h
-- [x] Thermal model: exponential decay, WARNING and DANGER thresholds, all solenoids and stepper
+- [x] Thermal model: exponential decay, WARNING and DANGER thresholds, solenoids and stepper
 - [x] Bin confirmation: 500ms timeout, ERROR_HALT on miss
 - [x] Serial logging: timestamp on every event, per-brick log, end-of-run summary, CSV mode
 - [x] Test harness: serial command interface, `test fullrun`, `test classify`, `log csv`
 - [ ] Firmware compiles clean: run `pio run` from firmware/ with zero errors
-- [ ] `test fullrun` routes all 24 bricks correctly and summary matches (6, 6, 4, 8)
-- [ ] Hardware timer interrupt stub for size detection (1us resolution)
+- [ ] `test fullrun` routes all 24 bricks correctly and summary matches (6, 6, 8, 4)
 - [ ] I2C clock set to 400kHz before first sensor read in init code
 - [ ] Stepper: step and direction control, full rotation per release
 - [ ] Stepper: reduced hold current between releases
-- [ ] Solenoid: PWM drop to 40% at 20ms, de-energize at ~280ms
-- [ ] Display module: ST7789 SPI driver, READY/SORTING/SORT COMPLETE/ERROR screens
+- [ ] Solenoid: 40ms on, spring return. No PWM hold needed.
+- [ ] Display module: I2C OLED driver, READY/SORTING/SORT COMPLETE/ERROR screens
 - [ ] Display: brick animation triggers on ROUTING (correct color, correct aspect ratio)
 - [ ] Display: bin counter flash and increment
 - [ ] Display: thermal bar on sidebar
@@ -117,11 +110,11 @@ Do every one of these on breadboard before any integration. Log everything.
 - [ ] L298N PWM tested at 1kHz, 5kHz, 10kHz: pick frequency, log result
 - [ ] Actual belt speed at operating PWM measured and recorded
 
-### IR break-beams - size detection (Adafruit pairs)
-- [ ] Both beams operational: emitter powered, receiver gives clean HIGH/LOW
-- [ ] 2x2 brick at 19mm spacing: second beam never breaks (confirm timeout classification)
-- [ ] 2x3 brick at 19mm spacing: second beam breaks within expected window
-- [ ] Test at multiple speeds, log timing data
+### IR break-beam - size detection (single beam in chute)
+- [ ] Beam operational: emitter powered, receiver gives clean HIGH/LOW
+- [ ] 2x2 brick at cam chord: beam clear (HIGH), reads as 2x2 in firmware
+- [ ] 2x3 brick at cam chord: beam blocked (LOW), reads as 2x3 in firmware
+- [ ] Test 10 bricks of each type, log results
 
 ### IR break-beams - bin confirmation (AliExpress pairs)
 - [ ] All 4 pairs powered and giving clean digital output
@@ -130,19 +123,19 @@ Do every one of these on breadboard before any integration. Log everything.
 ### Color sensor
 - [ ] I2C communication confirmed at 400kHz
 - [ ] Shroud installed before any reading is logged
-- [ ] Red 2x2 brick: log raw R/G/B values and ratio for 10 passes
-- [ ] Blue 2x2 brick: log raw R/G/B values and ratio for 10 passes
-- [ ] Red 2x3 brick: log raw R/G/B values and ratio for 10 passes
-- [ ] Blue 2x3 brick: log raw R/G/B values and ratio for 10 passes
-- [ ] Bare belt: log raw total to set black belt filter threshold
-- [ ] Clear separation visible between red and blue ratios
-- [ ] Threshold value set in config.h from empirical data
+- [ ] Run docs/CALIBRATION.md procedure: 20 readings per brick type in chute
+- [ ] Red bricks: log r_ratio values, compute mean and stddev
+- [ ] Blue bricks: log r_ratio values, compute mean and stddev
+- [ ] Clear separation visible between red and blue clusters (no overlap)
+- [ ] COLOR_RED_THRESHOLD set in config.h from empirical data
+- [ ] 10 verification bricks per type: all classify correctly before locking threshold
 
 ### Solenoids
 - [ ] All 3 flyback diodes installed, orientation verified with multimeter (before any energization)
-- [ ] Each solenoid energizes and extends stroke on command
-- [ ] PWM hold at 40% maintains extension
-- [ ] Spring selected: heaviest spring each solenoid can reliably overcome
+- [ ] 100uF bulk capacitor on 6V rail, correct polarity
+- [ ] Each solenoid energizes and extends stroke on command (40ms on-time)
+- [ ] Spring return completes within 100ms of de-energize
+- [ ] No PWM hold - direct push only, solenoid fires full then releases
 - [ ] Heatsinks attached to all 3 solenoid bodies with thermal adhesive tape
 
 ### Belt encoder

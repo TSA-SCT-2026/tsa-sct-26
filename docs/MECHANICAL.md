@@ -1,211 +1,168 @@
-# Mechanical Design Architecture
+# Mechanical Design
+
+All dimensions are in docs/DIMENSIONS.md. This document covers design rationale,
+construction method, and assembly notes.
 
 ## Brick dimensions (source of truth)
 
-| Brick | Length | Width | Height | Count | Colors |
-|-------|--------|-------|--------|-------|--------|
-| 2x2   | 15.8mm | 15.8mm | 11.4mm | 12 | 6 red, 6 blue |
-| 2x3   | 23.7mm | 15.8mm | 11.4mm | 12 | 4 red, 8 blue |
+| Brick | Width (along belt) | Depth (across belt) | Height | Count |
+|-------|-------------------|---------------------|--------|-------|
+| 2x2 | 15.8mm | 15.8mm | 11.4mm | 12 (6 red, 6 blue) |
+| 2x3 | 23.7mm | 15.8mm | 11.4mm | 12 (4 red, 8 blue) |
 
-Both bricks share the same width and height. Only length differs by 7.9mm. This single fact drives most mechanical and sensor decisions in the project.
+---
 
-### Brick reference documentation
+## Chute
 
-Official specifications and CAD models:
+Vertical rectangular tube, 22mm x 27mm internal, 310mm tall.
+All 24 bricks load before the run starts. Gravity feeds the queue.
 
-**2x2 Brick**
-- [BrickLink product page](https://www.bricklink.com/v2/catalog/catalogitem.page?P=3003&name=Brick%202%20x%202&category=%5BBrick%5D#T=C)
-- [TraceParts CAD model](https://www.traceparts.com/en/product/legor-legor-brick-2x2?CatalogPath=TRACEPARTS%3ATP02003002001002003&Product=10-20122010-068626)
+**Why 22mm x 27mm:** The 22mm dimension is the channel width (same as the belt channel).
+Bricks travel studs-up, length along the 27mm axis. The 27mm gives 1.65mm clearance per
+side for the 23.7mm brick face. PVC pipe is not a substitute: it cannot maintain brick
+orientation through the escapement.
 
-**2x3 Brick**
-- [BrickLink product page](https://www.bricklink.com/v2/catalog/catalogitem.page?P=3002#T=C)
-- [TraceParts CAD model](https://www.traceparts.com/en/product/legor-legor-brick-2x3?CatalogPath=TRACEPARTS%3ATP02003002001002003&Product=10-20122010-069842)
+Top is flared to 35mm x 40mm over 20mm height for easy loading. A 3D-printed guide at the
+flare entrance shows the correct brick orientation (studs up, length along travel axis).
 
-## Physical constants
+**Construction:** 3mm PLA, printed as rectangular tube. If printer bed is too small for
+310mm vertical: print in two halves with a tongue-and-groove joint, CA glue + external sleeve.
 
-```
-Belt width:              25mm
-Belt type:               GT2 closed loop, 400mm, 6mm wide
-Pulley teeth:            20
-Pulley pitch diameter:   12.73mm (20 * 2mm pitch / pi)
-Pulley center-to-center: 180mm
-Belt speed (operating):  200mm/s
-Brick spacing:           28mm center-to-center (23.7mm brick + 4.3mm buffer)
-Feed rate:               5 bricks per second
-Total sort time:         ~10 seconds for 24 bricks
-Footprint:               610mm x 610mm
-Materials:               3D printed PLA for all structural parts, fasteners and electronics excepted
-```
+**Sensor integration:** At the cam level, two features are cut into the chute wall:
+- 12mm x 12mm window for the TCS34725 color sensor (looking at brick's flat side face)
+- Break-beam holes in the opposite walls for the size beam
 
-Belt length math:
-```
-GT2 20-tooth pulley pitch diameter = 12.73mm
-Belt wrap contribution = pi * 12.73 = 39.96mm, rounds to 40mm
-400mm belt -> center distance = (400 - 40) / 2 = 180mm
-```
+---
 
-System belt usage:
-```
-Chute base transition:       50mm
-Taper channel:               60mm
-Sensing zone:                30mm
-Sensor to first plow buffer: 30mm
-3 plows at ~28mm each:       84mm
-Last plow to belt end:       20mm
-Total belt needed:           274mm
-Belt usable top run:         ~360mm
-Margin:                      ~86mm
-```
+## Escapement
 
-## Parts to print (in order)
+Single-lobe cam disk on NEMA 11 stepper shaft. One full rotation releases one brick.
+Self-indexing via step counting. Cannot double-feed by design.
 
-1. Chute transition piece: print and test first, before anything else
-2. Stepper cam disk: simple geometry, early iteration is cheap
-3. Sensor shroud for color sensor: needed for calibration validation
-4. Everything else once the chute transition is proven
+**Cam profile:**
+- 30mm disk diameter, 8mm lobe extension, 50-degree lobe arc
+- Flat chord (2mm depth) on the disk body where the bottom brick rests
+- Sharp lobe trailing edge: acts as the blocking surface for the next brick
+- Print at 0.12mm layer height, 100% infill
 
-Do not print the full frame until the chute transition piece reliably feeds bricks at belt speed. That piece is the gate for the entire mechanical build.
+**Tuning:** If double-releases occur, increase lobe arc by 5 degrees and reprint.
+At 3 rev/sec, the 50-degree dwell window is 46ms. Adequate to block the next brick.
 
-## Gravity chute
+**Exit:** The cam pushes the bottom brick horizontally out of the chute onto a 10mm ramp
+with a 5-degree decline, which deposits the brick onto the moving belt. The ramp is critical.
+Without it, the brick drops 2-3mm and may bounce.
 
-Near-vertical stack angle: ~75 degrees from horizontal. Bricks orient studs-up for low contact area and minimal friction. Gravity feeds them down into the escapement.
+**Thermal management:** TMC2209 current reduction between releases. StallGuard detects
+jams (stall flagged via UART). No additional hardware needed.
 
-```
-Chute inner width:  17.3mm (15.8mm brick + 1.5mm clearance)
-Stack height (all 2x3): 24 * 11.4mm = 273mm
-Realistic mixed stack:  ~240mm
-```
+---
 
-The inner profile must be rectangular to maintain brick orientation. Round pipe cannot constrain rotation. PVC pipe is not a viable substitute. Aluminum square tube would be dimensionally more accurate than printed PLA but adds sourcing complexity and is harder to integrate with the printed frame. Printed PLA is the correct choice with proper tolerance allowance.
+## Belt Channel
 
-A brick loaded sideways jams at the chute entrance rather than deep in the system. This is the correct failure mode: visible, immediate, and recoverable.
+22mm wide x 15mm tall above belt surface. Self-aligns 2x3 bricks: the 23.7mm dimension
+is blocked by the 22mm channel width, so 2x3 bricks can only travel in the correct
+orientation. 2x2 bricks (15.8mm) pass through freely.
 
-### Chute transition piece (highest risk item in the project)
+**Wall construction:** Two 3mm PLA walls, 290mm long.
+- Pusher side: three slots (24mm wide x 13mm tall) at pusher positions. Edges chamfered
+  1mm to prevent brick studs from catching.
+- Bin side: three openings (30mm wide x 13mm tall) aligned with pusher slots.
+- Interior surfaces: smooth. Sand after printing.
 
-The transition from near-vertical to horizontal at the chute base is a compound geometry problem. FDM tolerances bite hard on curved internal profiles. This piece must:
-- Redirect bricks smoothly from ~75 degrees to horizontal
-- Not allow bricks to tumble, jam, or stack at the curve
-- Work reliably at the escapement release rate with bricks of both lengths
+**Belt bed:** 3mm aluminum flat bar, 290mm x 22mm, between the pulleys below the belt.
+Covered with PTFE tape. The belt slides over this. Do not 3D print this piece (FDM warps).
 
-Print this first. Test with real bricks. Iterate until it works every time. Budget 3 iterations minimum. Do not proceed to full frame CAD until this passes. If this piece cannot be made to work reliably, the entire near-vertical chute concept needs revision before anything else is built.
+---
 
-## Stepper cam escapement
+## Pushers
 
-Single-lobe cam disk mounted on the stepper motor shaft. One full rotation releases exactly one brick and blocks the queue for the remainder of the rotation. This is mechanically guaranteed; it cannot release a partial brick.
+Three identical direct solenoid pusher assemblies at 75mm, 150mm, 225mm from chute exit.
 
-```
-Approximate lobe dimensions: 12mm height, 15mm width
-One full rotation = 200 steps (1.8 degrees per step)
-Release portion = ~50 steps (90 degrees)
-At target speed: 30ms per release
-```
+**No lever arm.** The solenoid rod pushes the face plate directly. Spring return is passive
+and fast. This is simpler and more reliable than a lever design.
 
-The cam disk geometry does not require a reference CAD model. A single-lobe disk is trivial to draw from these dimensions: a circle with one raised protrusion. The lobe pushes the bottom brick onto the belt as it passes; the rest of the disk holds the queue. Iterate the lobe profile with real bricks if the first print does not push cleanly.
+**Solenoid mount:** 3D-printed U-bracket clamps the JF-0530B body (13mm x 16mm x 30mm).
+Two M2 screws through bracket into solenoid mounting tabs. Bracket mounts to belt frame
+rail via M3 bolts through a 5mm-travel slot (for fine-tuning position along belt axis).
+Solenoid rod center: 6mm above belt surface (aligned to brick center of mass).
 
-The stepper holds its position electrically between releases using reduced current. This means the queue cannot backdrive the escapement when the motor is stationary.
+**Face plate:** 20mm wide (along belt axis) x 11mm tall x 2mm thick. PLA at 100% infill
+or 2mm aluminum sheet. Attached to solenoid rod via a press-fit sleeve with CA glue.
+All edges chamfered 0.5mm. Face surface flat, perpendicular to push direction.
 
-## Taper channel
+**Timing window (2x2 brick at 200mm/s):** (15.8 + 20) / 200 * 1000 = 179ms.
+Solenoid on-time: 40ms. Margin: 139ms. Adequate even with significant timing drift.
 
-```
-Entrance width: 30mm
-Exit width:     17.3mm
-Taper length:   60mm
-Position:       between chute exit and sensing zone
-```
+---
 
-Forces bricks square before sensors and plows. A severely yawed brick jams here, not at the plow. Better failure mode.
+## Sensing (at escapement level)
 
-## Sensing zone
+**Size beam:** Single IR break-beam crosses the 27mm chute dimension at 20mm from the
+reference wall. Emitter in one wall, receiver in the opposite wall. 10k pull-up on
+receiver output. If beam is blocked: brick is 2x3. If clear: brick is 2x2.
+Gap between brick sizes at beam position: 4.2mm on each side of threshold. Very robust.
 
-```
-Total zone length:     ~30mm
-IR break-beam spacing: 19mm (along travel axis)
-Color sensor standoff: 5-10mm above belt surface
-```
+**Color sensor:** TCS34725 on chute wall exterior, aligned with the 12mm x 12mm window.
+Black PLA shroud (15mm deep) surrounds the window, blocking all ambient light.
+The sensor's onboard LED is the only illumination. At 24ms integration time, the
+260ms cam dwell yields 10+ samples from a stationary brick. Use 6ms integration for
+more samples if needed.
 
-The color sensor shroud is part of the channel roof geometry. Print it as one piece with the channel. Ambient light is the primary failure mode for the color sensor. The shroud must block all light except the sensor's integrated LED.
+Mount sensor with shroud flush against the chute wall. No gap between shroud and chute.
+Calibrate only with the shroud installed. See docs/CALIBRATION.md.
 
-### Shroud design requirements
+---
 
-The shroud is not just a box around the sensor. It needs to:
+## Bins
 
-1. Seal against the belt surface (or come very close) on the leading and trailing edges so ambient light cannot enter from the direction of travel. A gap of even 2-3mm at the belt surface at this standoff distance leaks enough light to shift color readings.
-2. Allow bricks to enter and exit freely without snagging. The opening should be wider than the brick but use a labyrinth or overlapping lip geometry to block direct light paths rather than a simple open slot.
-3. Have a flat ceiling at a consistent standoff distance (5-10mm). Variation in standoff distance across the brick changes the integrated light level and potentially the ratio. Consistent geometry matters.
-4. Be CAD'd with the color sensor dimensions in mind. Mount the sensor board flush against the shroud ceiling, not floating inside it.
+Four bins, labeled on the outside: "2x2 RED", "2x2 BLUE", "2x3 BLUE", "2x3 RED".
 
-This piece needs to be iterated. Print it early, test it with a handheld flashlight pointed at the belt from various angles while the sensor is logging readings. If the ratio shifts when ambient light changes, the shroud is not tight enough.
+| Bin | Category | Internal W x L x H |
+|-----|----------|---------------------|
+| 1 | 2x2 red | 30mm x 30mm x 80mm |
+| 2 | 2x2 blue | 30mm x 30mm x 80mm |
+| 3 | 2x3 blue | 30mm x 35mm x 100mm |
+| 4 | 2x3 red (default) | 30mm x 35mm x 60mm |
 
-### Brick orientation enforcement at chute entrance
+Floor angled 10 degrees toward the back wall: bricks slide to rest, cannot bounce out.
+Break-beam slot at entrance of each bin. Bins 1-3 beside the belt channel; bin 4 at
+the belt end below the exit point.
 
-The chute width (17.3mm) already prevents 2x3 bricks from entering rotated 90 degrees. 23.7mm does not fit in 17.3mm. A 2x2 is square so rotation does not matter for it. Studs up vs studs down does not affect size or color measurements.
+---
 
-The remaining risk is a brick loaded completely on its side (11.4mm height presenting instead of 15.8mm length). Make the chute entrance opening narrow enough in the vertical dimension to prevent this. If a brick cannot enter on its side at the top of the chute, this failure mode is eliminated before it can cause a jam or misclassification.
+## Base Plate and Frame
 
-## Plow diverters
+**Base plate:** 610mm x 610mm x 6mm MDF or plywood. Finish with clear polyurethane.
+Pre-drill mounting holes for belt frame, chute support, and bins.
 
-Three plows, Class 3 lever geometry, solenoid actuated, spring return.
+**Belt frame:** Two side rails (290mm x 8mm x 40mm) plus cross-braces. PLA or aluminum.
+Belt sits between rails; channel walls sit on top of rails.
 
-Lever geometry:
-```
-Pivot to solenoid attachment: 8mm (L1)
-Pivot to plow tip:            24mm (L2)
-Mechanical advantage ratio:   3.0
-Solenoid stroke:              10mm
-Tip travel:                   30mm (adequate to clear 15.8mm brick width on 25mm belt)
-```
+**Chute support:** Vertical plate (310mm x 50mm x 5mm) bolted to base plate with two
+triangular gussets (50mm x 50mm x 5mm). Chute must not sway during escapement operation.
 
-Tip travel needed calculation:
-```
-(belt width / 2) + (brick width / 2) + buffer = 12.5 + 7.9 + 4 = 24.4mm -> use 30mm
-```
+**Electronics bay:** Underneath belt frame and beside chute. ESP32, TMC2209, MOSFET board,
+buck converters, and terminal strips mount here. Route cables cleanly with ties.
 
-The solenoid connects to the lever arm via a pinned connection (M2 pin through a drilled hole or small clevis). Not a hook or slot. A pinned connection eliminates rattle, wear, and angular play at speed.
-
-A slot in the channel wall accommodates the arc the solenoid rod travels. At these angles the arc is nearly linear. This is not a fabrication problem.
-
-Chamfer the leading face of each plow arm at 35 degrees. Slightly yawed bricks get nudged square rather than jamming against the face.
-
-### Plow spacing along belt
-
-```
-Footprint per plow along belt: ~32mm (lever length + 8mm safety gap)
-3 plows total:                 ~96mm
-```
-
-### Spring selection
-
-The force margin is large (~94x what the spring requires to return the arm). Use the heaviest spring from the assortment that the solenoid can still reliably overcome. Heavier spring means faster retraction, which is the optimization target. Test with the actual solenoid at operating voltage before committing to a spring weight.
-
-## Bin design
-
-Four bins, one per brick type. Bricks arrive at 200mm/s and will bounce out of empty bins without some form of energy absorption.
-
-Options: foam sheet glued to bin floor, felt lining, or a short downward ramp printed into the bin geometry that redirects kinetic energy downward rather than back toward the belt. The ramp approach is preferable because it is zero-cost (print it into the bin), durable, and does not require gluing or sourcing foam in the right thickness.
-
-## Fastener conventions
-
-- Structural frame joints: M3
-- Lever arm pin connections: M2
-- Sensor and electronics mounts: M3 preferred
-- Pre-order both M2 and M3 hardware kits
-
-## Print tolerances
-
-FDM variance is roughly 0.2mm to 0.5mm. All critical dimensions need explicit tolerance notes in CAD:
-
-- Belt channel width (25mm): ±0.3mm acceptable
-- Chute inner width (17.3mm): ±0.2mm, tighter is better, too tight and bricks drag
-- Pulley center distance (180mm): tensioner slot provides 5mm of adjustment
-- Plow lever arm lengths: ±0.5mm acceptable, ratio is what matters not absolute
-
-Test fit all printed channel sections with real bricks before assembling the full frame.
+---
 
 ## Assembly order
 
-1. Chute transition piece validated in isolation
-2. Full frame with all channel sections
-3. Dry assembly: no wiring, walk a brick through by hand from chute to belt end
-4. Fix all print fit issues before wiring anything
-5. Wiring and electronics integration
-6. First powered test
+1. Print test pieces: channel section, chute transition, cam disk.
+2. Test fit with real LEGO bricks before full-size prints.
+3. Assemble belt frame with rollers and belt. Test belt motion with motor only.
+4. Attach channel walls to belt frame.
+5. Install solenoid mounts and face plates. Manually fire each: verify brick exits cleanly.
+6. Assemble chute and cam. Load 10 bricks, run escapement, verify single releases.
+7. Mount sensors (size beam, color sensor with shroud, chute exit beam, bin beams).
+8. Wire everything. Install bins.
+9. Full integration: 24-brick sort attempt.
+10. Calibrate color thresholds. Run 10-run reliability test. Log all runs.
+
+---
+
+## Highest fabrication risk
+
+The chute exit ramp (transition from cam to belt) is the hardest piece to get right.
+FDM tolerances compound here. Print this first. Test with real bricks before printing
+anything else. Budget 3 iterations. Everything else gates on this piece working.
