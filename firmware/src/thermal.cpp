@@ -50,11 +50,8 @@ float ThermalModel::maxHeat() const {
 }
 
 uint16_t ThermalModel::adjustedStepperRpm() const {
-    switch (state()) {
-        case ThermalState::WARNING: return STEPPER_RPM_WARNING;
-        case ThermalState::DANGER:  return STEPPER_RPM_DANGER;
-        default:                    return STEPPER_RPM_NORMAL;
-    }
+    // Convert SPS to RPM for log readability. Not used for hardware timing.
+    return (uint16_t)((uint32_t)adjustedStepperSps() * 60u / STEPPER_STEPS_PER_REV);
 }
 
 uint16_t ThermalModel::adjustedStepperSps() const {

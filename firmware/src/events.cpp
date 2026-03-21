@@ -29,22 +29,21 @@ void pushEvent(EventType type) {
     Event e;
     e.type         = type;
     e.timestamp_ms = millis();
-    e.gap_us       = 0;
     gEventQueue.push(e);
 }
 
-void pushEventGap(uint32_t gap_us) {
+void pushEventSensingDone(const SenseResult& result) {
     Event e;
-    e.type         = EventType::BEAM2_BREAK;
+    e.type         = EventType::SENSING_DONE;
     e.timestamp_ms = millis();
-    e.gap_us       = gap_us;
+    e.senseResult  = result;
     gEventQueue.push(e);
 }
 
-void pushEventColor(uint16_t r, uint16_t g, uint16_t b, uint16_t c) {
+void pushEventPusherFired(uint8_t pusherIdx) {
     Event e;
-    e.type         = EventType::COLOR_SAMPLE;
+    e.type         = EventType::PUSHER_FIRED;
     e.timestamp_ms = millis();
-    e.color        = {r, g, b, c};
+    e.pusherIdx    = pusherIdx;
     gEventQueue.push(e);
 }

@@ -16,7 +16,7 @@ void StateMachine::begin() {
 void StateMachine::process(const Event& e) {
     if (e.type == EventType::NONE) return;
 
-    if (_state == State::CONFIRM) checkConfirmTimeout();
+    if (_state == State::CONFIRM || _state == State::TRANSIT) checkConfirmTimeout();
 
     switch (_state) {
         case State::IDLE:      onIdle(e);      break;
@@ -99,6 +99,14 @@ void StateMachine::onTransit(const Event& e) {
     // PUSHER_FIRED is pushed by the actuator timer when the solenoid fires.
     if (e.type == EventType::PUSHER_FIRED) {
         gThermal.onSolenoidFire(_brick.pusherIdx);
+    }
+
+    // Timeout: no bin confirmed before deadline.
+    if (e.type == EventType::CONFIRM_TIMEOUT) {
+        gLogger.errorHalt(_brick.number, _brick.targetBin, "TIMEOUT");
+        haltSystem();
+        transition(State::ERROR_HALT);
+        return;
     }
 
     // Check bin confirmations even during transit (brick may arrive quickly).

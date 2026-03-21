@@ -6,26 +6,23 @@
 //
 // Commands:
 //
-//   sim start                    inject START_BUTTON
-//   sim beam1                    inject BEAM1_BREAK (brick entered sensing zone)
-//   sim beam2 <gap_us>           inject BEAM2_BREAK with given gap (2x3 = ~95000)
-//   sim timeout                  inject SIZE_TIMEOUT (2x2 brick)
-//   sim color <r> <g> <b> <c>   inject one COLOR_SAMPLE reading
-//   sim colordone                inject COLOR_DONE (end of dwell window)
-//   sim bin <n>                  inject BIN{n}_CONFIRM (n = 1-4)
-//   sim jam                      inject CONFIRM_TIMEOUT (no bin arrived)
-//   sim reset                    inject RESET (clears ERROR_HALT)
+//   sim start                          inject START_BUTTON
+//   sim sensing <cat>                  inject SENSING_DONE
+//                                        cat: 2x2_RED | 2x2_BLUE | 2x3_RED | 2x3_BLUE
+//   sim chute_exit                     inject CHUTE_EXIT (brick entered belt)
+//   sim pusher <n>                     inject PUSHER_FIRED (n = 1-3)
+//   sim bin <n>                        inject BIN{n}_CONFIRM (n = 1-4)
+//   sim jam                            inject CONFIRM_TIMEOUT (no bin arrived)
+//   sim reset                          inject RESET (clears ERROR_HALT)
 //
-//   test classify <r> <g> <b> <gap_us>   classify a brick from raw inputs, print result
-//   test route <size> <color>             show plow and bin for a brick type
-//   test thermal <n>                      fire all solenoids n times, show heat evolution
-//   test fullrun                          simulate a complete 24-brick run
+//   test thermal [n]                   fire all solenoids n times, show heat evolution
+//   test fullrun                       simulate a complete 24-brick run
 //
-//   log human                    switch to human-readable output (default)
-//   log csv                      switch to CSV output (paste into spreadsheet)
+//   log human                          switch to human-readable output (default)
+//   log csv                            switch to CSV output (paste into spreadsheet)
 //
-//   status                       print current state, brick count, bin counts, thermal
-//   help                         print this command list
+//   status                             print current state, brick count, bin counts, thermal
+//   help                               print this command list
 
 namespace testHarness {
     void begin();

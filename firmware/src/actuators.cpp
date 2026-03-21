@@ -26,37 +26,27 @@ void beltSetDuty(uint8_t duty) {
     gLogger.info(buf);
 }
 
-void plowFire(uint8_t plow) {
-    gLogger.plowExtend(plow);
-    // Real: ledcWrite(plow pin, SOL_FULL_PWM)
-    // Timer to drop to hold at SOL_FULL_MS, de-energize at SOL_DEENERGIZE_MS
-    gLogger.plowHold(plow);
-    gLogger.plowRelease(plow);
-}
-
-void plowRelease(uint8_t plow) {
-    char buf[32];
-    snprintf(buf, sizeof(buf), "STUB plow %d FORCE RELEASE", plow);
+void armPusher(uint8_t pusherIdx, uint32_t fireAtMs) {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "STUB armPusher idx=%d fireAt=%lums on_ms=%d",
+             pusherIdx, fireAtMs, SOL_ON_MS);
     gLogger.info(buf);
+    // Real: esp_timer_once callback fires solenoid pin HIGH at fireAtMs,
+    //       then LOW after SOL_ON_MS. Spring returns rod.
 }
 
-void plowReleaseAll() {
-    gLogger.info("STUB all plows FORCE RELEASE");
+void pusherReleaseAll() {
+    gLogger.info("STUB all pushers FORCE DE-ENERGIZE");
+}
+
+void stepperSense() {
+    gLogger.info("STUB stepper SENSE (hold cam at dwell, sensing begins)");
+    // Real: hold current cam position, signal sensing module to start sampling
 }
 
 void stepperRelease() {
-    gLogger.info("STUB stepper RELEASE one brick");
-    // Real: step STEPPER_STEPS_PER_REV steps at adjustedStepperRpm()
-}
-
-void stepperSetRpm(uint16_t rpm) {
-    char buf[40];
-    snprintf(buf, sizeof(buf), "STUB stepper rpm=%d", rpm);
-    gLogger.info(buf);
-}
-
-void stepperHold() {
-    gLogger.info("STUB stepper HOLD (reduced current)");
+    gLogger.info("STUB stepper RELEASE one brick (one full cam revolution)");
+    // Real: step STEPPER_STEPS_PER_REV steps at adjustedStepperSps()
 }
 
 void stepperStop() {
@@ -82,7 +72,7 @@ void displayComplete(uint32_t totalMs, const uint8_t binCounts[4]) {
 }
 
 void displayError(uint8_t brickNum, uint8_t expectedBin) {
-    char buf[48];
+    char buf[56];
     snprintf(buf, sizeof(buf), "STUB display ERROR brick=%d expected_bin=%d",
              brickNum, expectedBin);
     gLogger.info(buf);

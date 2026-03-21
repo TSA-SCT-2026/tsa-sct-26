@@ -13,16 +13,15 @@ namespace actuators {
     void beltStop();
     void beltSetDuty(uint8_t duty);
 
-    // Solenoid plows. plow is 1-3.
-    // Full PWM for SOL_FULL_MS, then drops to hold PWM, then auto-releases at SOL_DEENERGIZE_MS.
-    void plowFire(uint8_t plow);
-    void plowRelease(uint8_t plow);       // force immediate release (error halt)
-    void plowReleaseAll();
+    // Solenoid pushers. pusherIdx is 1-3.
+    // armPusher schedules the solenoid fire at fireAtMs using esp_timer_once.
+    // pusherReleaseAll force-de-energizes all pushers immediately (error halt).
+    void armPusher(uint8_t pusherIdx, uint32_t fireAtMs);
+    void pusherReleaseAll();
 
     // Stepper escapement
-    void stepperRelease();                // fire one full revolution (releases one brick)
-    void stepperSetRpm(uint16_t rpm);
-    void stepperHold();                   // reduced current hold between releases
+    void stepperSense();                  // hold cam at dwell, begin sensing window
+    void stepperRelease();                // fire one full cam revolution (releases one brick)
     void stepperStop();
 
     // Display (stub - real implementation in display.cpp)
