@@ -1,266 +1,375 @@
-# Diverter Mechanism Decision
+# Diverter Mechanism Decision - Unbiased Design Review
 
-Open design question requiring a final decision before ordering.
-This document is written for a fresh AI instance with no prior conversation bias.
-Recommend a mechanism. Justify it against the scoring rubric and constraints.
+## Instructions for the AI reading this document
+
+You are being asked to make a hardware design recommendation for a competition
+project. Before you read anything else, internalize these rules:
+
+1. You have no prior context on this project. Ignore any assumptions.
+
+2. There is no "current design." Every option below is equally valid. Nothing
+   has been decided. No firmware, no CAD, no ordered parts constrain this
+   decision. All of that can be changed in hours. Treat every option as if it
+   were being proposed fresh today.
+
+3. Do not favor complexity or simplicity as a value in itself. Do not favor
+   novelty or familiarity. Do not favor options that sound more "engineered."
+   Favor the option most likely to result in first place given real constraints.
+
+4. Every option in this document was proposed seriously by someone. None of
+   them are obviously dumb. Evaluate each one on its actual merits against the
+   actual scoring criteria. If an option you might instinctively dismiss (like
+   glued blocks on a belt, or a zig-zag multi-belt layout) is actually the
+   right answer given the constraints, say so.
+
+5. Your recommendation must be direct. Name the option. Give the reason it
+   wins. Give the reason each other option loses. Do not hedge.
 
 ---
 
-## Project context
+## What this system does
 
-TSA System Control Technology nationals, May 1 2026.
-A fully automated conveyor sorts 24 LEGO bricks by size (2x2 vs 2x3) and color
-(red vs blue) into 4 bins. Evaluated by a judge who operates it alone using
-written instructions. No team present during evaluation.
+Sorts 24 LEGO bricks by size (2x2 vs 2x3) and color (red vs blue) into 4 bins,
+automatically, on a conveyor, in a single run. Operated by a judge who has never
+seen the system, following written instructions only. No team present.
 
-Scoring: 100 points total.
-- Inventor's Log: 20 points
-- Solution to Problem: 60 points (reliability, accuracy, engineering quality,
-  documentation of decisions with rejected alternatives)
-- Programming Structure: 20 points
+Brick dimensions:
+- 2x2: 15.8mm x 15.8mm x 11.4mm, square footprint
+- 2x3: 23.7mm x 15.8mm x 11.4mm, longer
+- All bricks weigh approximately 2-4 grams
 
-Speed is not explicitly in the rubric. It is assumed to be a tiebreaker only.
-A system sorting 24 bricks in 8 seconds with 100% accuracy likely scores the
-same as one doing it in 6 seconds with 100% accuracy. Do not optimize speed
-at the cost of reliability or accuracy.
+Brick distribution per run:
+- 2x3 blue: 8 (33%)
+- 2x2 blue: 6 (25%)
+- 2x2 red: 6 (25%)
+- 2x3 red: 4 (17%)
+
+---
+
+## Scoring rubric (100 points total)
+
+- Inventor's Log: 20 points (documentation, engineering notebook)
+- Solution to Problem: 60 points (does it work, reliability, accuracy,
+  engineering quality, decision documentation with rejected alternatives)
+- Programming Structure: 20 points (code organization, readability)
+
+Speed is NOT explicitly in the rubric. The assumption that speed is a
+tiebreaker is the team's own inference, not stated by the competition.
+A 12-second reliable sort may score identically to an 8-second reliable sort.
+Do not optimize speed at the expense of reliability or build feasibility.
+
+---
 
 ## Hard constraints
 
-- Footprint: 610mm x 610mm maximum
-- Power: 2S LiPo 7.4V, two 5V rails from LM2596 buck converters
+- Footprint: 610mm x 610mm maximum, cannot exceed this
+- Power: 2S LiPo 7.4V, stepped to 5V via buck converters, ~3A available
 - Microcontroller: ESP32
-- Timeline: parts arrive ~April 1, competition May 1, ~4 weeks to build
-- Team: 2 people, one focused on embedded firmware, one on CAD/mechanical
-- CAD person availability: uncertain this week, reason for open decision
-
-## Brick distribution (affects diverter duty cycle)
-
-- 2x3 blue: 8 bricks (33%) - DEFAULT path, no actuator fires
-- 2x2 blue: 6 bricks (25%)
-- 2x2 red:  6 bricks (25%)
-- 2x3 red:  4 bricks (17%)
-
-Total actuations per run: 16 (the 8 default-path bricks require nothing).
-
-## Belt and sensing architecture (decided, not open)
-
-- Single straight belt, wide flat rubber surface (~60-80mm wide) on printed rollers
-- Separate narrow GT2 belt loop on motor shaft for encoder/speed measurement only
-- JGB37-520 6V 600RPM gearmotor drives the belt
-- L298N PWM speed control, PI controller for closed-loop speed
-- Belt target speed: 200mm/s
-- Escapement: NEMA 11 stepper + TMC2209, cam disk releases one brick per revolution
-- Starting escapement rate: 800 sps = 4 bricks/sec, ~9 second run
-- Size detection: two Adafruit IR break-beams 19mm apart, hardware timer measures
-  gap between beam breaks. 2x3 (23.7mm) breaks both beams, 2x2 (15.8mm) does not.
-- Color detection: TCS34725 sampling continuously from beam 1 break, averaged over
-  brick dwell window (~79ms at 200mm/s = ~32 samples). Black belt filter discards
-  non-brick readings.
-- Bin confirmation: one IR break-beam per bin entrance, 500ms timeout triggers
-  ERROR_HALT if brick does not arrive
-
-## Timing window available for diverter
-
-Brick travels from sensing zone to first divert point in approximately 150ms.
-Solenoid/servo must be in position before brick arrives.
-After brick passes, actuator must return to neutral before next brick arrives.
-
-At 800 sps (4 bricks/sec): 250ms between brick releases.
-At 1000 sps (5 bricks/sec): 200ms between brick releases.
-At 1200 sps (6 bricks/sec): 167ms between brick releases.
-
-The diverter must complete extension + return within the inter-brick window
-minus any firmware scheduling jitter (assume ~10ms jitter budget).
-
-## Parts already ordered (in cart, not yet placed)
-
-Solenoids: JF-0530B 5V x4 (already in cart)
-Springs: torsion spring assortment (already in cart)
-No servos ordered yet (MG996R ~$3-4 each, could be added tonight)
-No additional motors ordered yet
-
-## Firmware state
-
-State machine, classifier, router, thermal model, logger, test harness all
-written and tested in simulation. Firmware is modular. The routing decision
-(which plow/actuator fires for which brick type) is a lookup table.
-Changing from solenoid to servo requires: different GPIO output pattern,
-different timing constants, no state machine changes. Estimated 30-60 minutes
-of firmware work to adapt to any mechanism.
-Firmware is not a constraint on this decision.
+- Competition date: May 1 2026
+- Parts order deadline: tonight (March 21 2026)
+- Parts arrival: approximately April 1 2026
+- Build and calibration window: April 1 to April 27 (approximately 4 weeks)
+- Team size: 2 people
+  - Person A: embedded firmware focus, can write firmware for any mechanism
+    in approximately 30-60 minutes once design is decided
+  - Person B: CAD/mechanical focus, availability this week is uncertain,
+    which is part of why this decision is open
+- Budget: approximately $130-150 total, most already spent on common parts
 
 ---
 
-## Candidate mechanisms
+## Parts already in cart (these are sunk costs, ignore them as a constraint)
 
-### Option 1: Solenoid plow with lever arm
+The following are already ordered or in cart but should NOT bias the decision.
+If the right answer requires different parts, order them. These are listed only
+so you know what is available without additional cost:
 
-A solenoid pushes a 3D printed lever arm (8mm input, 24mm output, ratio 3.0)
-which rotates a plow blade into the brick path. Spring returns the arm to neutral.
-Three plows at different positions along the belt for three of the four brick types.
-Default path (most common brick type) fires no solenoid.
+- JF-0530B solenoids 5V x4 (~$1.10 each)
+- Torsion spring assortment
+- NEMA 11 stepper + TMC2209 (escapement, decided separately)
+- JGB37-520 6V 600RPM gearmotor (belt drive, decided separately)
+- L298N motor driver
+- TCS34725 color sensor
+- IR break-beams x6 pairs
+- LM2596 buck converters x2
+- GT2 timing belt + pulleys (for encoder only)
+- Wide flat rubber belt (for brick transport surface)
+- ESP32, caps, wire, perfboard
 
-Actuation time: ~10ms to full extension.
-Return time: ~20-30ms (spring).
-Total occupied time per actuation: ~50ms.
-Margin at 800 sps: 200ms.
-Margin at 1000 sps: 150ms.
-Margin at 1200 sps: 117ms.
-
-Parts needed: solenoids (in cart), torsion springs (in cart), M2 pivot hardware,
-printed lever arm and plow.
-
-CAD required: lever arm with pivot hole and solenoid attachment point (simple part),
-plow blade, mounting bracket. Estimated complexity: low. A competent CAD person
-should complete in 2-4 hours.
-
-Teammate concern: the pivot hinge design is undecided. Concern about lever arm
-being flimsy or dislodging. Concern about opening in channel wall for lever sweep.
-
-Mitigation: M2 bolt through a printed bracket with brass tube bushing at pivot.
-Lever arm printed with layer lines perpendicular to load direction. Channel wall
-has a slot sized to the lever sweep arc. If the arm breaks, it is a 10-minute
-reprint. Force margin against brick load is approximately 94x.
-
-Documentation story: strong. Force margin calculation, lever ratio derivation,
-spring selection methodology, solenoid comparison to servo (timing math), thermal
-management (PWM hold, heatsink). All of this is engineering decision material
-that judges score.
-
-### Option 2: Servo (MG996R)
-
-A servo arm sweeps into the brick path to divert it. Spring return not needed,
-servo holds position. Three servos for three divert paths.
-
-MG996R specs: metal gears, 0.17s per 60 degrees at 6V.
-For 90 degree sweep (enough to divert brick across 25mm belt): ~0.25s.
-Return sweep: another 0.25s.
-Total occupied time: ~500ms.
-
-Margin at 800 sps (250ms inter-brick): NEGATIVE. Servo cannot complete extension
-and return before next brick arrives at 800 sps.
-
-This means servo constrains maximum escapement rate to approximately:
-1 / (0.5s per actuation) = 2 bricks/sec from a servo-limited channel.
-At that rate 24 bricks takes 12+ seconds.
-
-Note: not all bricks require actuation. 33% take the default path. But the
-worst-case plow (6 actuations at 25% frequency) still sees bricks every 250ms
-at 800 sps, which the servo cannot handle.
-
-With a fast servo (0.1s per 60 degrees): total occupied time ~330ms. Still
-exceeds the 250ms inter-brick window at 800 sps. Margin appears only if
-escapement is slowed to 600 sps or below (3 bricks/sec, ~14 second run).
-
-Parts needed: MG996R x4 (~$12-16 total), not currently in cart.
-
-CAD required: servo horn attachment to plow arm, mounting bracket. Similar
-complexity to solenoid plow. Slightly simpler because no pivot mechanism needed,
-servo provides its own rotation.
-
-Documentation story: weak. Servo is the obvious default choice. Every other
-team will have considered servos. Choosing servos because they are simpler is
-not a strong engineering decision. Choosing servos with documented tradeoff
-analysis (we accepted a slower run in exchange for build simplicity) is better
-but still not as strong as the solenoid story.
-
-### Option 3: Wide-face direct solenoid pusher (no lever)
-
-A solenoid pushes directly laterally (no lever amplification) with a wide flat
-face plate attached to the solenoid rod. Face plate is ~20-25mm wide to catch
-slightly yawed bricks.
-
-JF-0530B stroke: ~10mm. Belt is 25mm wide. A 10mm push with a 20mm face plate
-may not fully clear a 15.8mm brick off a 25mm belt - the brick may remain
-partially on the belt and not fall cleanly into the bin.
-
-If the channel is designed so the bin entrance is only 10mm lateral travel away,
-this could work. Requires careful channel geometry: the bin opening must be
-positioned so a 10mm push delivers the brick fully into it.
-
-Actuation time: same as solenoid plow (~10ms). Return time: spring, ~20-30ms.
-Margin: same as option 1.
-
-Parts needed: solenoids (in cart), springs (in cart), face plate (simple flat
-printed piece), no lever or pivot needed.
-
-CAD required: simpler than option 1. Face plate is a rectangle. No pivot.
-Channel geometry needs careful design around the 10mm stroke constraint.
-
-Teammate concern: this directly addresses the lever/pivot concern while keeping
-solenoid timing advantages. The tradeoff is less tip travel (10mm vs 30mm with
-lever), which constrains channel geometry.
-
-Documentation story: moderate. Simpler mechanism, less engineering complexity
-to document. Can still document the stroke vs geometry tradeoff and the face
-width decision.
-
-### Option 4: Rotary bin selector
-
-A single 4-chamber rotating disk at the belt exit routes bricks by rotating to
-align the correct chamber before the brick arrives. One motor drives the disk.
-No plows, no lateral diverters, belt is completely clear.
-
-Timing requirement: after classification, disk must rotate up to 270 degrees
-(worst case), settle, and be confirmed in position before brick arrives.
-At 200mm/s over ~200mm sensor-to-exit distance: 1000ms available for disk movement.
-This is the most generous timing window of all options.
-
-However: system is serial. Cannot release next brick until disk has settled and
-confirmed. Brick release rate is limited by disk rotation time, not escapement.
-With a fast servo driving the disk (0.1s per 60 degrees): 270 degree rotation
-= 0.45s + settling = ~600ms minimum between bricks = 1.7 bricks/sec maximum.
-24 bricks = ~14 seconds minimum plus overhead.
-
-Parts needed: one additional servo or DC motor with encoder for disk, disk printed
-in 4 chambers. Not currently in cart.
-
-CAD required: 4-chamber disk, motor mount, encoder for position confirmation.
-Moderate complexity.
-
-Documentation story: interesting mechanism with a clear engineering story
-(eliminate lateral forces on brick, simplify belt channel, trade throughput
-for reliability). Unusual enough to stand out. Weak on throughput.
-
-### Option 5: Parallel belt system
-
-Two belts side by side. A simple 2-way diverter at the chute exit routes each
-brick onto one of the two belts. Each belt has its own 2-bin routing at its end
-(one plow per belt, or just two bins at the end of each belt with a 2-way choice).
-
-Diverter at the chute exit only needs to make a 2-way decision, which any
-mechanism (even servo) can do reliably at full speed (servo only needs 90 degree
-sweep for 2-way, occupies ~250ms, exactly at the margin for 800 sps).
-
-Complexity cost: two belt motors, two speed controllers, two timing systems,
-belt alignment across two parallel frames, twice the perfboard wiring. Firmware
-needs to track which belt each brick is on. CAD significantly more complex.
-
-Parts needed: second JGB37, second L298N, second GT2 timing loop, second wide
-belt. Approximately $15-20 additional cost.
-
-Documentation story: interesting architectural choice with documented reasoning.
-The 2-way diverter simplification is a real engineering argument.
+Parts NOT in cart that could be added tonight at low cost:
+- MG996R servo: ~$3-4 each (metal gear, 0.17s per 60 degrees at 6V)
+- Additional small DC gearmotors: ~$3-6 each
+- Additional belt/roller materials: ~$3-5
+- Additional L298N or MX1508 drivers: ~$1-2 each
 
 ---
 
-## Decision criteria ranked by scoring impact
+## Sensing and classification (decided, not open, included for context)
 
-1. Does it work reliably for 24 bricks repeatedly? (reliability = majority of 60pts)
-2. Can it be built and calibrated in 4 weeks by a 2-person team? (schedule)
-3. Does it generate strong engineering documentation? (decision matrices, calculations)
-4. Does it run within the 10-second target? (speed, tiebreaker only)
-5. Does it stand out from other teams? (minor factor, judges score engineering not novelty)
+Size classification: two IR break-beams 19mm apart along the belt axis.
+Hardware timer measures gap between beam 1 and beam 2 breaking.
+- 2x3 brick (23.7mm): longer than 19mm gap, breaks both beams, gap ~95ms at 200mm/s
+- 2x2 brick (15.8mm): shorter than 19mm gap, beam 2 never breaks (timeout)
+This is binary, hardware-timed, essentially immune to noise.
 
-## What Opus is being asked to decide
+Color classification: TCS34725 RGB sensor facing down through a shroud.
+Samples continuously from beam 1 break, ~32 samples per brick at 200mm/s.
+Averages all valid samples, classifies by R/(R+G+B) ratio.
+Red LEGO has strong red spectral signature, blue LEGO has strong blue signature.
+Separation is large and reliable.
 
-Given the above, recommend one mechanism. State clearly:
-- Which option
-- Why it scores best against the 5 criteria above
-- What the critical build risk is and how to mitigate it
-- What the team should do in the next 48 hours
+Both sensors output classification result approximately 150ms after brick enters
+the sensing zone. This is the time available for the diverter to pre-set before
+the brick arrives.
 
-Do not recommend the solenoid plow just because firmware was written for it.
-Firmware adaptation takes 30-60 minutes and is not a constraint.
-Do not recommend any option just because it is novel.
-Recommend the option most likely to result in first place given real constraints.
+---
+
+## Belt and transport (decided, not open, included for context)
+
+Single straight belt. Wide flat rubber surface (~60-80mm wide) on 3D printed
+rollers. Belt moves at approximately 200mm/s. Bricks ride on the belt surface
+and travel from chute end to bin end in approximately 1.5 seconds.
+
+The belt is the ONLY transport mechanism. All bricks travel the full belt length.
+Diversion happens along the belt or at the end of the belt.
+
+---
+
+## The open question: how do we get bricks into 4 different bins?
+
+Below are ALL proposed options. Evaluate each one.
+
+---
+
+### Option A: Solenoid plow with lever arm
+
+Three solenoid-actuated lever arms at three positions along the belt.
+Each lever arm has a pivot, a solenoid input arm (8mm), and a plow output arm
+(24mm), giving 3:1 mechanical advantage.
+Solenoid stroke 10mm becomes 30mm tip travel at the plow face.
+30mm tip travel pushes a brick fully across the 25mm belt and into a side bin.
+Spring returns the arm to neutral after each actuation.
+Fourth bin (most common brick type, 33%) takes the default path with no actuation.
+
+Actuation: solenoid energizes, lever sweeps plow into path in ~10ms.
+Return: spring, ~20-30ms.
+Total cycle time per actuation: ~50ms.
+
+Three plows at different positions means three decisions happen in parallel as
+bricks travel down the belt. Brick 3 can be at plow 1 while brick 4 is being
+classified. The decisions are off the critical path.
+
+At 4 bricks/sec (250ms between releases): 200ms margin after 50ms actuation.
+At 6 bricks/sec (167ms between releases): 117ms margin.
+At 8 bricks/sec (125ms between releases): 75ms margin.
+
+Open questions / risks:
+- Pivot hinge design undecided. Options: M2 bolt through printed bracket with
+  brass tube bushing, or small ball bearing pressed into the arm.
+- CAD person concern: lever arm might be flimsy, pivot might dislodge.
+- Channel wall needs a slot for the lever sweep arc.
+- Force margin against brick is approximately 94x (solenoid force >> required).
+
+---
+
+### Option B: Servo plow (direct sweep, no lever)
+
+Same layout as Option A but with MG996R servos instead of solenoids and levers.
+Servo horn directly pushes a plow arm into the brick path.
+No lever, no spring, no pivot. Servo holds position, returns on command.
+
+MG996R: 0.17s per 60 degrees at 6V. For 90-degree sweep: ~0.25s.
+Return sweep: ~0.25s. Total cycle time: ~500ms.
+
+At 4 bricks/sec (250ms between releases): cycle time EXCEEDS inter-brick window.
+The servo cannot complete extension and return before the next brick arrives at
+the same plow position.
+
+This means the escapement must be slowed to keep inter-brick windows above 500ms:
+500ms window = 2 bricks/sec = 24 bricks in ~12+ seconds.
+
+Three servos in parallel still helps (different plows handle different bricks)
+but the worst-case plow (2x2 blue, 6 bricks at 25% frequency) sees a brick
+every 4th release. At 4 bricks/sec that is one 2x2-blue brick every second,
+which is within the servo's recovery time. The constraint is only binding if
+the same plow must fire twice within its cycle time.
+
+At 4 bricks/sec with the interleaved brick sequence, no single plow fires more
+than once per ~750ms. So servos MAY be viable at 4 bricks/sec if the firmware
+sequences releases to avoid back-to-back same-plow firings.
+
+At higher speeds (6+ bricks/sec), same-plow collision becomes likely.
+
+Parts: MG996R x4, not currently in cart, ~$12-16 to add.
+CAD: simpler than option A (no pivot, no lever ratio calculation).
+Firmware: trivial, PWM position control.
+
+---
+
+### Option C: Wide-face direct solenoid push (no lever)
+
+Solenoid pushes directly sideways with a wide flat face plate (~20-25mm wide)
+attached directly to the solenoid rod. No lever amplification.
+
+JF-0530B stroke: approximately 10mm.
+Belt width: ~60-80mm.
+Bin entrance must be positioned so a 10mm push delivers brick fully into it.
+This constrains channel geometry: bin opening must be within 10mm of brick edge.
+
+Face plate width 20-25mm catches slightly yawed bricks.
+Actuation and return timing: identical to option A (solenoid + spring).
+Tip travel is 10mm instead of 30mm.
+
+CAD: simplest of all solenoid options. No pivot, no lever.
+The constraint is channel geometry: bins must be adjacent to belt, not offset.
+If channel geometry can accommodate this, it eliminates the pivot concern entirely.
+
+Risk: 10mm stroke may be insufficient if the belt is wide. Depends on exact
+channel layout. Needs to be verified in CAD before committing.
+
+---
+
+### Option D: Rotary bin selector (disk at belt exit)
+
+A single 4-chamber rotating disk positioned at the belt exit point.
+Bricks fall off the end of the belt and into whichever chamber the disk has
+rotated to present. One motor drives the disk.
+Belt has no diverters at all. Clean straight run.
+
+Timing: brick exits belt approximately 1.5 seconds after release.
+Classification result is available at ~150ms after brick enters sensing zone.
+Time available for disk rotation: ~1.35 seconds. This is generous.
+
+But the system is serial: cannot release the next brick until the disk has
+rotated, settled, and confirmed position. Otherwise two bricks arrive at the
+exit while the disk is mid-rotation.
+
+With a servo driving the disk: 270-degree worst-case rotation at 0.17s/60deg
+= ~0.75s + settling ~0.25s = ~1s between bricks minimum.
+24 bricks at 1 brick/sec = 24 seconds minimum, plus overhead.
+
+With a stepper driving the disk: faster rotation possible but requires
+acceleration ramping firmware to stop accurately at 4 positions under varying
+load (brick weight shifts as chambers fill). Position encoder needed.
+
+Bin confirmation: one IR sensor per chamber opening.
+CAD: 4-chamber disk, motor mount, position sensing.
+Parts: one additional motor + driver, not currently in cart.
+
+---
+
+### Option E: Glued blocks on main conveyor belt as brick separators, with lateral solenoid pushers
+
+Physical dividers glued onto the wide flat belt surface create individual cells,
+one brick per cell. This eliminates timing-based brick spacing: the belt geometry
+handles it mechanically.
+
+With bricks pre-separated into cells, a lateral pusher (solenoid or servo) fires
+when each cell aligns with the correct bin opening. The pusher does not need to
+work against a moving brick - the brick is already in a defined location.
+Timing becomes positional rather than velocity-based.
+
+Pusher timing: fire when encoder confirms the correct cell is at the bin opening.
+This is deterministic and does not depend on belt speed accuracy.
+
+Belt construction concern: divider blocks are glued onto a rubber belt that
+flexes around the rollers at each end. The glue joint is stressed in peel on
+every rotation. Even low loads cause peel failure over repeated cycles at the
+roller radius. This is a material failure mode, not a load failure mode.
+
+Alternative attachment: if dividers are NOT glued but instead are part of a
+printed or modular belt surface (e.g., laser-cut flexible sheet with integrated
+walls, or 3D printed articulated belt sections), the peel problem disappears.
+Custom belt construction is a significant fabrication challenge.
+
+Risk assessment: if belt divider fabrication is reliable, this is a very clean
+design. The positional triggering eliminates the tight timing window problem
+entirely. The question is entirely about whether the dividers can be attached
+durably.
+
+---
+
+### Option F: Zig-zag multi-belt layout
+
+Instead of one straight belt with diverters, multiple shorter belt segments
+arranged in a zig-zag or branching pattern. Each branch decision point uses
+a simple 2-way diverter, which is easier to execute reliably than a 4-way.
+
+Example layout:
+- Main belt feeds a 2-way diverter (left or right)
+- Left branch leads to a 2-way diverter (bin 1 or bin 2)
+- Right branch leads to a 2-way diverter (bin 3 or bin 4)
+Total diverters: 3, all 2-way only.
+
+A 2-way servo diverter is much more viable than a 4-way: only 90-degree sweep
+needed, and the inter-brick timing concern is reduced because each diverter only
+handles a fraction of total bricks.
+
+The first diverter handles all 24 bricks (must be fast).
+Each second-tier diverter handles 12 bricks (half the frequency, more time).
+
+Footprint concern: zig-zag layout must fit within 610x610mm. With a 400mm main
+belt and two side branches, this may be tight. Needs a top-down layout sketch
+before committing.
+
+CAD complexity: significantly higher than single-belt options. Multiple belt
+frames, multiple motors, multiple speed controllers, alignment between segments.
+Bricks must transfer cleanly from one belt segment to the next without tumbling.
+Transition points between belt segments are a new failure mode.
+
+Parts: 2-3 additional small gearmotors, additional motor drivers, additional
+belts and rollers. Approximately $20-30 additional cost.
+
+---
+
+### Option G: Parallel dual-belt with first-stage 2-way diverter
+
+Two belts running side by side. A single 2-way diverter at the chute exit
+routes each brick onto belt A or belt B. Belt A leads to bins 1 and 2 (with
+a plow or pusher). Belt B leads to bins 3 and 4 (with a plow or pusher).
+
+The first-stage diverter only makes a 2-way decision (much easier than 4-way).
+Each belt's plow only makes a 2-way decision (even easier).
+
+Inter-brick timing at the first diverter: still needs to fire and return before
+next brick arrives (same constraint as before, but for a 2-way decision only).
+A servo doing a 45-degree sweep: ~0.12s. Return: ~0.12s. Cycle: ~250ms.
+This exactly matches the 4 bricks/sec inter-brick window. Marginal.
+
+Footprint: two belts side by side, each ~80mm wide plus frame, total ~200mm
+across. Plus the main chute and two sets of bins. Needs layout verification.
+
+Parts: second JGB37 motor, second L298N, second belt+rollers, additional plows.
+Approximately $15-25 additional cost.
+
+CAD complexity: moderate to high. Two complete belt frames plus the diverter.
+
+---
+
+## What Opus is being asked to do
+
+Rank the options. Recommend the best one. Be specific about:
+
+1. Which option gives the highest probability of scoring first place given
+   the 4-week build window, 2-person team, and real scoring rubric.
+
+2. For each option you reject, state the specific failure mode or constraint
+   that eliminates it.
+
+3. For your recommended option, state the single biggest risk and how to
+   mitigate it.
+
+4. What should be ordered tonight that is not already in the cart.
+
+5. What should the team do in the first 48 hours after making this decision.
+
+Constraints on your answer:
+- Do not recommend an option just because it sounds impressive.
+- Do not recommend an option just because it sounds simple.
+- Do not penalize options for using unconventional approaches if those
+  approaches actually solve the problem within the constraints.
+- Do not reference any prior conversation or design history.
+  Reason entirely from the constraints and options presented here.
+- Speed optimization is secondary to reliability and build feasibility.
+  A 12-second sort that works every time beats an 8-second sort with
+  a 10% failure rate.
