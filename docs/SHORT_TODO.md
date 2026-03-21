@@ -15,12 +15,13 @@ See docs/BOM.md. Key things to verify before checkout:
 
 ---
 
-## This week: firmware (unblocked)
+## This week: firmware (DONE)
 
-Fix firmware compilation after design switch. Does not require hardware.
-Priority order: actuators.cpp, events.cpp, test_harness.cpp, then logger, main.
-Delete classifier.cpp/h and router.cpp/h (replaced by state_machine routing table).
-Goal: pio run compiles clean with zero errors.
+Firmware compiles clean. Deleted classifier.h/cpp and router.h/cpp.
+Aligned actuators, events, logger, test_harness to V3 design:
+BrickCategory replaces old size/color/type enums, new event types throughout.
+Also fixed CONFIRM timeout hole: timeout now checked during TRANSIT state,
+preventing a machine hang if a bin beam never fires.
 
 ---
 

@@ -56,9 +56,9 @@ Pusher positions from chute exit:
 
 | Bin | Category | Count | Pusher | Rationale |
 |-----|----------|-------|--------|-----------|
-| 1 | 2x2 red | 6 | Solenoid 1 | -- |
-| 2 | 2x2 blue | 6 | Solenoid 2 | -- |
-| 3 | 2x3 blue | 8 | Solenoid 3 | -- |
+| 1 | 2x2 red | 6 | Solenoid 1 | |
+| 2 | 2x2 blue | 6 | Solenoid 2 | |
+| 3 | 2x3 blue | 8 | Solenoid 3 | |
 | 4 | 2x3 red | 4 | DEFAULT | Rarest category as default. Any classifier failure lands in the lowest-count bin, making contamination visible. Minimizes total misroute count if the classifier degrades. |
 
 Total pusher fires per run: 20 (6+6+8). Default path fires 0 times.
