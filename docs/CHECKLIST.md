@@ -8,15 +8,15 @@ Check items off as you go. This file is the source of truth for build status.
 ## Phase 0: Ordering (gate: all parts in transit before March 26)
 
 ### AliExpress cart - verify before checkout
-- [ ] GT2 belt: confirm 640mm closed loop, 20mm wide (NOT 400mm, NOT 6mm wide)
+- [ ] No GT2 belt needed in primary design (neoprene strip is the transport belt)
 - [ ] 0530 solenoid: confirm 6V variant selected (not 12V or 24V)
 - [ ] NEMA 11 stepper: confirm 34mm body, 4-wire bipolar, 5mm shaft
-- [ ] GT2 20-tooth pulley: confirm 5mm bore, 20mm wide belt compatible
 - [ ] LM2596 buck converter: confirm buying 2 units
 - [ ] TMC2209 stepper driver: confirm UART-capable variant, buying 1 (+ 1 spare recommended)
 - [ ] TCS34725 color sensor: confirm LED and INT pin are broken out on the board
 - [ ] JGB37-520 gearmotor: confirm 6V variant, 600 RPM no-load, 6mm D-shaft (same listing sells 7-960 RPM - select carefully)
 - [ ] IR break-beams: 2 packs of 4-pair (8 total: 1 size beam + 1 chute exit + 4 bin confirms + 2 spare)
+- [ ] JST-XH connector kit: 2-pin and 4-pin (wire bundle connectors)
 - [ ] Torsion springs: assortment for pusher spring return
 - [ ] Perfboard, 22AWG wire, L298N: in cart
 
@@ -25,7 +25,10 @@ Check items off as you go. This file is the source of truth for build status.
 - [ ] 3S balance charger ordered
 - [ ] IRLZ44N MOSFETs: 10-pack ordered (solenoid drivers)
 - [ ] 1N4007 diodes: 100-pack ordered (flyback diodes)
-- [ ] Display (SSD1306 OLED 0.96" I2C or equivalent): ordered
+- [ ] Display (ST7789V2 1.69" IPS LCD, SPI): ordered (Waveshare or equivalent)
+- [ ] Neoprene rubber strip 1/8" x 1" x 10ft: ordered (Amazon)
+- [ ] A3144 Hall sensor 3-pack: ordered (Amazon)
+- [ ] 3mm neodymium disc magnets 10-pack: ordered (Amazon)
 
 ### Already owned - verify quantities now
 - [ ] ESP32 DevKit: present and functional
@@ -110,11 +113,13 @@ Do every one of these on breadboard before any integration. Log everything.
 - [ ] L298N PWM tested at 1kHz, 5kHz, 10kHz: pick frequency, log result
 - [ ] Actual belt speed at operating PWM measured and recorded
 
-### IR break-beam - size detection (single beam in chute)
-- [ ] Beam operational: emitter powered, receiver gives clean HIGH/LOW
-- [ ] 2x2 brick at cam chord: beam clear (HIGH), reads as 2x2 in firmware
-- [ ] 2x3 brick at cam chord: beam blocked (LOW), reads as 2x3 in firmware
-- [ ] Test 10 bricks of each type, log results
+### IR break-beams - size detection (dual beam in chute)
+- [ ] Both beams operational: emitters powered, each receiver gives clean HIGH/LOW
+- [ ] 2x3 brick at cam chord: BOTH beams blocked, firmware reads 2x3. Test at multiple
+      positions (push brick to far side, center, near side). Must read 2x3 at all positions.
+- [ ] 2x2 brick at cam chord: never both beams blocked simultaneously. Firmware reads 2x2
+      at all positions across full 11.2mm play range.
+- [ ] Test 10 bricks of each type at multiple positions, log results
 
 ### IR break-beams - bin confirmation (AliExpress pairs)
 - [ ] All 4 pairs powered and giving clean digital output
@@ -138,11 +143,13 @@ Do every one of these on breadboard before any integration. Log everything.
 - [ ] No PWM hold - direct push only, solenoid fires full then releases
 - [ ] Heatsinks attached to all 3 solenoid bodies with thermal adhesive tape
 
-### Belt encoder
-- [ ] H206 mounted next to slotted pulley disk
-- [ ] Pulse output confirmed on oscilloscope or serial monitor at belt speed
-- [ ] Pulse count per rotation matches slot count on disk
-- [ ] ESP32 hardware pulse counter reading speed correctly
+### Belt speed sensor (Hall)
+- [ ] A3144 Hall sensor mounted beside idler roller, face 2mm from roller rim
+- [ ] Two 3mm neodymium disc magnets confirmed glued 180 degrees apart on idler rim
+- [ ] Hall sensor output on GPIO 4 with 10k external pull-up confirmed: clean HIGH/LOW
+- [ ] At operating belt speed, pulse interval ~196ms (verify via serial log)
+      Calculation: roller circ = pi*25 = 78.5mm, 2 pulses/rev -> 78.5/(2*200) = 196ms
+- [ ] Belt speed reading in firmware serial output within 10% of 200mm/s target
 
 ### Display
 - [ ] SPI communication confirmed
@@ -155,10 +162,11 @@ Do every one of these on breadboard before any integration. Log everything.
 ## Phase 4: Full frame CAD and print (April 2-9)
 
 - [ ] All channel sections CAD complete using validated chute transition geometry
-- [ ] Plow lever arms: pivot-to-solenoid 8mm, pivot-to-tip 24mm, ratio 3.0
-- [ ] Plow leading face chamfered at 35 degrees
-- [ ] Solenoid connection to lever: pinned (M2 pin), not hook or slot
-- [ ] Sensor mounts: color sensor at 5-10mm standoff above belt, break-beams at 19mm spacing
+- [ ] Solenoid U-bracket CAD complete: rod center at 6mm above belt surface
+- [ ] Face plate CAD complete: 20mm wide x 11mm tall x 2mm thick, all edges chamfered 0.5mm
+- [ ] Pusher slot in channel wall: 24mm wide x 13mm tall, edges chamfered 0.5mm
+- [ ] Color sensor window in chute wall at escapement level: 12mm x 12mm, on 27mm face
+- [ ] Size beam holes in chute 22mm walls: two per wall at X=5mm and X=21mm, 3mm diameter
 - [ ] Bin guides printed with downward ramp geometry (no foam needed)
 - [ ] Chute entrance opening: narrow enough vertically to prevent brick-on-side entry
 - [ ] Chute entrance guide: printed indication for studs-up orientation
@@ -185,9 +193,9 @@ Complete the wiring checklist from ELECTRICAL.md verbatim before first power-on:
 - [ ] ESP32 powered from clean Rail 2, not motor rail
 - [ ] All I2C devices on same bus: shared SDA, SCL, and ground
 - [ ] Display SPI connections correct: MOSI, SCLK, CS, DC, RST
-- [ ] Photointerrupter output on GPIO interrupt pin
+- [ ] Hall sensor (A3144) output on GPIO 4 with 10k external pull-up, ISR on falling edge confirmed
 - [ ] All solenoid and sensor wiring soldered to perfboard (no breadboard jumpers in final build)
-- [ ] Cable routing clean: no wires crossing belt path or plow travel zone
+- [ ] Cable routing clean: no wires crossing belt path or pusher travel zone
 
 ### First powered test
 - [ ] Power on with no motor or solenoid commands: verify no smoke, no heat

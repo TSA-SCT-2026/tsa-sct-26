@@ -113,8 +113,9 @@ If any fail: return to step 3, collect more readings, tighten the threshold.
 
 ## Notes
 
-- Size sensing needs no calibration. It is a single digital read (beam blocked or not).
-  The only check is physical: verify a 2x3 brick blocks the beam and a 2x2 does not.
+- Size sensing needs no calibration. It is two digital reads (dual break-beams at X=5mm
+  and X=21mm). The only check is physical: verify a 2x3 brick blocks both beams, and
+  a 2x2 brick never blocks both beams simultaneously at any position in the chute.
 - If a brick is damaged or painted, its color may not match. Use competition-spec bricks only.
 - Ambient light changes between calibration and competition can shift readings slightly.
   Calibrate in similar lighting conditions, or ensure the shroud fully blocks ambient light.

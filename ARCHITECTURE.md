@@ -29,9 +29,12 @@ carries it to the correct pusher position, which fires at a pre-calculated delay
 
 ## Sensing (in chute, brick stationary)
 
-**Size:** Single IR break-beam crosses the 27mm chute dimension at 20mm from the wall.
-A 2x3 brick (23.7mm) blocks the beam. A 2x2 brick (15.8mm) does not. Binary result,
-no timing measurement, no speed dependency.
+**Size:** Two IR break-beams cross the 22mm chute interior at X=5mm and X=21mm from the
+reference wall (measured along the 27mm dimension). Beam spacing 16mm exceeds the 2x2
+brick width (15.8mm), so a 2x2 can never span both beams simultaneously. A 2x3 brick
+(23.7mm) always spans both at any position within the chute. Detection logic: both beams
+blocked = 2x3. Anything else = 2x2. Binary result, position-independent, no timing
+measurement, no speed dependency.
 
 **Color:** TCS34725 mounted on the chute wall exterior, looking through a 12mm x 12mm
 window. A black PLA shroud blocks ambient light. The sensor's onboard LED is the only
@@ -43,8 +46,13 @@ on classification quality.
 
 ## Belt
 
-640mm GT2 closed-loop belt, 20mm wide, flat side up. Positive drive (no slip).
-Active transport length: 290mm. Belt speed: 200mm/s.
+Flat neoprene belt (19mm wide, 3/4") on smooth printed rollers. Motor D-shaft presses
+directly into drive roller bore (rigid coupling, zero slip at that joint). Neoprene strip
+(~700mm loop) wraps both rollers via friction. Hall sensor + PI firmware corrects speed drift.
+Belt runs 0.5-1mm below the channel wall bottom edges; walls rest on frame rails.
+
+Active transport length: 290mm. Belt speed: 200mm/s nominal. Target is locked empirically
+starting at 150mm/s; Hall PID holds it there during the run.
 
 Pusher positions from chute exit:
 - Pusher 1 (2x2 red): 75mm - fires at 375ms after chute exit
@@ -70,18 +78,25 @@ Do not revisit without a strong reason. Rationale for each is in the subsystem d
 - **Stepper escapement:** NEMA 11 + TMC2209 + single-lobe cam. Self-indexing. Step
   counting provides exact brick position. StallGuard detects jams passively.
 - **Sensing in chute:** eliminates sensing timing entirely, decouples belt speed from
-  classification quality, eliminates belt-mounted sensor bridges.
+  classification quality, eliminates belt-mounted sensor bridges. Dual size beams
+  (X=5 and X=21mm) give position-independent detection regardless of where the brick
+  lands on the cam chord.
 - **Direct solenoid pusher:** no lever arm, no pivot. Face plate on rod, spring return.
   Solenoid on-time 40ms, spring returns fast. Lower part count than lever design.
-- **GT2 positive drive:** no slip. Belt speed is exactly motor RPM x pulley circumference.
-  No encoder needed for steady-state speed. Simplifies firmware.
+- **Flat neoprene belt + Hall PID:** Motor D-shaft presses into drive roller (zero slip
+  at coupling). Neoprene strip wraps rollers via friction. Hall sensor on idler roller
+  (2 magnets, 2 pulses/rev) feeds a PI loop that corrects speed drift from voltage sag
+  and micro-slip. Transport surface is smooth neoprene - best possible grip on ABS bricks.
+  Rollers are simple smooth cylinders with no precision requirements. Belt splice is flat
+  overlap with tapered ends and flexible CA glue, no tooth alignment needed.
 - **TCS34725 + shroud:** integrated white LED, known I2C interface. Shroud is mandatory
   for calibration and operation. Open-air calibration is meaningless.
 - **3S LiPo 11.1V:** LM2596 handles up to 40V input. Runs Buck1 to 6V (belt, solenoids)
   and Buck2 to 5V (ESP32, sensors, display). TMC2209 takes 11.1V direct.
 - **Default = rarest:** 2x3 red (4 bricks) as default bin minimizes classifier failure damage.
 - **JGB37-520 belt motor:** 6mm D-shaft, 600 RPM at 6V, high gearbox torque. TT motors
-  at available ratios are too slow under load.
+  at available ratios are too slow under load. D-shaft press-fits into drive roller bore -
+  no pulleys, no intermediate belt, zero slip at the motor-to-roller joint.
 
 ## Build schedule
 
@@ -139,7 +154,8 @@ May 1          Competition.
 | Chute transition geometry | Print first, test with real bricks before any other CAD. Budget 3 iterations. This gates everything. |
 | Color sensor window alignment | Calibrate only with shroud installed. Log raw R/G/B, set thresholds from data. |
 | Solenoid spring tension | Order spring assortment. Test tension vs solenoid force before assembly. |
-| Belt/brick interface | Flat rubber side up. PTFE tape on belt bed if friction is excessive. |
+| Neoprene belt friction | Test neoprene on bare PLA roller day-1. If slip: add heat-shrink sleeve to drive roller. If still failing: rough roller with 120-grit. Fallback: GT2 motor-to-roller + neoprene roller-to-belt. |
+| Belt tracking | Idler crowned 0.5mm + 2mm flanges on both rollers. If belt walks: increase crown to 1mm. |
 | Stepper driver wiring | Bulk capacitor on VM input is non-negotiable. Verify before power-on. |
 | LiPo vs bench supply | All calibration and testing on LiPo after April 9. Bench supply current-limits and masks real behavior. |
 

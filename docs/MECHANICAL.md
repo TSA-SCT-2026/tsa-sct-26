@@ -41,16 +41,20 @@ Self-indexing via step counting. Cannot double-feed by design.
 
 **Cam profile:**
 - 30mm disk diameter, 8mm lobe extension, 50-degree lobe arc
-- Flat chord (2mm depth) on the disk body where the bottom brick rests
+- Flat chord (4mm depth) on the disk body where the bottom brick rests
 - Sharp lobe trailing edge: acts as the blocking surface for the next brick
 - Print at 0.12mm layer height, 100% infill
 
 **Tuning:** If double-releases occur, increase lobe arc by 5 degrees and reprint.
-At 3 rev/sec, the 50-degree dwell window is 46ms. Adequate to block the next brick.
+At 3 rev/sec, the 50-degree lobe sweeps in 46ms. This is adequate blocking time for the
+next brick in the queue. The sensing dwell (brick stationary on chord) is ~287ms (310
+non-lobe degrees at 3 rev/sec), consistent with the ~260ms stated in ARCHITECTURE.md.
 
 **Exit:** The cam pushes the bottom brick horizontally out of the chute onto a 10mm ramp
-with a 5-degree decline, which deposits the brick onto the moving belt. The ramp is critical.
-Without it, the brick drops 2-3mm and may bounce.
+that drops 2mm over its length (11.3 degrees), depositing the brick onto the moving belt.
+The ramp is integrated into the chute base piece (same printed part as cam motor mount).
+Its lower edge must be flush with or slightly above the belt surface - never below (a lip
+catches bricks). The ramp is critical. Without it, the brick drops abruptly and may bounce.
 
 **Thermal management:** TMC2209 current reduction between releases. StallGuard detects
 jams (stall flagged via UART). No additional hardware needed.
@@ -69,8 +73,25 @@ orientation. 2x2 bricks (15.8mm) pass through freely.
 - Bin side: three openings (30mm wide x 13mm tall) aligned with pusher slots.
 - Interior surfaces: smooth. Sand after printing.
 
-**Belt bed:** 3mm aluminum flat bar, 290mm x 22mm, between the pulleys below the belt.
-Covered with PTFE tape. The belt slides over this. Do not 3D print this piece (FDM warps).
+**Belt:** Neoprene rubber strip, 19mm (3/4") wide x 3mm thick, cut to ~700mm and spliced into
+a loop. Taper both ends over 20mm, overlap 20mm, flexible CA glue (Loctite Ultragel) or
+neoprene cement. No tooth alignment needed. Flat splice passes over smooth rollers cleanly.
+
+**Drive roller:** 25mm OD, 25mm wide, 6mm D-bore. Motor D-shaft presses directly in.
+M3 set screw through hub for axial retention. Bare PLA surface contacts belt by friction.
+If friction test fails: wrap with heat-shrink tubing. Print: 0.2mm layers, 100% infill.
+
+**Idler roller:** 25mm OD at edges, 25.5mm at center (0.5mm crown keeps belt centered),
+25mm wide, 5mm round bore. Rides on M5 bolt axle. Spring-loaded tensioner: M5 bolt
+through 10mm slot in frame end plate, compression spring pushes idler to tension belt.
+2mm flanges on both rollers as hard stops against belt walk.
+
+**Hall sensor:** A3144 Hall sensor mounted on belt frame beside idler roller, face 2mm
+from roller rim. Two 3mm neodymium disc magnets glued 180 degrees apart on the roller rim.
+10k pull-up on sensor output to 3.3V. 2 pulses per revolution. See ELECTRICAL.md.
+
+**Belt bed:** 3mm aluminum flat bar, 280mm x 22mm, between the rollers under the belt.
+Covered with PTFE tape. The neoprene belt slides over this. Do not 3D print (FDM warps).
 
 ---
 
@@ -97,10 +118,11 @@ Solenoid on-time: 40ms. Margin: 139ms. Adequate even with significant timing dri
 
 ## Sensing (at escapement level)
 
-**Size beam:** Single IR break-beam crosses the 27mm chute dimension at 20mm from the
-reference wall. Emitter in one wall, receiver in the opposite wall. 10k pull-up on
-receiver output. If beam is blocked: brick is 2x3. If clear: brick is 2x2.
-Gap between brick sizes at beam position: 4.2mm on each side of threshold. Very robust.
+**Size beam:** Two IR break-beams cross the 22mm chute interior (Y axis), mounted in
+the 27mm-wide walls at X=5mm (beam 1) and X=21mm (beam 2) from the reference wall.
+10k pull-up on each receiver output to 3.3V. Detection logic: both beams blocked = 2x3.
+Anything else = 2x2. Position-independent: correct at every possible brick position within
+the 27mm chute. See ISSUE_FIXES.md for full analysis and proof.
 
 **Color sensor:** TCS34725 on chute wall exterior, aligned with the 12mm x 12mm window.
 Black PLA shroud (15mm deep) surrounds the window, blocking all ambient light.

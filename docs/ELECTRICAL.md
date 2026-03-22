@@ -95,7 +95,9 @@ PIN_SOL2       = GPIO 33    // pusher 2 (2x2 blue -> bin 2, at 150mm)
 PIN_SOL3       = GPIO 15    // pusher 3 (2x3 blue -> bin 3, at 225mm)
 
 // Sensing (in chute, at escapement level)
-PIN_SIZE_BEAM  = GPIO 34    // single beam in chute: LOW=blocked=2x3, HIGH=clear=2x2
+PIN_SIZE_BEAM1 = GPIO 36    // beam 1 at chute X=5mm. LOW=blocked. 10k external pull-up.
+PIN_SIZE_BEAM2 = GPIO 34    // beam 2 at chute X=21mm. LOW=blocked. 10k external pull-up.
+                            // Detection: both LOW = 2x3. Anything else = 2x2.
 PIN_CHUTE_EXIT = GPIO 35    // chute exit confirmation beam
 
 // Bin confirmation beams
@@ -104,9 +106,12 @@ PIN_BIN2_BEAM  = GPIO 17
 PIN_BIN3_BEAM  = GPIO 5
 PIN_BIN4_BEAM  = GPIO 18
 
-// I2C bus (TCS34725 at 0x29, display at I2C or SPI)
+// I2C bus (TCS34725 at 0x29, display SSD1306 at 0x3C or SPI display - see display note)
 PIN_SDA        = GPIO 21
 PIN_SCL        = GPIO 22
+
+// Belt speed feedback
+PIN_HALL       = GPIO 4     // A3144 Hall sensor on idler roller. 10k pull-up to 3.3V. ISR on falling edge.
 
 // Operator interface
 PIN_START_BTN  = GPIO 19    // momentary button, external pull-up, active low
@@ -114,13 +119,21 @@ PIN_BUZZER     = GPIO 2     // piezo buzzer
 ```
 
 **GPIO errata notes:**
-- GPIO 34, 35: input-only, NO internal pull-ups. Must have 10k external pull-ups to 3.3V.
-- GPIO 36, 39: NOT USED. These have phantom interrupt issues (270pF internal capacitance
-  causes crosstalk with GPIO 37/38 when ADC1 is active). ESP32 ECO errata 3.11.
+- GPIO 34, 35, 36: input-only, NO internal pull-ups. Must have 10k external pull-ups to
+  3.3V. GPIO 36 is used for PIN_SIZE_BEAM1.
+- GPIO 36, 39 errata (ESP32 ECO 3.11): 270pF internal capacitance causes crosstalk with
+  GPIO 37/38 when ADC1 is actively sampling. This design does not use ADC1. The errata
+  condition is never triggered. Do not add ADC1 reads without reassigning GPIO 36 first.
+- GPIO 37, 38: NOT USED. Internal pins on some DevKit modules (internal Hall sensor,
+  flash). Do not use.
+- GPIO 39: NOT USED. Same input-only / no pull-up constraint as GPIO 36. Spare.
 - GPIO 12: affects flash voltage at boot if pulled HIGH. The L298N IN1 connection is safe
   because the motor does not run until firmware configures the pin after boot.
-- GPIO 0: has internal pull-up, boot button on most devkits. Safe for polled use only
-  (Hall sensor, polled after boot completes).
+- GPIO 0: NOT USED for Hall sensor. Has internal pull-up, boot button on most devkits.
+  Avoid ISR attachment on GPIO 0. Use GPIO 4 for the Hall interrupt instead.
+- GPIO 4: Hall sensor interrupt pin. Clean input, interrupt-capable, no boot-time issues.
+- GPIO 13: PIN_MOTOR_IN2 (L298N belt direction). Display SPI CS must NOT be assigned to
+  GPIO 13. See display note below.
 
 ---
 
@@ -177,11 +190,78 @@ StallGuard enabled (SGTHRS tuned during testing), 8x microstepping (1600 steps/r
 | ESP32 GPIO 15 | MOSFET gate 3 via 1k | Solenoid 3 |
 | ESP32 GPIO 21 | TCS34725 SDA, display SDA | I2C data |
 | ESP32 GPIO 22 | TCS34725 SCL, display SCL | I2C clock |
-| ESP32 GPIO 34 | Size beam receiver + 10k to 3.3V | External pull-up required |
+| ESP32 GPIO 36 | Size beam 1 receiver (X=5mm) + 10k to 3.3V | External pull-up required (input-only pin) |
+| ESP32 GPIO 34 | Size beam 2 receiver (X=21mm) + 10k to 3.3V | External pull-up required |
 | ESP32 GPIO 35 | Chute exit beam receiver + 10k to 3.3V | External pull-up required |
 | ESP32 GPIO 16 | Bin 1 beam receiver | Internal pull-up enabled in firmware |
 | ESP32 GPIO 17 | Bin 2 beam receiver | Internal pull-up enabled in firmware |
 | ESP32 GPIO 5 | Bin 3 beam receiver | Internal pull-up enabled in firmware |
 | ESP32 GPIO 18 | Bin 4 beam receiver | Internal pull-up enabled in firmware |
+| ESP32 GPIO 4 | Hall sensor output + 10k to 3.3V | ISR on falling edge, external pull-up |
 | ESP32 GPIO 19 | Start button + external pull-up | Active low |
 | ESP32 GPIO 2 | Piezo buzzer | -- |
+
+---
+
+## Hall sensor circuit (belt speed feedback)
+
+A3144 Hall sensor (digital output, active-low, open-collector). Two 3mm neodymium disc
+magnets glued 180 degrees apart on the idler roller rim. Sensor face 2mm from rim.
+
+```
+3.3V ---[10k]--- GPIO 4 --- A3144 OUT (pin 3)
+                              |
+                          A3144 VCC (pin 1) --- 5V
+                          A3144 GND (pin 2) --- GND
+```
+
+At 200mm/s belt speed: 2 pulses per revolution, roller circumference = pi*25 = 78.5mm.
+Pulse interval = 78.5 / (2 * 200) = 196ms. PI firmware in belt.cpp corrects drift.
+
+---
+
+## Wire routing and connectors
+
+System splits into 4 sections for transport. Each section connects via JST-XH connectors
+(polarized, snap-lock). No soldering at competition. Run self-test after reassembly.
+
+**Bundle 1: Chute (7 wires)**
+- Color sensor: SDA, SCL, VCC, GND (4 wires, 4-pin JST-XH)
+- Size beam 1 (X=5mm): signal wire (1 wire, 2-pin JST-XH with shared VCC)
+- Size beam 2 (X=21mm): signal wire (1 wire, 2-pin JST-XH with shared VCC)
+- Shared emitter VCC line (1 wire) feeds both beam emitters via 100 ohm resistors
+- Route along chute support plate, under belt frame to electronics bay. Tie every 50mm.
+
+**Bundle 2: Belt (14 wires)**
+- Solenoids x3: 2 wires each = 6 wires (6V + switched GND, 2-pin JST-XH per solenoid)
+- Chute exit beam: signal + VCC = 2 wires (2-pin JST-XH)
+- Belt motor: 2 wires to L298N output (Dupont)
+- Stepper: 4 wires to TMC2209 (coil A1, A2, B1, B2) (Dupont)
+- Hall sensor: signal + VCC = 2 wires (2-pin JST-XH)
+- Route along belt frame outside rail.
+
+**Bundle 3: Bins (8 wires)**
+- 4 bin beams: signal + VCC each = 8 wires (2-pin JST-XH per beam)
+- Route under base plate to electronics bay.
+
+Label every connector with tape flags. All connectors polarized. Wrong-way insertion
+impossible.
+
+---
+
+## Display wiring (open item)
+
+**GPIO 13 conflict:** The Waveshare ST7789V2 SPI display requires a CS pin. GPIO 13 is
+already used for PIN_MOTOR_IN2 (L298N belt direction). Do not assign TFT_CS to GPIO 13.
+
+When hardware arrives, measure available GPIOs before wiring the display. If no conflict-free
+SPI CS pin is available, use the SSD1306 0.96" I2C OLED as the primary display instead.
+
+SSD1306 on I2C (preferred fallback):
+- Address: 0x3C (confirmed different from TCS34725 at 0x29, no bus conflict)
+- Wiring: shared SDA (GPIO 21), SCL (GPIO 22), VCC (5V), GND
+- No additional GPIO pins needed
+- All display states (READY, SORTING, SORT COMPLETE, ERROR) fit in 128x64 pixels
+- Brick animation uses size (full vs small rectangle) and fill (solid = red, outline = blue)
+
+Both displays are on order. Use whichever can be wired without GPIO conflict.

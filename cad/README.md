@@ -6,12 +6,12 @@ All printable parts for the sorting system. Everything structural is PLA printed
 
 ```
 cad/
-  chute/       near-vertical feed chute and transition curve at the base
-  escapement/  stepper cam disk and motor housing
-  frame/       main belt frame, channel walls, base plate, tensioner mounts
-  sensing/     IR break-beam mounts and color sensor shroud (part of channel roof)
-  plows/       plow arms (x3), pivot mounts, solenoid mounts
-  bins/        four bin guides with ramp geometry for energy absorption
+  chute/          feed chute tube, flared top, cam housing, exit ramp (integrated)
+  chute_sensing/  color sensor shroud, IR break-beam mounts
+  escapement/     stepper cam disk
+  frame/          belt frame rails, end plates, channel walls, rollers, tensioner
+  pushers/        solenoid U-bracket mounts, face plates (x3)
+  bins/           four bin guides with angled floor and entrance beam slot
 ```
 
 ## Print order
@@ -25,7 +25,7 @@ Everything else: after the chute transition is validated.
 ## Conventions
 
 - Export STL files alongside source files (Fusion 360 / FreeCAD / whatever you use)
-- Name files descriptively: `plow_arm_v3.stl`, `chute_transition_v1.f3d`, etc.
+- Name files descriptively: `cam_disk_v2.stl`, `chute_transition_v1.f3d`, etc.
 - Keep version numbers in filenames during iteration so old versions are not lost
 - Critical dimensions are in MECHANICAL.md. Match them, and note any deviations
 

@@ -25,12 +25,15 @@ If jams occur, reduce lobe arc or increase chute clearance.
 ## Size Sensing
 
 **Setup:** Hold each brick type at the cam chord position with the escapement stopped.
+Test at multiple positions within the brick's range of play (0 to 11.2mm for 2x2,
+0 to 3.3mm for 2x3) to verify position independence.
 
-**PASS:** 2x3 brick blocks the beam (firmware reads: is_large = true) 10/10 times.
-2x2 brick clears the beam (firmware reads: is_large = false) 10/10 times.
+**PASS:** 2x3 brick: both beams blocked (firmware reads: is_large = true) 10/10 times
+at every tested position. 2x2 brick: both beams simultaneously blocked never occurs
+(firmware reads: is_large = false) 10/10 times at every tested position.
 
-**FAIL:** Any incorrect read. Any inconsistent read (some block, some clear) with the
-same brick type. Any read that requires repositioning the brick within normal tolerances.
+**FAIL:** Any incorrect read. Both beams simultaneously blocked for a 2x2 brick at any
+position. Either beam failing to block for a 2x3 brick at any position.
 
 ---
 
@@ -49,15 +52,21 @@ per brick (sample_count >= 6). No CAT_UNCERTAIN results.
 
 ## Belt
 
-**Setup:** Belt running with no bricks. Hall sensor or motor PWM feedback active.
+**Pre-test (day-1 friction check):** Before wiring anything, wrap neoprene strip around
+one printed roller and pull one end with ~2N force. Must not slide on bare PLA. If slides:
+add heat-shrink sleeve to drive roller. Gate for all subsequent assembly.
 
-**PASS:** Belt holds 200mm/s +/-10% (180-220mm/s) for 30 seconds at full duty.
-No belt slipping on pulleys. No belt jumping teeth.
+**Setup:** Belt running with no bricks. Hall sensor active (GPIO 4). Log speed to serial
+every 100ms for 60 seconds.
 
-**FAIL:** Speed drifts outside 180-220mm/s range. Belt slips or jumps during operation.
+**PASS:** Mean speed within 5% of BELT_TARGET_SPEED. Std dev < 5% of mean. No belt walking
+off rollers during 60-second run. No neoprene splice bump detectible in speed trace.
 
-**Note:** If no speed sensor: verify target speed by measuring time for a mark on the
-belt to travel a known distance (10 measurements, compute mean).
+**FAIL:** Speed drifts outside 5% window or shows high variance. Belt walks off rollers
+(fix: increase idler crown, check flange clearance). Splice creates visible speed spike.
+
+**Wall clearance check:** Place brick in channel, slide by hand full length. No catching
+at wall joints, slot edges, slot-to-wall transitions. Chamfer any sharp edges found.
 
 ---
 

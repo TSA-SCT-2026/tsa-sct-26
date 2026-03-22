@@ -39,7 +39,8 @@ error occurred and which brick number triggered it. Waits for manual reset.
 ```
 1. Previous brick has exited chute (chute exit beam cleared)
 2. Brick N settles onto cam chord (~50ms settling time)
-3. Read PIN_SIZE_BEAM: LOW = 2x3 (beam blocked), HIGH = 2x2 (beam clear)
+3. Read PIN_SIZE_BEAM1 (GPIO 36) and PIN_SIZE_BEAM2 (GPIO 34).
+   Both LOW = 2x3 (both beams blocked). Anything else = 2x2.
 4. Accumulate TCS34725 color samples for 150-200ms
 5. Compute r_ratio = R / (R + G + B), averaged over all valid samples
 6. Classify: (size, r_ratio) -> BrickCategory
@@ -88,18 +89,35 @@ Code must compile with zero warnings. Constants go in config.h, never hardcoded.
 |--------|---------------|
 | main.cpp | Init and loop: poll event queue, dispatch to state machine |
 | config.h | All tunable constants with units in comments |
-| selftest.h/.cpp | Power-on test sequence: solenoid pulse, beam verify, I2C ACK, stepper step |
-| escapement.h/.cpp | Stepper control: step pulse generation, cam rotation, StallGuard monitoring |
-| sensing.h/.cpp | senseBrickInChute(): size read + color accumulate + classify |
-| diverter.h/.cpp | armPusher(idx, fireAtMs): schedules solenoid fire using esp_timer_once |
+| sensors.h/.cpp | senseBrickInChute(): dual size beam read + color accumulate + classify. BrickCategory enum. |
+| actuators.h/.cpp | Belt motor PWM + Hall PI loop. Stepper control + StallGuard. Solenoid pushers. Buzzer. Self-test. (Currently consolidated; target: split into belt.h, escapement.h, diverter.h, audio.h, selftest.h before competition.) |
 | display.h/.cpp | State display updates, brick animation, bin counters, thermal bar |
-| belt.h/.cpp | Belt motor PWM control, speed target management |
-| audio.h/.cpp | Buzzer tones for events (ready, sorted, error) |
 | thermal.h/.cpp | Thermal model for solenoid temperature. WARNING and DANGER thresholds. |
 | logger.h/.cpp | Serial CSV output: every event timestamped. Source of notebook data. |
 | events.h/.cpp | Event queue: SENSING_DONE, CHUTE_EXIT, PUSHER_FIRED, BIN_CONFIRM |
 | state_machine.h/.cpp | State transitions, pusher routing table, run completion check |
 | test_harness.h/.cpp | Serial command interface for simulation and subsystem testing |
+
+---
+
+## Belt speed control
+
+Hall ISR on GPIO 4 captures pulse interval on each falling edge (A3144 active-low,
+2 magnets on idler roller). belt_update_speed() is called from the main loop every 100ms:
+
+```
+speed_mm_s = ROLLER_CIRC_MM / (BELT_MAGNETS * pulse_interval_s)
+error = BELT_TARGET_SPEED - speed_mm_s
+integral += error * dt
+pwm = BASE_PWM + KP * error + KI * integral
+```
+
+Constants in config.h: BELT_KP, BELT_KI, BELT_BASE_PWM, BELT_TARGET_SPEED, ROLLER_OD_MM.
+All require empirical tuning during calibration. Do not commit tuned values without
+also logging the test run that confirmed them.
+
+At 200mm/s, pulse interval is ~196ms. If no pulse received for 500ms: belt stall.
+Stall detection sets an error event. State machine transitions to ERROR_HALT.
 
 ---
 
