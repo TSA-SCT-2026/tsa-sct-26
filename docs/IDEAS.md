@@ -4,12 +4,51 @@ Scratchpad for concepts that are exploratory, not yet architecture. Some of thes
 
 ---
 
-## Alternative diverter mechanisms (considered before committing to solenoid plow)
+## Belt mechanism selection
 
-Every design was evaluated against the core constraint: sort 5 bricks per second, 200mm/s belt, 140ms inter-brick window.
+There are exactly two coherent belt strategies for this application:
 
-**Solenoid plow: current design**
-Pre-set before brick arrives, actuation off critical path, spring return is passive. The only mechanism that fully decouples actuation timing from belt speed. Chosen.
+1. **Toothed belt on toothed pulleys** - positive drive, speed mathematically deterministic.
+   Requires printed GT2 pulleys with accurate 0.75mm tooth profiles, belt splice with tooth
+   alignment. Fabrication risk is non-zero but manageable (droftarts generator is proven).
+
+2. **Flat belt on smooth rollers** - friction drive, needs speed feedback. Best transport
+   surface, simplest fabrication (smooth cylinders, flat splice). Hall sensor + PI loop
+   closes the speed determinism gap at the cost of ~30 lines of firmware.
+
+"Toothed belt on smooth rollers" is not a coherent strategy: GT2 teeth on a smooth PLA
+roller contact only at tooth tips (discrete, deformable neoprene pads with air gaps).
+The Euler belt equation requires continuous surface contact. Effective mu is lower than
+a flat belt on the same roller. This approach has the downside of friction drive (slip)
+without the upside of positive drive (teeth engaging pulleys). Rejected.
+
+**Current design: Strategy 2 (flat neoprene belt, Hall PID)**
+Neoprene rubber strip (~25mm wide) on smooth printed rollers. Motor D-shaft rigid coupling
+to drive roller (zero slip at that joint). A3144 Hall sensor + 2 magnets on idler roller
+feed a PI loop that corrects speed drift from voltage sag and micro-slip. Transport surface
+is smooth neoprene - better grip on ABS bricks than GT2 backing.
+
+**Fallback if friction test fails (day-1):**
+Add heat-shrink sleeve to drive roller, then rough with 120-grit. If still failing: GT2
+hybrid (6mm GT2 belt connects motor to roller shaft with positive drive, neoprene belt
+wraps rollers for transport). This bounds all slip to the roller-belt interface.
+
+Rejected immediately: gravity rollers (LEGO bottom geometry catches), linear pusher
+(serial: 70+ sec for 24 bricks), O-ring cord (line contact, co-planarity problems).
+
+---
+
+## Alternative diverter mechanisms (considered during design)
+
+Every design was evaluated against the core constraint: sort at 200mm/s belt, 179ms timing window.
+
+**Direct solenoid pusher: current design**
+Solenoid rod pushes a face plate directly into the brick. Spring return passive. 40ms on-time.
+No lever arm, no pivot. Simpler and more reliable than lever designs. Chosen.
+
+**Solenoid plow with lever arm (considered, rejected)**
+Lever amplifies short solenoid stroke to longer plow tip travel. More parts, more failure modes.
+Direct pusher achieves adequate travel without a lever. Rejected in favor of direct push.
 
 **Servo flap**
 Weakness: 100-150ms sweep and return time. Eats the entire inter-brick window. Throughput drops to 2-3 bricks/second. Not viable at target speed.
@@ -39,11 +78,11 @@ An omnidirectional wheel or roller array that activates to push bricks sideways 
 
 ## Puller vs pusher solenoid timing optimization
 
-For any solenoid-actuated mechanism, consider which direction the solenoid pushes vs which direction is spring-loaded. The puller variant: spring loads the active position, solenoid holds the neutral position. This means the active movement is instant (spring snap) rather than solenoid-speed. Retraction is solenoid-speed rather than spring-speed.
+For any solenoid-actuated mechanism, consider which direction is solenoid-driven vs spring-loaded. The puller variant: spring loads the active position, solenoid holds the neutral position. Active movement is instant (spring snap); retraction is solenoid-speed.
 
-For our plow: the spring returns the arm to the clear position (neutral). The solenoid pushes to the divert position. This means divert motion is solenoid speed (~10ms), clear motion is spring speed (15-20ms target). The divert is on the critical path (needs to happen before brick arrives). The clear is not critical (brick has already passed). Current design is already optimized: fast direction = solenoid, return direction = spring.
+For the direct pusher: the solenoid fires the push (fast, ~10ms), spring returns the rod to rest (passive). The push is on the critical path (must reach the brick in the right window). The return is not critical (brick has already been deflected). This is already optimized: fast direction = solenoid, return direction = spring.
 
-If a future design needs faster return (spring) and slower extension (solenoid), invert the geometry.
+If a future design needs faster return and slower extension, invert the geometry.
 
 ---
 

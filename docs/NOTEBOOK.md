@@ -29,7 +29,7 @@ Inventor's Log is 20 of 100 points. Evaluated by judges without the team present
 - [ ] Brick spacing: maximum brick length + buffer -> center-to-center gap -> inter-brick window
 - [ ] Dwell time: belt speed, brick width, samples per brick
 - [ ] Size detection timing: beam spacing, belt speed, expected gap for 2x3, timeout for 2x2
-- [ ] Solenoid de-energize timing: brick length + plow footprint, belt speed -> on-time calculation
+- [ ] Solenoid on-time: brick length + face plate width, belt speed -> on-time calculation (40ms nominal)
 - [ ] Thermal model: heat accumulation rate, exponential decay constant, threshold derivations
 - [ ] Power budget: all components, peak simultaneous draw, LiPo capacity vs run count
 - [ ] Throughput: stepper cycle time, belt speed, brick spacing -> bricks per second

@@ -24,8 +24,21 @@ Determine these in dry assembly. Log them. Update EMBEDDED.md and ELECTRICAL.md 
 **Belt speed at operating voltage**
 The JGB37-520 is rated 600 RPM no-load at 6V. Actual belt speed under load with belt tension and brick weight is not known. Measure it during breadboard validation (run motor at operating PWM duty cycle, time a brick over a known distance, calculate mm/s). If actual speed differs significantly from 200mm/s, recalculate: size detection threshold, solenoid de-energize timing, color dwell time, brick spacing.
 
+**Neoprene belt friction (day-1 test)**
+As soon as one roller is printed and the neoprene strip arrives: wrap strip around roller,
+pull one end with ~2N force. If it grips without sliding: PASS. If slides: add heat-shrink
+sleeve to drive roller and retest. If still sliding: rough roller with 120-grit sandpaper.
+If all three fail: switch to GT2 hybrid fallback (GT2 motor-to-roller + neoprene roller-to-belt).
+This test gates everything. Do not wire electronics until friction is confirmed.
+
+**Neoprene belt tracking**
+Primary mitigation: idler roller is crowned 0.5mm at center. Both rollers have 2mm hard-stop
+flanges. Test belt running empty for 60 seconds before any brick test. If belt still walks:
+increase idler crown to 1mm.
+
 **Belt friction with bricks**
-Verify bricks do not slide sideways on the smooth GT2 belt surface during plow actuation. The plow tip pushes laterally against a moving brick. If belt-to-brick friction is too low, the brick may spin rather than deflect cleanly. Test during first powered belt run. If sliding is a problem, lightly textured belt surface or slightly slowing the belt during plow contact are options.
+Verify bricks do not spin on the neoprene surface when a solenoid pusher fires laterally.
+Neoprene-on-ABS friction is high; this is a low risk. Test during first powered belt run.
 
 **L298N PWM frequency**
 Test at 1kHz, 5kHz, and 10kHz. Observe: motor response, audible noise, L298N temperature under sustained operation. Pick the frequency that gives smooth control with acceptable heat. Document the result.
