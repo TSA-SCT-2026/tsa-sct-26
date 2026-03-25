@@ -1,0 +1,35 @@
+Meeting Notes:
+
+  Meeting 2:
+    -Finalized Design
+
+    -Start the Notebook
+      -Problem Statement + Design Brief
+      -Research
+      -Talk about each design individually (pro+cons etc.)
+      -Decision Matrix with back up designs
+      -Part we bought + why
+      -2d + 3d CAD drawings and models
+      -Any prework we did to fluff the notebook
+
+    -CAD
+      -2d drawing
+      -Individual 3d parts and join them in assemblies
+
+    -Simulate on Claude
+      -test different dimensions
+      -how gravity + other forces will impact simulation
+      -how positioning/mechanically can the assembly be best optimized for best performance (can't focus on speed, etc.)
+      -Equations on how stuff moves + physics forces
+
+    -Extra Notes:
+      -PTF Tape to reduce friction on the conveyor
+      -Create datasets of different aspects of the conveyor and make graphs, tables, equations to show performance. Use that metric to improve
+      design and regenerate statistics to show improved performance objectively.
+      -Use Matlab alternatives such as SageMath, GNU Octave, Python, Excel for modeling (whatever is efficient).
+
+    -Use AI
+      -automate learning of things we don't know
+      -ask what we need to do and how to approach certain things.
+      -ideas/solutions
+      -generate data/simulations
