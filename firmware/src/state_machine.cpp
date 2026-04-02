@@ -39,9 +39,7 @@ uint8_t StateMachine::binCount(uint8_t bin) const {
     return _binCounts[bin - 1];
 }
 
-// ----------------------------------------------------------------
 // State handlers
-// ----------------------------------------------------------------
 
 void StateMachine::onIdle(const Event& e) {
     if (e.type == EventType::START_BUTTON) {
@@ -50,133 +48,123 @@ void StateMachine::onIdle(const Event& e) {
     }
 }
 
+void StateMachine::onFeed(const Event& e) {
+    if (e.type == EventType::ENTRY_BEAM_TRIGGERED) {
+        _brick.entryMs = e.timestamp_ms;
+        gLogger.info("entry beam triggered");
+        _timeoutMs = e.timestamp_ms + APPROACH_TIMEOUT_MS;
+        transition(S_APPROACH);
+    }
+    else if (millis() > _timeoutMs) {
+        haltOnError(ERR_JAM_CHUTE);
+    }
+}
+
+void StateMachine::onApproach(const Event& e) {
+    if (e.type == EventType::STOP_SW_TRIGGERED) {
+        _brick.seatedMs = e.timestamp_ms;
+        gLogger.info("stop switch triggered");
+        actuators::beltStop();
+        _token = false;
+        _timeoutMs = e.timestamp_ms + SETTLE_MS;
+        transition(S_SEATED);
+    }
+    else if (millis() > _timeoutMs) {
+        haltOnError(ERR_JAM_APPROACH);
+    }
+}
+
+void StateMachine::onSeated(const Event& e) {
+    if (millis() >= _timeoutMs) {
+        transition(S_SENSING);
+        actuators::startSensing();
+    }
+}
+
 void StateMachine::onSensing(const Event& e) {
-    // SENSING_DONE is pushed by the escapement module after senseBrickInChute()
-    // returns. The result is carried in the event payload.
     if (e.type == EventType::SENSING_DONE) {
         _brick.sense = e.senseResult;
 
         if (_brick.sense.category == BrickCategory::UNCERTAIN) {
-            gLogger.errorHalt(_brick.number, 0, "UNCERTAIN_CLASSIFICATION");
-            haltSystem();
-            transition(State::ERROR_HALT);
+            haltOnError(ERR_SENSOR_FAULT);
             return;
         }
 
-        _brick.pusherIdx = pusherFor(_brick.sense.category);
         _brick.targetBin = binFor(_brick.sense.category);
+        _brick.binSteps = stepsForBin(_brick.targetBin);
 
         gLogger.classified(_brick.number, _brick.sense.category,
-                           _brick.pusherIdx, _brick.targetBin);
+                           0, _brick.targetBin);
 
-        // Release brick onto belt
-        actuators::stepperRelease();
-        gThermal.onStepperRelease();
-        transition(State::RELEASING);
+        transition(S_INDEXED);
+        actuators::indexToBin(_brick.binSteps);
     }
 }
 
-void StateMachine::onReleasing(const Event& e) {
-    // CHUTE_EXIT fires when the chute exit beam confirms brick left the chute.
-    if (e.type == EventType::CHUTE_EXIT) {
+void StateMachine::onIndexed(const Event& e) {
+    if (e.type == EventType::INDEXED) {
+        if (e.value != 0) {
+            haltOnError(ERR_DISC_JAM);
+            return;
+        }
+        gLogger.info("disc indexed");
+        transition(S_RELEASED);
+        actuators::releasePlatform();
         _brick.releaseMs = e.timestamp_ms;
-
-        // Arm pusher timer. Delay = pusher position / belt speed.
-        // Pusher 0 means default path, no push needed.
-        if (_brick.pusherIdx > 0) {
-            float positionMm = 0.0f;
-            switch (_brick.pusherIdx) {
-                case 1: positionMm = PUSHER1_POS_MM; break;
-                case 2: positionMm = PUSHER2_POS_MM; break;
-                case 3: positionMm = PUSHER3_POS_MM; break;
-            }
-            uint32_t delayMs = (uint32_t)(positionMm / BELT_TARGET_MM_S * 1000.0f);
-            actuators::armPusher(_brick.pusherIdx, _brick.releaseMs + delayMs);
-        }
-
-        actuators::displaySorting(_brick.number, TOTAL_BRICKS);
-        _confirmDeadlineMs = e.timestamp_ms + CONFIRM_TIMEOUT_MS;
-        transition(State::TRANSIT);
+        _timeoutMs = e.timestamp_ms + FALL_SETTLE_MS;
     }
 }
 
-void StateMachine::onTransit(const Event& e) {
-    // PUSHER_FIRED is pushed by the actuator timer when the solenoid fires.
-    if (e.type == EventType::PUSHER_FIRED) {
-        gThermal.onSolenoidFire(_brick.pusherIdx);
-    }
-
-    // Timeout: no bin confirmed before deadline.
-    if (e.type == EventType::CONFIRM_TIMEOUT) {
-        gLogger.errorHalt(_brick.number, _brick.targetBin, "TIMEOUT");
-        haltSystem();
-        transition(State::ERROR_HALT);
-        return;
-    }
-
-    // Check bin confirmations even during transit (brick may arrive quickly).
-    uint8_t arrived = binFromEvent(e);
-    if (arrived == _brick.targetBin) {
-        _brick.confirmMs = e.timestamp_ms;
-        _brick.confirmed = true;
-        uint32_t transit = _brick.confirmMs - _brick.releaseMs;
-        _binCounts[_brick.targetBin - 1]++;
-        _brickCount++;
-        _transitSum += transit;
-        gLogger.binConfirm(_brick.number, _brick.targetBin, arrived, transit, true);
-        gLogger.thermal();
-
-        if (_brickCount >= TOTAL_BRICKS) {
-            endRun();
-            transition(State::COMPLETE);
-        } else {
-            startNextBrick();
-        }
-        return;
-    }
-
-    if (arrived != 0 && arrived != _brick.targetBin) {
-        gLogger.binConfirm(_brick.number, _brick.targetBin, arrived, 0, false);
-        gLogger.errorHalt(_brick.number, _brick.targetBin, "WRONG_BIN");
-        haltSystem();
-        transition(State::ERROR_HALT);
+void StateMachine::onReleased(const Event& e) {
+    if (millis() >= _timeoutMs) {
+        _timeoutMs = millis() + BIN_CONFIRM_TIMEOUT_MS;
+        transition(S_CONFIRM);
     }
 }
 
 void StateMachine::onConfirm(const Event& e) {
-    // Fallback confirm handling (same logic as onTransit bin check).
     uint8_t arrived = binFromEvent(e);
+    
     if (arrived == _brick.targetBin) {
         _brick.confirmMs = e.timestamp_ms;
         _brick.confirmed = true;
         uint32_t transit = _brick.confirmMs - _brick.releaseMs;
         _binCounts[_brick.targetBin - 1]++;
-        _brickCount++;
-        _transitSum += transit;
         gLogger.binConfirm(_brick.number, _brick.targetBin, arrived, transit, true);
+        transition(S_RESET);
+    }
+    else if (arrived != 0 && arrived != _brick.targetBin) {
+        gLogger.binConfirm(_brick.number, _brick.targetBin, arrived, 0, false);
+        haltOnError(ERR_MISS_BIN);
+    }
+    else if (millis() > _timeoutMs) {
+        haltOnError(ERR_MISS_BIN);
+    }
+}
+
+void StateMachine::onReset(const Event& e) {
+    if (e.type == EventType::PLATFORM_RELEASED) {
+        _brickCount++;
+        _token = true;
         gLogger.thermal();
 
         if (_brickCount >= TOTAL_BRICKS) {
             endRun();
-            transition(State::COMPLETE);
+            transition(S_COMPLETE);
         } else {
             startNextBrick();
         }
-    } else if (e.type == EventType::CONFIRM_TIMEOUT) {
-        gLogger.errorHalt(_brick.number, _brick.targetBin, "TIMEOUT");
-        haltSystem();
-        transition(State::ERROR_HALT);
+    }
+    else if (millis() > _timeoutMs) {
+        haltOnError(ERR_PLATFORM_STUCK);
     }
 }
 
 void StateMachine::onComplete(const Event& e) {
-    // Wait for RESET to return to IDLE.
-    if (e.type == EventType::RESET) {
+    if (e.type == EventType::START_BUTTON) {
         _brickCount = 0;
         memset(_binCounts, 0, sizeof(_binCounts));
-        _errorCount  = 0;
-        _transitSum  = 0;
-        transition(State::IDLE);
+        transition(S_IDLE);
         actuators::displayReady();
     }
 }
@@ -186,51 +174,62 @@ void StateMachine::onErrorHalt(const Event& e) {
         gLogger.info("RESET - returning to IDLE");
         _brickCount = 0;
         memset(_binCounts, 0, sizeof(_binCounts));
-        _errorCount  = 0;
-        _transitSum  = 0;
-        transition(State::IDLE);
+        _token = true;
+        transition(S_IDLE);
         actuators::displayReady();
     }
 }
 
-// ----------------------------------------------------------------
 // Internal helpers
-// ----------------------------------------------------------------
 
 void StateMachine::startRun() {
     _brickCount = 0;
     memset(_binCounts, 0, sizeof(_binCounts));
-    _errorCount = 0;
-    _transitSum = 0;
     _runStartMs = millis();
-    actuators::beltStart();
-    gLogger.info("run started");
+    _token = true;
+    gLogger.info("V6 run started");
 }
 
 void StateMachine::endRun() {
-    uint32_t totalMs    = millis() - _runStartMs;
-    uint32_t avgTransit = (_brickCount > 0) ? _transitSum / _brickCount : 0;
+    uint32_t totalMs = millis() - _runStartMs;
     actuators::beltStop();
+    actuators::homeDisc();
     actuators::displayComplete(totalMs, _binCounts);
-    gLogger.runComplete(totalMs, _binCounts, _errorCount, avgTransit);
+    gLogger.runComplete(totalMs, _binCounts, 0, 0);
 }
 
 void StateMachine::startNextBrick() {
+    if (!_token) {
+        gLogger.info("ERROR: token=0, cannot feed next brick");
+        haltOnError(ERR_DOUBLE_ENTRY);
+        return;
+    }
+
     _brick = BrickRecord{};
     _brick.number = _brickCount + 1;
-    // Transition to SENSING. The escapement module will call senseBrickInChute()
-    // and push SENSING_DONE when complete.
-    transition(State::SENSING);
-    actuators::stepperSense();  // tells escapement to hold cam and begin sensing
+    actuators::beltStart();
+    _timeoutMs = millis() + FEED_TIMEOUT_MS;
+    transition(S_FEED);
 }
 
-void StateMachine::checkConfirmTimeout() {
-    if (_confirmDeadlineMs > 0 && millis() > _confirmDeadlineMs) {
-        _confirmDeadlineMs = 0;
+void StateMachine::haltOnError(ErrorCode code) {
+    _errorCode = code;
+    actuators::beltStop();
+    actuators::stepperStop();
+    actuators::releaseOff();
+    actuators::displayError(_brick.number, (uint8_t)code);
+    actuators::buzzerError();
+    gLogger.errorHalt(_brick.number, _brick.targetBin, errorName(code));
+    transition(S_ERROR_HALT);
+}
+
+void StateMachine::checkTimeout() {
+    if (_timeoutMs > 0 && millis() > _timeoutMs) {
         Event timeout;
-        timeout.type = EventType::CONFIRM_TIMEOUT;
+        timeout.type = EventType::TIMEOUT;
         timeout.timestamp_ms = millis();
         gEventQueue.push(timeout);
+        _timeoutMs = 0;
     }
 }
 
@@ -244,36 +243,28 @@ uint8_t StateMachine::binFromEvent(const Event& e) const {
     }
 }
 
-void StateMachine::haltSystem() {
-    actuators::beltStop();
-    actuators::stepperStop();
-    actuators::pusherReleaseAll();
-    actuators::displayError(_brick.number, _brick.targetBin);
-    _errorCount++;
-}
-
-// Bin and pusher routing table (Addendum A bin assignment)
-uint8_t StateMachine::pusherFor(BrickCategory cat) {
-    switch (cat) {
-        case BrickCategory::CAT_2x2_RED:  return 1;
-        case BrickCategory::CAT_2x2_BLUE: return 2;
-        case BrickCategory::CAT_2x3_BLUE: return 3;
-        case BrickCategory::CAT_2x3_RED:  return 0;  // default path, no pusher
-        default:                           return 0;
+uint16_t StateMachine::stepsForBin(uint8_t bin) const {
+    switch (bin) {
+        case 1:  return BIN1_STEPS;
+        case 2:  return BIN2_STEPS;
+        case 3:  return BIN3_STEPS;
+        case 4:  return BIN4_STEPS;
+        default: return BIN4_STEPS;
     }
 }
 
+// V6 bin routing table
 uint8_t StateMachine::binFor(BrickCategory cat) {
     switch (cat) {
-        case BrickCategory::CAT_2x2_RED:  return 1;
-        case BrickCategory::CAT_2x2_BLUE: return 2;
-        case BrickCategory::CAT_2x3_BLUE: return 3;
-        case BrickCategory::CAT_2x3_RED:  return 4;
+        case BrickCategory::CAT_2x2_RED:  return 1;  // NW bin (315 deg)
+        case BrickCategory::CAT_2x2_BLUE: return 2;  // NE bin (45 deg)
+        case BrickCategory::CAT_2x3_BLUE: return 3;  // SE bin (135 deg)
+        case BrickCategory::CAT_2x3_RED:  return 4;  // SW bin (225 deg, home, default)
         default:                           return 4;
     }
 }
 
-void StateMachine::transition(State next) {
+void StateMachine::transition(SystemState next) {
     gLogger.stateChange(stateName(), stateNameFor(next));
     _state = next;
 }
@@ -282,15 +273,33 @@ const char* StateMachine::stateName() const {
     return stateNameFor(_state);
 }
 
-const char* StateMachine::stateNameFor(State s) {
+const char* StateMachine::stateNameFor(SystemState s) {
     switch (s) {
-        case State::IDLE:       return "IDLE";
-        case State::SENSING:    return "SENSING";
-        case State::RELEASING:  return "RELEASING";
-        case State::TRANSIT:    return "TRANSIT";
-        case State::CONFIRM:    return "CONFIRM";
-        case State::COMPLETE:   return "COMPLETE";
-        case State::ERROR_HALT: return "ERROR_HALT";
-        default:                return "UNKNOWN";
+        case S_IDLE:       return "IDLE";
+        case S_FEED:       return "FEED";
+        case S_APPROACH:   return "APPROACH";
+        case S_SEATED:     return "SEATED";
+        case S_SENSING:    return "SENSING";
+        case S_INDEXED:    return "INDEXED";
+        case S_RELEASED:   return "RELEASED";
+        case S_CONFIRM:    return "CONFIRM";
+        case S_RESET:      return "RESET";
+        case S_COMPLETE:   return "COMPLETE";
+        case S_ERROR_HALT: return "ERROR_HALT";
+        default:           return "UNKNOWN";
+    }
+}
+
+const char* StateMachine::errorName(ErrorCode code) const {
+    switch (code) {
+        case ERR_JAM_CHUTE:       return "JAM_CHUTE";
+        case ERR_JAM_APPROACH:    return "JAM_APPROACH";
+        case ERR_SENSOR_FAULT:    return "SENSOR_FAULT";
+        case ERR_DISC_JAM:        return "DISC_JAM";
+        case ERR_MISS_BIN:        return "MISS_BIN";
+        case ERR_DOUBLE_ENTRY:    return "DOUBLE_ENTRY";
+        case ERR_PLATFORM_STUCK:  return "PLATFORM_STUCK";
+        case ERR_POSITION_DRIFT:  return "POSITION_DRIFT";
+        default:                  return "UNKNOWN_ERROR";
     }
 }
