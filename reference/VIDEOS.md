@@ -9,3 +9,9 @@
 4. [3D Printed Color Sorting Machine | Arduino and 3D print Project](https://www.youtube.com/watch?v=vOLTPEVGzjM) by Carlos 3D FR
 
 5. [Smart Conveyor using Arduino ESP32](https://www.youtube.com/watch?v=HdYP6mvLWew) by Hacktuber
+
+
+https://www.youtube.com/watch?v=2tBa83m16nc
+https://www.youtube.com/watch?v=qoejrZhn5XI
+https://www.youtube.com/watch?v=uVoZxnJS6xw
+https://www.youtube.com/shorts/l8QTaY-TBvg

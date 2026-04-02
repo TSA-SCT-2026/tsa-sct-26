@@ -3,12 +3,12 @@
 #include "logger.h"
 #include "config.h"
 
-// Escapement-based sensing (Addendum A).
-// The brick is stationary on the cam chord when sensed.
-// Size: single digital read of PIN_SIZE_BEAM.
+// V6 static chamber sensing.
+// The brick is stationary in isolated chamber when sensed.
+// Size: two beams at X=5mm and X=21mm. Both blocked = 2x3, one blocked = 2x2.
 // Color: blocking sample loop for COLOR_SENSE_MS.
-// Classification is complete BEFORE the brick is released onto the belt.
-// The belt is transport-only. Belt speed has no effect on sensing quality.
+// Classification is complete BEFORE the disc is indexed.
+// The disc and belt are stopped during sensing.
 
 namespace sensors {
 

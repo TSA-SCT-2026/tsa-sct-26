@@ -8,24 +8,29 @@
 StateMachine gStateMachine;
 
 void StateMachine::begin() {
-    _state = State::IDLE;
+    _state = S_IDLE;
+    _token = true;
     actuators::displayReady();
-    gLogger.info("state machine ready");
+    gLogger.info("V6 state machine ready");
 }
 
 void StateMachine::process(const Event& e) {
     if (e.type == EventType::NONE) return;
 
-    if (_state == State::CONFIRM || _state == State::TRANSIT) checkConfirmTimeout();
+    checkTimeout();
 
     switch (_state) {
-        case State::IDLE:      onIdle(e);      break;
-        case State::SENSING:   onSensing(e);   break;
-        case State::RELEASING: onReleasing(e); break;
-        case State::TRANSIT:   onTransit(e);   break;
-        case State::CONFIRM:   onConfirm(e);   break;
-        case State::COMPLETE:  onComplete(e);  break;
-        case State::ERROR_HALT:onErrorHalt(e); break;
+        case S_IDLE:       onIdle(e);       break;
+        case S_FEED:       onFeed(e);       break;
+        case S_APPROACH:   onApproach(e);   break;
+        case S_SEATED:     onSeated(e);     break;
+        case S_SENSING:    onSensing(e);    break;
+        case S_INDEXED:    onIndexed(e);    break;
+        case S_RELEASED:   onReleased(e);   break;
+        case S_CONFIRM:    onConfirm(e);    break;
+        case S_RESET:      onReset(e);      break;
+        case S_COMPLETE:   onComplete(e);   break;
+        case S_ERROR_HALT: onErrorHalt(e);  break;
     }
 }
 

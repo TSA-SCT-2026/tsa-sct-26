@@ -3,9 +3,9 @@
 #include <Wire.h>
 #include "config.h"
 
-// Escapement-based sensing (Addendum A).
-// Classification happens while brick is stationary on cam chord, before release.
-// Belt speed has no effect on sensing quality.
+// V6 static chamber sensing.
+// Classification happens while brick is stationary in isolated chamber.
+// Size sensing uses two beams at different positions in chamber width.
 
 enum class BrickCategory : uint8_t {
     CAT_2x2_RED  = 0,   // -> pusher 1 -> bin 1
@@ -24,9 +24,9 @@ struct SenseResult {
 
 namespace sensors {
     void begin();
-    SenseResult senseBrickInChute();  // call once per cam cycle, blocks for COLOR_SENSE_MS
+    SenseResult senseBrickInChamber();  // call when brick seated, blocks for COLOR_SENSE_MS
     void attachBinBeams();
-    bool chuteExitBeamClear();
+    bool chamberExitBeamClear();
     float beltSpeedMms();             // optional, 0.0 if Hall sensor not installed
     const char* categoryName(BrickCategory cat);
 }

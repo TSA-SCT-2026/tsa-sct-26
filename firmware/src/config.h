@@ -1,74 +1,68 @@
 #pragma once
 
 // ================================================================
-// Design: V3 + Addendum A (March 21 2026)
-// Sensing moved to escapement zone. Brick classified while stationary.
-// Belt is transport only. Speed decoupled from sensing quality.
-// Diverter: direct solenoid push, no lever arm.
-// Default bin: 2x3 RED (rarest category, minimizes error accumulation).
+// Design: V6 (chamber-based sorting)
+// Chamber sensing with dual size beams. Chute selector disc with stepper.
+// Single trapdoor release via class 3 lever. TB6612FNG belt motor driver.
 // ================================================================
 
 // ================================================================
 // Pin assignments
-// Avoid GPIO 36 and 39 - phantom interrupt errata with ESP32 ADC.
-// GPIO 34, 35: input-only, no internal pull-ups. Need external 10k to 3.3V.
+// GPIO 34, 35, 36, 39: input-only, no internal pull-ups. Need external 10k to 3.3V.
 // ================================================================
 
-// Stepper (escapement) via TMC2209
-#define PIN_STEPPER_STEP    25
-#define PIN_STEPPER_DIR     26
-#define PIN_STEPPER_EN      27      // active-low on TMC2209 (pull LOW to enable)
+// Stepper (chute selector disc) via TMC2209
+#define PIN_STEP            25
+#define PIN_DIR             26
+#define PIN_ENABLE          27      // active-low on TMC2209 (pull LOW to enable)
 #define PIN_TMC_UART        23      // single-wire UART, needs 1k series resistor
 
-// Belt motor via L298N
-#define PIN_BELT_PWM        14      // PWM speed control (L298N ENA)
-#define PIN_BELT_DIR1       12      // L298N IN1
-#define PIN_BELT_DIR2       13      // L298N IN2
+// Belt motor via TB6612FNG
+#define PIN_MOTOR_ENA       14      // PWM speed control
+#define PIN_MOTOR_IN1       12      // direction
+#define PIN_MOTOR_IN2       13      // direction
+#define PIN_MOTOR_STBY      0       // standby (must be HIGH for operation)
 
-// Solenoids via N-channel MOSFETs (IRLZ44N)
-#define PIN_SOL1            32      // pusher 1 -> bin 1 (2x2 red)
-#define PIN_SOL2            33      // pusher 2 -> bin 2 (2x2 blue)
-#define PIN_SOL3            15      // pusher 3 -> bin 3 (2x3 blue)
+// Release solenoid via N-channel MOSFET (IRLZ44N)
+#define PIN_RELEASE         32      // class 3 lever solenoid, gate via 1k resistor
 
-// Sensing - chute/escapement zone
-// GPIO 34 and 35 are input-only. External 10k pull-ups to 3.3V required.
-#define PIN_SIZE_BEAM       34      // chute size beam: blocked=2x3, clear=2x2
-#define PIN_CHUTE_EXIT      35      // chute exit confirmation beam
+// Sensing - chamber zone
+// GPIO 34, 35, 36, 39 are input-only. External 10k pull-ups to 3.3V required.
+#define PIN_SIZE_BEAM1      36      // X=5mm, 10k ext pull-up, INPUT-ONLY
+#define PIN_SIZE_BEAM2      34      // X=21mm, 10k ext pull-up, INPUT-ONLY
+#define PIN_ENTRY_BEAM      35      // chamber entry, 10k ext pull-up, INPUT-ONLY
+#define PIN_STOP_SW         33      // stop wall micro-switch, internal pull-up
+#define PIN_HOME_SW         15      // disc home micro-switch, internal pull-up
+#define PIN_SHELF_LEVEL     39      // platform-level switch, 10k ext pull-up, INPUT-ONLY
 // TCS34725 color sensor on I2C (pins below)
 
 // Bin confirmation beams
-#define PIN_BIN1_BEAM       16      // bin 1 confirm (2x2 red)
-#define PIN_BIN2_BEAM       17      // bin 2 confirm (2x2 blue)
-#define PIN_BIN3_BEAM       5       // bin 3 confirm (2x3 blue)
-#define PIN_BIN4_BEAM       18      // bin 4 confirm (2x3 red, default)
+#define PIN_BIN1_BEAM       16
+#define PIN_BIN2_BEAM       17
+#define PIN_BIN3_BEAM       5
+#define PIN_BIN4_BEAM       18
 
-// I2C bus (TCS34725 at 0x29)
-#define PIN_COLOR_SDA       21
-#define PIN_COLOR_SCL       22
-
-// Display (Waveshare 1.69in ST7789V2, SPI)
-#define PIN_TFT_CS          13      // NOTE: shared with belt DIR2 - reassign if conflict
-#define PIN_TFT_DC          12
-#define PIN_TFT_RST         2
+// I2C bus (TCS34725 at 0x29, PCF8574 at 0x20)
+#define PIN_SDA             21
+#define PIN_SCL             22
+#define PCF8574_ADDR        0x20
 
 // Operator interface
-#define PIN_START_BTN       19      // momentary button, active low, internal pull-up
-#define PIN_BUZZER          0       // passive piezo, 100 ohm series resistor
+#define PIN_START_BTN       19      // momentary button, active low, external pull-up
+#define PIN_BUZZER          2       // passive piezo, 100 ohm series resistor
 
-// Optional: belt speed Hall sensor
-#define PIN_HALL            4       // A3144 Hall sensor on idler roller
+// Belt speed Hall sensor
+#define PIN_HALL            4       // A3144 Hall sensor on idler roller, 10k pull-up
 
 // ================================================================
 // Belt
 // ================================================================
-#define BELT_TARGET_MM_S        200     // target speed (sensing decoupled, can push up)
-#define BELT_PWM_FREQ_HZ        5000    // L298N PWM frequency (1-10kHz range)
-#define BELT_PWM_RESOLUTION     8       // bits (0-255)
-#define BELT_PWM_INIT_DUTY      128     // start at 50%, tune up to 200mm/s
-
-// Belt geometry (Addendum A - shorter belt, 640mm loop)
-#define BELT_ACTIVE_MM          290.0f  // chute exit to belt end
-#define BELT_CIRCUMFERENCE_MM   640     // closed-loop GT2 belt
+#define BELT_TARGET_SPEED       100.0f  // target speed (mm/s)
+#define BELT_KP                 0.5f
+#define BELT_KI                 0.1f
+#define BELT_BASE_PWM           128
+#define ROLLER_OD_MM            25.0f
+#define BELT_MAGNETS            2
 
 // ================================================================
 // Escapement-based sensing (Addendum A)

@@ -1,7 +1,5 @@
 # Bill of Materials V6 — Final
 
-**Source of Truth:** `docs/BOM.xlsx` is the authoritative BOM spreadsheet. This markdown file provides context and validation notes.
-
 All items validated. Every spec confirmed. Order as listed with no modifications.
 
 ---

@@ -8,6 +8,16 @@ Sorts 24 LEGO bricks by size and color into 4 bins on a conveyor, automatically,
 
 Read ARCHITECTURE.md for the full system overview, design philosophy, pipeline, and build schedule.
 
+## System overview V6
+
+V6 uses a **chamber isolation architecture**:
+- Narrow 20mm belt conveyor with side rails (brick isolation)
+- Class 3 lever trapdoor (10mm solenoid stroke amplified to 25mm tip travel)
+- Stepper-indexed 4-position rotating chute selector beneath trap
+- Four collection bins at stationary positions
+
+This design eliminates lateral diverter complexity and achieves deterministic per-brick isolation through sequential chamber gating.
+
 ## Repo structure
 
 ```
