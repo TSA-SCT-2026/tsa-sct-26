@@ -8,26 +8,24 @@ namespace actuators {
 
     void begin();
 
-    // Belt motor
+    // Belt motor (TB6612FNG)
     void beltStart();
     void beltStop();
     void beltSetDuty(uint8_t duty);
 
-    // Solenoid pushers. pusherIdx is 1-3.
-    // armPusher schedules the solenoid fire at fireAtMs using esp_timer_once.
-    // pusherReleaseAll force-de-energizes all pushers immediately (error halt).
-    void armPusher(uint8_t pusherIdx, uint32_t fireAtMs);
-    void pusherReleaseAll();
+    // Release solenoid (class 3 lever trapdoor)
+    void firePlatformRelease();
 
-    // Stepper escapement
-    void stepperSense();                  // hold cam at dwell, begin sensing window
-    void stepperRelease();                // fire one full cam revolution (releases one brick)
-    void stepperStop();
+    // Chute selector disc stepper
+    bool homeDisc();                      // home disc to 225 deg (bin 4), return success
+    bool indexToBin(uint8_t bin_index);   // move to target bin, monitor StallGuard
+    bool reHomeCheck();                   // verify position every RETHOME_PERIOD_BRICKS
 
     // Display (stub - real implementation in display.cpp)
     void displayReady();
-    void displaySorting(uint8_t brickNum, uint8_t total);
+    void displaySorting(uint8_t brickNum, uint8_t total, uint8_t targetBin, 
+                        const uint8_t binCounts[4]);
     void displayComplete(uint32_t totalMs, const uint8_t binCounts[4]);
-    void displayError(uint8_t brickNum, uint8_t expectedBin);
+    void displayError(uint8_t brickNum, uint8_t expectedBin, const char* errorCode);
 
 }  // namespace actuators

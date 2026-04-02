@@ -65,71 +65,52 @@
 #define BELT_MAGNETS            2
 
 // ================================================================
-// Escapement-based sensing (Addendum A)
-// Brick is stationary on cam chord. Size: single digital read.
-// Color: accumulate samples during cam dwell time.
+// Timeouts (ms)
 // ================================================================
-#define CHUTE_WIDTH_MM          27.0f   // chute internal dimension (27mm axis)
-#define SIZE_BEAM_POS_MM        20.0f   // beam position from wall in 27mm dimension
-                                        // 2x3=23.7mm blocks it, 2x2=15.8mm does not
-#define COLOR_SENSE_MS          150     // color sampling duration per brick (ms)
-#define COLOR_INTEGRATION_MS    24      // TCS34725 integration time per sample
-#define COLOR_MIN_SAMPLES       3       // below this: CAT_UNCERTAIN, flag error
+#define FEED_TIMEOUT_MS         5000
+#define APPROACH_TIMEOUT_MS     500
+#define SETTLE_MS               50
+#define COLOR_TIMEOUT_MS        500
+#define SOLENOID_ON_MS          80
+#define FALL_SETTLE_MS          400
+#define PLATFORM_RETURN_MS      300
+#define BIN_CONFIRM_TIMEOUT_MS  1000
+
+// ================================================================
+// Sensing
+// ================================================================
+#define COLOR_SAMPLE_COUNT      8
+#define COLOR_MIN_SAMPLES       4
+#define COLOR_RED_THRESHOLD     0.42f   // SET FROM CALIBRATION DATA
+#define C_MIN_VALID             100
 #define I2C_FREQ_HZ             400000  // set explicitly before first sensor read
 
-// Color thresholds (calibrate with real bricks and shroud installed)
-#define COLOR_RED_HIGH          0.50f   // R/(R+G+B) above this = RED
-#define COLOR_RED_LOW           0.30f   // R/(R+G+B) below this = BLUE
-                                        // between = UNCERTAIN
+// ================================================================
+// Stepper (chute selector disc)
+// ================================================================
+#define STEPPER_STEPS_PER_REV   1600
+#define STEPPER_RUN_SPS         400
+#define STEPPER_START_SPS       100
+#define STEPPER_ACCEL           50
+#define STEPPER_DECEL_STEPS     50
+#define STEPPER_HOLD_CURRENT    200
+#define RETHOME_PERIOD_BRICKS   8
+#define RETHOME_TOLERANCE_STEPS 20
+
+// Bin positions (steps 0-1599)
+#define BIN1_STEPS              1400
+#define BIN2_STEPS              200
+#define BIN3_STEPS              600
+#define BIN4_STEPS              1000    // home
 
 // ================================================================
-// Pusher positions (mm from belt start / chute exit)
+// Expected counts
 // ================================================================
-#define PUSHER1_POS_MM          75.0f   // bin 1: 2x2 red
-#define PUSHER2_POS_MM          150.0f  // bin 2: 2x2 blue
-#define PUSHER3_POS_MM          225.0f  // bin 3: 2x3 blue
-#define BELT_END_MM             290.0f  // bin 4: 2x3 red (default, no pusher)
-
-// Travel time from chute exit to each pusher at BELT_TARGET_MM_S
-// T_ms = pos_mm / belt_mm_s * 1000
-// Pusher 1: 375ms, Pusher 2: 750ms, Pusher 3: 1125ms
-
-// ================================================================
-// Bin assignment
-// ================================================================
-#define EXPECTED_BIN1           6       // 2x2 red  -> pusher 1 -> bin 1
-#define EXPECTED_BIN2           6       // 2x2 blue -> pusher 2 -> bin 2
-#define EXPECTED_BIN3           8       // 2x3 blue -> pusher 3 -> bin 3
-#define EXPECTED_BIN4           4       // 2x3 red  -> default  -> bin 4 (RAREST)
+#define EXPECTED_BIN1           6
+#define EXPECTED_BIN2           6
+#define EXPECTED_BIN3           8
+#define EXPECTED_BIN4           4
 #define TOTAL_BRICKS            24
-
-// ================================================================
-// Solenoid timing
-// ================================================================
-#define SOL_ON_MS               40      // energize duration (brick clears in ~2ms, 40ms is safe)
-// No lever, no PWM hold needed - direct push, spring return
-// Face plate: 20mm wide. Window = (15.8+20)/200*1000 = 179ms. Margin: 139ms.
-
-// ================================================================
-// Escapement (NEMA 11 + cam)
-// ================================================================
-#define STEPPER_STEPS_PER_REV   200     // full step, 1.8 deg/step
-#define CAM_LOBE_DEG            50      // lobe arc (tune +/-5 deg to prevent double-release)
-
-// Cycle time per brick: SENSE_MS + release + settle = ~280ms = 3.6 bricks/sec
-// Reduce COLOR_SENSE_MS to 100ms for ~3.8 bricks/sec if needed
-#define ESCAPEMENT_CYCLE_MS     280     // total cam cycle time
-
-// Thermal throttle (uses same model, different sps values)
-#define STEPPER_SPS_NORMAL      800     // 3.6 bricks/sec at 280ms cycle
-#define STEPPER_SPS_WARNING     533     // thermal WARNING throttle
-#define STEPPER_SPS_DANGER      267     // thermal DANGER throttle
-
-// ================================================================
-// Bin confirmation
-// ================================================================
-#define CONFIRM_TIMEOUT_MS      2000    // max wait after routing before ERROR_HALT
-                                        // calibrate from actual bin distances after assembly
 
 // ================================================================
 // Thermal model
