@@ -40,10 +40,10 @@ void pushEventSensingDone(const SenseResult& result) {
     gEventQueue.push(e);
 }
 
-void pushEventPusherFired(uint8_t pusherIdx) {
+void pushEventIndexed(uint8_t binIdx) {
     Event e;
-    e.type         = EventType::PUSHER_FIRED;
+    e.type         = EventType::INDEXED;
     e.timestamp_ms = millis();
-    e.pusherIdx    = pusherIdx;
+    e.binIdx       = binIdx;
     gEventQueue.push(e);
 }

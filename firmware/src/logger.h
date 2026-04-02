@@ -19,12 +19,14 @@ public:
 
     // State machine events
     void stateChange(const char* from, const char* to);
-    void classified(uint8_t brickNum, BrickCategory cat, uint8_t pusherIdx, uint8_t bin);
+    void classified(uint8_t brickNum, BrickCategory cat, uint8_t discPos, uint8_t bin);
+    void platformReleased(uint8_t brickNum, uint8_t bin);
+    void discIndexed(uint8_t brickNum, uint8_t bin, const char* position);
     void binConfirm(uint8_t brickNum, uint8_t expectedBin, uint8_t actualBin,
-                    uint32_t transitMs, bool ok);
+                    uint32_t feedMs, bool ok);
     void thermal();
     void runComplete(uint32_t totalMs, const uint8_t counts[4],
-                     uint8_t errors, uint32_t avgTransitMs);
+                     uint8_t errors, uint32_t avgFeedMs);
     void errorHalt(uint8_t brickNum, uint8_t expectedBin, const char* reason);
     void info(const char* msg);
 

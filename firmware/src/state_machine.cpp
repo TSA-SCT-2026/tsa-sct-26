@@ -94,8 +94,9 @@ void StateMachine::onSensing(const Event& e) {
         _brick.binSteps = stepsForBin(_brick.targetBin);
 
         gLogger.classified(_brick.number, _brick.sense.category,
-                           0, _brick.targetBin);
+                           _brick.targetBin, _brick.targetBin);
 
+        actuators::displaySorting(_brick.number, TOTAL_BRICKS, _brick.targetBin, _binCounts);
         transition(S_INDEXED);
         actuators::indexToBin(_brick.binSteps);
     }
@@ -107,9 +108,17 @@ void StateMachine::onIndexed(const Event& e) {
             haltOnError(ERR_DISC_JAM);
             return;
         }
-        gLogger.info("disc indexed");
+        const char* discPos = "UNKNOWN";
+        switch (_brick.targetBin) {
+            case 1: discPos = "NW (315°)"; break;
+            case 2: discPos = "NE (45°)"; break;
+            case 3: discPos = "SE (135°)"; break;
+            case 4: discPos = "SW (225°)"; break;
+        }
+        gLogger.discIndexed(_brick.number, _brick.targetBin, discPos);
         transition(S_RELEASED);
         actuators::releasePlatform();
+        gLogger.platformReleased(_brick.number, _brick.targetBin);
         _brick.releaseMs = e.timestamp_ms;
         _timeoutMs = e.timestamp_ms + FALL_SETTLE_MS;
     }
@@ -217,7 +226,7 @@ void StateMachine::haltOnError(ErrorCode code) {
     actuators::beltStop();
     actuators::stepperStop();
     actuators::releaseOff();
-    actuators::displayError(_brick.number, (uint8_t)code);
+    actuators::displayError(_brick.number, _brick.targetBin, errorName(code));
     actuators::buzzerError();
     gLogger.errorHalt(_brick.number, _brick.targetBin, errorName(code));
     transition(S_ERROR_HALT);

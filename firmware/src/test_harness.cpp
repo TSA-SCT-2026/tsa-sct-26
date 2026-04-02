@@ -1,6 +1,7 @@
 #include "test_harness.h"
 #include "events.h"
 #include "sensors.h"
+#include "actuators.h"
 #include "state_machine.h"
 #include "thermal.h"
 #include "logger.h"
@@ -8,7 +9,7 @@
 
 // ----------------------------------------------------------------
 // Full-run brick sequence: 6x 2x2_RED, 6x 2x2_BLUE, 8x 2x3_BLUE, 4x 2x3_RED
-// Interleaved so back-to-back same-pusher firings stress the thermal model.
+// Interleaved so back-to-back same-bin indexing tests thermal model.
 // ----------------------------------------------------------------
 static const BrickCategory FULL_RUN_SEQUENCE[TOTAL_BRICKS] = {
     BrickCategory::CAT_2x2_RED,   // bin 1
@@ -61,15 +62,6 @@ static SenseResult senseResultFor(BrickCategory cat) {
 }
 
 // Routing mirrors state_machine.cpp - used only for driving confirmations in fullrun.
-static uint8_t pusherForCat(BrickCategory cat) {
-    switch (cat) {
-        case BrickCategory::CAT_2x2_RED:  return 1;
-        case BrickCategory::CAT_2x2_BLUE: return 2;
-        case BrickCategory::CAT_2x3_BLUE: return 3;
-        default:                           return 0;  // default path, no pusher
-    }
-}
-
 static uint8_t binForCat(BrickCategory cat) {
     switch (cat) {
         case BrickCategory::CAT_2x2_RED:  return 1;
@@ -83,23 +75,24 @@ static uint8_t binForCat(BrickCategory cat) {
 static void simulateBrick(BrickCategory cat) {
     Event e;
 
-    // Sensing: brick is stationary on cam chord, classification completes
+    // Brick seated in chamber
+    pushEvent(EventType::BRICK_SEATED);
+    while (gEventQueue.pop(e)) gStateMachine.process(e);
+
+    // Sensing: brick is stationary in chamber, classification completes
     pushEventSensingDone(senseResultFor(cat));
     while (gEventQueue.pop(e)) gStateMachine.process(e);
 
-    // Chute exit: brick leaves chute, enters belt, pusher timer armed
-    pushEvent(EventType::CHUTE_EXIT);
+    // Disc indexed to target bin
+    uint8_t bin = binForCat(cat);
+    pushEventIndexed(bin);
     while (gEventQueue.pop(e)) gStateMachine.process(e);
 
-    // Pusher fired (for non-default bricks)
-    uint8_t pusher = pusherForCat(cat);
-    if (pusher > 0) {
-        pushEventPusherFired(pusher);
-        while (gEventQueue.pop(e)) gStateMachine.process(e);
-    }
+    // Platform released
+    pushEvent(EventType::PLATFORM_RELEASED);
+    while (gEventQueue.pop(e)) gStateMachine.process(e);
 
     // Bin confirmation
-    uint8_t bin = binForCat(cat);
     pushEvent((EventType)((uint8_t)EventType::BIN1_CONFIRM + (bin - 1)));
     while (gEventQueue.pop(e)) gStateMachine.process(e);
 
@@ -178,16 +171,19 @@ static void handleSim(const char* args) {
         }
         pushEventSensingDone(result);
 
-    } else if (strcmp(args, "chute_exit") == 0) {
-        pushEvent(EventType::CHUTE_EXIT);
+    } else if (strcmp(args, "seated") == 0) {
+        pushEvent(EventType::BRICK_SEATED);
 
-    } else if (strncmp(args, "pusher ", 7) == 0) {
-        int idx = atoi(args + 7);
-        if (idx >= 1 && idx <= 3) {
-            pushEventPusherFired((uint8_t)idx);
+    } else if (strncmp(args, "indexed ", 8) == 0) {
+        int bin = atoi(args + 8);
+        if (bin >= 1 && bin <= 4) {
+            pushEventIndexed((uint8_t)bin);
         } else {
-            Serial.println("[harness] usage: sim pusher <1-3>");
+            Serial.println("[harness] usage: sim indexed <1-4>");
         }
+
+    } else if (strcmp(args, "released") == 0) {
+        pushEvent(EventType::PLATFORM_RELEASED);
 
     } else if (strncmp(args, "bin ", 4) == 0) {
         int bin = atoi(args + 4);
@@ -210,25 +206,85 @@ static void handleSim(const char* args) {
 
 static void handleTest(const char* args) {
 
-    if (strncmp(args, "thermal", 7) == 0) {
+    if (strcmp(args, "release") == 0) {
+        Serial.println();
+        Serial.println("--- test platform release --------------------------");
+        uint32_t start = millis();
+        actuators::firePlatformRelease();
+        uint32_t duration = millis() - start;
+        Serial.printf("  Platform release fired. Duration: %lums\n", duration);
+        Serial.println("----------------------------------------------------");
+        Serial.println();
+
+    } else if (strcmp(args, "home") == 0) {
+        Serial.println();
+        Serial.println("--- test home disc ---------------------------------");
+        uint32_t start = millis();
+        bool success = actuators::homeDisc();
+        uint32_t duration = millis() - start;
+        Serial.printf("  Home result: %s. Duration: %lums\n", 
+                       success ? "SUCCESS" : "FAIL", duration);
+        Serial.println("----------------------------------------------------");
+        Serial.println();
+
+    } else if (strncmp(args, "index ", 6) == 0) {
+        int bin = atoi(args + 6);
+        if (bin >= 1 && bin <= 4) {
+            Serial.println();
+            Serial.printf("--- test index to bin %d -----------------------------\n", bin);
+            uint32_t start = millis();
+            bool success = actuators::indexToBin((uint8_t)bin);
+            uint32_t duration = millis() - start;
+            Serial.printf("  Index result: %s. Duration: %lums\n", 
+                           success ? "SUCCESS" : "FAIL", duration);
+            Serial.println("----------------------------------------------------");
+            Serial.println();
+        } else {
+            Serial.println("[harness] usage: test index <1-4>");
+        }
+
+    } else if (strcmp(args, "drop") == 0) {
+        Serial.println();
+        Serial.println("--- test drop (index + release + confirm) ---------");
+        Serial.println("  Indexing to bin 1...");
+        uint32_t start = millis();
+        bool indexed = actuators::indexToBin(1);
+        if (!indexed) {
+            Serial.println("  ERROR: index failed");
+            Serial.println("----------------------------------------------------");
+            Serial.println();
+            return;
+        }
+        uint32_t indexDuration = millis() - start;
+        Serial.printf("  Index complete: %lums\n", indexDuration);
+        
+        Serial.println("  Firing platform release...");
+        start = millis();
+        actuators::firePlatformRelease();
+        uint32_t releaseDuration = millis() - start;
+        Serial.printf("  Release fired: %lums\n", releaseDuration);
+        
+        Serial.println("  Waiting for bin 1 beam confirmation...");
+        Serial.println("  (inject with: sim bin 1)");
+        Serial.println("----------------------------------------------------");
+        Serial.println();
+
+    } else if (strncmp(args, "thermal", 7) == 0) {
         int n = 6;
         if (strlen(args) > 8) n = atoi(args + 8);
 
         Serial.println();
         Serial.println("--- thermal model evolution --------------------");
-        Serial.printf("  Firing all 3 pushers + stepper %d times each:\n", n);
-        Serial.println("  fire#   sol1    sol2    sol3    step    state");
+        Serial.printf("  Firing platform release + stepper %d times:\n", n);
+        Serial.println("  fire#   release  step    state");
 
-        ThermalModel sim;  // local instance, does not affect gThermal
+        ThermalModel sim;
         for (int i = 1; i <= n; i++) {
             sim.onSolenoidFire(1);
-            sim.onSolenoidFire(2);
-            sim.onSolenoidFire(3);
             sim.onStepperRelease();
             sim.update();
-            Serial.printf("  %-6d  %.3f   %.3f   %.3f   %.3f   %s\n",
-                           i, sim.solenoidHeat(1), sim.solenoidHeat(2),
-                           sim.solenoidHeat(3), sim.stepperHeat(), sim.stateName());
+            Serial.printf("  %-6d  %.3f    %.3f   %s\n",
+                           i, sim.solenoidHeat(1), sim.stepperHeat(), sim.stateName());
         }
         float factor = expf(-THERMAL_DECAY_RATE * 5.0f);
         Serial.printf("  after 5s decay factor = %.4f\n", factor);
@@ -244,8 +300,8 @@ static void handleTest(const char* args) {
         Event e;
         while (gEventQueue.pop(e)) gStateMachine.process(e);
 
-        if (gStateMachine.currentState() != State::SENSING) {
-            Serial.println("[harness] ERROR: state machine did not enter SENSING after start");
+        if (gStateMachine.currentState() != State::FEED) {
+            Serial.println("[harness] ERROR: state machine did not enter FEED after start");
             return;
         }
 

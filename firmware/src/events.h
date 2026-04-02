@@ -9,9 +9,10 @@
 enum class EventType : uint8_t {
     NONE = 0,
     START_BUTTON,     // operator pressed start
-    SENSING_DONE,     // senseBrickInChute() complete: senseResult contains result
-    CHUTE_EXIT,       // chute exit beam broke: brick confirmed on belt
-    PUSHER_FIRED,     // pusher solenoid fired (from timer callback)
+    SENSING_DONE,     // senseBrickInChamber() complete: senseResult contains result
+    BRICK_SEATED,     // stop switch triggered, brick ready for sensing
+    INDEXED,          // disc indexed to target bin position
+    PLATFORM_RELEASED,// platform release solenoid fired
     BIN1_CONFIRM,     // bin 1 confirmation beam broke
     BIN2_CONFIRM,     // bin 2 confirmation beam broke
     BIN3_CONFIRM,     // bin 3 confirmation beam broke
@@ -26,7 +27,7 @@ struct Event {
     uint32_t    timestamp_ms;
     union {
         SenseResult senseResult;   // SENSING_DONE
-        uint8_t     pusherIdx;     // PUSHER_FIRED: which pusher (1-3)
+        uint8_t     binIdx;        // INDEXED: which bin (1-4)
     };
 
     Event() : type(EventType::NONE), timestamp_ms(0) {
@@ -56,4 +57,4 @@ extern EventQueue gEventQueue;
 // Convenience helpers for test harness
 void pushEvent(EventType type);
 void pushEventSensingDone(const SenseResult& result);
-void pushEventPusherFired(uint8_t pusherIdx);
+void pushEventIndexed(uint8_t binIdx);

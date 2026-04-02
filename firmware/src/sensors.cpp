@@ -16,8 +16,9 @@ void begin() {
     Wire.begin(PIN_COLOR_SDA, PIN_COLOR_SCL);
     Wire.setClock(I2C_FREQ_HZ);
 
-    pinMode(PIN_SIZE_BEAM, INPUT);       // external 10k pull-up to 3.3V required
-    pinMode(PIN_CHUTE_EXIT, INPUT);      // external 10k pull-up to 3.3V required
+    pinMode(PIN_SIZE_BEAM1, INPUT);      // external 10k pull-up to 3.3V required
+    pinMode(PIN_SIZE_BEAM2, INPUT);      // external 10k pull-up to 3.3V required
+    pinMode(PIN_ENTRY_BEAM, INPUT);      // external 10k pull-up to 3.3V required
     pinMode(PIN_BIN1_BEAM, INPUT_PULLUP);
     pinMode(PIN_BIN2_BEAM, INPUT_PULLUP);
     pinMode(PIN_BIN3_BEAM, INPUT_PULLUP);
@@ -30,24 +31,26 @@ void begin() {
     //   tcs.setGain(TCS34725_GAIN_4X);
 }
 
-// Called once per cam cycle, while brick is stationary on cam chord.
+// Called once per brick, while brick is stationary in isolation chamber.
 // Blocks for COLOR_SENSE_MS to accumulate color samples.
-// Returns a fully classified BrickCategory before the brick is released.
-SenseResult senseBrickInChute() {
+// Returns a fully classified BrickCategory before disc indexing begins.
+SenseResult senseBrickInChamber() {
     SenseResult result;
     result.sampleCount = 0;
     result.rRatio = 0.0f;
     result.category = BrickCategory::UNCERTAIN;
 
-    // Size: single digital read. LOW = beam blocked = 2x3.
-    // The beam crosses the 27mm chute dimension at 20mm from the wall.
-    // A 2x3 brick (23.7mm) blocks it. A 2x2 brick (15.8mm) does not reach it.
-    result.isLarge = (digitalRead(PIN_SIZE_BEAM) == LOW);
+    // Size: two beams at X=5mm and X=21mm in chamber width dimension.
+    // Both blocked = 2x3 (23.7mm width).
+    // One blocked = 2x2 (15.8mm width).
+    bool beam1 = (digitalRead(PIN_SIZE_BEAM1) == LOW);
+    bool beam2 = (digitalRead(PIN_SIZE_BEAM2) == LOW);
+    result.isLarge = (beam1 && beam2);
 
-    gLogger.info(result.isLarge ? "SIZE: 2x3 (beam blocked)" : "SIZE: 2x2 (beam clear)");
+    gLogger.info(result.isLarge ? "SIZE: 2x3 (both beams blocked)" : "SIZE: 2x2 (one beam)");
 
     // Color: accumulate samples for COLOR_SENSE_MS.
-    // The brick is stationary - no motion blur, no position jitter.
+    // The brick is stationary in isolated chamber - no motion blur, no ambient light.
     // At 24ms integration: ~6 samples in 150ms.
     // At 2.4ms integration: ~62 samples in 150ms.
     uint32_t rSum = 0, gSum = 0, bSum = 0;
@@ -110,9 +113,9 @@ void attachBinBeams() {
     //   attachInterrupt(PIN_BIN4_BEAM, onBin4, FALLING);
 }
 
-// Chute exit beam: confirms brick was released by cam.
-bool chuteExitBeamClear() {
-    return digitalRead(PIN_CHUTE_EXIT) == HIGH;
+// Chamber exit beam: confirms brick was released by platform.
+bool chamberExitBeamClear() {
+    return digitalRead(PIN_ENTRY_BEAM) == HIGH;
 }
 
 // Belt speed from Hall sensor on idler roller (optional).

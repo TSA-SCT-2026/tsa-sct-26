@@ -39,28 +39,42 @@ void Logger::stateChange(const char* from, const char* to) {
     Serial.printf("%s -> %s\n", from, to);
 }
 
-void Logger::classified(uint8_t brickNum, BrickCategory cat, uint8_t pusherIdx, uint8_t bin) {
+void Logger::classified(uint8_t brickNum, BrickCategory cat, uint8_t discPos, uint8_t bin) {
     if (_mode != LogMode::HUMAN) return;
     timestamp(); label("CLASSIFIED");
-    if (pusherIdx > 0) {
-        Serial.printf("brick=%-2d  %s  pusher=%d  bin=%d\n",
-                       brickNum, sensors::categoryName(cat), pusherIdx, bin);
-    } else {
-        Serial.printf("brick=%-2d  %s  pusher=none  bin=%d\n",
-                       brickNum, sensors::categoryName(cat), bin);
+    const char* posLabel = "UNKNOWN";
+    switch (discPos) {
+        case 1: posLabel = "NW (315°)"; break;
+        case 2: posLabel = "NE (45°)"; break;
+        case 3: posLabel = "SE (135°)"; break;
+        case 4: posLabel = "SW (225°)"; break;
     }
+    Serial.printf("brick=%-2d  %s  disc=%s  bin=%d\n",
+                   brickNum, sensors::categoryName(cat), posLabel, bin);
+}
+
+void Logger::platformReleased(uint8_t brickNum, uint8_t bin) {
+    if (_mode != LogMode::HUMAN) return;
+    timestamp(); label("PLATFORM_RELEASED");
+    Serial.printf("brick=%-2d  bin=%d\n", brickNum, bin);
+}
+
+void Logger::discIndexed(uint8_t brickNum, uint8_t bin, const char* position) {
+    if (_mode != LogMode::HUMAN) return;
+    timestamp(); label("DISC_INDEXED");
+    Serial.printf("brick=%-2d  bin=%d  position=%s\n", brickNum, bin, position);
 }
 
 void Logger::binConfirm(uint8_t brickNum, uint8_t expectedBin, uint8_t actualBin,
-                         uint32_t transitMs, bool ok) {
+                         uint32_t feedMs, bool ok) {
     if (_mode != LogMode::HUMAN) return;
     timestamp(); label("BIN_CONFIRM");
     if (ok) {
-        Serial.printf("brick=%-2d  bin=%d  transit=%lums  -> OK\n",
-                       brickNum, actualBin, transitMs);
+        Serial.printf("brick=%-2d  bin=%d  feed=%lums  -> OK\n",
+                       brickNum, actualBin, feedMs);
     } else {
-        Serial.printf("brick=%-2d  expected=%d  got=%d  transit=%lums  -> FAIL\n",
-                       brickNum, expectedBin, actualBin, transitMs);
+        Serial.printf("brick=%-2d  expected=%d  got=%d  feed=%lums  -> FAIL\n",
+                       brickNum, expectedBin, actualBin, feedMs);
     }
 }
 
@@ -74,7 +88,7 @@ void Logger::thermal() {
 }
 
 void Logger::runComplete(uint32_t totalMs, const uint8_t counts[4],
-                          uint8_t errors, uint32_t avgTransitMs) {
+                          uint8_t errors, uint32_t avgFeedMs) {
     Serial.println();
     Serial.println("=== RUN COMPLETE =================================================");
 
@@ -96,7 +110,7 @@ void Logger::runComplete(uint32_t totalMs, const uint8_t counts[4],
     uint8_t correct = counts[0] + counts[1] + counts[2] + counts[3];
     Serial.printf("  accuracy        : %d/%d (%.1f%%)\n",
                    correct, TOTAL_BRICKS, 100.0f * correct / TOTAL_BRICKS);
-    Serial.printf("  avg_transit_ms  : %lu\n", avgTransitMs);
+    Serial.printf("  avg_feed_ms     : %lu\n", avgFeedMs);
     Serial.printf("  peak_heat       : %.2f (%s)\n",
                    gThermal.maxHeat(), gThermal.stateName());
     Serial.printf("  errors          : %d\n", errors);
@@ -108,7 +122,7 @@ void Logger::errorHalt(uint8_t brickNum, uint8_t expectedBin, const char* reason
     timestamp(); label("ERROR_HALT");
     Serial.printf("brick=%-2d  expected_bin=%d  reason=%s\n",
                    brickNum, expectedBin, reason);
-    Serial.println("  -> belt stopped, stepper stopped, all pushers off");
+    Serial.println("  -> belt stopped, stepper stopped, platform locked");
     Serial.println("  -> type 'sim reset' to clear and return to IDLE");
 }
 
