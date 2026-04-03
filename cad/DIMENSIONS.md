@@ -1,4 +1,4 @@
-# Critical Dimensions V6
+# Critical Dimensions
 
 Single reference. If this conflicts with a subsystem doc, this wins.
 

@@ -1,6 +1,6 @@
-# Mechanical Design V6
+# Mechanical Design
 
-All dimensions are in docs/DIMENSIONS.md. This document covers design rationale,
+All dimensions are in `cad/DIMENSIONS.md`. This document covers design rationale,
 construction method, and assembly notes.
 
 ---

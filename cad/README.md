@@ -1,34 +1,59 @@
 # CAD
 
-All printable parts for the sorting system. Everything structural is PLA printed on the school printer.
+All printable parts for the chamber-drop sorter. Current architecture uses a class 3 lever trapdoor and selector disc routing.
 
 ## Directory structure
 
 ```
 cad/
-  chute/          feed chute tube, flared top, cam housing, exit ramp (integrated)
+  chute/          feed chute tube, transition, chamber body, stop-wall interfaces
   chute_sensing/  color sensor shroud, IR break-beam mounts
-  escapement/     stepper cam disk
   frame/          belt frame rails, end plates, channel walls, rollers, tensioner
-  pushers/        solenoid U-bracket mounts, face plates (x3)
   bins/           four bin guides with angled floor and entrance beam slot
 ```
 
+Non-CAD references:
+- `cad/DIMENSIONS.md`: critical geometry source of truth
+- `cad/MECHANICAL.md`: mechanism rationale and tradeoffs
+- `docs/ARCHITECTURE.md`: full pipeline and active CAD gates
+
 ## Print order
 
-Print the chute transition piece first. Test it with real bricks before printing anything else. This is the highest mechanical risk in the project and the gate for all downstream CAD decisions.
+1. Chute transition piece first
+- Validate with real bricks before any major print run
+- Gate: no jams and no double-feed behavior
 
-Second: stepper cam disk. Simple geometry, worth iterating early before the housing is printed around it.
+2. Trapdoor mechanism parts
+- Platform
+- Hinge bracket
+- Lever arm
+- Lever pivot bracket
+- Solenoid mount bracket
 
-Everything else: after the chute transition is validated.
+Gate: 50 reliable drop and re-latch cycles before printing larger assemblies.
+
+3. Chamber and sensing fit prints
+- Beam hole fit and alignment
+- Color sensor window and shroud fit
+- Stop-wall switch fit
+
+4. Selector disc prototype
+- Validate concentric alignment and clean drop path to all 4 bins
+
+5. Remaining structural parts
+- Frame, channel walls, bin shells, covers, cable guides
 
 ## Conventions
 
-- Export STL files alongside source files (Fusion 360 / FreeCAD / whatever you use)
-- Name files descriptively: `cam_disk_v2.stl`, `chute_transition_v1.f3d`, etc.
-- Keep version numbers in filenames during iteration so old versions are not lost
-- Critical dimensions are in MECHANICAL.md. Match them, and note any deviations
+- Export STL files alongside source files
+- Use descriptive versioned names: `platform_v3.stl`, `selector_disc_v2.stl`
+- Record any critical dimension deviation in commit context
+- Do not freeze geometry from simulation alone: validate with real bricks
 
 ## Tolerance notes
 
-FDM variance is 0.2-0.5mm. All channels that interface with bricks or the belt need explicit tolerances in CAD. Undersized channels jam. Oversized channels let bricks yaw past the taper. See MECHANICAL.md for target dimensions and acceptable ranges.
+FDM variance is 0.2-0.5mm. All brick-facing channels and interfaces need explicit tolerance.
+
+- Undersized channels cause jams
+- Oversized channels allow yaw and mis-seat risk
+- Sensor mount tolerance must preserve beam alignment and shroud seal

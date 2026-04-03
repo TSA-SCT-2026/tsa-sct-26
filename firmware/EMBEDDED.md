@@ -1,4 +1,4 @@
-# Embedded Design V6
+# Embedded Design
 
 ## State machine
 
@@ -155,7 +155,7 @@ This is the minimum possible solenoid load in this design. Thermal impact is neg
 | sensors.h/.cpp | senseBrickInChamber(): dual beams + color + classify. |
 | actuators.h/.cpp | All hardware. Target split before competition: belt.h, chute_selector.h, release.h, audio.h, selftest.h. |
 | display.h/.cpp | All display states. |
-| thermal.h/.cpp | Solenoid thermal model (minimal load in V6). |
+| thermal.h/.cpp | Solenoid thermal model (minimal load in current mechanism). |
 | logger.h/.cpp | Serial CSV. Every event timestamped. |
 | events.h/.cpp | Event queue. |
 | state_machine.h/.cpp | Transitions and routing table. |
@@ -163,7 +163,7 @@ This is the minimum possible solenoid load in this design. Thermal impact is neg
 
 ---
 
-## config.h constants V6
+## config.h constants
 
 ```c
 // Belt
@@ -215,7 +215,7 @@ This is the minimum possible solenoid load in this design. Thermal impact is neg
 
 ---
 
-## GPIO assignments V6
+## GPIO assignments
 
 ```c
 PIN_STEP        = GPIO 25    // stepper step
@@ -265,34 +265,31 @@ Failure on any step: display SELF-TEST FAIL [component]. Halt.
 
 ---
 
-## Firmware changes from V1 (Claude Code instructions)
+## Implementation alignment notes
 
 sensors.h/.cpp:
-  Rename senseBrickInChute -> senseBrickInChamber. No logic change.
+  Keep `senseBrickInChamber` as the single classification entry point.
 
 actuators.h/.cpp:
-  Remove PIN_SOL2, PIN_SOL3.
-  Rename PIN_SOL1 -> PIN_RELEASE. SOLENOID_ON_MS = 80. Logic unchanged (HIGH = fire).
-  Replace cam escapement stepper with chute selector:
-    Home: run until PIN_HOME_SW, set position = BIN4_STEPS.
-    indexToBin(bin_index): shortest arc, ramp, StallGuard read after.
-    Periodic re-home every RETHOME_PERIOD_BRICKS.
-  Belt: BELT_TARGET_SPEED = 100.0f.
-  Add PIN_SHELF_LEVEL check in RESET state.
+  Use `PIN_RELEASE` as the only release output.
+  Keep `SOLENOID_ON_MS = 80` unless calibration data supports change.
+  Chute selector behavior:
+    Home: run until `PIN_HOME_SW`, set position = `BIN4_STEPS`.
+    `indexToBin(bin_index)`: shortest arc, ramp, StallGuard read after move.
+    Periodic re-home every `RETHOME_PERIOD_BRICKS`.
+  Belt target starts at `BELT_TARGET_SPEED = 100.0f`.
+  Keep `PIN_SHELF_LEVEL` check in `RESET` when installed.
 
 state_machine.h/.cpp:
-  Full rewrite. V6 states.
-  Remove TRANSIT state and all pusher timing.
+  Maintain current states and selector-before-release order.
+  Do not add legacy transit or pusher timing paths.
 
 config.h:
-  Remove all V1 pusher constants.
-  Add all V6 constants above.
-  Update GPIO list.
+  Keep all constants listed above in one location.
+  Update GPIO map only with matching doc updates.
 
 events.h/.cpp:
-  Add: BRICK_SEATED, INDEXED, PLATFORM_RELEASED.
-  Remove: PUSHER_FIRED.
+  Keep event set aligned to current state flow: `BRICK_SEATED`, `INDEXED`, `PLATFORM_RELEASED`.
 
 test_harness.h/.cpp:
-  Add: `test release`, `test home`, `test index N` (N=1-4), `test drop`.
-  Remove: `test pusher N`.
+  Supported test commands: `test release`, `test home`, `test index N` (N=1-4), `test drop`.

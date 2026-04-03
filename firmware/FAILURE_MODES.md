@@ -1,4 +1,4 @@
-# Failure Mode Analysis V6
+# Failure Mode Analysis
 
 All failure modes, probability, detection, response, mitigation.
 
@@ -30,8 +30,8 @@ Even at half solenoid stroke (4mm): tip travels 15mm, still 50% more than requir
 Detection: BIN_CONFIRM_TIMEOUT (brick never arrives in bin).
 Response: ERROR_HALT (MISS_BIN_N).
 Mitigation: Verify full lever travel clears tab during bench test before integration.
-If tab is not cleared: shorten lever arm at effort point (move effort point closer to
-load, increases tip travel at the cost of requiring more solenoid force).
+If tab is not cleared: move effort point closer to fulcrum to increase tip travel at
+the cost of requiring more solenoid force.
 
 ### FM-04: Platform does not return to level after drop
 
