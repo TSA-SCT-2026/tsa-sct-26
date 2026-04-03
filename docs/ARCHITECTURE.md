@@ -3,7 +3,7 @@
 ## What this builds
 
 A fully automated LEGO brick sorting system that classifies 24 bricks by size and color
-and drops them into 4 labeled bins. Built for TSA System Control Technology nationals,
+and drops them into 4 labeled bins. Built for TSA System Control Technology states,
 May 1 2026. The evaluator loads all 24 bricks, presses start, and does nothing else.
 Target: 24 bricks sorted correctly, maximum reliability first, speed tuned after.
 
@@ -173,3 +173,9 @@ Target after optimization: under 10 seconds for 24 bricks.
 - Add firmware CSV event logging for replay: emit one row per state transition with run id, brick number, state, timestamp, category, target bin, actual bin, color sample count, and thermal state.
 - Add simulation compare mode: overlay expected vs replayed timestamps per state (`SEATED`, `SENSING_DONE`, `INDEXED`, `RELEASED`, `BIN_CONFIRM`) and report per phase delta.
 - Add optional "Use firmware config" mode in simulation: parse `firmware/src/config.h` into defaults at build time so tuning inputs stay synchronized.
+
+## Open questions
+
+OQ-05: Disc funnel surface. Test plain PLA first. Add PTFE tape if brick catches on edge.
+OQ-06: Belt transport length. 100-120mm for phase 1. Shorten for speed in phase 2.
+OQ-07: Lever chamfer angle. Start at 30 degrees. Tune empirically. Not knowable in advance.
