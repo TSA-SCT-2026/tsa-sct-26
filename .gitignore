@@ -24,10 +24,6 @@ firmware/.vscode/
 
 # Local developer notes (not for repo)
 CLAUDE.md
-actual_plan/
-archive/
-archive2/
+AGENTS.md
 
-# Planning session outputs (content folded into docs)
-docs/MASTER_PLAN_V3_*.md
-docs/DEMO_MAP.html
+
