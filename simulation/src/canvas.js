@@ -1,326 +1,198 @@
-// canvas.js - all canvas drawing functions and layout constants
+// canvas.js
+// Lightweight V6 visualization: chamber, trapdoor, disc, bins.
 
 'use strict';
 
-import { state } from './animation.js';
+import { BIN_DIRECTIONS, BIN_LABELS, CATEGORY_COLOR } from './defaults.js';
 
-// ---- CANVAS LAYOUT CONSTANTS ----
-export const CY = 120;    // belt center Y
-export const BT = 100;    // belt top Y
-export const BB = 140;    // belt bottom Y
+export const BRICK_COLOR = { ...CATEGORY_COLOR };
 
-// X positions as fractions [0..1] of canvas width
-export const FX = {
-  chute:       0.03,
-  taperStart:  0.07,
-  taperEnd:    0.17,
-  beam1:       0.24,
-  beam2:       0.28,
-  color:       0.26,
-  bufferEnd:   0.35,
-  plow1:       0.42,
-  plow2:       0.57,
-  plow3:       0.72,
-  end:         0.90,
-};
+const DEG = Math.PI / 180;
 
-// Bin Y positions (where bricks exit to)
-export const BIN_Y = [30, 210, 30, CY];
-
-// Which plows go up vs down
-export const PLOW_DIR = [null, 'up', 'down', 'up'];
-
-// Plow X fractions: plow 1,2,3
-export const PLOW_FX = [null, FX.plow1, FX.plow2, FX.plow3];
-
-// Map brick type to bin index (0-based)
-export const BRICK_TO_BIN = {'2x2_blue': 0, '2x2_red': 1, '2x3_red': 2, '2x3_blue': 3};
-
-// Brick colors
-export const BRICK_COLOR = {'2x2_blue': '#185FA5', '2x2_red': '#E24B4A', '2x3_red': '#E24B4A', '2x3_blue': '#185FA5'};
-
-// ---- DRAWING FUNCTIONS ----
-
-export function drawLabel(ctx, cx, cy, text, size, color) {
+function drawText(ctx, txt, x, y, color = '#9ca3af', font = '11px system-ui', align = 'center') {
   ctx.fillStyle = color;
-  ctx.font = `${size}px system-ui`;
-  ctx.textAlign = 'center';
-  ctx.fillText(text, cx, cy);
+  ctx.font = font;
+  ctx.textAlign = align;
+  ctx.fillText(txt, x, y);
 }
 
-export function drawHatched(ctx, x, y, w, h, bg, line) {
-  ctx.fillStyle = bg;
-  ctx.fillRect(x, y, w, h);
-  ctx.save();
-  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-  ctx.strokeStyle = line;
-  ctx.lineWidth = 1;
-  for (let i = -h; i < w + h; i += 8) {
-    ctx.beginPath();
-    ctx.moveTo(x + i, y);
-    ctx.lineTo(x + i + h, y + h);
-    ctx.stroke();
-  }
-  ctx.restore();
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(x, y, w, h);
+function chamberRect(W, H) {
+  const cx = W * 0.26;
+  const cy = H * 0.54;
+  return { x: cx - 64, y: cy - 40, w: 128, h: 80 };
 }
 
-export function drawBinBox(ctx, bx, by, bw, bh, label, binIdx, count, numRuns) {
-  const BASE_EXPECTED = [6, 6, 4, 8];
-  const runs = numRuns || 1;
-  const exp = BASE_EXPECTED[binIdx] * runs;
-  const isMatch = count === exp && !state.animRunning;
-  ctx.fillStyle = isMatch ? 'rgba(74,222,128,0.1)' : 'rgba(50,50,60,0.8)';
-  ctx.strokeStyle = isMatch ? '#4ade80' : '#555';
-  ctx.lineWidth = 1;
+function drawChamber(ctx, W, H, scene) {
+  const c = chamberRect(W, H);
+  ctx.strokeStyle = '#6b7280';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(c.x, c.y, c.w, c.h);
+
+  const beam1x = c.x + 22;
+  const beam2x = c.x + c.w - 22;
+  ctx.setLineDash([3, 2]);
+  ctx.strokeStyle = '#ef4444';
   ctx.beginPath();
-  ctx.roundRect(bx, by, bw, bh, 3);
-  ctx.fill();
+  ctx.moveTo(beam1x, c.y - 12);
+  ctx.lineTo(beam1x, c.y + c.h + 12);
   ctx.stroke();
+  ctx.strokeStyle = '#fb923c';
+  ctx.beginPath();
+  ctx.moveTo(beam2x, c.y - 12);
+  ctx.lineTo(beam2x, c.y + c.h + 12);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawText(ctx, 'B1', beam1x, c.y - 16, '#f87171', '10px monospace');
+  drawText(ctx, 'B2', beam2x, c.y - 16, '#fb923c', '10px monospace');
+
+  const colorX = c.x + c.w + 18;
+  const colorY = c.y + c.h * 0.55;
+  ctx.fillStyle = '#60a5fa';
+  ctx.fillRect(colorX - 8, colorY - 8, 16, 16);
+  drawText(ctx, 'COLOR', colorX, colorY - 14, '#60a5fa', '9px monospace');
+
+  // Trapdoor platform
+  const hingeX = c.x + 24;
+  const platW = 86;
+  const platY = c.y + c.h - 18;
+  const tilt = scene.platformAngle || 0;
+  ctx.save();
+  ctx.translate(hingeX, platY);
+  ctx.rotate(-tilt * DEG);
   ctx.fillStyle = '#9ca3af';
-  ctx.font = '7px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(label, bx + bw / 2, by + 10);
-  ctx.fillStyle = '#f9fafb';
-  ctx.font = 'bold 12px monospace';
-  ctx.fillText(count, bx + bw / 2, by + bh - 7);
+  ctx.fillRect(0, -4, platW, 8);
+  ctx.fillStyle = '#4b5563';
+  ctx.fillRect(platW - 6, -6, 6, 12);
+  ctx.restore();
+
+  ctx.fillStyle = '#4b5563';
+  ctx.beginPath();
+  ctx.arc(hingeX, platY, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Lever
+  const leverBaseX = c.x + c.w + 4;
+  const leverBaseY = platY;
+  ctx.save();
+  ctx.translate(leverBaseX, leverBaseY);
+  ctx.rotate((scene.leverAngle || 0) * DEG);
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(34, 0);
+  ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#64748b';
+  ctx.beginPath();
+  ctx.arc(leverBaseX, leverBaseY, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  drawText(ctx, 'CHAMBER', c.x + c.w / 2, c.y - 24, '#9ca3af', '10px monospace');
 }
 
-export function drawPlow(ctx, plowNum, W, H, simMs, liveBinCounts, plowStates, params, numRuns) {
-  const ps = plowStates[plowNum];
-  if (!ps) return;
-  const bx = W * PLOW_FX[plowNum];
-  const angle = ps.angle;
-  const dir = PLOW_DIR[plowNum];
-
-  let armColor = '#555';
-  if (ps.phase === 'fire') armColor = '#fb923c';
-  else if (ps.phase === 'hold') armColor = '#fbbf24';
-  else if (ps.phase === 'retract') armColor = '#888';
-
-  const rad = angle * Math.PI / 180;
-  const armLength = (BB - BT) * 0.85;
+function drawDiscAndBins(ctx, W, H, scene, binCounts, numRuns, expectedCounts) {
+  const discCx = W * 0.54;
+  const discCy = H * 0.58;
+  const discR = 56;
+  const rot = (scene.discAngleDeg || 225) * DEG;
 
   ctx.save();
-  if (dir === 'up') {
-    ctx.translate(bx, BB);
-    ctx.rotate(-rad);
-    ctx.strokeStyle = armColor;
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-armLength * Math.sin(rad * 0.3 + 0.1), -armLength); ctx.stroke();
-    ctx.fillStyle = armColor;
-    ctx.beginPath(); ctx.arc(-armLength * Math.sin(rad * 0.3 + 0.1), -armLength, 3, 0, Math.PI * 2); ctx.fill();
-  } else {
-    ctx.translate(bx, BT);
-    ctx.rotate(rad);
-    ctx.strokeStyle = armColor;
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-armLength * Math.sin(rad * 0.3 + 0.1), armLength); ctx.stroke();
-    ctx.fillStyle = armColor;
-    ctx.beginPath(); ctx.arc(-armLength * Math.sin(rad * 0.3 + 0.1), armLength, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.translate(discCx, discCy);
+  ctx.rotate(rot);
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath();
+  ctx.arc(0, 0, discR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  for (let i = 0; i < 4; i++) {
+    const a = (i * 90 + 45) * DEG;
+    const sx = Math.cos(a) * 28;
+    const sy = Math.sin(a) * 28;
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(sx - 10, sy - 6, 20, 12);
   }
   ctx.restore();
 
-  const binIdx = plowNum - 1;
-  const binLabels = ['2x2 BLUE', '2x2 RED', '2x3 RED'];
-  const byOffset = dir === 'up' ? BT - 50 : BB + 14;
-  const boxH = 30;
-  drawBinBox(ctx, bx - 30, byOffset - (dir === 'up' ? boxH : 0), 60, boxH, binLabels[binIdx], binIdx, liveBinCounts[binIdx], numRuns);
+  drawText(ctx, `Disc ${Math.round(scene.discAngleDeg || 225)}deg`, discCx, discCy + discR + 16, '#94a3b8', '10px monospace');
 
-  const lbl = ['P1', 'P2', 'P3'][plowNum - 1];
-  drawLabel(ctx, bx, dir === 'up' ? BB + 10 : BT - 10, lbl, 8, armColor === '#555' ? '#555' : armColor);
+  for (let i = 0; i < 4; i++) {
+    const deg = [315, 45, 135, 225][i];
+    const ax = discCx + Math.cos(deg * DEG) * 118;
+    const ay = discCy + Math.sin(deg * DEG) * 86;
+    const bw = 88;
+    const bh = 42;
+    const cnt = binCounts[i] || 0;
+    const exp = (expectedCounts[i] || 0) * (numRuns || 1);
+    const good = cnt === exp && !scene.running;
+    ctx.fillStyle = good ? 'rgba(34,197,94,0.08)' : 'rgba(30,41,59,0.75)';
+    ctx.strokeStyle = good ? '#22c55e' : '#475569';
+    ctx.lineWidth = 1;
+    ctx.fillRect(ax - bw / 2, ay - bh / 2, bw, bh);
+    ctx.strokeRect(ax - bw / 2, ay - bh / 2, bw, bh);
+    drawText(ctx, BIN_LABELS[i], ax, ay - 8, '#cbd5e1', '9px monospace');
+    drawText(ctx, `${cnt} / ${exp}`, ax, ay + 10, '#f8fafc', 'bold 11px monospace');
+    drawText(ctx, BIN_DIRECTIONS[i], ax, ay + 22, '#64748b', '9px monospace');
+  }
 }
 
-export function drawAnimBrick(ctx, b, simMs, beltPxPerMs, W, H, params) {
-  const elapsed = simMs - b.spawnSim;
-  if (elapsed < 0) return;
+function drawBelts(ctx, W, H) {
+  const y = H * 0.54;
+  ctx.strokeStyle = '#374151';
+  ctx.lineWidth = 14;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.05, y);
+  ctx.lineTo(W * 0.24, y);
+  ctx.stroke();
+}
 
-  const pxPerMm = W * (FX.end - FX.chute) / 500;
-  const beltMm = elapsed * params.belt_target_mm_s / 1000;
-  const chuteX = W * FX.chute;
-
-  const brickW = b.is2x3 ? 15 : 10;
-  const brickH = 10;
-
-  const plowMmPositions = [null, 210, 285, 360];
-  const endMm = 480;
-
-  const plowMm = b.plow > 0 ? plowMmPositions[b.plow] : endMm;
-  const deflectDist = 55;
-
-  if (beltMm > plowMm + deflectDist) {
-    b.done = true;
-    return;
+function drawAnimationBrick(ctx, b, scene) {
+  if (!b || b.done) return;
+  const color = BRICK_COLOR[b.type] || '#94a3b8';
+  const w = b.sizeResult === '2x3' ? 20 : 14;
+  const h = 10;
+  ctx.fillStyle = color;
+  ctx.fillRect(b.x - w / 2, b.y - h / 2, w, h);
+  if (scene.highlightBrick === b.id) {
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(b.x - w / 2 - 1, b.y - h / 2 - 1, w + 2, h + 2);
   }
-
-  let drawX, drawY;
-
-  if (beltMm < plowMm) {
-    drawX = chuteX + beltMm * pxPerMm;
-    drawY = CY;
-
-    const beam1Mm = 116;
-    if (b.flashBorder > 0 && beltMm > beam1Mm) {
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(drawX - brickW / 2 - 1, drawY - brickH / 2 - 1, brickW + 2, brickH + 2);
-    }
-  } else {
-    const t = Math.min((beltMm - plowMm) / deflectDist, 1.0);
-    drawX = chuteX + (plowMm + t * 15) * pxPerMm;
-    const targetY = BIN_Y[b.binIdx];
-    drawY = CY + (targetY - CY) * t;
-    ctx.globalAlpha = 1.0 - t * 0.5;
-  }
-
-  ctx.fillStyle = b.color;
-  ctx.fillRect(drawX - brickW / 2, drawY - brickH / 2, brickW, brickH);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
-  if (b.is2x3) {
-    ctx.beginPath(); ctx.arc(drawX - 4, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(drawX, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(drawX + 4, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
-  } else {
-    ctx.beginPath(); ctx.arc(drawX - 2, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(drawX + 2, drawY, 1.5, 0, Math.PI * 2); ctx.fill();
-  }
-
-  ctx.globalAlpha = 1.0;
 }
 
 export function drawErrorHaltOverlay(ctx, W, H, msg) {
-  // Semi-transparent dark overlay
   ctx.fillStyle = 'rgba(0,0,0,0.65)';
   ctx.fillRect(0, 0, W, H);
-
-  // Red banner
-  const bannerH = 60;
-  const bannerY = H / 2 - bannerH / 2;
   ctx.fillStyle = 'rgba(220,38,38,0.92)';
-  ctx.fillRect(0, bannerY, W, bannerH);
-
-  ctx.strokeStyle = '#f87171';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(0, bannerY, W, bannerH);
-
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 16px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText('ERROR_HALT', W / 2, bannerY + 22);
-
-  ctx.font = '11px monospace';
-  ctx.fillText(msg, W / 2, bannerY + 44);
+  ctx.fillRect(0, H / 2 - 32, W, 64);
+  drawText(ctx, 'ERROR_HALT', W / 2, H / 2 - 6, '#fff', 'bold 16px system-ui');
+  drawText(ctx, msg, W / 2, H / 2 + 16, '#fff', '11px monospace');
 }
 
-export function drawBelt(ctx, W, H, simMs, params, liveBinCounts, plowStates, animBricks, replayMode) {
-  const p = params;
-  const pxPerMm = W * (FX.end - FX.chute) / 500;
-  const beltPxPerMs = p.belt_target_mm_s * pxPerMm / 1000;
-  const x = f => W * f;
-
-  ctx.fillStyle = '#141414';
+export function drawBelt(ctx, W, H, simMs, params, liveBinCounts, sceneState, animBricks, replayMode) {
+  ctx.fillStyle = '#111827';
   ctx.fillRect(0, 0, W, H);
+  drawBelts(ctx, W, H);
+  drawChamber(ctx, W, H, sceneState || {});
+  drawDiscAndBins(
+    ctx,
+    W,
+    H,
+    sceneState || {},
+    liveBinCounts || [0, 0, 0, 0],
+    params.num_runs || 1,
+    [params.counts['2x2_red'], params.counts['2x2_blue'], params.counts['2x3_blue'], params.counts['2x3_red']],
+  );
 
-  ctx.fillStyle = '#222';
-  ctx.fillRect(x(FX.chute), BT, x(FX.end) - x(FX.chute), BB - BT);
+  for (const b of animBricks || []) drawAnimationBrick(ctx, b, sceneState || {});
 
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(x(FX.chute), BT); ctx.lineTo(x(FX.end), BT); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x(FX.chute), BB); ctx.lineTo(x(FX.end), BB); ctx.stroke();
-
-  ctx.strokeStyle = '#2a2a2a';
-  ctx.lineWidth = 1;
-  const ridgeSpacing = 20;
-  const ridgeOffset = (simMs * beltPxPerMs) % ridgeSpacing;
-  for (let rx = x(FX.chute) + ridgeOffset - ridgeSpacing; rx < x(FX.end); rx += ridgeSpacing) {
-    if (rx < x(FX.chute)) continue;
-    ctx.beginPath(); ctx.moveTo(rx, BT + 2); ctx.lineTo(rx, BB - 2); ctx.stroke();
-  }
-
-  ctx.strokeStyle = '#666';
-  ctx.lineWidth = 2;
-  const taperY1 = BT - 18, taperY2 = BT;
-  ctx.beginPath();
-  ctx.moveTo(x(FX.taperStart), taperY1);
-  ctx.lineTo(x(FX.taperEnd), taperY2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x(FX.taperStart), BB + 18);
-  ctx.lineTo(x(FX.taperEnd), BB);
-  ctx.stroke();
-
-  drawLabel(ctx, x(FX.taperStart) + (x(FX.taperEnd) - x(FX.taperStart)) / 2, BT - 24, 'TAPER', 9, '#666');
-
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 1;
-  const chuteW = x(FX.taperStart) - x(FX.chute);
-  const chuteH = 60;
-  drawHatched(ctx, x(FX.chute), CY - chuteH / 2, chuteW, chuteH, '#333', '#444');
-  drawLabel(ctx, x(FX.chute) + chuteW / 2, CY + 28, 'CHUTE', 8, '#888');
-
-  const senseX = x(FX.beam1) - 4;
-  const senseW = x(FX.beam2) + 4 - senseX;
-  ctx.fillStyle = 'rgba(26,80,120,0.25)';
-  ctx.fillRect(senseX, BT, senseW, BB - BT);
-  ctx.strokeStyle = '#1a6080';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(senseX, BT, senseW, BB - BT);
-
-  ctx.strokeStyle = '#ff6666';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([3, 2]);
-  ctx.beginPath(); ctx.moveTo(x(FX.beam1), BT - 8); ctx.lineTo(x(FX.beam1), BB + 8); ctx.stroke();
-  ctx.setLineDash([]);
-  drawLabel(ctx, x(FX.beam1), BT - 14, 'B1', 8, '#ff6666');
-
-  ctx.strokeStyle = '#ff9944';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([3, 2]);
-  ctx.beginPath(); ctx.moveTo(x(FX.beam2), BT - 8); ctx.lineTo(x(FX.beam2), BB + 8); ctx.stroke();
-  ctx.setLineDash([]);
-  drawLabel(ctx, x(FX.beam2), BT - 14, 'B2', 8, '#ff9944');
-
-  const gapPx = x(FX.beam2) - x(FX.beam1);
-  ctx.strokeStyle = '#888';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(x(FX.beam1), BB + 14); ctx.lineTo(x(FX.beam2), BB + 14); ctx.stroke();
-  drawLabel(ctx, x(FX.beam1) + gapPx / 2, BB + 22, `${p.beam_gap_mm}mm`, 8, '#888');
-
-  ctx.fillStyle = '#4fc3f7';
-  ctx.beginPath(); ctx.arc(x(FX.color), BT - 10, 5, 0, Math.PI * 2); ctx.fill();
-  drawLabel(ctx, x(FX.color), BT - 22, 'COLOR', 7, '#4fc3f7');
-
-  drawLabel(ctx, senseX + senseW / 2, CY, 'SIZE + COLOR', 8, '#4fc3f7');
-
-  ctx.strokeStyle = '#444';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 3]);
-  ctx.beginPath(); ctx.moveTo(x(FX.beam2), CY); ctx.lineTo(x(FX.plow1) - 2, CY); ctx.stroke();
-  ctx.setLineDash([]);
-  drawLabel(ctx, x(FX.beam2) + (x(FX.plow1) - x(FX.beam2)) / 2, CY - 14, `lead: ${p.sol_lead_ms}ms`, 8, '#555');
-
-  const numRuns = p.num_runs || 1;
-  drawPlow(ctx, 1, W, H, simMs, liveBinCounts, plowStates, p, numRuns);
-  drawPlow(ctx, 2, W, H, simMs, liveBinCounts, plowStates, p, numRuns);
-  drawPlow(ctx, 3, W, H, simMs, liveBinCounts, plowStates, p, numRuns);
-
-  drawBinBox(ctx, x(FX.end) + 4, CY - 18, 50, 36, '2x3 BLUE', 3, liveBinCounts[3], numRuns);
-
-  for (const b of animBricks) {
-    drawAnimBrick(ctx, b, simMs, beltPxPerMs, W, H, p);
-  }
-
-  // REPLAY MODE label
   if (replayMode) {
-    ctx.fillStyle = 'rgba(96,165,250,0.18)';
-    ctx.fillRect(W - 100, 6, 94, 18);
-    ctx.fillStyle = '#60a5fa';
-    ctx.font = 'bold 10px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('REPLAY MODE', W - 53, 19);
+    ctx.fillStyle = 'rgba(96,165,250,0.15)';
+    ctx.fillRect(W - 106, 8, 98, 20);
+    drawText(ctx, 'REPLAY MODE', W - 57, 22, '#60a5fa', 'bold 10px system-ui');
   }
 }

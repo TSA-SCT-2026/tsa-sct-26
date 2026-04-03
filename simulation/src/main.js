@@ -27,7 +27,7 @@ function updateWarnings() {
 }
 
 function doDrawBelt(ctx, W, H, simMs) {
-  drawBelt(ctx, W, H, simMs, params, state.liveBinCounts, state.plowStates, state.animBricks, state.replayMode);
+  drawBelt(ctx, W, H, simMs, params, state.liveBinCounts, state.sceneState, state.animBricks, state.replayMode);
 }
 
 function doDrawErrorHaltOverlay(ctx, W, H, msg) {

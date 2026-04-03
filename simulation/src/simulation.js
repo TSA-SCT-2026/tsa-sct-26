@@ -1,383 +1,510 @@
-// simulation.js - discrete event engine: generateSequence(), computeSimulation()
+// simulation.js
+// V6 chamber-drop discrete event model.
 
 'use strict';
 
-import { decayHeat, coolingPctToRate, misfireProbability } from './thermal.js';
+import { CATEGORY_TO_BIN } from './defaults.js';
+import { coolingPctToRate, decayHeat } from './thermal.js';
 
-// Plow spring return time after de-energize (ms)
-const RETRACT_MS = 20;
+const STATE = {
+  IDLE: 'IDLE',
+  FEED: 'FEED',
+  APPROACH: 'APPROACH',
+  SEATED: 'SEATED',
+  SENSING: 'SENSING',
+  INDEXED: 'INDEXED',
+  RELEASED: 'RELEASED',
+  CONFIRM: 'CONFIRM',
+  RESET: 'RESET',
+  COMPLETE: 'COMPLETE',
+  ERROR_HALT: 'ERROR_HALT',
+};
 
-export function generateSequence(p) {
-  const types = ['2x2_blue', '2x2_red', '2x3_red', '2x3_blue'];
+const TYPES = ['2x2_red', '2x2_blue', '2x3_blue', '2x3_red'];
+
+function clamp01(v) {
+  return Math.max(0, Math.min(1, v));
+}
+
+function categorySize(type) {
+  return type.includes('2x3') ? '2x3' : '2x2';
+}
+
+function categoryColor(type) {
+  return type.includes('red') ? 'RED' : 'BLUE';
+}
+
+function expectedCountsForRun(params) {
+  return [
+    params.counts['2x2_red'] || 0,
+    params.counts['2x2_blue'] || 0,
+    params.counts['2x3_blue'] || 0,
+    params.counts['2x3_red'] || 0,
+  ];
+}
+
+function sequenceInterleaved(rem, total) {
   const seq = [];
-
-  if (p.sequence === 'worst_case' || p.sequence === 'worst_case_thermal') {
-    // Group all bricks by type to maximize heat accumulation per solenoid
-    for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
-
-  } else if (p.sequence === 'worst_case_accuracy') {
-    // Alternate each plow-using brick with a default brick to maximize cross-plow conflicts
-    // at high sps. After defaults run out, dump remaining plow bricks consecutively.
-    const plowTypes = ['2x2_blue', '2x2_red', '2x3_red'];
-    const rem = Object.fromEntries(types.map(t => [t, p.counts[t]]));
-    let pi = 0;
-    while (true) {
-      let added = false;
-      for (let k = 0; k < plowTypes.length; k++) {
-        const t = plowTypes[(pi + k) % plowTypes.length];
-        if (rem[t] > 0) {
-          seq.push(t); rem[t]--;
-          pi = (pi + k + 1) % plowTypes.length;
-          added = true; break;
-        }
+  while (seq.length < total) {
+    let pushed = false;
+    for (const t of TYPES) {
+      if (rem[t] > 0) {
+        seq.push(t);
+        rem[t]--;
+        pushed = true;
       }
-      if (!added || seq.length >= p.total_bricks) break;
-      if (rem['2x3_blue'] > 0) { seq.push('2x3_blue'); rem['2x3_blue']--; }
-      if (seq.length >= p.total_bricks) break;
     }
-    for (const t of types) while (rem[t] > 0 && seq.length < p.total_bricks) { seq.push(t); rem[t]--; }
+    if (!pushed) break;
+  }
+  return seq;
+}
 
-  } else if (p.sequence === 'default_last') {
-    // Legacy alias: plow bricks first, default last
-    for (const t of ['2x2_blue', '2x2_red', '2x3_red']) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
-    for (let i = 0; i < p.counts['2x3_blue']; i++) seq.push('2x3_blue');
+function sequenceWorstCase(rem) {
+  const seq = [];
+  for (const t of TYPES) {
+    for (let i = 0; i < rem[t]; i++) seq.push(t);
+  }
+  return seq;
+}
 
-  } else if (p.sequence === 'default_first') {
-    // Default path bricks first, plow bricks last
-    for (let i = 0; i < p.counts['2x3_blue']; i++) seq.push('2x3_blue');
-    for (const t of ['2x2_blue', '2x2_red', '2x3_red']) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
+function sequenceDefaultFirst(rem) {
+  const seq = [];
+  for (let i = 0; i < rem['2x3_red']; i++) seq.push('2x3_red');
+  rem['2x3_red'] = 0;
+  for (const t of TYPES) {
+    for (let i = 0; i < rem[t]; i++) seq.push(t);
+  }
+  return seq;
+}
 
-  } else if (p.sequence === 'random') {
-    // Fisher-Yates shuffle - each run gets its own independent order
-    for (const t of types) for (let i = 0; i < p.counts[t]; i++) seq.push(t);
-    for (let i = seq.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [seq[i], seq[j]] = [seq[j], seq[i]];
-    }
-
-  } else {
-    // interleaved: round-robin by type
-    const rem = Object.fromEntries(types.map(t => [t, p.counts[t]]));
-    let safety = 200;
-    while (seq.length < p.total_bricks && safety-- > 0) {
-      for (const t of types) {
-        if (rem[t] > 0 && seq.length < p.total_bricks) { seq.push(t); rem[t]--; }
+function sequenceWorstCaseAccuracy(rem, total) {
+  const seq = [];
+  const p = ['2x2_red', '2x2_blue', '2x3_blue'];
+  let pi = 0;
+  while (seq.length < total) {
+    let appended = false;
+    for (let k = 0; k < p.length; k++) {
+      const t = p[(pi + k) % p.length];
+      if (rem[t] > 0) {
+        seq.push(t);
+        rem[t]--;
+        pi = (pi + k + 1) % p.length;
+        appended = true;
+        break;
       }
+    }
+    if (!appended) break;
+    if (rem['2x3_red'] > 0 && seq.length < total) {
+      seq.push('2x3_red');
+      rem['2x3_red']--;
+    }
+  }
+  for (const t of TYPES) {
+    while (rem[t] > 0 && seq.length < total) {
+      seq.push(t);
+      rem[t]--;
     }
   }
   return seq;
 }
 
-// Compute the time (ms) a brick arrives at plow `plowIdx` (1-3) after T_classified.
-// Plow 1 is at sol_lead_ms from sensing. Plows 2 and 3 are proportionally further
-// based on bin_distances_mm (distance from sensing zone to each bin entrance).
-function plowArrivalMs(T_classified, plowIdx, p) {
-  const extraMm = p.bin_distances_mm[plowIdx - 1] - p.bin_distances_mm[0];
-  return T_classified + p.sol_lead_ms + (extraMm / p.belt_target_mm_s) * 1000;
+export function generateSequence(params) {
+  const rem = Object.fromEntries(TYPES.map((t) => [t, params.counts[t] || 0]));
+  const total = TYPES.reduce((n, t) => n + rem[t], 0);
+
+  if (params.sequence === 'worst_case') return sequenceWorstCase(rem);
+  if (params.sequence === 'default_first') return sequenceDefaultFirst(rem);
+  if (params.sequence === 'worst_case_accuracy') return sequenceWorstCaseAccuracy(rem, total);
+  if (params.sequence === 'random') {
+    const seq = sequenceWorstCase(rem);
+    for (let i = seq.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seq[i], seq[j]] = [seq[j], seq[i]];
+    }
+    return seq;
+  }
+  return sequenceInterleaved(rem, total);
 }
 
-// computeSimulation returns a full event log and per-brick statistics.
-// Routing is physically modeled: bricks trace through plows in order, and the first
-// extended plow catches them regardless of intent. No ERROR_HALT - routing errors
-// are logged and the run continues.
-export function computeSimulation(p) {
-  const DIST_CHUTE_TO_SENSOR_MM = 100;
+function shortestStepDelta(current, target, revSteps) {
+  let delta = target - current;
+  if (delta > revSteps / 2) delta -= revSteps;
+  if (delta < -revSteps / 2) delta += revSteps;
+  return delta;
+}
 
-  const rate = coolingPctToRate(p.thermal_cooling_pct);
-  const normalReleaseInterval = (p.stepper_steps_per_rev / p.stepper_sps) * 1000;
-  // Minimum release interval when same-type fast-release is active (belt spacing limit)
-  const minSameTypeInterval = (p.brick_spacing_mm / p.belt_target_mm_s) * 1000;
+function thermalState(maxHeat, params) {
+  if (maxHeat >= params.thermal_danger_level) return 'DANGER';
+  if (maxHeat >= params.thermal_warn_level) return 'WARNING';
+  return 'NORMAL';
+}
 
-  let thermal = {sol1:0, sol2:0, sol3:0, stepper:0};
-  let lastReleaseT = 0;
-  let binCounts = [0, 0, 0, 0];
+function indexSpeedForState(stateLabel, params) {
+  if (stateLabel === 'DANGER') return Math.max(120, Math.round(params.stepper_run_sps * 0.50));
+  if (stateLabel === 'WARNING') return Math.max(180, Math.round(params.stepper_run_sps * 0.75));
+  return params.stepper_run_sps;
+}
+
+function indexDurationMs(moveSteps, params, activeRunSps) {
+  if (moveSteps <= 0) return 0;
+  const accelSteps = Math.min(params.stepper_decel_steps, Math.floor(moveSteps / 2));
+  const cruiseSteps = Math.max(0, moveSteps - accelSteps * 2);
+  const v0 = Math.max(1, params.stepper_start_sps);
+  const v1 = Math.max(v0 + 1, activeRunSps);
+  const accelTime = (2 * accelSteps) / (v0 + v1);
+  const cruiseTime = cruiseSteps / v1;
+  return Math.round((accelTime * 2 + cruiseTime) * 1000);
+}
+
+function colorSenseDuration(params) {
+  const targetMs = params.color_sample_count * params.color_integration_ms;
+  return Math.min(targetMs, params.color_timeout_ms);
+}
+
+function addStateEvent(events, t, state, brickNum, detail = '') {
+  events.push({ t, type: 'STATE_ENTER', state, brickNum, detail });
+}
+
+export function computeSimulation(params) {
+  const events = [];
+  const brickLog = [];
+  const runSummary = [];
+
+  const expectedPerRun = expectedCountsForRun(params);
+  const rate = coolingPctToRate(params.thermal_cooling_pct);
+
+  let totalErrors = 0;
+  let totalHalts = 0;
+  let totalThrottleBricks = 0;
+  let totalThrottleDelayMs = 0;
+  let overallCorrect = 0;
+  let overallTotal = 0;
+  let overallPeakHeat = 0;
   let thermalDangerReached = false;
-  let peakHeat = 0;
 
-  const allBrickLog = [];
-  const allEvents = [];
+  let globalT = 0;
   let globalBrickNum = 0;
 
-  // plowExtendedUntil[n]: sim time when plow n finishes retracting (fully idle)
-  const plowExtendedUntil = [0, 0, 0, 0];
+  for (let run = 0; run < params.num_runs; run++) {
+    const seq = generateSequence(params);
+    const runBins = [0, 0, 0, 0];
+    let runState = STATE.IDLE;
+    let statePositionSteps = params.bin_steps[params.home_bin_index];
+    let runStart = globalT;
+    let haltEvent = null;
+    let lastEventT = globalT;
+    let runPeakHeat = 0;
 
-  let throttleCount = 0;
-  let throttledMs = 0;
-  let pureRunMs = 0;
+    let thermal = { sol1: 0, sol2: 0, sol3: 0, stepper: 0 };
 
-  // Error tracking
-  let totalErrors = 0;
-  const errorCauses = { plow_conflict: 0, thermal_misfire: 0, sol_retract_early: 0 };
+    const applyDecay = (nowT) => {
+      const dt = Math.max(0, nowT - lastEventT) / 1000;
+      thermal.sol1 = decayHeat(thermal.sol1, dt, rate);
+      thermal.sol2 = decayHeat(thermal.sol2, dt, rate);
+      thermal.sol3 = decayHeat(thermal.sol3, dt, rate);
+      thermal.stepper = decayHeat(thermal.stepper, dt, rate);
+      lastEventT = nowT;
+    };
 
-  const THERMAL_UPDATE_INTERVAL_MS = 500;
-
-  for (let run = 0; run < p.num_runs; run++) {
-    const seq = generateSequence(p);
-
-    if (run > 0) {
-      const gapStartT = lastReleaseT;
-      allEvents.push({ t: gapStartT, type: 'INTER_RUN_GAP', run: run - 1, gapMs: p.interrun_gap_ms });
-
-      // Emit smooth THERMAL_UPDATE events during the cooldown gap
-      const thermalAtGapStart = {...thermal};
-      for (let dt = THERMAL_UPDATE_INTERVAL_MS; dt <= p.interrun_gap_ms; dt += THERMAL_UPDATE_INTERVAL_MS) {
-        const elapsed = dt / 1000;
-        allEvents.push({
-          t: gapStartT + dt,
-          type: 'THERMAL_UPDATE',
-          thermal: {
-            sol1:    decayHeat(thermalAtGapStart.sol1,    elapsed, rate),
-            sol2:    decayHeat(thermalAtGapStart.sol2,    elapsed, rate),
-            sol3:    decayHeat(thermalAtGapStart.sol3,    elapsed, rate),
-            stepper: decayHeat(thermalAtGapStart.stepper, elapsed, rate),
-          }
-        });
-      }
-
-      const gapSec = p.interrun_gap_ms / 1000;
-      thermal.sol1    = decayHeat(thermal.sol1,    gapSec, rate);
-      thermal.sol2    = decayHeat(thermal.sol2,    gapSec, rate);
-      thermal.sol3    = decayHeat(thermal.sol3,    gapSec, rate);
-      thermal.stepper = decayHeat(thermal.stepper, gapSec, rate);
-      lastReleaseT += p.interrun_gap_ms;
-    }
-
-    let runStartT = 0;
-    let runLastConfirmT = 0;
-    let prevBrickType = null;
+    addStateEvent(events, globalT, STATE.IDLE, 0, `run ${run + 1} ready`);
 
     for (let i = 0; i < seq.length; i++) {
-      const brickType = seq[i];
+      const type = seq[i];
+      const sizeResult = categorySize(type);
+      const colorResult = categoryColor(type);
+      const targetBin = CATEGORY_TO_BIN[type];
+      const targetSteps = params.bin_steps[targetBin];
       globalBrickNum++;
+      overallTotal++;
 
-      // Thermal state determines release speed
-      const maxHeat = Math.max(thermal.sol1, thermal.sol2, thermal.sol3, thermal.stepper);
-      let sps = p.stepper_sps;
-      let thermalState = 'NORMAL';
-      if (maxHeat > p.thermal_danger_level) { sps = 267; thermalState = 'DANGER'; thermalDangerReached = true; }
-      else if (maxHeat > p.thermal_warn_level) { sps = 533; thermalState = 'WARNING'; }
+      addStateEvent(events, globalT, STATE.FEED, globalBrickNum);
+      runState = STATE.FEED;
 
-      let releaseInterval = (p.stepper_steps_per_rev / sps) * 1000;
-
-      // If same type as previous AND plow is still extended, fire immediately (belt-spacing limited).
-      // The plow is already in position - no solenoid setup needed.
-      const plowNumForType = p.plow_map[brickType];
-      const prevPlowNum = prevBrickType ? p.plow_map[prevBrickType] : -1;
-      if (
-        brickType === prevBrickType &&
-        plowNumForType > 0 &&
-        (lastReleaseT + minSameTypeInterval + plowNumForType > 0) // always true, just for clarity
-      ) {
-        // Estimate whether plow will still be extended when this brick arrives - check against
-        // the minimum-interval T_classified to see if plow is still up
-        const estT_classified_min = lastReleaseT + minSameTypeInterval +
-          (DIST_CHUTE_TO_SENSOR_MM / p.belt_target_mm_s) * 1000 +
-          (p.brick_2x3_mm / p.belt_target_mm_s) * 1000;
-        if (estT_classified_min < plowExtendedUntil[plowNumForType]) {
-          // Plow still extended - use fast release
-          releaseInterval = Math.max(minSameTypeInterval, releaseInterval);
-          // If belt-spacing interval is less than thermal-throttled interval, still respect throttle
-          if (minSameTypeInterval < releaseInterval) {
-            releaseInterval = minSameTypeInterval;
-          }
-        }
-      }
-
-      // Track throttle delay vs normal
-      if (thermalState !== 'NORMAL') {
-        throttleCount++;
-        throttledMs += releaseInterval - normalReleaseInterval;
-      }
-
-      const T_release = lastReleaseT + releaseInterval;
-      if (i === 0) runStartT = T_release;
-
-      const dtSec = releaseInterval / 1000;
-      thermal.sol1    = decayHeat(thermal.sol1,    dtSec, rate);
-      thermal.sol2    = decayHeat(thermal.sol2,    dtSec, rate);
-      thermal.sol3    = decayHeat(thermal.sol3,    dtSec, rate);
-      thermal.stepper = decayHeat(thermal.stepper, dtSec, rate);
-
-      thermal.stepper = Math.min(thermal.stepper + p.thermal_heat_per_step, 1.0);
-      peakHeat = Math.max(peakHeat, thermal.stepper);
-
-      allEvents.push({
-        t: T_release, type: 'BRICK_RELEASED', brickNum: globalBrickNum, brickType, run,
-        sps, thermalState, thermal: {...thermal}
-      });
-
-      const T_sense = T_release + (DIST_CHUTE_TO_SENSOR_MM / p.belt_target_mm_s) * 1000;
-      allEvents.push({ t: T_sense, type: 'BRICK_AT_SENSOR', brickNum: globalBrickNum, brickType });
-
-      const brickLen = brickType.includes('2x3') ? p.brick_2x3_mm : p.brick_2x2_mm;
-      const is2x3 = brickType.includes('2x3');
-      let sizeResolveMs, gapUs;
-      if (is2x3) {
-        gapUs = Math.round((p.beam_gap_mm / p.belt_target_mm_s) * 1e6);
-        sizeResolveMs = (p.beam_gap_mm / p.belt_target_mm_s) * 1000;
-      } else {
-        gapUs = 0;
-        sizeResolveMs = p.size_timeout_ms;
-      }
-
-      const dwellMs = (brickLen / p.belt_target_mm_s) * 1000;
-      const samples = Math.max(1, Math.floor(dwellMs / p.color_integration_ms));
-
-      const T_classified = T_sense + Math.max(sizeResolveMs, dwellMs);
-      allEvents.push({
-        t: T_classified, type: 'BRICK_CLASSIFIED', brickNum: globalBrickNum, brickType,
-        sizeResult: is2x3 ? '2x3' : '2x2',
-        colorResult: brickType.includes('red') ? 'RED' : 'BLUE',
-        gapUs, samples
-      });
-
-      const plowNum = p.plow_map[brickType];
-
-      // --- Thermal misfire check ---
-      // Check BEFORE updating heat so the heat at fire time is used
-      let hasMisfire = false;
-      if (plowNum > 0) {
-        const solKey = 'sol' + plowNum;
-        const dt2 = (T_classified - T_release) / 1000;
-        const heatAtFire = decayHeat(thermal[solKey], dt2, rate);
-        const prob = misfireProbability(heatAtFire, p.thermal_warn_level, p.thermal_danger_level);
-        hasMisfire = Math.random() < prob;
-      }
-
-      // --- Physical routing: trace brick through plows in order ---
-      // Each brick physically passes plow 1, then 2, then 3.
-      // The first extended plow deflects it to that bin regardless of intent.
-      let actualBin = 3; // default: passes all plows
-      let routingCorrect = true;
-      let errorCause = null;
-
-      for (let px = 1; px <= 3; px++) {
-        const arrT = plowArrivalMs(T_classified, px, p);
-        const plowExtended = arrT < plowExtendedUntil[px];
-
-        if (px === plowNum && !hasMisfire) {
-          // This brick's intended plow - it fires. Check if it'll catch the brick.
-          // After we fire (handled below), plowExtendedUntil[px] will be updated.
-          // The plow is extended from T_classified to T_classified + sol_deenergize_ms + RETRACT_MS.
-          const newExtUntil = T_classified + p.sol_deenergize_ms + RETRACT_MS;
-          if (arrT < newExtUntil) {
-            // Correct deflection
-            actualBin = px - 1;
-            // But if a PREVIOUS brick's plow (px' < px) is also extended, that one wins
-            // (already handled above in loop - we break on first extended plow, so we only
-            // reach px === plowNum if no earlier plow was extended)
-          } else {
-            // sol_deenergize_ms too short - plow retracts before brick arrives
-            routingCorrect = false;
-            errorCause = 'sol_retract_early';
-            actualBin = 3; // brick passes through
-          }
-          break;
-        } else if (plowExtended) {
-          // A wrong plow (not this brick's intended one) is extended
-          actualBin = px - 1;
-          if (px !== plowNum) {
-            routingCorrect = false;
-            if (hasMisfire && px > plowNum) {
-              errorCause = 'thermal_misfire'; // brick passed through its own misfired plow, caught by later one
-            } else {
-              errorCause = 'plow_conflict';
-            }
-          }
-          break;
-        }
-        // If px === plowNum and hasMisfire: plow didn't extend, brick continues past it
-      }
-
-      // If plowNum > 0 and we reached actualBin===3 without break: either misfire sent
-      // brick to default path, or no plow caught it
-      if (plowNum > 0 && actualBin === 3) {
-        if (hasMisfire) {
-          routingCorrect = false;
-          errorCause = 'thermal_misfire';
-        }
-        // sol_retract_early already handled above; default stays
-      }
-
-      // --- Update plow state after routing determination ---
-      if (plowNum > 0) {
-        if (!hasMisfire) {
-          const solKey = 'sol' + plowNum;
-          const dt2 = (T_classified - T_release) / 1000;
-          thermal[solKey] = decayHeat(thermal[solKey], dt2, rate);
-          thermal[solKey] = Math.min(thermal[solKey] + p.thermal_heat_per_sol, 1.0);
-          peakHeat = Math.max(peakHeat, thermal[solKey]);
-
-          // Reset de-energize timer (handles same-plow re-fire cleanly)
-          plowExtendedUntil[plowNum] = T_classified + p.sol_deenergize_ms + RETRACT_MS;
-
-          allEvents.push({ t: T_classified, type: 'PLOW_FIRE', plow: plowNum, brickNum: globalBrickNum, thermal: {...thermal} });
-          allEvents.push({ t: T_classified + p.sol_full_ms, type: 'PLOW_HOLD', plow: plowNum, brickNum: globalBrickNum });
-          allEvents.push({ t: T_classified + p.sol_deenergize_ms, type: 'PLOW_RELEASE', plow: plowNum, brickNum: globalBrickNum });
-        } else {
-          // Misfire: solenoid attempted but heat-degraded stroke insufficient
-          allEvents.push({
-            t: T_classified, type: 'PLOW_MISFIRE', plow: plowNum, brickNum: globalBrickNum,
-            msg: `Plow ${plowNum} misfire (thermal heat too high) on brick #${globalBrickNum}`
-          });
-        }
-      } else {
-        allEvents.push({ t: T_classified, type: 'PLOW_SKIP', brickNum: globalBrickNum, msg: 'default path - no solenoid' });
-      }
-
-      // --- Routing error event ---
-      if (!routingCorrect) {
+      const feedMs = Math.round((params.transport_distance_mm / params.belt_target_mm_s) * 1000);
+      let tEntry = globalT + feedMs;
+      if (feedMs > params.feed_timeout_ms) {
+        tEntry = globalT + params.feed_timeout_ms;
+        addStateEvent(events, tEntry, STATE.ERROR_HALT, globalBrickNum, 'JAM_CHUTE');
+        haltEvent = { t: tEntry, state: STATE.ERROR_HALT, code: 'JAM_CHUTE', brickNum: globalBrickNum };
         totalErrors++;
-        errorCauses[errorCause] = (errorCauses[errorCause] || 0) + 1;
-        allEvents.push({
-          t: T_classified,
-          type: 'ROUTING_ERROR',
+        totalHalts++;
+        break;
+      }
+
+      events.push({
+        t: tEntry,
+        type: 'ENTRY_BEAM_TRIGGERED',
+        brickNum: globalBrickNum,
+        run,
+        category: type,
+      });
+
+      addStateEvent(events, tEntry, STATE.APPROACH, globalBrickNum);
+      runState = STATE.APPROACH;
+      const tSeated = tEntry + params.entry_to_stop_ms;
+      if (params.entry_to_stop_ms > params.approach_timeout_ms) {
+        addStateEvent(events, tEntry + params.approach_timeout_ms, STATE.ERROR_HALT, globalBrickNum, 'JAM_APPROACH');
+        haltEvent = { t: tEntry + params.approach_timeout_ms, state: STATE.ERROR_HALT, code: 'JAM_APPROACH', brickNum: globalBrickNum };
+        totalErrors++;
+        totalHalts++;
+        break;
+      }
+
+      events.push({
+        t: tSeated,
+        type: 'BRICK_SEATED',
+        brickNum: globalBrickNum,
+        run,
+      });
+
+      addStateEvent(events, tSeated, STATE.SEATED, globalBrickNum);
+      runState = STATE.SEATED;
+
+      const tSensingStart = tSeated + params.settle_ms;
+      addStateEvent(events, tSensingStart, STATE.SENSING, globalBrickNum);
+      runState = STATE.SENSING;
+
+      const senseMs = colorSenseDuration(params);
+      const validSamples = Math.max(
+        0,
+        Math.min(params.color_sample_count, Math.floor(params.color_timeout_ms / params.color_integration_ms)),
+      );
+      const tSensingDone = tSensingStart + Math.max(params.size_read_ms, senseMs);
+
+      if (validSamples < params.color_min_samples) {
+        addStateEvent(events, tSensingDone, STATE.ERROR_HALT, globalBrickNum, 'SENSOR_FAULT');
+        haltEvent = { t: tSensingDone, state: STATE.ERROR_HALT, code: 'SENSOR_FAULT', brickNum: globalBrickNum };
+        totalErrors++;
+        totalHalts++;
+        break;
+      }
+
+      events.push({
+        t: tSensingDone,
+        type: 'BRICK_CLASSIFIED',
+        brickNum: globalBrickNum,
+        run,
+        category: type,
+        sizeResult,
+        colorResult,
+        samples: validSamples,
+        targetBin,
+      });
+
+      applyDecay(tSensingDone);
+      const preIndexMax = Math.max(thermal.sol1, thermal.sol2, thermal.sol3, thermal.stepper);
+      const tState = thermalState(preIndexMax, params);
+      if (tState !== 'NORMAL') totalThrottleBricks++;
+      if (tState === 'DANGER') thermalDangerReached = true;
+      const activeSps = indexSpeedForState(tState, params);
+      const normalIndexMs = indexDurationMs(Math.abs(shortestStepDelta(statePositionSteps, targetSteps, params.stepper_steps_per_rev)), params, params.stepper_run_sps);
+
+      addStateEvent(events, tSensingDone, STATE.INDEXED, globalBrickNum);
+      runState = STATE.INDEXED;
+
+      const moveDelta = shortestStepDelta(statePositionSteps, targetSteps, params.stepper_steps_per_rev);
+      const moveSteps = Math.abs(moveDelta);
+      const indexMs = indexDurationMs(moveSteps, params, activeSps);
+      const indexEnd = tSensingDone + indexMs;
+      events.push({
+        t: tSensingDone,
+        type: 'DISC_INDEX_START',
+        brickNum: globalBrickNum,
+        run,
+        fromSteps: statePositionSteps,
+        toSteps: targetSteps,
+        moveSteps,
+        indexMs,
+        activeSps,
+      });
+      const thermalStepInc = params.thermal_heat_per_step * (moveSteps / params.stepper_steps_per_rev);
+      thermal.stepper = clamp01(thermal.stepper + thermalStepInc);
+      runPeakHeat = Math.max(runPeakHeat, thermal.stepper);
+      overallPeakHeat = Math.max(overallPeakHeat, thermal.stepper);
+
+      if (activeSps < params.stepper_run_sps) {
+        totalThrottleDelayMs += Math.max(0, indexMs - normalIndexMs);
+      }
+
+      events.push({
+        t: indexEnd,
+        type: 'DISC_INDEXED',
+        brickNum: globalBrickNum,
+        run,
+        targetBin,
+        moveSteps,
+        activeSps,
+        thermalState: tState,
+      });
+
+      statePositionSteps = ((targetSteps % params.stepper_steps_per_rev) + params.stepper_steps_per_rev) % params.stepper_steps_per_rev;
+
+      addStateEvent(events, indexEnd, STATE.RELEASED, globalBrickNum);
+      runState = STATE.RELEASED;
+
+      const releaseEnd = indexEnd + params.solenoid_on_ms;
+      const settleDone = indexEnd + params.fall_settle_ms;
+      applyDecay(indexEnd);
+      thermal.sol1 = clamp01(thermal.sol1 + params.thermal_heat_per_sol);
+      runPeakHeat = Math.max(runPeakHeat, thermal.sol1);
+      overallPeakHeat = Math.max(overallPeakHeat, thermal.sol1);
+
+      events.push({
+        t: indexEnd,
+        type: 'PLATFORM_RELEASED',
+        brickNum: globalBrickNum,
+        run,
+        targetBin,
+      });
+      events.push({
+        t: releaseEnd,
+        type: 'SOLENOID_OFF',
+        brickNum: globalBrickNum,
+        run,
+      });
+
+      addStateEvent(events, settleDone, STATE.CONFIRM, globalBrickNum);
+      runState = STATE.CONFIRM;
+
+      const confirmAt = settleDone + params.bin_confirm_latency_ms;
+      if (params.bin_confirm_latency_ms > params.bin_confirm_timeout_ms) {
+        addStateEvent(events, settleDone + params.bin_confirm_timeout_ms, STATE.ERROR_HALT, globalBrickNum, 'MISS_BIN');
+        haltEvent = { t: settleDone + params.bin_confirm_timeout_ms, state: STATE.ERROR_HALT, code: 'MISS_BIN', brickNum: globalBrickNum };
+        totalErrors++;
+        totalHalts++;
+        break;
+      }
+
+      events.push({
+        t: confirmAt,
+        type: 'BIN_CONFIRM',
+        brickNum: globalBrickNum,
+        run,
+        binIdx: targetBin,
+        category: type,
+        correct: true,
+      });
+
+      runBins[targetBin]++;
+      overallCorrect++;
+
+      addStateEvent(events, confirmAt, STATE.RESET, globalBrickNum);
+      runState = STATE.RESET;
+
+      const resetDone = confirmAt + Math.max(params.token_restore_ms, 1);
+      events.push({
+        t: resetDone,
+        type: 'TOKEN_RESTORED',
+        brickNum: globalBrickNum,
+        run,
+      });
+
+      brickLog.push({
+        num: globalBrickNum,
+        run: run + 1,
+        type,
+        sizeResult,
+        colorResult,
+        samples: validSamples,
+        targetBin: targetBin + 1,
+        actualBin: targetBin + 1,
+        binIdx: targetBin,
+        indexSteps: moveSteps,
+        indexMs,
+        transitMs: Math.round(confirmAt - tEntry),
+        totalBrickMs: Math.round(resetDone - globalT),
+        thermalState: thermalState(Math.max(thermal.sol1, thermal.sol2, thermal.sol3, thermal.stepper), params),
+        correct: true,
+      });
+
+      if ((i + 1) % params.rehome_period_bricks === 0) {
+        events.push({
+          t: resetDone + 2,
+          type: 'REHOME_CHECK',
           brickNum: globalBrickNum,
-          cause: errorCause,
-          expectedBin: plowNum === 0 ? 3 : plowNum - 1,
-          actualBin,
-          msg: `Brick #${globalBrickNum} (${brickType}) misrouted to bin ${actualBin + 1} [${errorCause}]`
+          run,
+          ok: true,
         });
       }
 
-      const T_confirm = T_sense + (p.bin_distances_mm[actualBin] / p.belt_target_mm_s) * 1000;
-      allEvents.push({ t: T_confirm, type: 'BIN_CONFIRM', brickNum: globalBrickNum, binIdx: actualBin, brickType, correct: routingCorrect });
-
-      runLastConfirmT = T_confirm;
-      binCounts[actualBin]++;
-      const transitMs = Math.round(T_confirm - T_release);
-
-      allBrickLog.push({
-        num: globalBrickNum, run: run + 1, type: brickType,
-        sizeResult: is2x3 ? '2x3' : '2x2',
-        colorResult: brickType.includes('red') ? 'RED' : 'BLUE',
-        samples, plow: plowNum, binIdx: actualBin, transitMs, thermalState,
-        correct: routingCorrect, errorCause: errorCause || null
-      });
-
-      lastReleaseT = T_release;
-      prevBrickType = brickType;
+      globalT = resetDone;
     }
 
-    if (seq.length > 0) pureRunMs += runLastConfirmT - runStartT;
+    const runEnd = globalT;
+    runState = haltEvent ? STATE.ERROR_HALT : STATE.COMPLETE;
+    addStateEvent(events, runEnd, runState, 0, haltEvent ? haltEvent.code : `run ${run + 1} complete`);
+    events.push({
+      t: runEnd,
+      type: haltEvent ? 'RUN_HALTED' : 'RUN_COMPLETE',
+      run,
+      binCounts: [...runBins],
+      totalMs: Math.max(0, runEnd - runStart),
+      haltCode: haltEvent ? haltEvent.code : null,
+    });
 
-    allEvents.push({ t: lastReleaseT + 2000, type: 'RUN_COMPLETE', run, binCounts: [...binCounts], totalMs: lastReleaseT });
-    binCounts = [0, 0, 0, 0];
+    const expected = expectedPerRun;
+    const runCorrect = runBins.reduce((n, v, idx) => n + Math.min(v, expected[idx]), 0);
+    const runTotal = runBins.reduce((n, v) => n + v, 0);
+    runSummary.push({
+      run: run + 1,
+      halted: Boolean(haltEvent),
+      haltCode: haltEvent ? haltEvent.code : null,
+      totalMs: Math.max(0, runEnd - runStart),
+      binCounts: [...runBins],
+      expectedCounts: [...expected],
+      accuracy: runTotal > 0 ? (runCorrect / runTotal) * 100 : 0,
+      peakHeat: runPeakHeat,
+    });
+
+    if (run < params.num_runs - 1) {
+      const gapStart = globalT;
+      events.push({
+        t: gapStart,
+        type: 'INTER_RUN_GAP',
+        run,
+        gapMs: params.interrun_gap_ms,
+      });
+      const step = 500;
+      for (let dt = step; dt <= params.interrun_gap_ms; dt += step) {
+        events.push({
+          t: gapStart + dt,
+          type: 'THERMAL_UPDATE',
+          run,
+          thermal: {
+            sol1: decayHeat(thermal.sol1, dt / 1000, rate),
+            sol2: decayHeat(thermal.sol2, dt / 1000, rate),
+            sol3: decayHeat(thermal.sol3, dt / 1000, rate),
+            stepper: decayHeat(thermal.stepper, dt / 1000, rate),
+          },
+        });
+      }
+      globalT += params.interrun_gap_ms;
+    }
   }
 
-  allEvents.sort((a, b) => a.t - b.t);
+  events.sort((a, b) => a.t - b.t);
 
-  const totalSimMs = allEvents[allEvents.length - 1]?.t || 0;
-  const totalGapMs = (p.num_runs - 1) * p.interrun_gap_ms;
-  const avgBps = pureRunMs > 0 ? (allBrickLog.length / (pureRunMs / 1000)) : 0;
-  const accuracy = allBrickLog.length > 0
-    ? (allBrickLog.filter(b => b.correct).length / allBrickLog.length) * 100
-    : 100;
+  const pureRunMs = runSummary.reduce((n, r) => n + r.totalMs, 0);
+  const totalGapMs = Math.max(0, params.num_runs - 1) * params.interrun_gap_ms;
+  const totalSimMs = pureRunMs + totalGapMs;
+  const avgBps = pureRunMs > 0 ? overallTotal / (pureRunMs / 1000) : 0;
+  const accuracy = overallTotal > 0 ? (overallCorrect / overallTotal) * 100 : 0;
 
   return {
-    events: allEvents, brickLog: allBrickLog, thermalDangerReached, peakHeat,
-    totalSimMs, haltEvent: null,
-    throttleCount, throttledMs, pureRunMs, totalGapMs, avgBps,
-    totalErrors, errorCauses, accuracy
+    events,
+    brickLog,
+    runSummary,
+    totalErrors,
+    totalHalts,
+    thermalDangerReached,
+    peakHeat: overallPeakHeat,
+    totalSimMs,
+    pureRunMs,
+    totalGapMs,
+    avgBps,
+    throttleCount: totalThrottleBricks,
+    throttledMs: totalThrottleDelayMs,
+    accuracy,
+    haltEvent: null,
   };
 }

@@ -1,28 +1,37 @@
-// animation.js - shared state, animation loop, event processing
+// animation.js
 
 'use strict';
+
+const BIN_MAP = {
+  '2x2_red': 0,
+  '2x2_blue': 1,
+  '2x3_blue': 2,
+  '2x3_red': 3,
+};
 
 export const state = {
   params: null,
   animRunning: false,
   animPaused: false,
-  animStartWallMs: null,
+  animStartWallMs: 0,
   animOffsetSimMs: 0,
   simData: null,
   animFrameId: null,
-  liveThermal: {sol1:0, sol2:0, sol3:0, stepper:0},
+  speedMultiplier: 1,
+  replayMode: false,
+
+  liveThermal: { sol1: 0, sol2: 0, sol3: 0, stepper: 0 },
   liveBinCounts: [0, 0, 0, 0],
   liveEventIdx: 0,
   animBricks: [],
-  pendingFlashes: [],
-  plowStates: [
-    null,
-    {phase:'idle', phaseStartSim:0, angle:0},
-    {phase:'idle', phaseStartSim:0, angle:0},
-    {phase:'idle', phaseStartSim:0, angle:0},
-  ],
-  speedMultiplier: 1,
-  replayMode: false,
+  sceneState: {
+    running: false,
+    leverAngle: 0,
+    platformAngle: 0,
+    discAngleDeg: 225,
+    discTargetDeg: 225,
+    highlightBrick: null,
+  },
   haltOverlay: null,
 };
 
@@ -44,38 +53,39 @@ export function registerCallbacks(cbs) {
   Object.assign(cb, cbs);
 }
 
-import { BRICK_COLOR } from './canvas.js';
-
 function resetAnimState() {
-  state.liveThermal = {sol1:0, sol2:0, sol3:0, stepper:0};
+  state.liveThermal = { sol1: 0, sol2: 0, sol3: 0, stepper: 0 };
   state.liveBinCounts = [0, 0, 0, 0];
   state.liveEventIdx = 0;
   state.animBricks = [];
-  state.pendingFlashes = [];
   state.haltOverlay = null;
-  state.plowStates = [
-    null,
-    {phase:'idle', phaseStartSim:0, angle:0},
-    {phase:'idle', phaseStartSim:0, angle:0},
-    {phase:'idle', phaseStartSim:0, angle:0},
-  ];
+  state.sceneState = {
+    running: false,
+    leverAngle: 0,
+    platformAngle: 0,
+    discAngleDeg: 225,
+    discTargetDeg: 225,
+    highlightBrick: null,
+  };
+}
+
+function resetUiForRun() {
+  const timeline = document.getElementById('timeline-log');
+  if (timeline) timeline.innerHTML = '';
+  const body = document.getElementById('brick-log-body');
+  if (body) body.innerHTML = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
+  const summary = document.getElementById('run-summary');
+  if (summary) summary.style.display = 'none';
+  for (let i = 0; i < 4; i++) {
+    cb.setBinCount && cb.setBinCount(i, 0);
+    const box = document.getElementById(`bin-${i}`);
+    if (box) box.className = 'bin-box';
+  }
 }
 
 export function _launchAnimLoop(updateWarnings, populateBrickTable) {
   resetAnimState();
-
-  for (let i = 0; i < 4; i++) {
-    if (cb.setBinCount) cb.setBinCount(i, 0);
-    const box = document.getElementById('bin-' + i);
-    if (box) box.className = 'bin-box';
-  }
-  const tlEl = document.getElementById('timeline-log');
-  if (tlEl) tlEl.innerHTML = '';
-  const blEl = document.getElementById('brick-log-body');
-  if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">Running...</td></tr>';
-  const rsEl = document.getElementById('run-summary');
-  if (rsEl) rsEl.style.display = 'none';
-
+  resetUiForRun();
   if (updateWarnings) updateWarnings();
   if (populateBrickTable && state.simData) populateBrickTable(state.simData.brickLog);
 
@@ -83,9 +93,12 @@ export function _launchAnimLoop(updateWarnings, populateBrickTable) {
   state.animPaused = false;
   state.animStartWallMs = performance.now();
   state.animOffsetSimMs = 0;
+  state.sceneState.running = true;
 
-  document.getElementById('runBtn').textContent = 'Pause';
-  document.getElementById('resetBtn').style.display = 'inline-block';
+  const runBtn = document.getElementById('runBtn');
+  if (runBtn) runBtn.textContent = 'Pause';
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.style.display = 'inline-block';
 
   requestAnimationFrame(animFrame);
 }
@@ -97,81 +110,221 @@ export function startSim(computeSimulation, params, updateWarnings, populateBric
   _launchAnimLoop(updateWarnings, populateBrickTable);
 }
 
-// Instant mode: compute and display results without animation
 export function runInstant(computeSimulationFn, params, updateWarnings, populateBrickTable) {
   if (state.animRunning) return;
-  const sd = computeSimulationFn(params);
-  state.simData = sd;
+  state.simData = computeSimulationFn(params);
   state.replayMode = false;
-
   resetAnimState();
-  for (let i = 0; i < 4; i++) {
-    if (cb.setBinCount) cb.setBinCount(i, 0);
-    const box = document.getElementById('bin-' + i);
-    if (box) box.className = 'bin-box';
+  resetUiForRun();
+
+  for (const ev of state.simData.events) {
+    processEvent(ev, ev.t);
   }
-  const tlEl = document.getElementById('timeline-log');
-  if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Instant mode - no timeline.</span>';
-  const rsEl = document.getElementById('run-summary');
-  if (rsEl) rsEl.style.display = 'none';
+  state.sceneState.running = false;
+  cb.updateThermalUI && cb.updateThermalUI();
+  cb.showRunSummary && cb.showRunSummary(state.simData);
+  cb.updateBinMatchState && cb.updateBinMatchState();
+  populateBrickTable && populateBrickTable(state.simData.brickLog);
+  updateWarnings && updateWarnings();
 
-  for (const ev of sd.events) {
-    switch (ev.type) {
-      case 'BIN_CONFIRM':
-        state.liveBinCounts[ev.binIdx]++;
-        if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
-        break;
-      case 'BRICK_RELEASED':
-      case 'PLOW_FIRE':
-        if (ev.thermal) state.liveThermal = {...ev.thermal};
-        break;
-      case 'THERMAL_UPDATE':
-        if (ev.thermal) state.liveThermal = {...ev.thermal};
-        break;
-    }
-  }
-
-  if (cb.updateThermalUI) cb.updateThermalUI();
-  if (cb.showRunSummary) cb.showRunSummary(sd);
-  if (cb.updateBinMatchState) cb.updateBinMatchState();
-  if (populateBrickTable) populateBrickTable(sd.brickLog);
-  if (updateWarnings) updateWarnings();
-
-  document.getElementById('runBtn').textContent = 'Run Simulation';
-  const rstBtn = document.getElementById('resetBtn');
-  if (rstBtn) rstBtn.style.display = 'inline-block';
+  const runBtn = document.getElementById('runBtn');
+  if (runBtn) runBtn.textContent = 'Run Simulation';
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.style.display = 'inline-block';
 }
 
 export function resetSim(params, drawBeltFn) {
   state.animRunning = false;
   state.animPaused = false;
   state.replayMode = false;
-  state.haltOverlay = null;
   if (state.animFrameId) cancelAnimationFrame(state.animFrameId);
   resetAnimState();
 
   for (let i = 0; i < 4; i++) {
-    if (cb.setBinCount) cb.setBinCount(i, 0);
-    const box = document.getElementById('bin-' + i);
+    cb.setBinCount && cb.setBinCount(i, 0);
+    const box = document.getElementById(`bin-${i}`);
     if (box) box.className = 'bin-box';
   }
-  if (cb.updateThermalUI) cb.updateThermalUI();
-  document.getElementById('runBtn').textContent = 'Run Simulation';
-  document.getElementById('resetBtn').style.display = 'none';
-  const rsEl = document.getElementById('run-summary');
-  if (rsEl) rsEl.style.display = 'none';
-  const tlEl = document.getElementById('timeline-log');
-  if (tlEl) tlEl.innerHTML = '<span style="color:var(--text3);font-size:12px">Run a simulation to see events here.</span>';
-  const blEl = document.getElementById('brick-log-body');
-  if (blEl) blEl.innerHTML = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
 
-  const rlEl = document.getElementById('replay-label');
-  if (rlEl) rlEl.style.display = 'none';
+  cb.updateThermalUI && cb.updateThermalUI();
+  const runBtn = document.getElementById('runBtn');
+  if (runBtn) runBtn.textContent = 'Run Simulation';
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) resetBtn.style.display = 'none';
+
+  const summary = document.getElementById('run-summary');
+  if (summary) summary.style.display = 'none';
+  const timeline = document.getElementById('timeline-log');
+  if (timeline) timeline.innerHTML = '<span style="color:var(--text3);font-size:12px">Run a simulation to see events here.</span>';
+  const body = document.getElementById('brick-log-body');
+  if (body) body.innerHTML = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>';
+  const replay = document.getElementById('replay-label');
+  if (replay) replay.style.display = 'none';
 
   const canvas = document.getElementById('belt-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    if (drawBeltFn) drawBeltFn(ctx, canvas.width, canvas.height, 0);
+    drawBeltFn && drawBeltFn(ctx, canvas.width, canvas.height, 0);
+  }
+}
+
+function logEvent(type, detail, t) {
+  if (!cb.addEvent) return;
+  cb.addEvent(`${Math.round(t)}ms`, type, detail);
+}
+
+function updateThermalFromState() {
+  const p = state.params;
+  if (!p) return;
+  const peak = Math.max(state.liveThermal.sol1, state.liveThermal.sol2, state.liveThermal.sol3, state.liveThermal.stepper);
+  const thermalLabel = peak >= p.thermal_danger_level ? 'DANGER' : peak >= p.thermal_warn_level ? 'WARNING' : 'NORMAL';
+  if (cb.setText) cb.setText('m-thermal-state', thermalLabel);
+}
+
+function moveBrickTo(binIdx, brickNum) {
+  const existing = state.animBricks.find((b) => b.id === brickNum);
+  if (!existing) return;
+  const centers = [
+    [0.64, 0.26],
+    [0.76, 0.38],
+    [0.76, 0.74],
+    [0.62, 0.86],
+  ];
+  existing.targetBinIdx = binIdx;
+  existing.tx = centers[binIdx][0];
+  existing.ty = centers[binIdx][1];
+}
+
+function processEvent(ev, simMs) {
+  switch (ev.type) {
+    case 'STATE_ENTER': {
+      if (ev.state === 'ERROR_HALT') {
+        state.haltOverlay = `Brick #${ev.brickNum} ${ev.detail || ''}`.trim();
+      }
+      if (ev.state === 'RELEASED') {
+        state.sceneState.leverAngle = 22;
+        state.sceneState.platformAngle = 18;
+      } else if (ev.state === 'RESET') {
+        state.sceneState.leverAngle = 0;
+        state.sceneState.platformAngle = 0;
+      }
+      logEvent('STATE', `${ev.state}${ev.detail ? ` (${ev.detail})` : ''}`, ev.t);
+      break;
+    }
+
+    case 'ENTRY_BEAM_TRIGGERED': {
+      const y = 0.54;
+      state.animBricks.push({
+        id: ev.brickNum,
+        type: ev.category,
+        sizeResult: ev.category.includes('2x3') ? '2x3' : '2x2',
+        x: 0.10,
+        y,
+        tx: 0.24,
+        ty: y,
+        targetBinIdx: BIN_MAP[ev.category],
+        done: false,
+      });
+      state.sceneState.highlightBrick = ev.brickNum;
+      logEvent('ENTRY', `Brick #${ev.brickNum} entered chamber`, ev.t);
+      break;
+    }
+
+    case 'BRICK_SEATED':
+      logEvent('SEATED', `Brick #${ev.brickNum} seated`, ev.t);
+      break;
+
+    case 'BRICK_CLASSIFIED':
+      logEvent('CLASSIFIED', `#${ev.brickNum}: ${ev.sizeResult} ${ev.colorResult} -> Bin ${ev.targetBin + 1}`, ev.t);
+      break;
+
+    case 'DISC_INDEX_START':
+      state.liveThermal.stepper = Math.min(1, state.liveThermal.stepper + (state.params.thermal_heat_per_step || 0.05));
+      updateThermalFromState();
+      logEvent('INDEX_START', `#${ev.brickNum}: ${ev.moveSteps} steps @ ${ev.activeSps} sps`, ev.t);
+      break;
+
+    case 'DISC_INDEXED': {
+      const degMap = [315, 45, 135, 225];
+      state.sceneState.discTargetDeg = degMap[ev.targetBin];
+      state.sceneState.discAngleDeg = degMap[ev.targetBin];
+      if (ev.thermalState && cb.setText) {
+        cb.setText('m-active-sps', `${ev.activeSps} steps/s`);
+      }
+      logEvent('INDEXED', `Disc -> Bin ${ev.targetBin + 1}`, ev.t);
+      break;
+    }
+
+    case 'PLATFORM_RELEASED':
+      state.liveThermal.sol1 = Math.min(1, state.liveThermal.sol1 + (state.params.thermal_heat_per_sol || 0.15));
+      updateThermalFromState();
+      state.sceneState.leverAngle = 28;
+      state.sceneState.platformAngle = 38;
+      logEvent('RELEASE', `Brick #${ev.brickNum} released`, ev.t);
+      break;
+
+    case 'SOLENOID_OFF':
+      state.sceneState.leverAngle = 8;
+      logEvent('SOL_OFF', `Brick #${ev.brickNum} solenoid off`, ev.t);
+      break;
+
+    case 'BIN_CONFIRM':
+      state.liveBinCounts[ev.binIdx]++;
+      cb.setBinCount && cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
+      cb.flashBin && cb.flashBin(ev.binIdx);
+      moveBrickTo(ev.binIdx, ev.brickNum);
+      logEvent('BIN_CONFIRM', `#${ev.brickNum} -> ${ev.binIdx + 1}${ev.correct ? ' OK' : ' FAIL'}`, ev.t);
+      break;
+
+    case 'REHOME_CHECK':
+      logEvent('REHOME', `#${ev.brickNum} home check ${ev.ok ? 'OK' : 'FAIL'}`, ev.t);
+      break;
+
+    case 'THERMAL_UPDATE':
+      if (ev.thermal) state.liveThermal = { ...ev.thermal };
+      break;
+
+    case 'INTER_RUN_GAP':
+      logEvent('GAP', `Run ${ev.run + 1} -> next run gap ${Math.round(ev.gapMs / 1000)}s`, ev.t);
+      break;
+
+    case 'RUN_COMPLETE':
+      logEvent('RUN_COMPLETE', `Run ${ev.run + 1} done`, ev.t);
+      break;
+
+    case 'RUN_HALTED':
+      logEvent('RUN_HALTED', `Run ${ev.run + 1} halted (${ev.haltCode})`, ev.t);
+      break;
+  }
+}
+
+function updateBrickAnimations() {
+  for (const b of state.animBricks) {
+    if (b.done) continue;
+    const dx = b.tx - b.x;
+    const dy = b.ty - b.y;
+    b.x += dx * 0.15;
+    b.y += dy * 0.15;
+    if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002 && b.targetBinIdx != null) {
+      b.done = true;
+    }
+  }
+}
+
+function render(simMs) {
+  const canvas = document.getElementById('belt-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const mappedBricks = state.animBricks.map((b) => ({
+    ...b,
+    x: b.x * canvas.width,
+    y: b.y * canvas.height,
+  }));
+
+  cb.drawBelt && cb.drawBelt(ctx, canvas.width, canvas.height, simMs, state.params, state.liveBinCounts, state.sceneState, mappedBricks, state.replayMode);
+  if (state.haltOverlay && cb.drawErrorHaltOverlay) {
+    cb.drawErrorHaltOverlay(ctx, canvas.width, canvas.height, state.haltOverlay);
   }
 }
 
@@ -187,22 +340,17 @@ function animFrame(wallMs) {
       state.liveEventIdx++;
     }
 
-    updatePlowAngles(simMs);
-    updateAnimBricks(simMs);
-
-    const canvas = document.getElementById('belt-canvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      if (cb.drawBelt) cb.drawBelt(ctx, canvas.width, canvas.height, simMs);
-    }
-
-    if (cb.updateThermalUI) cb.updateThermalUI();
+    updateBrickAnimations();
+    cb.updateThermalUI && cb.updateThermalUI();
+    render(simMs);
 
     if (state.liveEventIdx >= state.simData.events.length) {
       state.animRunning = false;
-      document.getElementById('runBtn').textContent = 'Run Simulation';
-      if (cb.showRunSummary) cb.showRunSummary(state.simData);
-      if (cb.updateBinMatchState) cb.updateBinMatchState();
+      state.sceneState.running = false;
+      const runBtn = document.getElementById('runBtn');
+      if (runBtn) runBtn.textContent = 'Run Simulation';
+      cb.showRunSummary && cb.showRunSummary(state.simData);
+      cb.updateBinMatchState && cb.updateBinMatchState();
     }
   }
 
@@ -211,167 +359,19 @@ function animFrame(wallMs) {
   }
 }
 
-function addColoredEvent(tStr, type, detail, color) {
-  const log = document.getElementById('timeline-log');
-  if (!log) return;
-  const row = document.createElement('div');
-  row.className = 'event-row';
-  row.innerHTML = `<span class="ev-t" style="color:${color}">${tStr}</span><span class="ev-type" style="color:${color}">${type}</span><span class="ev-detail" style="color:${color}">${detail}</span>`;
-  log.appendChild(row);
-  if (log.scrollTop + log.clientHeight >= log.scrollHeight - 40) log.scrollTop = log.scrollHeight;
-}
-
-function processEvent(ev, simMs) {
-  const tStr = ev.t.toFixed(0) + 'ms';
-  const p = state.params;
-
-  switch (ev.type) {
-    case 'BRICK_RELEASED': {
-      if (cb.addEvent) cb.addEvent(tStr, 'RELEASED', `Brick #${ev.brickNum} (${ev.brickType}) at ${ev.sps}sps [${ev.thermalState}]`);
-      if (ev.thermal) state.liveThermal = {...ev.thermal};
-      if (cb.setText) {
-        cb.setText('m-thermal-state', ev.thermalState);
-        cb.setText('m-active-sps', ev.sps + ' sps');
-      }
-      const brickColor = BRICK_COLOR[ev.brickType] || '#888';
-      const plowNum = p.plow_map[ev.brickType];
-      state.animBricks.push({
-        id: ev.brickNum,
-        type: ev.brickType,
-        spawnSim: ev.t,
-        is2x3: ev.brickType.includes('2x3'),
-        color: brickColor,
-        plow: plowNum,
-        binIdx: plowNum === 0 ? 3 : plowNum - 1,
-        classified: false,
-        classifySimMs: null,
-        plowFireSimMs: null,
-        binConfirmSimMs: null,
-        done: false,
-        flashBorder: 0,
-        routingError: false,
-      });
-      break;
-    }
-    case 'BRICK_CLASSIFIED': {
-      if (cb.addEvent) cb.addEvent(tStr, 'CLASSIFIED', `#${ev.brickNum}: ${ev.sizeResult} ${ev.colorResult} | gap=${ev.gapUs}us | ${ev.samples} samples`);
-      const ab = state.animBricks.find(b => b.id === ev.brickNum);
-      if (ab) { ab.classified = true; ab.classifySimMs = ev.t; ab.flashBorder = 200; }
-      break;
-    }
-    case 'PLOW_FIRE': {
-      if (cb.addEvent) cb.addEvent(tStr, 'PLOW_FIRE', `Plow ${ev.plow} fires for brick #${ev.brickNum}`);
-      if (ev.thermal) state.liveThermal = {...ev.thermal};
-      const ps = state.plowStates[ev.plow];
-      if (ps) {
-        ps.phase = 'fire';
-        // Offset so plow visually reaches full extension as the brick arrives at the plow,
-        // not when the solenoid fires electrically. The brick arrives sol_lead_ms after
-        // classification; full extension takes sol_full_ms; so start animation early.
-        ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
-        ps.angle = 0;
-      }
-      const ab = state.animBricks.find(b => b.id === ev.brickNum);
-      if (ab) ab.plowFireSimMs = ev.t;
-      break;
-    }
-    case 'PLOW_HOLD': {
-      if (cb.addEvent) cb.addEvent(tStr, 'PLOW_HOLD', `Plow ${ev.plow} holding (40% PWM)`);
-      const ps = state.plowStates[ev.plow];
-      if (ps) {
-        ps.phase = 'hold';
-        ps.phaseStartSim = ev.t + p.sol_lead_ms - p.sol_full_ms;
-      }
-      break;
-    }
-    case 'PLOW_RELEASE': {
-      if (cb.addEvent) cb.addEvent(tStr, 'PLOW_RELEASE', `Plow ${ev.plow} de-energized, spring return`);
-      const ps = state.plowStates[ev.plow];
-      if (ps) { ps.phase = 'retract'; ps.phaseStartSim = ev.t; }
-      break;
-    }
-    case 'PLOW_MISFIRE':
-      addColoredEvent(tStr, 'PLOW_MISFIRE', ev.msg, 'var(--orange)');
-      break;
-    case 'ROUTING_ERROR': {
-      addColoredEvent(tStr, 'ROUTING_ERROR', ev.msg, 'var(--red)');
-      const ab = state.animBricks.find(b => b.id === ev.brickNum);
-      if (ab) {
-        ab.routingError = true;
-        ab.binIdx = ev.actualBin;
-      }
-      break;
-    }
-    case 'PLOW_SKIP':
-      if (cb.addEvent) cb.addEvent(tStr, 'PLOW_SKIP', ev.msg);
-      break;
-    case 'BIN_CONFIRM': {
-      const label = ev.correct === false ? ' [WRONG BIN]' : '';
-      if (cb.addEvent) cb.addEvent(tStr, 'BIN_CONFIRM',
-        `Brick #${ev.brickNum} -> Bin ${ev.binIdx + 1} (${['2x2 BLUE','2x2 RED','2x3 RED','2x3 BLUE'][ev.binIdx]})${label}`);
-      state.liveBinCounts[ev.binIdx]++;
-      if (cb.setBinCount) cb.setBinCount(ev.binIdx, state.liveBinCounts[ev.binIdx]);
-      if (cb.flashBin) cb.flashBin(ev.binIdx);
-      const ab = state.animBricks.find(b => b.id === ev.brickNum);
-      if (ab) ab.binConfirmSimMs = ev.t;
-      break;
-    }
-    case 'RUN_COMPLETE':
-      if (cb.addEvent) cb.addEvent(tStr, 'RUN_COMPLETE', `Run ${ev.run + 1} done. Bin counts: ${ev.binCounts.join(', ')}`);
-      break;
-    case 'INTER_RUN_GAP':
-      if (cb.addEvent) cb.addEvent(tStr, 'INTER_RUN_GAP', `${ev.gapMs/1000}s cooldown between runs`);
-      break;
-    case 'THERMAL_UPDATE':
-      if (ev.thermal) state.liveThermal = {...ev.thermal};
-      if (cb.updateThermalUI) cb.updateThermalUI();
-      break;
-    case 'DRIFT_DETECTED':
-      addColoredEvent(tStr, 'DRIFT', ev.msg, 'var(--yellow)');
-      break;
-  }
-}
-
-function updatePlowAngles(simMs) {
-  const p = state.params;
-  for (let i = 1; i <= 3; i++) {
-    const ps = state.plowStates[i];
-    if (!ps) continue;
-    const elapsed = simMs - ps.phaseStartSim;
-    if (ps.phase === 'fire') {
-      // Clamp to 0 so plow doesn't go negative before it starts sweeping
-      ps.angle = Math.max(0, Math.min(35, elapsed / p.sol_full_ms * 35));
-    } else if (ps.phase === 'hold') {
-      ps.angle = 35;
-    } else if (ps.phase === 'retract') {
-      ps.angle = Math.max(0, 35 - elapsed / 20 * 35);
-      if (ps.angle <= 0) { ps.phase = 'idle'; ps.angle = 0; }
-    } else {
-      ps.angle = 0;
-    }
-  }
-}
-
-function updateAnimBricks(simMs) {
-  state.animBricks = state.animBricks.filter(b => !b.done);
-  for (const b of state.animBricks) {
-    if (b.flashBorder > 0) b.flashBorder -= 16;
-  }
-}
-
-export function setSpeed(s) {
+export function setSpeed(multiplier) {
   if (state.animRunning && !state.animPaused) {
-    const wallNow = performance.now();
-    const wallElapsed = wallNow - state.animStartWallMs;
+    const now = performance.now();
+    const wallElapsed = now - state.animStartWallMs;
     state.animOffsetSimMs += wallElapsed * state.speedMultiplier;
-    state.animStartWallMs = wallNow;
+    state.animStartWallMs = now;
   }
-  state.speedMultiplier = s;
-  ['spd1','spd2','spd5','spd10'].forEach(id => {
+  state.speedMultiplier = multiplier;
+  ['spd1', 'spd2', 'spd5', 'spd10', 'spdInstant'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.classList.remove('active');
   });
-  document.getElementById('spdInstant')?.classList.remove('active');
-  const activeEl = document.getElementById('spd' + s);
-  if (activeEl) activeEl.classList.add('active');
+  const selected = multiplier === 1 ? 'spd1' : multiplier === 2 ? 'spd2' : multiplier === 5 ? 'spd5' : 'spd10';
+  const active = document.getElementById(selected);
+  if (active) active.classList.add('active');
 }

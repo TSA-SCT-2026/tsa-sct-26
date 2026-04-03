@@ -44,12 +44,12 @@ export function buildControls(params) {
         </div>
         <div class="ctrl">
           <div class="ctrl-top"><span class="ctrl-name">Brick sequence</span></div>
-          <div class="ctrl-desc">Order bricks are released. Affects thermal stress and plow conflict risk at high speed.</div>
+          <div class="ctrl-desc">Order bricks are processed through the chamber. Affects selector indexing stress and thermal profile.</div>
           <select id="ctrl-sequence" onchange="window._setParam('sequence', this.value)">
-            <option value="interleaved">Default order (interleaved round-robin)</option>
-            <option value="worst_case">Worst-case: heat (group all same-type together)</option>
-            <option value="worst_case_accuracy">Worst-case: accuracy (alternate plow/default bricks)</option>
-            <option value="default_first">Default-path bricks first</option>
+            <option value="interleaved">Interleaved round robin</option>
+            <option value="worst_case">Grouped by category (thermal stress)</option>
+            <option value="worst_case_accuracy">Alternate category blocks</option>
+            <option value="default_first">2x3 red first (home bin first)</option>
             <option value="random">Random (shuffled independently each run)</option>
           </select>
         </div>

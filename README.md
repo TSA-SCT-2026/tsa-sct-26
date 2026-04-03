@@ -48,6 +48,8 @@ tsa-sct-26/
 
 Open `simulation/simulator.html` in a browser for an interactive system simulator. No server needed. Defaults match `firmware/src/config.h`. Controls let you tune every parameter and see the effect on throughput, sensing, and thermal behavior before touching hardware. See `simulation/CONFIG_REFERENCE.md` for a full explanation of every parameter.
 
+When firmware config values change, update `simulation/src/defaults.js` in the same change so simulator tuning remains aligned.
+
 ## Competition requirements summary
 
 - 2ft x 2ft maximum footprint

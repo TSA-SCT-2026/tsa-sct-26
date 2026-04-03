@@ -165,3 +165,11 @@ Target after optimization: under 10 seconds for 24 bricks.
 - Pass/fail acceptance: docs/TEST_PROTOCOL.md
 - Engineering notebook: docs/NOTEBOOK.md
 - Competition info: docs/competition/COMPETITION_INFO.md
+
+---
+
+## Simulation integration TODO
+
+- Add firmware CSV event logging for replay: emit one row per state transition with run id, brick number, state, timestamp, category, target bin, actual bin, color sample count, and thermal state.
+- Add simulation compare mode: overlay expected vs replayed timestamps per state (`SEATED`, `SENSING_DONE`, `INDEXED`, `RELEASED`, `BIN_CONFIRM`) and report per phase delta.
+- Add optional "Use firmware config" mode in simulation: parse `firmware/src/config.h` into defaults at build time so tuning inputs stay synchronized.

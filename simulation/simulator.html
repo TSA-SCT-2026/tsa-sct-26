@@ -1,4 +1,414 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brick Sorter Simulator - TSA SCT 2026</title>
+<style>:root {
+  --bg: #111827;
+  --bg2: #1f2937;
+  --bg3: #374151;
+  --bg4: #4b5563;
+  --text: #f9fafb;
+  --text2: #9ca3af;
+  --text3: #6b7280;
+  --border: #374151;
+  --accent: #60a5fa;
+  --green: #4ade80;
+  --yellow: #fbbf24;
+  --red: #f87171;
+  --orange: #fb923c;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f3f4f6;
+    --bg2: #ffffff;
+    --bg3: #e5e7eb;
+    --bg4: #d1d5db;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --border: #d1d5db;
+    --accent: #2563eb;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+    --orange: #ea580c;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+#header h1 { font-size: 14px; font-weight: 700; }
+#header .sub { font-size: 11px; color: var(--text2); }
+.hdr-controls { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.btn {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 4px 12px; cursor: pointer; font-size: 12px; font-weight: 500;
+  transition: background 0.12s;
+}
+.btn:hover { background: var(--bg4); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { opacity: 0.88; }
+.btn.active { outline: 2px solid var(--accent); }
+.btn.danger { background: var(--red); color: #fff; border-color: var(--red); }
+.replay-badge {
+  display: none;
+  background: rgba(96,165,250,0.15);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+#main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ---- CONTROLS ---- */
+#controls {
+  width: 282px;
+  min-width: 282px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.section { border-bottom: 1px solid var(--border); }
+.sec-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px; cursor: pointer; user-select: none;
+  background: var(--bg2);
+}
+.sec-hdr:hover { background: var(--bg3); }
+.sec-hdr .sec-title {
+  font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2);
+}
+.sec-hdr .chev { font-size: 9px; transition: transform 0.18s; color: var(--text3); }
+.sec-hdr.closed .chev { transform: rotate(-90deg); }
+.sec-body { padding: 8px 12px 12px; }
+.sec-body.hidden { display: none; }
+.ctrl { margin-bottom: 11px; }
+.ctrl:last-of-type { margin-bottom: 2px; }
+.ctrl-top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 2px;
+}
+.ctrl-name { font-size: 12px; font-weight: 500; }
+.ctrl-val { font-family: monospace; font-size: 12px; color: var(--accent); }
+.ctrl-val-input {
+  font-family: monospace; font-size: 12px; color: var(--accent);
+  background: transparent; border: none; border-bottom: 1px solid transparent;
+  width: 68px; text-align: right; padding: 0 2px; outline: none; cursor: text;
+  -moz-appearance: textfield;
+}
+.ctrl-val-input::-webkit-outer-spin-button,
+.ctrl-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ctrl-val-input:focus {
+  border-bottom-color: var(--accent);
+  background: var(--bg3); border-radius: 2px 2px 0 0;
+}
+.ctrl-val-input:disabled { color: var(--text3); cursor: default; }
+.ctrl-desc { font-size: 10px; color: var(--text3); line-height: 1.4; margin-top: 2px; }
+input[type=range] { width: 100%; height: 4px; accent-color: var(--accent); cursor: pointer; margin-top: 4px; }
+input[type=range]:disabled { opacity: 0.38; cursor: not-allowed; }
+.sec-reset { width: 100%; margin-top: 10px; font-size: 11px; }
+select {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 100%; margin-top: 4px;
+}
+input[type=number] {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 6px; font-size: 12px; width: 60px;
+}
+
+/* ---- CENTER ---- */
+#center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+#belt-wrap {
+  flex-shrink: 0;
+  position: relative;
+  background: #141414;
+  border-bottom: 1px solid var(--border);
+}
+#belt-canvas { display: block; width: 100%; height: 240px; }
+
+/* ---- BOTTOM TABS ---- */
+#bottom {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg2); min-height: 0;
+}
+#tab-bar {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
+.tab {
+  padding: 6px 16px; cursor: pointer; font-size: 12px;
+  color: var(--text2); border-bottom: 2px solid transparent;
+  user-select: none;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover { color: var(--text); }
+#tab-content { flex: 1; overflow: hidden; position: relative; min-height: 0; }
+.tab-panel {
+  position: absolute; inset: 0; overflow-y: auto;
+  padding: 8px 12px; display: none;
+}
+.tab-panel.active { display: block; }
+.event-row {
+  display: flex; gap: 8px; padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-family: monospace; align-items: baseline;
+}
+.ev-t { color: var(--text3); min-width: 68px; }
+.ev-type { min-width: 150px; color: var(--accent); font-size: 10px; }
+.ev-detail { color: var(--text2); }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th {
+  text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border);
+  color: var(--text2); font-weight: 600; position: sticky; top: 0;
+  background: var(--bg2); font-size: 10px;
+}
+td { padding: 3px 6px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:hover td { background: var(--bg3); }
+.warn-row {
+  padding: 7px 10px; border-radius: 4px; margin-bottom: 5px;
+  font-size: 12px; line-height: 1.4;
+}
+.warn-row.w { background: rgba(251,191,36,0.12); border-left: 3px solid var(--yellow); color: var(--yellow); }
+.warn-row.e { background: rgba(248,113,113,0.12); border-left: 3px solid var(--red); color: var(--red); }
+.warn-row.ok { background: rgba(74,222,128,0.1); border-left: 3px solid var(--green); color: var(--green); }
+
+/* ---- METRICS ---- */
+#metrics {
+  width: 282px; min-width: 282px;
+  background: var(--bg2); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 10px 12px; flex-shrink: 0;
+}
+.msec { margin-bottom: 14px; }
+.msec-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text2); margin-bottom: 7px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.mrow {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px; font-size: 12px;
+}
+.ml { color: var(--text2); }
+.mv { font-family: monospace; font-weight: 600; }
+.mv.g { color: var(--green); }
+.mv.y { color: var(--yellow); }
+.mv.r { color: var(--red); }
+.tbar-row { margin-bottom: 6px; }
+.tbar-top {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--text2); margin-bottom: 2px;
+}
+.tbar-bg {
+  height: 7px; background: var(--bg3); border-radius: 3px;
+  overflow: hidden; position: relative;
+}
+.tbar-fill { height: 100%; border-radius: 3px; transition: width 0.15s, background 0.2s; }
+.tbar-warn, .tbar-danger {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+}
+.tbar-warn { background: var(--yellow); opacity: 0.6; }
+.tbar-danger { background: var(--red); opacity: 0.6; }
+.bins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.bin-box {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 5px; padding: 7px 8px; text-align: center;
+}
+.bin-name { font-size: 9px; color: var(--text2); margin-bottom: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.bin-cnt { font-size: 24px; font-weight: 700; font-family: monospace; line-height: 1; }
+.bin-exp { font-size: 9px; color: var(--text3); margin-top: 1px; }
+.bin-box.match { border-color: var(--green); }
+.bin-box.over { border-color: var(--red); }
+.bin-box.flash { background: var(--accent); transition: background 0.08s; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Brick Sorter Simulator</h1>
+  <span class="sub">TSA SCT 2026 - defaults from firmware/src/config.h</span>
+  <span id="replay-label" class="replay-badge">REPLAY</span>
+  <div class="hdr-controls">
+    <span style="font-size:11px;color:var(--text2);">Speed:</span>
+    <button class="btn active" id="spd1" onclick="setSpeed(1)">1x</button>
+    <button class="btn" id="spd2" onclick="setSpeed(2)">2x</button>
+    <button class="btn" id="spd5" onclick="setSpeed(5)">5x</button>
+    <button class="btn" id="spd10" onclick="setSpeed(10)">10x</button>
+    <button class="btn" id="spdInstant" onclick="runInstant()">Instant</button>
+    <button class="btn" id="loadCsvBtn">Load CSV</button>
+    <button class="btn primary" id="runBtn" onclick="handleRunBtn()">Run Simulation</button>
+    <button class="btn" id="resetBtn" onclick="resetSim()" style="display:none">Reset</button>
+  </div>
+</div>
+
+<div id="main">
+  <!-- Controls -->
+  <div id="controls">
+    <!-- Built by JS -->
+  </div>
+
+  <!-- Center: belt + bottom tabs -->
+  <div id="center">
+    <div id="belt-wrap">
+      <canvas id="belt-canvas" width="800" height="240"></canvas>
+    </div>
+    <div id="bottom">
+      <div id="tab-bar">
+        <div class="tab active" onclick="switchTab('timeline')">Timeline</div>
+        <div class="tab" onclick="switchTab('bricks')">Per-Brick Log</div>
+        <div class="tab" onclick="switchTab('warnings')">Warnings</div>
+      </div>
+      <div id="tab-content">
+        <div class="tab-panel active" id="panel-timeline">
+          <div id="timeline-log" style="color:var(--text3);font-size:12px;padding:4px 0;">
+            Run a simulation to see events here.
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-bricks">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Run</th><th>Type</th><th>Size</th><th>Color</th>
+                <th>Samples</th><th>Target</th><th>Actual</th>
+                <th>Index ms</th><th>Thermal</th><th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="brick-log-body">
+              <tr><td colspan="11" style="color:var(--text3);text-align:center;padding:12px">No data yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-panel" id="panel-warnings">
+          <div id="warnings-content">
+            <div class="warn-row ok">No warnings - run a simulation or adjust parameters to see analysis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div id="metrics">
+    <div class="msec">
+      <div class="msec-title">Throughput</div>
+      <div class="mrow"><span class="ml">Escapement rate</span><span class="mv" id="m-esc-rate">-</span></div>
+      <div class="mrow"><span class="ml">Belt speed</span><span class="mv" id="m-belt-spd">-</span></div>
+      <div class="mrow"><span class="ml">Belt capacity</span><span class="mv" id="m-belt-cap">-</span></div>
+      <div class="mrow"><span class="ml">Bottleneck</span><span class="mv" id="m-bottleneck">-</span></div>
+      <div class="mrow"><span class="ml">Belt margin</span><span class="mv" id="m-margin">-</span></div>
+      <div class="mrow"><span class="ml">Est. run time</span><span class="mv" id="m-runtime">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Sensing</div>
+      <div class="mrow"><span class="ml">Color dwell (2x2)</span><span class="mv" id="m-dwell">-</span></div>
+      <div class="mrow"><span class="ml">Color samples</span><span class="mv" id="m-samples">-</span></div>
+      <div class="mrow"><span class="ml">2x3 signal window</span><span class="mv" id="m-sig-win">-</span></div>
+      <div class="mrow"><span class="ml">Size timeout</span><span class="mv" id="m-timeout">-</span></div>
+      <div class="mrow"><span class="ml">Timeout margin</span><span class="mv" id="m-tmarg">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Thermal (live)</div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 1</span><span id="th-sol1-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol1-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw1"></div><div class="tbar-danger" id="td1"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 2</span><span id="th-sol2-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol2-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw2"></div><div class="tbar-danger" id="td2"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Solenoid 3</span><span id="th-sol3-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-sol3-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw3"></div><div class="tbar-danger" id="td3"></div></div>
+      </div>
+      <div class="tbar-row">
+        <div class="tbar-top"><span>Stepper</span><span id="th-step-val">0.00</span></div>
+        <div class="tbar-bg"><div class="tbar-fill" id="th-step-bar" style="width:0%"></div>
+          <div class="tbar-warn" id="tw4"></div><div class="tbar-danger" id="td4"></div></div>
+      </div>
+      <div class="mrow" style="margin-top:6px"><span class="ml">State</span><span class="mv" id="m-thermal-state">NORMAL</span></div>
+      <div class="mrow"><span class="ml">Active sps</span><span class="mv" id="m-active-sps">-</span></div>
+    </div>
+    <div class="msec">
+      <div class="msec-title">Bin Counts</div>
+      <div class="bins-grid">
+        <div class="bin-box" id="bin-0">
+          <div class="bin-name">2x2 RED</div>
+          <div class="bin-cnt" id="bin-cnt-0">0</div>
+          <div class="bin-exp" id="bin-exp-0">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-1">
+          <div class="bin-name">2x2 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-1">0</div>
+          <div class="bin-exp" id="bin-exp-1">expected: 6</div>
+        </div>
+        <div class="bin-box" id="bin-2">
+          <div class="bin-name">2x3 BLUE</div>
+          <div class="bin-cnt" id="bin-cnt-2">0</div>
+          <div class="bin-exp" id="bin-exp-2">expected: 8</div>
+        </div>
+        <div class="bin-box" id="bin-3">
+          <div class="bin-name">2x3 RED</div>
+          <div class="bin-cnt" id="bin-cnt-3">0</div>
+          <div class="bin-exp" id="bin-exp-3">expected: 4</div>
+        </div>
+      </div>
+    </div>
+    <div class="msec" id="run-summary" style="display:none">
+      <div class="msec-title">Run Complete</div>
+      <div class="mrow"><span class="ml">Total time</span><span class="mv" id="m-total-time">-</span></div>
+      <div class="mrow"><span class="ml">Bricks sorted</span><span class="mv" id="m-bricks-sorted">-</span></div>
+      <div class="mrow"><span class="ml">Routing accuracy</span><span class="mv" id="m-accuracy">-</span></div>
+      <div class="mrow"><span class="ml">Routing errors</span><span class="mv" id="m-error-detail">-</span></div>
+      <div class="mrow"><span class="ml">Avg throughput</span><span class="mv" id="m-avg-bps">-</span></div>
+      <div class="mrow"><span class="ml">Peak heat</span><span class="mv" id="m-peak-heat">-</span></div>
+      <div class="mrow"><span class="ml">Throttled bricks</span><span class="mv" id="m-throttle-count">-</span></div>
+      <div class="mrow"><span class="ml">Time throttled</span><span class="mv" id="m-throttled-ms">-</span></div>
+      <div id="m-diagnosis" style="display:none;font-size:10px;color:var(--yellow);margin-top:6px;line-height:1.5;padding:4px 0;border-top:1px solid var(--border)"></div>
+    </div>
+  </div>
+</div>
+
+<script>"use strict";
 (() => {
   // src/defaults.js
   var BIN_LABELS = ["2x2 RED", "2x2 BLUE", "2x3 BLUE", "2x3 RED"];
@@ -1974,3 +2384,6 @@
   }
   init();
 })();
+</script>
+</body>
+</html>
