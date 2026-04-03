@@ -10,6 +10,14 @@ Success criteria:
 - Reach under 10 seconds only after 24/24 correctness is stable
 - Make operation obvious for a first-time evaluator using only written instructions
 
+## Numeric source of truth
+
+All mechanism geometry and timing constants used by documentation must trace back to `cad/DIMENSIONS.md`.
+
+If another doc needs a number, either:
+- reference `cad/DIMENSIONS.md` directly, or
+- explicitly say it is a derived value and show the derivation source.
+
 ## Current phase
 
 Current phase is CAD completion before other work.
@@ -135,6 +143,13 @@ Conservative phase estimate:
 | Total for 24 bricks | about 94s |
 
 Optimization belongs to a later phase after reliability is proven.
+
+## Known limits right now
+
+- Current timing budget is intentionally conservative and not optimized for final speed scoring yet.
+- Throughput tuning is deferred until reliability gates pass repeatedly on real bricks.
+- Calibration values are expected to change with final hardware stack and shroud-installed optical conditions.
+- Firmware replay logging and simulation compare workflow are still pending integration items.
 
 ## Locked decisions
 

@@ -33,6 +33,7 @@ Why this matters:
 - Replay can become exact, not reconstructed.
 - Compare mode can compute precise per-phase deltas.
 - Troubleshooting becomes deterministic and repeatable across runs.
+- TODO: enforce run log filename convention in replay examples and docs: `run_YYYYMMDD_HHMM_session_label.csv`.
 
 ---
 

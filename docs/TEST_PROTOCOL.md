@@ -39,7 +39,7 @@ Pass criteria:
 
 ## Data logging
 
-Capture serial logs for every run as CSV and store in `docs/runs/` once that directory is active.
+Capture serial logs for every run as CSV and store in `docs/runs/`.
 
 ## Failure handling
 

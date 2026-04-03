@@ -40,6 +40,12 @@ Acceptance:
 - Minimum 0.15 separation between calibrated cluster centers
 - Classification stability across repeated trials
 
+Calibration evidence template:
+
+| Trial set | Lighting condition | Shroud installed (yes or no) | Red mean ratio | Blue mean ratio | Separation | Threshold chosen | Operator | Date |
+|-----------|--------------------|-------------------------------|----------------|-----------------|------------|------------------|----------|------|
+| | | | | | | | | |
+
 ## 3. Belt and approach timing calibration
 
 Procedure:

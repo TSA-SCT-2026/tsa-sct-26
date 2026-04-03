@@ -43,6 +43,7 @@ Required coding rules:
 ## Key constraints
 
 - Classification sensing happens only in static `SENSING` state
+- Do not document sensing as interrupt-only: Hall speed capture is interrupt-driven, classification sensing is state-driven in `SENSING`
 - Display updates must not block sensing or routing
 - I2C clock must be set to 400kHz before color sensor communication
 - Thermal model is required for actuator protection
@@ -51,3 +52,9 @@ Required coding rules:
 ## Logging
 
 During calibration: connect serial at 115200 baud and log CSV output. Every brick event, confirmation, and end-of-run summary should be timestamped.
+
+Run log filename convention:
+- `run_YYYYMMDD_HHMM_session_label.csv`
+
+TODO:
+- Enforce this filename convention in firmware logging scripts and examples.

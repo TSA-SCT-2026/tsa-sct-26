@@ -3,17 +3,18 @@
 Competition documentation goes here. Judges score this heavily. Build it from logged run data, not from memory.
 Current execution priority is CAD-first validation, so begin with mechanical decision matrices and trapdoor test evidence.
 
-## What goes here
+Notebook source of truth lives in `docs/notebook/` and run CSV data lives in `docs/runs/`.
 
-Planned directory structure to create as notebook material is generated:
+## Recommended notebook file set
 
-```
-docs/engineering/
-  decision_matrices/    one file per subsystem: sensor choice, actuator choice, selector choice
-  calibration/          calibration procedures for size threshold and color threshold
-  equations/            all math: lever geometry, belt speed, brick spacing, thermal model
-  failure_modes/        failure mode analysis table
-```
+Keep the notebook authored in this directory with one file per section:
+
+- `decision_matrices.md`
+- `calibration_records.md`
+- `equations_and_models.md`
+- `failure_mode_analysis.md`
+- `performance_summary.md`
+- `iteration_log.md`
 
 ## Decision matrices
 
@@ -31,7 +32,7 @@ Write these after hardware exists. The procedure must specify: what hardware con
 
 ## Performance data
 
-Run at least 10 full 24-brick runs during reliability testing. Log all of them to CSV via serial output. Summarize in a table: run number, time, per-bin totals, accuracy, any errors. This table is the core of the performance section.
+Run at least 10 full 24-brick runs during reliability testing. Log all of them to CSV via serial output in `docs/runs/`. Summarize in a table: run number, time, per-bin totals, accuracy, any errors. This table is the core of the performance section.
 
 ## Failure mode analysis
 
