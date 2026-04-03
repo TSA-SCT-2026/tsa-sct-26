@@ -12,6 +12,7 @@ cad/
   chute/          feed chute tube, transition, chamber body, stop-wall interfaces
   chute_sensing/  color sensor shroud, IR break-beam mounts
   frame/          belt frame rails, end plates, channel walls, rollers, tensioner
+  frame/rollers/  OpenSCAD pulley, idler, and fit coupon models
   bins/           four bin guides with angled floor and entrance beam slot
 ```
 
@@ -19,6 +20,10 @@ Non-CAD references:
 - `cad/DIMENSIONS.md`: critical geometry source of truth
 - `cad/MECHANICAL.md`: mechanism rationale and tradeoffs
 - `docs/ARCHITECTURE.md`: full pipeline and active CAD gates
+
+OpenSCAD roller workflow:
+- `cad/frame/rollers/build_rollers.sh`
+- `cad/frame/rollers/stl/` output directory
 
 ## Print order
 

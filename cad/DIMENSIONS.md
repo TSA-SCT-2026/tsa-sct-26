@@ -1,10 +1,20 @@
 # Critical Dimensions
 
-Single reference. If this conflicts with a subsystem doc, this wins.
+Truth model:
+- `LOCKED_TRUTH`: stable, physically invariant constraints
+- `PROVISIONAL_ESTIMATE`: best estimate before purchased hardware is in hand
+
+Current rule:
+- LEGO brick geometry is `LOCKED_TRUTH`
+- Widthwise brick orientation is `LOCKED_TRUTH`
+- Belt strip accommodation for that orientation is `LOCKED_TRUTH`
+- All purchased hardware fit values are `PROVISIONAL_ESTIMATE` until verified on receipt
 
 ---
 
 ## Bricks
+
+Status for this section: `LOCKED_TRUTH`
 
 | Dimension | 2x2    | 2x3    |
 |-----------|--------|--------|
@@ -16,10 +26,13 @@ Single reference. If this conflicts with a subsystem doc, this wins.
 
 Orientation rule: bricks are widthwise across the conveyor, so the 15.8mm width runs across the channel and brick length runs along travel.
 Reason: this holds across-channel fit constant for 2x2 and 2x3 bricks, reduces yaw risk, and makes the along-travel dimension measurable by the two fixed size beams.
+This orientation requirement is `LOCKED_TRUTH`.
 
 ---
 
 ## Feed chute
+
+Status for this section: `PROVISIONAL_ESTIMATE`
 
 | Feature | Dimension |
 |---------|-----------|
@@ -34,6 +47,12 @@ Reason: this holds across-channel fit constant for 2x2 and 2x3 bricks, reduces y
 ---
 
 ## Belt channel
+
+Status for this section:
+- `LOCKED_TRUTH` for belt strip accommodation constraints:
+  - Internal channel width = 20mm
+  - Belt material target width = 19mm strip
+- `PROVISIONAL_ESTIMATE` for all other values in this section
 
 | Feature | Dimension |
 |---------|-----------|
@@ -56,6 +75,8 @@ Reason: this holds across-channel fit constant for 2x2 and 2x3 bricks, reduces y
 ---
 
 ## Isolation chamber
+
+Status for this section: `PROVISIONAL_ESTIMATE`
 
 | Feature | Dimension |
 |---------|-----------|
@@ -91,6 +112,8 @@ Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
 
 ## Trapdoor platform
 
+Status for this section: `PROVISIONAL_ESTIMATE`
+
 | Feature | Dimension |
 |---------|-----------|
 | Platform width (along belt) | 22mm |
@@ -113,6 +136,8 @@ Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
 ---
 
 ## Class 3 lever arm
+
+Status for this section: `PROVISIONAL_ESTIMATE`
 
 | Feature | Dimension |
 |---------|-----------|
@@ -148,6 +173,8 @@ Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
 
 ## Chute selector disc
 
+Status for this section: `PROVISIONAL_ESTIMATE`
+
 | Feature | Dimension |
 |---------|-----------|
 | Disc diameter | 100mm |
@@ -166,6 +193,8 @@ Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
 
 ## Stepper indexing
 
+Status for this section: `PROVISIONAL_ESTIMATE`
+
 1600 steps/rev (200 steps * 8x microstepping).
 
 | Bin | Direction | Degrees | Steps | At 400 sps | At 2000 sps |
@@ -181,6 +210,8 @@ Firmware always takes shortest arc. Max adjacent move: 90 deg = 1000ms at 400 sp
 
 ## Bins
 
+Status for this section: `PROVISIONAL_ESTIMATE`
+
 | Bin | Direction | Category | Count | Internal |
 |-----|-----------|----------|-------|----------|
 | 1 | NW | 2x2 red | 6 | 40x40x90mm |
@@ -191,6 +222,8 @@ Firmware always takes shortest arc. Max adjacent move: 90 deg = 1000ms at 400 sp
 ---
 
 ## Drop fall geometry
+
+Status for this section: `PROVISIONAL_ESTIMATE` (derived estimate)
 
 | Feature | Value |
 |---------|-------|
@@ -206,6 +239,8 @@ Firmware always takes shortest arc. Max adjacent move: 90 deg = 1000ms at 400 sp
 
 ## Footprint
 
+Status for this section: `PROVISIONAL_ESTIMATE` until full assembled CAD is validated
+
 | Feature | Dimension |
 |---------|-----------|
 | Base plate | 610mm x 610mm x 6mm MDF |
@@ -213,3 +248,41 @@ Firmware always takes shortest arc. Max adjacent move: 90 deg = 1000ms at 400 sp
 | Hard limit | 610mm x 610mm |
 
 Confirm in full CAD before printing frame.
+
+---
+
+## Validation On Receipt Checklists
+
+These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
+
+### Feed chute
+
+- Verify printed chute internal width and depth with calipers.
+- Verify single brick exit gate at 13.5mm target with real bricks.
+
+### Belt channel and rollers
+
+- Verify belt strip measured width and thickness from received strip stock.
+- Verify drive shaft actual D profile against modeled bore assumptions.
+- Verify idler bearing seat fit with received MR115 bearings.
+- Verify crown tracking behavior under powered belt run.
+
+### Isolation chamber and sensing interfaces
+
+- Verify actual sensor body clearances for beam holders and color window stack.
+- Verify switch body and actuator positions against printed mounts.
+
+### Trapdoor platform and lever assemblies
+
+- Verify spring free length and installed force from received spring assortments.
+- Verify solenoid mounting and plunger alignment using received unit dimensions.
+
+### Selector and indexing interfaces
+
+- Verify actual stepper shaft and hub dimensions from received hardware.
+- Verify home switch and flag engagement using final mounted hardware.
+
+### Bins and packaging
+
+- Verify printed bin internal dimensions with real brick stack tests.
+- Verify assembled footprint remains within 610mm x 610mm.
