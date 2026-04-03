@@ -12,6 +12,7 @@ Read `docs/ARCHITECTURE.md` for the full system overview, design philosophy, pip
 
 Current design uses a **chamber isolation architecture**:
 - Narrow 20mm belt conveyor with side rails (brick isolation)
+- Bricks oriented widthwise across conveyor, with length along travel for stable fit and deterministic size sensing
 - Class 3 lever trapdoor (8mm solenoid stroke amplified to about 30mm tip travel)
 - Stepper-indexed 4-position rotating chute selector beneath trap
 - Four collection bins at stationary positions

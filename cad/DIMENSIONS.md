@@ -14,6 +14,9 @@ Single reference. If this conflicts with a subsystem doc, this wins.
 | Studs     | 1.7mm  | 1.7mm  |
 | Weight    | ~2g    | ~3g    |
 
+Orientation rule: bricks are widthwise across the conveyor, so the 15.8mm width runs across the channel and brick length runs along travel.
+Reason: this holds across-channel fit constant for 2x2 and 2x3 bricks, reduces yaw risk, and makes the along-travel dimension measurable by the two fixed size beams.
+
 ---
 
 ## Feed chute

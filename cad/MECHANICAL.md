@@ -12,7 +12,8 @@ construction method, and assembly notes.
 | 2x2   | 15.8mm              | 15.8mm              | 11.4mm | 12 (6 red, 6 blue) |
 | 2x3   | 15.8mm              | 23.7mm              | 11.4mm | 12 (4 red, 8 blue) |
 
-Bricks travel length-axis along belt, width-axis across belt.
+Orientation rule: bricks are widthwise across the conveyor, meaning the 15.8mm brick width spans across the belt channel while brick length is along travel.
+Why this orientation is required: it keeps the across-belt footprint constant for both brick sizes, reduces yaw risk in the 20mm channel, and lets the along-travel dimension drive clean size discrimination at the X=5mm and X=21mm beam positions.
 
 ---
 

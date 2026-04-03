@@ -35,6 +35,10 @@ Every correctness guarantee is enforced by geometry and binary state, not timing
 
 The belt carries transport only. Classification and routing correctness do not depend on belt timing.
 
+Brick orientation rule:
+- Bricks are widthwise across the conveyor: 15.8mm width across the belt channel, brick length along travel
+- Why: fixed across-channel footprint limits yaw and keeps size detection dependent on along-travel length at fixed beam positions
+
 ## End-to-end pipeline
 
 ```
