@@ -65,7 +65,7 @@ Implications:
 - The device must work from a cold start operated by a stranger following written instructions.
 - The display must communicate system state unambiguously: READY, SORTING, SORT COMPLETE, ERROR must be readable and obvious.
 - Error recovery (jam, halt) must be possible by following the written instructions alone.
-- The operator instructions sheet is a required deliverable. See OPERATOR_INSTRUCTIONS.md.
+- The operator instructions sheet is a required deliverable. Keep it in `docs/` and package it with the device at setup.
 - The 15-minute setup constraint means no calibration on-site. Everything is tuned and locked before conference day.
 
 ## Notes for the team

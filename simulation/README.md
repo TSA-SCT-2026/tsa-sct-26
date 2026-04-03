@@ -1,6 +1,6 @@
 # Brick Sorter Simulator
 
-V6 chamber-drop simulator for TSA SCT 2026.
+Chamber-drop simulator for TSA SCT 2026.
 
 This simulator is for real system development, not game physics: it focuses on tuning firmware-facing timing, thermal behavior, run sequencing, and troubleshooting with replayed logs.
 
@@ -16,7 +16,7 @@ No server or install is required for use.
 
 ## What this models
 
-- V6 state flow: `IDLE -> FEED -> APPROACH -> SEATED -> SENSING -> INDEXED -> RELEASED -> CONFIRM -> RESET`
+- State flow: `IDLE -> FEED -> APPROACH -> SEATED -> SENSING -> INDEXED -> RELEASED -> CONFIRM -> RESET`
 - Chamber-static sensing timing
 - Selector disc indexing time from steps and SPS
 - Trapdoor release and confirmation windows
@@ -117,6 +117,6 @@ Planned enhancement is tracked in `simulation/TODO.md`: optional "Use firmware c
 
 Current source of truth for architecture behavior is:
 
-- `ARCHITECTURE.md`
-- `docs/EMBEDDED.md`
-- `docs/MECHANICAL.md`
+- `docs/ARCHITECTURE.md`
+- `firmware/EMBEDDED.md`
+- `cad/MECHANICAL.md`

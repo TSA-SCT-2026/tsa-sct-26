@@ -1,12 +1,15 @@
 # Engineering Documentation
 
 Competition documentation goes here. Judges score this heavily. Build it from logged run data, not from memory.
+Current execution priority is CAD-first validation, so begin with mechanical decision matrices and trapdoor test evidence.
 
 ## What goes here
 
+Planned directory structure to create as notebook material is generated:
+
 ```
 docs/engineering/
-  decision_matrices/    one file per subsystem: sensor choice, actuator choice, escapement choice
+  decision_matrices/    one file per subsystem: sensor choice, actuator choice, selector choice
   calibration/          calibration procedures for size threshold and color threshold
   equations/            all math: lever geometry, belt speed, brick spacing, thermal model
   failure_modes/        failure mode analysis table
@@ -19,8 +22,8 @@ Each decision matrix documents: what options were considered, what was chosen, a
 Subsystems that need matrices:
 - Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
 - Color sensor (TCS34725 vs camera vs discrete photodiodes)
-- Plow actuation (solenoid vs servo vs paddle wheel vs pop-up gate)
-- Escapement mechanism (stepper cam vs dual-pin solenoid vs Geneva drive vs rotary servo)
+- Trapdoor release actuation (class 3 lever with solenoid vs direct plunger vs sliding support)
+- Selector mechanism (rotary selector disc vs linear diverter vs hybrid gate)
 
 ## Calibration procedures
 

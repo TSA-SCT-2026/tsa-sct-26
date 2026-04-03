@@ -6,13 +6,13 @@ Sorts 24 LEGO bricks by size and color into 4 bins on a conveyor, automatically,
 
 ## Start here
 
-Read ARCHITECTURE.md for the full system overview, design philosophy, pipeline, and build schedule.
+Read `docs/ARCHITECTURE.md` for the full system overview, design philosophy, pipeline, and build schedule.
 
-## System overview V6
+## System overview
 
-V6 uses a **chamber isolation architecture**:
+Current design uses a **chamber isolation architecture**:
 - Narrow 20mm belt conveyor with side rails (brick isolation)
-- Class 3 lever trapdoor (10mm solenoid stroke amplified to 25mm tip travel)
+- Class 3 lever trapdoor (8mm solenoid stroke amplified to about 30mm tip travel)
 - Stepper-indexed 4-position rotating chute selector beneath trap
 - Four collection bins at stationary positions
 
@@ -22,26 +22,26 @@ This design eliminates lateral diverter complexity and achieves deterministic pe
 
 ```
 tsa-sct-26/
-  ARCHITECTURE.md          master system overview: read this first
-
   cad/                     all printable parts, organized by subsystem
+    MECHANICAL.md          physical design and fabrication notes
+    DIMENSIONS.md          critical geometry and tolerances
   firmware/                ESP32 embedded firmware (PlatformIO project)
+    EMBEDDED.md            firmware architecture and specification
+  wiring/
+    ELECTRICAL.md          power architecture, wiring, protection components
   simulation/              browser-based system simulator (no server needed)
     simulator.html         open this directly - interactive parameter tuning
     CONFIG_REFERENCE.md    explanation of every parameter, timing math, warnings
   docs/
-    MECHANICAL.md          physical design, all measurements, fabrication concerns
-    ELECTRICAL.md          power architecture, wiring, protection components
-    EMBEDDED.md            state machine, sensor logic, actuator control, firmware checklist
+    ARCHITECTURE.md        master architecture and phase plan
     BOM.md                 parts list with ordering info
-    ISSUES.md              open technical questions with resolution paths
-    IDEAS.md               design alternatives analysis and exploratory concepts
-    NOTEBOOK.md            engineering notebook checklist and timeline
-    SHORT_TODO.md          immediate action items
-
-    competition/           official problem statement and judge Q&A prep
-    engineering/           decision matrices, calibration procedures, performance data
-    runs/                  CSV logs from calibration and reliability runs
+    CALIBRATION.md         calibration process and targets
+    CHECKLIST.md           build and verification checklist
+    TEST_PROTOCOL.md       pass/fail protocol
+    COMPETITION_INFO.md    competition references and constraints
+    notebook/
+      README.md            engineering notebook guidance
+  SHORT_TODO.md            immediate session task list
 ```
 
 ## Development tools
@@ -55,4 +55,4 @@ When firmware config values change, update `simulation/src/defaults.js` in the s
 - 2ft x 2ft maximum footprint
 - 24 LEGO bricks (12x 2x2, 12x 2x3) sorted by size then color into 4 bins
 - Minimum: 2 sensors, manual start/stop, programmable controller, feedback loop, motorized conveyor, 1 automated sorting mechanism
-- Full requirements: docs/competition/PROBLEM_STATEMENT.md
+- Full requirements: `docs/COMPETITION_INFO.md`

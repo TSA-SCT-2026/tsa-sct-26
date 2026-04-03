@@ -1,181 +1,247 @@
-# SCT 2026: System Architecture V6
+# SCT 2026: System Architecture
 
-## What this builds
+## Mission
 
-A fully automated LEGO brick sorting system that classifies 24 bricks by size and color
-and drops them into 4 labeled bins. Built for TSA System Control Technology states,
-May 1 2026. The evaluator loads all 24 bricks, presses start, and does nothing else.
-Target: 24 bricks sorted correctly, maximum reliability first, speed tuned after.
+Build a fully automated LEGO brick sorter for TSA System Control Technology nationals on May 1, 2026.
 
----
+Success criteria:
+- Sort 24 bricks into 4 bins correctly
+- Prioritize reliability and repeatability first
+- Reach under 10 seconds only after 24/24 correctness is stable
+- Make operation obvious for a first-time evaluator using only written instructions
+
+## Current phase
+
+Current phase is CAD completion before other work.
+
+Scope in this phase:
+- Lock core mechanical geometry
+- Print and validate the highest risk mechanism pieces
+- Freeze assembly interfaces before wiring and firmware integration
+
+Out of scope in this phase:
+- Throughput tuning
+- Firmware optimization
+- Final wiring harness finish work
 
 ## Core design principle
 
-**Every correctness guarantee is enforced by geometry and binary state, not timing.**
+Every correctness guarantee is enforced by geometry and binary state, not timing.
 
-- One brick occupies the isolation chamber at a time. Physical geometry prevents two.
-- Sensing only happens when the system is confirmed static. No motion noise.
-- Routing is set by a stepper-indexed chute selector before the brick is released.
-- Release is a gravity trapdoor. Support is removed. Physics does the rest.
+- One brick occupies the isolation chamber at a time: physical geometry prevents two
+- Sensing only happens while the chamber is static
+- Chute selector position is committed before release
+- Release is support removal, then gravity
 
-The belt carries no timing responsibility. All decisions are made while the brick is
-motionless. Belt speed has zero effect on classification or routing correctness.
+The belt carries transport only. Classification and routing correctness do not depend on belt timing.
 
----
-
-## Pipeline
+## End-to-end pipeline
 
 ```
 [feed chute: 24 bricks loaded]
     -> [narrow belt: 20mm channel, 100-120mm transport]
-    -> [isolation chamber: stop wall, micro-switch confirm, one brick physically possible]
-    -> [STATIC: dual IR size beams + TCS34725 color -> classification locked]
-    -> [stepper indexes 4-position chute selector disc to correct bin]
-    -> [solenoid fires class 3 lever: tip sweeps out from under platform tab]
-    -> [platform far edge unsupported: drops under gravity]
-    -> [brick falls through aligned disc funnel into correct bin]
+    -> [isolation chamber: stop wall + micro-switch confirm]
+    -> [STATIC: dual IR size beams + TCS34725 color]
+    -> [classification lock]
+    -> [stepper indexes 4-position chute selector]
+    -> [solenoid actuates class 3 lever]
+    -> [lever clears platform tab]
+    -> [platform drops under gravity]
+    -> [brick falls through selector opening into target bin]
     -> [bin entry beam confirms arrival]
-    -> [platform returns to level: lever tip re-engages tab via chamfer]
-    -> [token restored: belt feeds next brick]
+    -> [platform and lever return]
+    -> [token restored, belt feeds next brick]
 ```
 
----
+## Mechanism summary
 
-## Trapdoor mechanism summary
+The chamber floor is a hinged platform. A class 3 lever tip supports a tab on the platform far edge.
 
-The chamber floor is a hinged platform. A class 3 lever arm runs alongside the platform's
-far edge (the disc-facing edge, away from the belt). The lever tip tucks under a small
-tab on the platform far edge — this is what supports that edge.
+- Solenoid applies effort near the fulcrum
+- Lever tip sweeps outward and clears the tab
+- Platform loses support and drops under gravity
+- Brick falls through the selector opening
+- Springs return platform and lever to latched state
 
-The solenoid (JF-0530B 6V) mounts near the lever hinge. It fires a short lateral stroke.
-The class 3 geometry amplifies this into a larger arc at the lever tip, which sweeps
-outward away from the belt, clearing the platform tab. The platform far edge is
-unsupported. Gravity drops it. The brick falls straight down.
+Design intent:
+- Solenoid does not carry platform weight
+- Actuation work is primarily spring preload
+- Re-latch is geometric with chamfered lead-in
 
-The solenoid never carries the platform weight. It only overcomes the lever return spring.
-This is the minimum possible work for an actuator in this system.
+## Sensing summary
 
-Return: solenoid de-energizes, lever return spring pulls tip back inward. Platform
-returns to level under its own return spring. Lever tip chamfer re-engages the tab
-automatically as the platform levels — slam latch geometry, no active re-latching.
+Size:
+- Two IR break-beams at X=5mm and X=21mm
+- Both blocked means 2x3
+- Any other valid pattern means 2x2
 
----
+Color:
+- TCS34725 through a 12mm x 12mm chamber window
+- Black PLA shroud installed during all calibration and runs
+- Use normalized red ratio `R/(R+G+B)` with static sampling window
 
-## Sensing
+Sampling constraints:
+- Belt must be off
+- Chamber seated switch must confirm brick presence
 
-**Size:** Dual IR break-beams in chamber walls at X=5mm and X=21mm. 16mm spacing.
-Both blocked = 2x3. Anything else = 2x2. Binary, position-independent, static.
+## Chute selector summary
 
-**Color:** TCS34725 on chamber wall exterior through 12mm x 12mm window. Black PLA shroud.
-R/(R+G+B) ratio averaged over 8+ samples during static settle phase.
+- NEMA 11 stepper with TMC2209
+- 100mm selector disc with 4 openings at 90-degree intervals
+- Disc mounted to 5mm aluminum shaft hub, not printed bore
+- Periodic re-home cadence to catch drift
 
-Both reads happen only when belt is OFF and micro-switch confirms brick is seated.
+Rule:
+- Selector indexing completes before trapdoor release
 
----
+## Bin mapping
 
-## Chute selector
-
-NEMA 11 stepper (TMC2209) drives a 100mm disc with 4 funnel openings at 90-degree
-intervals, arranged at NW/NE/SE/SW (45 degrees from belt axis). Disc is secured with
-a 5mm aluminum shaft hub — not printed bore. StallGuard monitors for jam. Periodic
-re-home every 8 bricks catches any step count drift.
-
-Stepper indexes BEFORE the trapdoor fires. The brick cannot fall until the disc is
-at the correct position and confirmed by step count.
-
----
-
-## Bin assignment
-
-| Bin | Direction | Category | Count | Pusher |
-|-----|-----------|----------|-------|--------|
+| Bin | Direction | Category | Count | Selector angle |
+|-----|-----------|----------|-------|----------------|
 | 1 | NW | 2x2 red | 6 | 315 deg |
 | 2 | NE | 2x2 blue | 6 | 45 deg |
 | 3 | SE | 2x3 blue | 8 | 135 deg |
-| 4 | SW DEFAULT | 2x3 red | 4 | 225 deg |
+| 4 | SW default | 2x3 red | 4 | 225 deg |
 
-Bin 4 is the default and home position. Any classifier failure lands here.
-Rarest category minimizes contamination damage.
+Default bin is category 2x3 red because it is the rarest bucket.
 
----
+## Compliance coverage
 
-## Key decisions locked
-
-- **Gravity trapdoor with class 3 lever.** Support removed, physics does it. Not a pusher.
-- **Class 3 lever sweeps outward (away from belt).** Solenoid decoupled from platform weight.
-- **No escapement cam.** Single-brick constraint enforced by chamber geometry + token.
-- **Static-only sensing.** No classification during motion. Period.
-- **Pre-committed routing.** Disc positioned before brick falls. Passive post-drop.
-- **Token = occupancy truth.** No timing estimates of chamber state.
-- **5mm aluminum shaft hub.** Printed disc bore is not acceptable.
-- **Default = rarest (bin 4).** Minimum contamination on classifier failure.
-
----
-
-## Competition compliance
-
-| Requirement | V6 implementation |
-|-------------|-------------------|
-| Two or more sensors | Dual size beams (2), color sensor (3), entry beam (4), stop micro-switch (5), 4 bin beams (9 total) |
-| Manual start/stop | Momentary button on GPIO 19 |
+| Requirement | Implementation |
+|-------------|----------------|
+| Two or more sensors | Dual IR size beams, color sensor, chamber micro-switch, bin beams |
+| Manual start and stop | Momentary control button |
 | Programmable controller | ESP32 DevKit |
-| Feedback loop | Chamber sensors confirm occupancy; bin beams confirm sort; ERROR_HALT on miss |
-| Motorized conveyor | JGB37-520 belt motor |
-| Automated sorting mechanism | NEMA 11 stepper + chute selector disc |
+| Feedback loop | Chamber and bin confirmations with halt on miss |
+| Motorized conveyor | JGB37-520 belt drive |
+| Automated sorting mechanism | Stepper selector plus trapdoor release |
 
----
+## Timing budget
 
-## Timing budget (phase 1, conservative)
+Conservative phase estimate:
 
 | Phase | Duration |
 |-------|----------|
-| Belt delivers brick (120mm at 100mm/s) | 1200ms |
-| Entry beam + belt stop | 10ms |
-| Settle | 50ms |
-| Size beams (instantaneous) | 5ms |
-| Color accumulation (8 samples at 24ms) | 192ms |
-| Classification lock | 1ms |
-| Stepper index (worst case 180 deg at 400 sps) | 2000ms |
-| Lever fires + brick falls (80ms + 128ms) | 208ms |
-| Platform + lever return | 200ms |
-| Bin confirm | 50ms |
-| Token restore + belt restart | 20ms |
-| **Total per brick** | **~3936ms** |
-| **24 bricks** | **~94 seconds** |
+| Belt transport | 1200ms |
+| Settle and sensor read | 247ms |
+| Selector index worst case | 2000ms |
+| Drop and return | 408ms |
+| Confirm and restart | 70ms |
+| Total per brick | about 3925ms |
+| Total for 24 bricks | about 94s |
 
-Phase 1 is deliberately slow. Speed optimization after 24/24 confirmed:
-- Stepper to 2000 sps: worst case 400ms, saves 1600ms per brick
-- Belt to 200mm/s: saves 600ms per brick
-- Color samples to 4: saves 96ms per brick
-- Overlap stepper with color sensing (phase 2 optimization)
+Optimization belongs to a later phase after reliability is proven.
 
-Target after optimization: under 10 seconds for 24 bricks.
+## Locked decisions
 
----
+- Gravity trapdoor with class 3 lever
+- Lever tip sweeps outward away from belt
+- Static-only sensing
+- Routing pre-commit before release
+- Occupancy token as source of truth
+- 5mm aluminum hub interface for selector disc
+- Default bin is the rarest category
 
-## Subsystem docs
+## Dedicated TODO: CAD phase only
 
-- Physical design: docs/MECHANICAL.md
-- Wiring and power: docs/ELECTRICAL.md
-- Firmware architecture: docs/EMBEDDED.md
-- Critical dimensions: docs/DIMENSIONS.md
-- Parts list: docs/BOM.md
-- Color calibration: docs/CALIBRATION.md
-- Build checklist: docs/CHECKLIST.md
-- Pass/fail acceptance: docs/TEST_PROTOCOL.md
-- Engineering notebook: docs/NOTEBOOK.md
-- Competition info: docs/competition/COMPETITION_INFO.md
+Status date: April 3, 2026
 
----
+### A. Gate 1: isolate and validate trapdoor mechanism
 
-## Simulation integration TODO
+Goal: prove repeatable drop and re-latch before printing larger assemblies.
 
-- Add firmware CSV event logging for replay: emit one row per state transition with run id, brick number, state, timestamp, category, target bin, actual bin, color sample count, and thermal state.
-- Add simulation compare mode: overlay expected vs replayed timestamps per state (`SEATED`, `SENSING_DONE`, `INDEXED`, `RELEASED`, `BIN_CONFIRM`) and report per phase delta.
-- Add optional "Use firmware config" mode in simulation: parse `firmware/src/config.h` into defaults at build time so tuning inputs stay synchronized.
+Tasks:
+- Print platform, hinge bracket, lever arm, lever pivot bracket, and solenoid bracket
+- Assemble and verify free motion at hinge and lever pivots
+- Validate lever-tip under-tab engagement at rest
+- Validate full tab clearance on solenoid actuation
+- Validate spring-assisted re-latch via chamfer geometry
+- Run 50-cycle reliability test with real bricks
+
+Exit criteria:
+- 0 failed drops in 50 cycles
+- 0 failed re-latches in 50 cycles
+- Return-to-level under 200ms
+
+### B. Gate 2: chamber and sensing geometry lock
+
+Goal: lock interfaces before any broad part print run.
+
+Tasks:
+- Freeze chamber wall geometry and stop-wall switch mounting
+- Freeze dual beam hole placements at X=5mm and X=21mm
+- Freeze color window and shroud mount geometry
+- Confirm sensor hardware clearances with fast fit prints
+
+Exit criteria:
+- Sensors mount without forcing
+- Brick motion is unobstructed
+- No light leak paths around shroud interface
+
+### C. Gate 3: selector disc and drop alignment
+
+Goal: guarantee clean gravitational path from platform to bins.
+
+Tasks:
+- Print selector disc prototype with target opening geometry
+- Validate disc-to-platform concentric alignment
+- Validate drop path to each bin quadrant
+- Tune funnel edges if any corner contact appears
+
+Exit criteria:
+- Brick clears drop path in all 4 selector positions
+- No edge catch across at least 25 drops per bin
+
+### D. Gate 4: chute transition and belt interface
+
+Goal: de-risk highest-risk geometry before full mechanical print set.
+
+Tasks:
+- Prototype chute transition piece first and test with real bricks
+- Validate exit height and transition smoothness into belt channel
+- Validate single-brick feed behavior at target clearances
+
+Exit criteria:
+- No double-feed events in 50-feed trial
+- No jam at transition under full-height stack load
+
+### E. Gate 5: mechanical packaging and footprint check
+
+Goal: guarantee rules compliance and operator clarity.
+
+Tasks:
+- Confirm full assembly envelope stays within 610mm x 610mm
+- Place and verify bin labels and orientation cues in CAD
+- Confirm cable routing channels and anchor points
+- Confirm clear mounting surface for labeled start control
+
+Exit criteria:
+- Footprint hard limit met with margin documented
+- All operator-facing labels physically placeable and visible
+
+## Secondary TODOs after CAD lock
+
+These are not active until CAD gates are complete:
+- Firmware CSV event logging for replay integration
+- Simulation compare mode for expected versus replayed timing
+- Optional simulation import from `firmware/src/config.h`
 
 ## Open questions
 
-OQ-05: Disc funnel surface. Test plain PLA first. Add PTFE tape if brick catches on edge.
-OQ-06: Belt transport length. 100-120mm for phase 1. Shorten for speed in phase 2.
-OQ-07: Lever chamfer angle. Start at 30 degrees. Tune empirically. Not knowable in advance.
+- OQ-05: Selector funnel surface finish. Test plain PLA first. Add PTFE tape only if catch appears.
+- OQ-06: Belt transport length final value in 100-120mm window.
+- OQ-07: Lever chamfer angle tuning. Start at 30 degrees and validate empirically.
+
+## Document map
+
+Primary references:
+- Mechanical design: `cad/MECHANICAL.md`
+- Critical dimensions: `cad/DIMENSIONS.md`
+- Electrical design: `wiring/ELECTRICAL.md`
+- Firmware architecture: `firmware/EMBEDDED.md`
+- Parts list: `docs/BOM.md`
+- Calibration: `docs/CALIBRATION.md`
+- Test protocol: `docs/TEST_PROTOCOL.md`
+- Build checklist: `docs/CHECKLIST.md`
+- Notebook guide: `docs/notebook/README.md`
+- Competition info: `docs/COMPETITION_INFO.md`

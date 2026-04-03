@@ -68,13 +68,13 @@ Minimum approach:
 
 ## Completed
 
-**[DONE] Replace V1 model with V6 chamber simulation**
+**[DONE] Replace legacy model with chamber simulation**
 
 - Replaced belt and plow model with chamber state flow and trapdoor release timing.
 - Added selector disc indexing timing from step count and SPS.
 - Added deterministic category-to-bin routing aligned with docs.
 
-**[DONE] Update visualization for V6 mechanisms**
+**[DONE] Update visualization for current mechanisms**
 
 - Canvas now shows chamber, trapdoor, lever, selector disc, and bin layout.
 - Timeline shows state transitions and key actuator events.
