@@ -1,37 +1,28 @@
 # Short TODO
 
-Updated April 4, 2026.
+Updated April 4, 2026 after architecture sync.
 Current phase: CAD first, with hardware truth lock only where it changes interfaces.
 
 Details live in `docs/ARCHITECTURE.md` under `Dedicated TODO: CAD phase only`.
 
 ## This session
 
-1. Chute transition gate
-- Prototype chute transition first
-- Validate no jams and no double-feed behavior
+1. Lock real hardware truth
+- Measure and photograph the received NEMA 17, color sensor, and solenoid
+- Update any repo dimensions or assumptions that still differ from the real parts
 
-2. Trapdoor mechanism gate
-- Print and bench-validate platform, lever, hinge, and solenoid brackets
-- Complete 50-cycle drop and re-latch test
-
-3. Conveyor module CAD gate
-- Build the Fusion conveyor module around the NEMA 17, pulley, idler, belt envelope, and tensioner travel
-- Verify shaft fit, roller coplanarity, belt tracking envelope, and footprint margin
-
-4. Roller STL and coupon lock
+2. Rebuild and lock roller outputs
 - Regenerate all roller STL files from `cad/frame/rollers/scripts/build_rollers.sh`
-- Run shaft-fit, bearing-fit, and crown coupons, then lock final params in `cad/frame/rollers/src/rollers_params.scad`
+- Run shaft-fit, bearing-fit, and crown coupons, then lock final values in `cad/frame/rollers/src/rollers_params.scad`
 
-5. Hardware truth lock gate
-- Verify the received color sensor module against the `TCS3200 GY-31` purchase record
-- Verify the received solenoid against the `0530 Linear Solenoid Electromagnet 12V` purchase record
-- Photograph, measure, and update any remaining repo assumptions that do not match the real hardware
+3. Build the Fusion conveyor module
+- Place the NEMA 17, pulley, idler, belt envelope, axle stack, and tensioner travel
+- Verify shaft fit, roller coplanarity, belt tracking envelope, and motor clearance
 
-6. Conveyor control freeze gate
-- Freeze the conveyor stepper driver interface and GPIO plan after the real driver choice is locked
-- Keep conservative acceleration and gate feed on entry beam, stop switch, and reset completion
+4. De-risk the highest-risk mechanisms
+- Prototype the chute transition first
+- Bench-validate the trapdoor release and re-latch cycle with repeated runs
 
-7. Packaging and operator UX gate
-- Confirm CAD envelope stays within 610mm x 610mm
-- Place and verify operator labels, display readability, and start-control area
+5. Freeze control and packaging interfaces
+- Freeze the conveyor stepper driver interface and GPIO plan after the driver choice is final
+- Confirm footprint, labels, display visibility, and operator-facing layout
