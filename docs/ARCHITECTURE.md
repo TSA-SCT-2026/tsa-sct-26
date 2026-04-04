@@ -219,10 +219,13 @@ Tasks:
 - Prototype chute transition piece first and test with real bricks
 - Validate exit height and transition smoothness into belt channel
 - Validate single-brick feed behavior at target clearances
+- Build pulley and idler assembly CAD with motor, axle, and bearing hardware references
+- Validate pulley clamp clearance, bearing seating depth, and belt tracking envelope in assembly view
 
 Exit criteria:
 - No double-feed events in 50-feed trial
 - No jam at transition under full-height stack load
+- Pulley assembly CAD shows no hard interference at operating clearances
 
 ### E. Gate 5: mechanical packaging and footprint check
 
@@ -262,5 +265,6 @@ Primary references:
 - Calibration: `docs/CALIBRATION.md`
 - Test protocol: `docs/TEST_PROTOCOL.md`
 - Build checklist: `docs/CHECKLIST.md`
+- Assembly guide: `docs/ASSEMBLY.md`
 - Notebook guide: `docs/notebook/README.md`
 - Competition info: `docs/COMPETITION_INFO.md`

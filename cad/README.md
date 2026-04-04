@@ -24,6 +24,7 @@ Non-CAD references:
 OpenSCAD roller workflow:
 - `cad/frame/rollers/build_rollers.sh`
 - `cad/frame/rollers/stl/` output directory
+- `cad/frame/rollers/ASSEMBLY.md` in depth roller assembly guide
 
 ## Print order
 

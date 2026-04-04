@@ -2,12 +2,15 @@
 
 This folder contains prototype OpenSCAD models for the belt drive pulley and idler roller.
 
+System level assembly flow is in `docs/ASSEMBLY.md`.
+
 Files:
 - `rollers_params.scad`: shared parameters, truth tags, asserts, and dimension report
 - `drive_pulley.scad`: 25mm OD drive pulley with split clamp D bore hub
 - `idler_roller.scad`: 25mm OD crowned idler with dual MR115 pockets
 - `roller_coupons.scad`: bearing fit, D bore fit, and crown test coupons
 - `build_rollers.sh`: validation and STL export script
+- `ASSEMBLY.md`: beginner friendly in depth assembly and fit guide
 
 Run:
 ```bash
