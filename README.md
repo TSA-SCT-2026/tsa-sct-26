@@ -35,6 +35,7 @@ tsa-sct-26/
     CONFIG_REFERENCE.md    explanation of every parameter, timing math, warnings
   docs/
     ARCHITECTURE.md        master architecture and phase plan
+    MEETINGS.md            chronological team meeting notes and decisions
     ASSEMBLY.md            full system assembly workflow
     BOM.md                 parts list with ordering info
     CALIBRATION.md         calibration process and targets

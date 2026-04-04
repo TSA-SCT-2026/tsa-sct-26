@@ -266,5 +266,6 @@ Primary references:
 - Test protocol: `docs/TEST_PROTOCOL.md`
 - Build checklist: `docs/CHECKLIST.md`
 - Assembly guide: `docs/ASSEMBLY.md`
+- Meeting log: `docs/MEETINGS.md`
 - Notebook guide: `docs/notebook/README.md`
 - Competition info: `docs/COMPETITION_INFO.md`
