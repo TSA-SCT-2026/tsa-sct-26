@@ -19,7 +19,7 @@ enum class EventType : uint8_t {
     BIN4_CONFIRM,     // bin 4 confirmation beam broke
     CONFIRM_TIMEOUT,  // no bin confirmed within CONFIRM_TIMEOUT_MS
     RESET,            // operator reset from ERROR_HALT
-    ENCODER_PULSE,    // belt speed encoder tick (Hall sensor on idler roller)
+    ENCODER_PULSE,    // optional diagnostic pulse from idler Hall sensor
 };
 
 struct Event {

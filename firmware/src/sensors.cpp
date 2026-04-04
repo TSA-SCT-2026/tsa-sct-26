@@ -6,14 +6,14 @@
 // V6 static chamber sensing.
 // The brick is stationary in isolated chamber when sensed.
 // Size: two beams at X=5mm and X=21mm. Both blocked = 2x3, one blocked = 2x2.
-// Color: blocking sample loop for COLOR_SENSE_MS.
+// Color: blocking sample loop bounded by COLOR_TIMEOUT_MS.
 // Classification is complete BEFORE the disc is indexed.
 // The disc and belt are stopped during sensing.
 
 namespace sensors {
 
 void begin() {
-    Wire.begin(PIN_COLOR_SDA, PIN_COLOR_SCL);
+    Wire.begin(PIN_SDA, PIN_SCL);
     Wire.setClock(I2C_FREQ_HZ);
 
     pinMode(PIN_SIZE_BEAM1, INPUT);      // external 10k pull-up to 3.3V required
@@ -25,14 +25,11 @@ void begin() {
     pinMode(PIN_BIN4_BEAM, INPUT_PULLUP);
 
     gLogger.info("sensors::begin - I2C configured, beam pins ready");
-    // Real TCS34725 init:
-    //   tcs.begin();
-    //   tcs.setIntegrationTime(TCS34725_INTEGRATIONTIME_24MS);
-    //   tcs.setGain(TCS34725_GAIN_4X);
+    // Real color sensor init depends on the final purchased module.
 }
 
 // Called once per brick, while brick is stationary in isolation chamber.
-// Blocks for COLOR_SENSE_MS to accumulate color samples.
+// Blocks until COLOR_TIMEOUT_MS or COLOR_SAMPLE_COUNT samples are reached.
 // Returns a fully classified BrickCategory before disc indexing begins.
 SenseResult senseBrickInChamber() {
     SenseResult result;
@@ -49,22 +46,19 @@ SenseResult senseBrickInChamber() {
 
     gLogger.info(result.isLarge ? "SIZE: 2x3 (both beams blocked)" : "SIZE: 2x2 (one beam)");
 
-    // Color: accumulate samples for COLOR_SENSE_MS.
+    // Color: accumulate samples for COLOR_TIMEOUT_MS or until the target sample count is reached.
     // The brick is stationary in isolated chamber - no motion blur, no ambient light.
     // At 24ms integration: ~6 samples in 150ms.
     // At 2.4ms integration: ~62 samples in 150ms.
     uint32_t rSum = 0, gSum = 0, bSum = 0;
     uint32_t start = millis();
 
-    while (millis() - start < COLOR_SENSE_MS) {
-        // Real TCS34725 read:
-        //   uint16_t r, g, b, c;
-        //   tcs.getRawData(&r, &g, &b, &c);
-        //   if (c > 100) { rSum += r; gSum += g; bSum += b; result.sampleCount++; }
-        //   delay(COLOR_INTEGRATION_MS);
+    while ((millis() - start < COLOR_TIMEOUT_MS) && (result.sampleCount < COLOR_SAMPLE_COUNT)) {
+        // Real color sensor read depends on the final purchased module.
+        // Replace this stub after the TCS3200 GY-31 wiring and calibration plan is locked.
 
         // Stub: yields so other tasks can run during dwell
-        delay(COLOR_INTEGRATION_MS);
+        delay(24);
         result.sampleCount++;   // remove when real reads are implemented
     }
 
@@ -79,13 +73,10 @@ SenseResult senseBrickInChamber() {
     }
 
     bool isRed;
-    if (result.rRatio > COLOR_RED_HIGH) {
+    if (result.rRatio > COLOR_RED_THRESHOLD) {
         isRed = true;
-    } else if (result.rRatio < COLOR_RED_LOW) {
-        isRed = false;
     } else {
-        gLogger.info("COLOR: ratio in dead zone -> UNCERTAIN");
-        return result;
+        isRed = false;
     }
 
     // Assign category
@@ -118,7 +109,7 @@ bool chamberExitBeamClear() {
     return digitalRead(PIN_ENTRY_BEAM) == HIGH;
 }
 
-// Belt speed from Hall sensor on idler roller (optional).
+// Belt speed from Hall sensor on idler roller (optional diagnostic only).
 float beltSpeedMms() {
     // Real: count Hall pulses per second, convert via roller circumference.
     return 0.0f;

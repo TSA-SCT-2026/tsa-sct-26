@@ -41,7 +41,11 @@ Every correctness guarantee is enforced by geometry and binary state, not timing
 - Chute selector position is committed before release
 - Release is support removal, then gravity
 
-The belt carries transport only. Classification and routing correctness do not depend on belt timing.
+The conveyor must be sequenced correctly, but correctness is still closed by physical state and sensor confirmation.
+
+- Conveyor motion can be aggressive and repeatable because NEMA 17 step control governs feed distance and stop behavior.
+- Entry beam, stop switch, selector position, and platform reset still gate the state machine.
+- Step count improves sequencing. It does not replace chamber truth checks.
 
 Brick orientation rule:
 - Bricks are widthwise across the conveyor: 15.8mm width across the belt channel, brick length along travel
@@ -53,7 +57,7 @@ Brick orientation rule:
 [feed chute: 24 bricks loaded]
     -> [narrow belt: 20mm channel, 100-120mm transport]
     -> [isolation chamber: stop wall + micro-switch confirm]
-    -> [STATIC: dual IR size beams + TCS34725 color]
+    -> [STATIC: dual IR size beams + purchased color sensor module]
     -> [classification lock]
     -> [stepper indexes 4-position chute selector]
     -> [solenoid actuates class 3 lever]
@@ -88,9 +92,10 @@ Size:
 - Any other valid pattern means 2x2
 
 Color:
-- TCS34725 through a 12mm x 12mm chamber window
+- Current purchase log points to a TCS3200 GY-31 module
+- Sensor mounts behind a 12mm x 12mm chamber window
 - Black PLA shroud installed during all calibration and runs
-- Use normalized red ratio `R/(R+G+B)` with static sampling window
+- Final classification method must be locked from measured hardware behavior, not assumed from the earlier TCS34725 plan
 
 Sampling constraints:
 - Belt must be off
@@ -102,6 +107,13 @@ Sampling constraints:
 - 100mm selector disc with 4 openings at 90-degree intervals
 - Disc mounted to 5mm aluminum shaft hub, not printed bore
 - Periodic re-home cadence to catch drift
+
+## Conveyor summary
+
+- NEMA 17 stepper on the conveyor feed axis
+- Controlled feed and approach motion, not open-loop PWM speed tuning
+- Chamber entry beam and stop-wall switch remain the final authority that a brick is actually seated
+- Conservative acceleration first, then speed tuning after repeatability is proven
 
 Rule:
 - Selector indexing completes before trapdoor release
@@ -125,7 +137,7 @@ Default bin is category 2x3 red because it is the rarest bucket.
 | Manual start and stop | Momentary control button |
 | Programmable controller | ESP32 DevKit |
 | Feedback loop | Chamber and bin confirmations with halt on miss |
-| Motorized conveyor | JGB37-520 belt drive |
+| Motorized conveyor | NEMA 17 stepper conveyor |
 | Automated sorting mechanism | Stepper selector plus trapdoor release |
 
 ## Timing budget

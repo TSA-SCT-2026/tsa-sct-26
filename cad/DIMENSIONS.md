@@ -63,14 +63,14 @@ Status for this section:
 | Belt material | 19mm neoprene x 3mm |
 | Transport length | 100-120mm |
 | Drive roller OD | 25mm |
-| Drive roller bore | 6mm D-flat |
+| Drive roller bore | 5mm stepper shaft with clampable flat profile |
 | Idler roller OD | 25mm (0.5mm crown) |
 | Idler roller bearings | MR115ZZ 5mm ID x 11mm OD x 4mm |
 | Roller flanges | 2mm both ends |
 | Belt speed (phase 1) | 100mm/s |
 | Belt bed | 3mm aluminum bar 22mm wide, PTFE tape |
-| Hall sensor gap | 2mm from sensor face to idler rim |
-| Hall magnets | 2x 3mm neodymium disc, 180 deg apart |
+| Hall sensor gap | Optional diagnostic only |
+| Hall magnets | Optional diagnostic only |
 
 ---
 
@@ -165,7 +165,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 |---------|-----------|
 | Solenoid plunger axis | Parallel to belt travel direction |
 | Contact point on lever | 8mm from fulcrum |
-| Solenoid stroke required at contact point | 8mm (nominal JF-0530B stroke) |
+| Solenoid stroke required at contact point | 8mm target from the received 0530-series solenoid |
 | Solenoid mount wall | Chamber side wall (same wall as lever fulcrum) |
 | Solenoid axis height above platform | Matched to lever arm height |
 
@@ -263,7 +263,7 @@ These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
 ### Belt channel and rollers
 
 - Verify belt strip measured width and thickness from received strip stock.
-- Verify drive shaft actual D profile against modeled bore assumptions.
+- Verify actual NEMA 17 shaft diameter, flat depth, and usable shaft length against modeled pulley assumptions.
 - Verify idler bearing seat fit with received MR115 bearings.
 - Verify crown tracking behavior under powered belt run.
 

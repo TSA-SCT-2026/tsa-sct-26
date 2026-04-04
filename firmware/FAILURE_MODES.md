@@ -101,10 +101,12 @@ Detection: Wire.endTransmission() non-zero.
 Response: ERROR_HALT (SENSOR_FAULT).
 Mitigation: 4.7k pull-ups on SDA/SCL. Route away from motor leads.
 
-### FM-12: Hall sensor no pulse
+### FM-12: Conveyor stepper overheats or drops steps
 
-Detection: No pulse for 500ms with belt running.
+Detection: Missed seated confirmation, position inconsistency, or driver thermal warning.
 Response: ERROR_HALT.
+Mitigation: Conservative acceleration, reduced hold current, airflow on both stepper drivers,
+and sensor-confirmed chamber seating before every sensing cycle.
 
 ---
 
@@ -137,7 +139,7 @@ Mitigation: Calibrate with shroud. 0.15 minimum gap between clusters.
 | FM-09 | Brick bounces out | Near zero | Visual | None |
 | FM-10 | MOSFET shorts | Very low | APPROACH_TIMEOUT | ERROR_HALT |
 | FM-11 | I2C lockup | Low | Wire return | ERROR_HALT |
-| FM-12 | Hall no pulse | Low | Stall detection | ERROR_HALT |
+| FM-12 | Conveyor stepper thermal or missed-step issue | Low | Seated mismatch or driver warning | ERROR_HALT |
 | FM-13 | Step drift | Low | Re-home check | ERROR_HALT |
 | FM-14 | Color misclassify | Low | Post-run count | None per-cycle |
 

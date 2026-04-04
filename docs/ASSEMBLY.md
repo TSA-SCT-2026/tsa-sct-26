@@ -136,11 +136,16 @@ Pass criteria:
 This stage uses the roller subsystem guide:
 - `cad/frame/rollers/ASSEMBLY.md`
 
+CAD file layout for this subsystem:
+- `src/` holds OpenSCAD source
+- `scripts/` holds build helpers
+- `stl/` holds exported print files
+
 Key points:
 1. Print and test coupons first.
 2. Choose final D bore and bearing fit from coupon results.
 3. Print final drive pulley and idler.
-4. Build split clamp hub with hardware.
+4. Build split clamp hub with the offset M3 screw and hex nut hardware.
 5. Set belt tension and confirm stable tracking.
 
 Pass criteria:
@@ -218,9 +223,14 @@ Why this is used:
 - Printed bores vary between prints.
 - Clamp tension lets you tune grip without reprinting.
 
+Important clarification:
+- This is for the conveyor drive motor pulley.
+- The conveyor uses the NEMA 17 feed stepper.
+- The selector disc uses a separate NEMA 11 stepper.
+
 Hardware needed:
 - M3 screw
-- M3 nut or M3 heat set insert
+- M3 hex nut
 
 Installation tip:
 - Tighten in small steps while checking pulley runout.

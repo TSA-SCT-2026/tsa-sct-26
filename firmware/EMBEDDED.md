@@ -18,7 +18,7 @@ Token = 1. Platform level (lever tip under tab). Disc at home (225 deg, bin 4).
 Display: READY. Waiting for START button.
 
 **FEED (S1)**
-Token = 1. Belt on at BELT_TARGET_SPEED. Hall PID active.
+Token = 1. Conveyor feed axis runs a stepper motion profile toward the chamber.
 Monitor PIN_ENTRY_BEAM. Triggered -> APPROACH.
 Timeout FEED_TIMEOUT_MS -> ERROR_HALT (JAM_CHUTE).
 
@@ -33,7 +33,7 @@ Settle: SETTLE_MS (50ms). Nothing moves.
 
 **SENSING (S4)**
 Read both size beams: both LOW = 2x3, else = 2x2.
-Accumulate TCS34725 color samples until COLOR_SAMPLE_COUNT or COLOR_TIMEOUT_MS.
+Accumulate color samples from the purchased color module until COLOR_SAMPLE_COUNT or COLOR_TIMEOUT_MS.
 valid_sample_count < COLOR_MIN_SAMPLES -> ERROR_HALT (SENSOR_FAULT).
 Lock category and bin_index.
 
@@ -88,9 +88,9 @@ DOUBLE_ENTRY, PLATFORM_STUCK, POSITION_DRIFT.
 3. Read GPIO 36 (beam 1) and GPIO 34 (beam 2).
    Both LOW -> SIZE_2x3. Else -> SIZE_2x2.
 4. Loop until COLOR_SAMPLE_COUNT valid samples or COLOR_TIMEOUT_MS:
-   - TCS34725 integration (24ms)
-   - Read R, G, B, C
-   - If C > C_MIN_VALID: r_ratio = R/(R+G+B), accumulate
+   - Read current color-module output
+   - Convert to calibrated red versus blue classification metric
+   - Accumulate valid samples
 5. valid_sample_count < COLOR_MIN_SAMPLES -> ERROR_HALT (SENSOR_FAULT)
 6. avg_r_ratio = sum / count
 7. color = avg_r_ratio > COLOR_RED_THRESHOLD ? COLOR_RED : COLOR_BLUE
@@ -167,12 +167,12 @@ This is the minimum possible solenoid load in this design. Thermal impact is neg
 
 ```c
 // Belt
-#define BELT_TARGET_SPEED       100.0f
-#define BELT_KP                 0.5f
-#define BELT_KI                 0.1f
-#define BELT_BASE_PWM           128
-#define ROLLER_OD_MM            25.0f
-#define BELT_MAGNETS            2
+#define CONVEYOR_TARGET_SPEED_MM_S  100.0f
+#define CONVEYOR_RUN_SPS            800
+#define CONVEYOR_START_SPS          120
+#define CONVEYOR_ACCEL_SPS          80
+#define CONVEYOR_HOLD_CURRENT       250
+#define ROLLER_OD_MM                25.0f
 
 // Timeouts (ms)
 #define FEED_TIMEOUT_MS         5000
@@ -222,9 +222,6 @@ PIN_STEP        = GPIO 25    // stepper step
 PIN_DIR         = GPIO 26    // stepper direction
 PIN_ENABLE      = GPIO 27    // stepper enable, active low
 PIN_TMC_UART    = GPIO 23    // TMC2209 UART, 1k series
-PIN_MOTOR_ENA   = GPIO 14    // belt PWM
-PIN_MOTOR_IN1   = GPIO 12    // belt direction
-PIN_MOTOR_IN2   = GPIO 13    // belt direction
 PIN_RELEASE     = GPIO 32    // lever solenoid, IRLZ44N gate via 1k
 PIN_SIZE_BEAM1  = GPIO 36    // X=5mm. 10k ext pull-up. Input-only.
 PIN_SIZE_BEAM2  = GPIO 34    // X=21mm. 10k ext pull-up. Input-only.
@@ -238,7 +235,7 @@ PIN_BIN3_BEAM   = GPIO 5
 PIN_BIN4_BEAM   = GPIO 18
 PIN_SDA         = GPIO 21
 PIN_SCL         = GPIO 22
-PIN_HALL        = GPIO 4     // belt speed, ISR falling edge, 10k pull-up
+PIN_HALL        = GPIO 4     // optional diagnostic Hall input if retained later
 PIN_START_BTN   = GPIO 19    // active low, external pull-up
 PIN_BUZZER      = GPIO 2
 ```
@@ -250,7 +247,7 @@ ADC1 never used. GPIO 36 and 39 safe as digital inputs.
 
 ## Self-test sequence (power-on)
 
-1. TCS34725: I2C ACK at 0x29. ID = 0x44.
+1. Color sensor: verify the actual purchased module responds as expected for the chosen interface.
 2. Display: I2C ACK at 0x3C or SPI init.
 3. Size beam 1 (GPIO 36): HIGH (unblocked).
 4. Size beam 2 (GPIO 34): HIGH.
@@ -258,7 +255,7 @@ ADC1 never used. GPIO 36 and 39 safe as digital inputs.
 6. Lever release: 20ms pulse. Verify lever does not fully clear tab (sub-threshold test).
 7. Stepper: 5 steps CW, 5 CCW. SGRESULT clean.
 8. Home: run until PIN_HOME_SW triggers. Set position = BIN4_STEPS.
-9. Belt: 200ms spin. Hall pulse received.
+9. Conveyor feed axis: short forward and stop command succeeds.
 10. Display SELF-TEST PASS. -> IDLE.
 
 Failure on any step: display SELF-TEST FAIL [component]. Halt.
@@ -277,7 +274,7 @@ actuators.h/.cpp:
     Home: run until `PIN_HOME_SW`, set position = `BIN4_STEPS`.
     `indexToBin(bin_index)`: shortest arc, ramp, StallGuard read after move.
     Periodic re-home every `RETHOME_PERIOD_BRICKS`.
-  Belt target starts at `BELT_TARGET_SPEED = 100.0f`.
+  Conveyor target starts at `CONVEYOR_TARGET_SPEED_MM_S = 100.0f`.
   Keep `PIN_SHELF_LEVEL` check in `RESET` when installed.
 
 state_machine.h/.cpp:

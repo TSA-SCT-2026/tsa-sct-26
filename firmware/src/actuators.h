@@ -8,7 +8,7 @@ namespace actuators {
 
     void begin();
 
-    // Belt motor (TB6612FNG)
+    // Conveyor feed axis. Keep this abstraction stable even as the hardware moved to a stepper.
     void beltStart();
     void beltStop();
     void beltSetDuty(uint8_t duty);

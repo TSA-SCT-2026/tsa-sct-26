@@ -24,9 +24,9 @@ struct SenseResult {
 
 namespace sensors {
     void begin();
-    SenseResult senseBrickInChamber();  // call when brick seated, blocks for COLOR_SENSE_MS
+    SenseResult senseBrickInChamber();  // call when brick seated, blocks until sample or timeout limits are reached
     void attachBinBeams();
     bool chamberExitBeamClear();
-    float beltSpeedMms();             // optional, 0.0 if Hall sensor not installed
+    float beltSpeedMms();             // optional diagnostic only, 0.0 if Hall sensor not installed
     const char* categoryName(BrickCategory cat);
 }

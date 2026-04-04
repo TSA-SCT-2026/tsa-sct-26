@@ -22,9 +22,15 @@ Non-CAD references:
 - `docs/ARCHITECTURE.md`: full pipeline and active CAD gates
 
 OpenSCAD roller workflow:
-- `cad/frame/rollers/build_rollers.sh`
+- `cad/frame/rollers/scripts/build_rollers.sh`
 - `cad/frame/rollers/stl/` output directory
 - `cad/frame/rollers/ASSEMBLY.md` in depth roller assembly guide
+
+Roller subsystem layout:
+- `cad/frame/rollers/src/`: OpenSCAD source files
+- `cad/frame/rollers/docs/`: part cards and parameter notes
+- `cad/frame/rollers/scripts/`: export and validation scripts
+- `cad/frame/rollers/stl/`: exported printable meshes
 
 ## Print order
 

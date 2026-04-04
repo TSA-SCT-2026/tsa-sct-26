@@ -3,7 +3,7 @@
 // ================================================================
 // Design: V6 (chamber-based sorting)
 // Chamber sensing with dual size beams. Chute selector disc with stepper.
-// Single trapdoor release via class 3 lever. TB6612FNG belt motor driver.
+// Conveyor feed axis uses a dedicated NEMA 17 stepper. Single trapdoor release via class 3 lever.
 // ================================================================
 
 // ================================================================
@@ -17,11 +17,8 @@
 #define PIN_ENABLE          27      // active-low on TMC2209 (pull LOW to enable)
 #define PIN_TMC_UART        23      // single-wire UART, needs 1k series resistor
 
-// Belt motor via TB6612FNG
-#define PIN_MOTOR_ENA       14      // PWM speed control
-#define PIN_MOTOR_IN1       12      // direction
-#define PIN_MOTOR_IN2       13      // direction
-#define PIN_MOTOR_STBY      0       // standby (must be HIGH for operation)
+// Conveyor stepper driver pin map is intentionally not frozen here yet.
+// Keep the belt API abstract until the final dual-stepper wiring map is locked.
 
 // Release solenoid via N-channel MOSFET (IRLZ44N)
 #define PIN_RELEASE         32      // class 3 lever solenoid, gate via 1k resistor
@@ -34,7 +31,8 @@
 #define PIN_STOP_SW         33      // stop wall micro-switch, internal pull-up
 #define PIN_HOME_SW         15      // disc home micro-switch, internal pull-up
 #define PIN_SHELF_LEVEL     39      // platform-level switch, 10k ext pull-up, INPUT-ONLY
-// TCS34725 color sensor on I2C (pins below)
+// Purchased color sensor in BOM is TCS3200 GY-31, not TCS34725.
+// Final color-sensor pin map is not frozen here yet.
 
 // Bin confirmation beams
 #define PIN_BIN1_BEAM       16
@@ -42,7 +40,7 @@
 #define PIN_BIN3_BEAM       5
 #define PIN_BIN4_BEAM       18
 
-// I2C bus (TCS34725 at 0x29, PCF8574 at 0x20)
+// I2C bus reserved for PCF8574 and optional peripherals
 #define PIN_SDA             21
 #define PIN_SCL             22
 #define PCF8574_ADDR        0x20
@@ -51,18 +49,18 @@
 #define PIN_START_BTN       19      // momentary button, active low, external pull-up
 #define PIN_BUZZER          2       // passive piezo, 100 ohm series resistor
 
-// Belt speed Hall sensor
-#define PIN_HALL            4       // A3144 Hall sensor on idler roller, 10k pull-up
+// Optional idler Hall diagnostics pin if speed logging is retained later
+#define PIN_HALL            4
 
 // ================================================================
-// Belt
+// Conveyor feed axis
 // ================================================================
-#define BELT_TARGET_SPEED       100.0f  // target speed (mm/s)
-#define BELT_KP                 0.5f
-#define BELT_KI                 0.1f
-#define BELT_BASE_PWM           128
-#define ROLLER_OD_MM            25.0f
-#define BELT_MAGNETS            2
+#define CONVEYOR_TARGET_SPEED_MM_S  100.0f
+#define CONVEYOR_RUN_SPS            800
+#define CONVEYOR_START_SPS          120
+#define CONVEYOR_ACCEL_SPS          80
+#define CONVEYOR_HOLD_CURRENT       250
+#define ROLLER_OD_MM                25.0f
 
 // ================================================================
 // Timeouts (ms)

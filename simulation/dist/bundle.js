@@ -18,7 +18,7 @@
   var DEFAULTS = {
     // Conveyor and chamber timing
     belt_target_mm_s: 100,
-    // BELT_TARGET_SPEED
+    // CONVEYOR_TARGET_SPEED_MM_S
     transport_distance_mm: 120,
     // docs timing budget basis
     entry_to_stop_ms: 10,
@@ -142,7 +142,7 @@
           min: 2,
           max: 16,
           step: 1,
-          desc: "Number of TCS34725 samples to average."
+          desc: "Number of color-module samples to average."
         },
         {
           id: "color_integration_ms",
@@ -236,7 +236,7 @@
           min: 30,
           max: 160,
           step: 5,
-          desc: "JF-0530B pulse width for lever actuation."
+          desc: "0530-series solenoid pulse width for lever actuation."
         },
         {
           id: "fall_settle_ms",

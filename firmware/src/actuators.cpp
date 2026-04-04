@@ -13,24 +13,24 @@ static int16_t current_position_steps = 0;  // current disc position
 
 void begin() {
     gLogger.info("STUB actuators::begin - pins not configured yet");
-    // Real: pinMode for all GPIO, set TB6612FNG STBY HIGH, TMC2209 UART init
+    // Real: pinMode for all GPIO, init both stepper drivers, set reduced hold current when idle
 }
 
 void beltStart() {
-    gLogger.info("STUB belt START (TB6612FNG)");
-    // Real: digitalWrite(PIN_MOTOR_STBY, HIGH), set direction, analogWrite PWM
+    gLogger.info("STUB belt START (conveyor stepper feed)");
+    // Real: enable conveyor stepper, run feed profile until chamber event advances state
 }
 
 void beltStop() {
     gLogger.info("STUB belt STOP");
-    // Real: analogWrite(PIN_MOTOR_ENA, 0), optional STBY LOW for power save
+    // Real: stop conveyor stepper and reduce hold current for thermal control
 }
 
 void beltSetDuty(uint8_t duty) {
     char buf[48];
-    snprintf(buf, sizeof(buf), "STUB belt duty=%d", duty);
+    snprintf(buf, sizeof(buf), "STUB belt tuning hook=%d", duty);
     gLogger.info(buf);
-    // Real: analogWrite(PIN_MOTOR_ENA, duty)
+    // Real: map this temporary tuning hook to conveyor speed or microstep profile selection
 }
 
 void firePlatformRelease() {

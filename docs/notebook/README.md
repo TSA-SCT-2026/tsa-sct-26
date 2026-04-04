@@ -22,7 +22,7 @@ Each decision matrix documents: what options were considered, what was chosen, a
 
 Subsystems that need matrices:
 - Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
-- Color sensor (TCS34725 vs camera vs discrete photodiodes)
+- Color sensor (TCS3200 GY-31 vs alternative color modules vs camera vs discrete photodiodes)
 - Trapdoor release actuation (class 3 lever with solenoid vs direct plunger vs sliding support)
 - Selector mechanism (rotary selector disc vs linear diverter vs hybrid gate)
 

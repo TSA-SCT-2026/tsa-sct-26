@@ -43,10 +43,12 @@ No cam. No escapement.
 - Transport length: 100-120mm.
 - Target belt speed: 100mm/s (phase 1).
 
-Drive: JGB37-520 6V 600RPM gearmotor, 6mm D-shaft direct to drive roller.
-Drive roller: 25mm OD, 6mm D-bore. Idler roller: 25mm OD (0.5mm crown), MR115ZZ
-flanged ball bearings on M5 bolt axle, spring-loaded tensioner slot.
-Hall sensor + PI loop on idler roller.
+Drive: NEMA 17 stepper on the conveyor feed axis. Use controlled feed and approach
+motion with conservative acceleration at first.
+Drive roller: 25mm OD, 5mm clamp bore matched to the NEMA 17 shaft profile.
+Idler roller: 25mm OD (0.5mm crown), MR115ZZ flanged ball bearings on M5 bolt axle,
+spring-loaded tensioner slot.
+Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does not depend on it.
 
 ---
 
@@ -130,7 +132,7 @@ has inherent stroke tolerance built into the lever ratio.
 
 ### Solenoid mounting
 
-The JF-0530B solenoid mounts on the chamber side wall (same wall as the lever fulcrum),
+The purchased 0530-series solenoid mounts on the chamber side wall (same wall as the lever fulcrum),
 plunger axis parallel to the belt travel direction (pointing inward toward the belt).
 The plunger tip contacts the lever arm at the effort point (8mm from fulcrum).
 

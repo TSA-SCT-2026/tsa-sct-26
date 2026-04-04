@@ -16,7 +16,7 @@ firmware/
     main.cpp            entry point, hardware init, main loop
     state_machine.*     state machine: all states and transitions
     sensors.*           size detection (break-beams) and color detection
-    actuators.*         selector indexing, release solenoid timing, belt motor
+    actuators.*         selector indexing, release solenoid timing, conveyor feed axis
     events.*            event queue and event types
     logger.*            serial logging
     test_harness.*      serial command test interface

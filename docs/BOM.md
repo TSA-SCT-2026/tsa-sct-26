@@ -1,30 +1,42 @@
 # Bill of Materials
 
-**Source of Truth:** `docs/BOM.xlsx` is the authoritative BOM spreadsheet. This markdown file provides context and validation notes.
+**Source of Truth:** `docs/BOM.xlsx` is the authoritative BOM spreadsheet and purchase record. This markdown file is the architecture-facing summary and may lag the spreadsheet if purchase history changes first.
 
-All items validated. Every spec confirmed. Order as listed with no modifications.
+Architecture-critical correction:
+- Conveyor drive is now treated as `NEMA 17 conveyor stepper`
+- Selector drive is `NEMA 11 stepper`
+- Do not treat `JGB37-520 gearmotor` or `TB6612FNG conveyor drive` as the active plan
 
 ---
 
 ## VALIDATION NOTES (read before ordering)
 
-**Solenoid (JF-0530B 6V):**
-Spec confirmed across multiple sources: stroke 10mm, force 5N at end of stroke, rated
-current 300mA continuous, peak ~1600mA, body 30x16x15mm, plunger 6x58mm.
-The listing sells 6V, 12V, and 24V variants under the same model number.
-SELECT 6V. Verify on receipt: measure plunger stroke with calipers, confirm 10mm minimum.
+**Solenoid currently recorded in purchase log:**
+`0530 Linear Solenoid Electromagnet 12V` in `docs/BOM.xlsx`.
 
-**TB6612FNG replaces L298N:**
-L298N drops 1.4-2V across BJT transistors. On a 6V rail the motor sees 4-4.6V.
-TB6612FNG (MOSFET) drops 0.2-0.5V. Motor sees 5.5-5.8V. 90%+ efficiency vs 40-70%.
-3.3V logic compatible (no level shifter needed for ESP32). Motor voltage 2.5-13.5V
-(6V rail is well within range). Same pin-compatible control signals as L298N.
-STBY pin must be held HIGH — wire to 3.3V permanently or to a spare GPIO.
+Important note:
+- Repo design documents previously assumed a 6V JF-0530B variant.
+- The spreadsheet purchase log currently points to a 12V 0530 listing instead.
+- Treat the spreadsheet as hardware truth until the received part is measured and photographed.
+- Before wiring, verify actual coil voltage, stroke, body size, and current draw on the received unit.
+
+**Conveyor and selector motion drivers:**
+Use dedicated stepper drivers for both motion axes. Conveyor uses NEMA 17.
+Selector uses NEMA 11. Reduce hold current when static and provide airflow near the drivers.
 
 **PCF8574 I2C expander:**
-Default address 0x20. No conflict with TCS34725 (0x29) or SSD1306 (0x3C).
+Default address 0x20. No conflict with SSD1306 (0x3C) or other reserved I2C peripherals.
 Shares existing SDA/SCL bus (GPIO 21/22). Adds 8 digital I/O pins for buffer/future use.
 Arduino library: PCF8574 by xreef (PlatformIO). Powers from 3.3V.
+
+**Color sensor currently recorded in purchase log:**
+`TCS3200 GY-31 Color Sensor Module` in `docs/BOM.xlsx`.
+
+Important note:
+- Repo design documents previously assumed `TCS34725`.
+- The spreadsheet purchase log currently points to `TCS3200 GY-31`.
+- Treat the spreadsheet as hardware truth until the received module is verified.
+- Final firmware pin map and calibration flow must match the actual received sensor.
 
 **Fuse:**
 Inline blade fuse holder on LiPo positive lead before power switch. 5A automotive
@@ -37,32 +49,31 @@ immediately and can swap in 10 seconds.
 
 | # | Part | Qty | Est. Cost | Validated spec / ordering note |
 |---|------|-----|-----------|-------------------------------|
-| 1 | JF-0530B solenoid | 4 | $17 | **SELECT 6V** (not 12V or 24V). Spec: 5N/10mm, 300mA, body 30x16x15mm. 1 used + 3 spare. |
-| 2 | NEMA 11 stepper 34mm | 1 | $12 | 4-wire bipolar, 5mm shaft, 1.8 deg/step. |
-| 3 | JGB37-520 gearmotor | 1 | $10 | **SELECT 6V, 600 RPM**. Same listing sells 7-960 RPM. 6mm D-shaft. |
-| 4 | TB6612FNG dual motor driver module | 2 | $5 | Replaces L298N. MOSFET H-bridge. 6V motor compatible. 3.3V logic compatible. 1 primary + 1 spare. |
+| 1 | 0530 Linear Solenoid Electromagnet 12V | 3 | $17 | Spreadsheet purchase record item. Measure actual stroke, body size, and current draw on receipt before wiring. |
+| 2 | NEMA 11 stepper 34mm | 2 | $12 | Selector axis plus spare. 4-wire bipolar, 5mm shaft, 1.8 deg/step. |
+| 3 | NEMA17 Stepper Motor 17HS4401S | 1 | $10 | Conveyor feed axis. 42BYGH class, 1.5A, 4-lead. |
+| 4 | TMC2209 stepper driver | 3 | $6 | Two active axes plus one spare. UART-capable variant. |
 | 5 | IR break-beam 3mm (4-pair pack) | 3 | $21 | 12 pairs: 2 size beams + 1 entry + 1 home + 4 bin confirm + 4 spare. |
-| 6 | TCS34725 color sensor | 2 | $8 | Onboard white LED and INT pin required. 1 primary + 1 spare. |
-| 7 | TMC2209 stepper driver | 2 | $6 | UART-capable variant. 1 primary + 1 spare. |
-| 8 | LM2596 buck converter | 3 | $5 | 2 used (6V and 5V rails) + 1 spare. |
-| 9 | IRLZ44N MOSFET | 10 | $8 | Logic-level N-channel. 1 used for solenoid driver. 9 spare. |
+| 6 | TCS3200 GY-31 color sensor module | 2 | $8 | Spreadsheet purchase record item. Firmware interface and calibration must be updated to the received module. |
+| 7 | LM2596 buck converter | 3 | $5 | 2 used (motor rail trim and logic rail) + 1 spare. |
+| 8 | IRLZ44N MOSFET | 10 | $8 | Logic-level N-channel. 1 used for solenoid driver. 9 spare. |
 | 10 | 22AWG silicone wire assorted | 1 | $5 | Permanent wiring. |
 | 11 | Perfboard 5x7cm | 2 packs | $4 | MOSFET driver board + spare. |
 | 12 | JST-XH connector kit (2-pin and 4-pin) | 1 | $6 | Transport connectors, polarized. |
 | 13 | Compression spring assortment (5-8mm OD) | 1 | $5 | Belt idler tensioner spring. Various rates. |
 | 14 | Tension spring assortment (4-6mm OD, 0.3-0.4mm wire) | 2 | $8 | Platform return spring AND lever return spring. Light rates only. |
 | 15 | Sub-miniature snap-action micro-switch (Omron D2F equiv) | 10 | $6 | Pin-plunger actuator type. Stop wall (1), disc home (1), shelf-level (1), 7 spare. |
-| 16 | TMC2209 heatsink (aluminum, adhesive) | 2 | $3 | For TMC2209 thermal management. |
+| 16 | TMC2209 heatsink (aluminum, adhesive) | 3 | $3 | For both active stepper drivers plus one spare. |
 | 17 | 5mm shaft hub (aluminum, set-screw or clamp) | 2 | $5 | Chute disc mounting. Non-negotiable. 1 primary + 1 spare. |
 | 18 | 3mm OD polished steel rod 200mm | 4 | $6 | Platform hinge rod. Cut to 25mm sections with Dremel. |
 | 19 | MR115ZZ flanged ball bearing (5mm ID x 11mm OD x 4mm) | 4 | $6 | Idler roller bearings. 2 used + 2 spare. |
-| 20 | NEMA 11 motor mount bracket (metal) | 2 | $8 | 1 used + 1 spare. Do not rely on printed PLA alone. |
+| 20 | NEMA 11 motor mount bracket (metal) | 2 | $8 | Selector axis bracket. 1 used + 1 spare. Do not rely on printed PLA alone. |
 | 21 | Heat shrink tubing assortment | 1 | $4 | |
 | 22 | M2 + M3 heat-set insert assortment | 1 | $5 | All printed structural parts at screw locations. |
 | 23 | M2 + M3 screw assortment + M3 nylon locknuts | 1 | $8 | Lever pivot: M3 x 12mm + nylon locknut. All fasteners. |
 | 24 | Small rubber foot pads (3mm, self-adhesive, 3M or equiv) | 1 pack | $4 | Stop wall damper, system feet. |
 | 25 | PCF8574 I2C GPIO expander module | 3 | $3 | Address 0x20 default. No bus conflict. 8 extra digital I/O. 1 primary + 2 spare. |
-| 26 | 30mm 5V brushless fan | 2 | $4 | TMC2209 thermal management. Runs from 5V rail. 1 primary + 1 spare. |
+| 26 | 30mm 5V brushless fan | 2 | $4 | Stepper driver thermal management. Runs from 5V rail. 1 primary + 1 spare. |
 | 27 | Inline blade fuse holder + 5A automotive blade fuses (10-pack) | 1 | $4 | LiPo main line protection. Replaceable at competition. |
 
 **AliExpress subtotal: ~$171**
@@ -78,7 +89,7 @@ immediately and can swap in 10 seconds.
 | 3 | SSD1306 OLED 0.96" I2C 128x64 | 1 | $5 | Primary display. Address 0x3C. No GPIO conflict. |
 | 4 | Waveshare 1.69" IPS LCD (ST7789V2, SPI) | 1 | $12 | Attempt SPI at wiring time. Fallback to SSD1306. |
 | 5 | Neoprene rubber strip 1/8" x **3/4"** x 10ft | 1 | $8 | Belt. 19mm wide. **NOT 1 inch**. Search: TORRAMI neoprene strip. |
-| 6 | A3144 Hall sensor 3-pack | 1 | $4 | Belt speed feedback. Digital output, active-low. 1 used + 2 spare. |
+| 6 | A3144 Hall sensor 3-pack | 1 | $4 | Optional diagnostic speed logging only. Not required for conveyor correctness. |
 | 7 | 3mm neodymium disc magnets 10-pack | 1 | $4 | Idler roller. 2 used + 8 spare. |
 | 8 | PTFE tape 1/2" (plumber tape) | 2 | $6 | Chute walls, belt channel, belt bed. |
 | 9 | UHMW tape 1/2" | 1 | $10 | Platform top surface. Non-negotiable for clean brick drop. |
@@ -140,7 +151,7 @@ immediately and can swap in 10 seconds.
 
 | Part | Why not |
 |------|---------|
-| L298N | Replaced by TB6612FNG. L298N wastes 30% of 6V rail as heat. |
+| L298N | Not used in the active dual-stepper architecture. |
 | Torsion springs | Not used. Lever mechanism uses only tension + compression springs. |
 | Servo motors | Not used anywhere. |
 | GT2 belt or toothed pulleys | Not used. Belt is neoprene on smooth rollers. |

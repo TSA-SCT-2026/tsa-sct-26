@@ -6,22 +6,30 @@ Status date: April 3, 2026
 
 - Main supply: LiPo pack for all meaningful runs
 - Logic rail: regulated 3.3V for ESP32 and sensors
-- Actuator rail: 6V path for belt motor, stepper driver input, and release solenoid
+- Actuator rail: motor-voltage path for conveyor stepper driver, selector stepper driver, and release solenoid supply
 - Common ground across logic and actuator rails
 
 ## Non-negotiable protection
 
 - Flyback diode on every solenoid coil
-- Bulk capacitor at stepper driver motor power input
+- Bulk capacitor at each stepper driver motor power input
 - Gate resistor on solenoid MOSFET drive
-- Shared ground return sized for motor and solenoid current
+- Shared ground return sized for both stepper phases and solenoid current
+
+## Motion drivers
+
+- Conveyor feed axis: NEMA 17 stepper with dedicated driver
+- Selector disc axis: NEMA 11 stepper with dedicated driver
+- Do not share one stepper driver between both axes
+- Reduce hold current on both axes when static to limit heat
 
 ## Release solenoid path
 
-- Solenoid: JF-0530B, controlled by `PIN_RELEASE`
+- Solenoid: purchased 0530-series unit, controlled by `PIN_RELEASE`
 - Drive device: logic-level N-MOSFET low-side switching
 - Control pulse: `SOLENOID_ON_MS` from firmware config
 - Solenoid drives class 3 lever release only
+- Verify actual coil voltage and current on the received part before final wiring
 
 ## Sensor wiring notes
 
