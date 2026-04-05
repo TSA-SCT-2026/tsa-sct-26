@@ -33,7 +33,7 @@ This repo is centered on one active architecture:
 - Off-axis toothed timing-belt stage to a supported smooth drive roller
 - Event-gated restart only after physical reset truth is satisfied
 
-Rejected upstream singulation families such as cam, Geneva, star wheel, and dual-pin are not part of the active plan. Keep them in notebook alternatives only.
+Rejected upstream singulation families such as cam, Geneva, star wheel, and dual-pin are documented in the notebook alternatives.
 
 ## Core design principle
 
@@ -150,7 +150,7 @@ Why this is the active production path:
 - Easier tuning of speed versus torque after real hardware arrives
 - Cleaner service and replacement path
 
-Direct-drive conveyor rollers are not the active plan.
+The conveyor uses an off-axis timing-belt stage to a supported smooth drive roller.
 
 ## Sensing summary
 

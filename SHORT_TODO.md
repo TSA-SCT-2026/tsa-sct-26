@@ -1,17 +1,19 @@
 # Short TODO
 
-Updated April 5, 2026 after the selector-chute architecture reset and firmware build repair.
-Current priority: finish ordering the timing-belt conveyor parts, validate CAD outputs, and wait for hardware arrival on April 10 before any measurement work.
+Updated April 5, 2026 after the selector-chute architecture reset, firmware build repair, and conveyor timing-stage cleanup.
+Current priority: order the remaining timing-stage parts, validate the chute transition with bricks already on hand, and wait for hardware arrival on April 10 before any measurement work.
 
 ## This session's next tasks
 
 1. Order the timing-belt conveyor additions
-- Add the timing-belt stage items from `docs/BOM.md` to the actual purchase plan
-- Prioritize belt, pulleys, supported shaft hardware, and tension hardware before parts arrival
+- Order only the remaining timing-stage items that are not already in `docs/BOM.xlsx`
+- Buy the `100T` and `104T` belts, `16T` and `32T` pulleys, `5mm` shaft stock, extra `MR115ZZ` bearings, and `5mm` shaft collars
+- Use the slotted `NEMA17` mount as the active tension plan instead of buying a separate tensioner first
 
-2. Unblock CAD output generation
-- Re-run `cad/frame/rollers/scripts/build_rollers.sh`
-- Confirm the timing-stage STL outputs generate cleanly
+2. Review the refreshed timing-stage STL outputs
+- `cad/frame/rollers/scripts/build_rollers.sh` now runs end to end
+- Check the generated pulley, roller, and coupon STLs before printing
+- Keep only the current `drive_roller` and `coupon_shaft_fit` output names in future artifact updates
 
 3. Validate the highest-risk physical part
 - Print the chute transition prototype first

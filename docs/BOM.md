@@ -1,15 +1,14 @@
 # Bill of Materials
 
-**Source of Truth:** `docs/BOM.xlsx` is the authoritative BOM spreadsheet and purchase record. This markdown file is the architecture-facing summary and may lag the spreadsheet if purchase history changes first.
+**Source of Truth:** `docs/BOM.xlsx` is the authoritative purchase record. Everything recorded there is already ordered. This markdown file is the clean summary of what is ordered plus the few remaining timing-stage purchases.
 
-Architecture-critical correction:
-- Conveyor drive is now treated as an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
+Current architecture:
+- Conveyor drive is an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
 - Selector drive is `NEMA 11 stepper`
-- Do not treat `JGB37-520 gearmotor`, `TB6612FNG conveyor drive`, or direct motor-shaft drive as the active plan
 
 ---
 
-## VALIDATION NOTES (read before ordering)
+## Receipt checks
 
 **Solenoid currently recorded in purchase log:**
 `0530 Linear Solenoid Electromagnet 12V` in `docs/BOM.xlsx`.
@@ -26,7 +25,7 @@ Selector uses NEMA 11. Reduce hold current when static and provide airflow near 
 
 **Timing-belt conveyor stage:**
 - Use a toothed belt between the NEMA 17 and the supported drive roller.
-- Keep pulley tooth count and belt series provisional until the final packaging pass is locked.
+- The only actionable buying items left in this markdown are the timing-stage parts below.
 - Use a guarded, adjustable tension path so ratio changes do not require a full rebuild.
 
 **PCF8574 I2C expander:**
@@ -48,21 +47,37 @@ Inline blade fuse holder on LiPo positive lead before power switch. 5A automotiv
 blade fuse. Replaceable. Bring 10 spare fuses to competition. If it blows you know
 immediately and can swap in 10 seconds.
 
-**Timing-belt stage provisional order items:**
+**Remaining timing-stage purchases:**
 
-| Part | Qty | Est. Cost | Validated spec / ordering note |
-|------|-----|-----------|-------------------------------|
-| GT2 timing belt, final pitch provisional | 2 | $8 | Production conveyor ratio stage. Final pitch and length lock after packaging pass. |
-| Motor pulley for timing belt | 1 | $4 | Tooth count provisional until ratio is measured. |
-| Roller pulley for timing belt | 1 | $4 | Tooth count provisional until ratio is measured. |
-| Supported conveyor roller shaft hardware | 1 | $12 | Shaft, bearings, collars, and mount provisions. |
-| Belt tension hardware | 1 | $8 | Slotted mount or idler tensioner, final form provisional. |
+Current CAD assumptions are:
+- `GT2 / 2mm pitch`
+- `6mm belt width`
+- `16T` motor pulley
+- `32T` driven pulley
+- `78mm` nominal pulley center distance
+- `8mm` tension-adjust travel
 
-Timing-belt stage subtotal is provisional and is not included in the grand total yet.
+That geometry works best if you buy the two standard closed-loop belt lengths that straddle the modeled pitch length instead of betting on a single custom size.
+
+| Part | Qty | Exact spec / search term | Buy note |
+|------|-----|---------------------------|---------|
+| GT2 closed-loop timing belt, short | 2 | `GT2 closed loop belt 100T 200mm 6mm wide 2mm pitch` | One install candidate plus one spare. Fits if the printed stage lands slightly short. |
+| GT2 closed-loop timing belt, long | 2 | `GT2 closed loop belt 104T 208mm 6mm wide 2mm pitch` | One install candidate plus one spare. Fits if the printed stage lands slightly long. |
+| GT2 motor pulley | 2 | `GT2 16 tooth 5mm bore 6mm belt width aluminum pulley double flange` | One install plus one spare. Clamp or dual set-screw style is preferred. |
+| GT2 driven pulley | 2 | `GT2 32 tooth 5mm bore 6mm belt width aluminum pulley double flange` | One install plus one spare. Match belt pitch and width to the motor pulley. |
+| Supported drive shaft | 2 | `5mm precision ground shaft rod 200mm` | One install plus one spare. Cut to final length after frame landings are fixed. |
+| Drive-shaft bearings | 4 | `MR115ZZ flanged bearing 5x11x4` | Two active bearings for the supported shaft plus two spare. This is in addition to the idler-bearing count already recorded in `docs/BOM.xlsx`. |
+| Shaft collars | 4 | `5mm clamp shaft collar aluminum` | Two active collars for axial retention plus two spare. |
+
+Preferred tension strategy:
+- Use the printed slotted `NEMA17` mount as the active tension adjuster.
+- Do not buy a separate belt tensioner unless packaging later proves the slot can not cover the full adjustment range.
+
+Timing-stage subtotal is provisional and is not included in the grand total yet.
 
 ---
 
-## AliExpress (order now — 7-15 day lead time)
+## AliExpress (already ordered via `docs/BOM.xlsx`)
 
 | # | Part | Qty | Est. Cost | Validated spec / ordering note |
 |---|------|-----|-----------|-------------------------------|
@@ -97,7 +112,7 @@ Timing-belt stage subtotal is provisional and is not included in the grand total
 
 ---
 
-## Amazon (2-3 day delivery)
+## Amazon (already ordered via `docs/BOM.xlsx`)
 
 | # | Part | Qty | Est. Cost | Validated spec / ordering note |
 |---|------|-----|-----------|-------------------------------|
@@ -130,7 +145,7 @@ Timing-belt stage subtotal is provisional and is not included in the grand total
 
 ---
 
-## Hardware store (same day if needed)
+## Hardware store (already ordered or stock on hand)
 
 | Part | Est. Cost | Notes |
 |------|-----------|-------|
@@ -171,7 +186,6 @@ Timing-belt stage subtotal is provisional and is not included in the grand total
 | L298N | Not used in the active dual-stepper architecture. |
 | Torsion springs | Not used. Lever mechanism uses only tension + compression springs. |
 | Servo motors | Not used anywhere. |
-| Direct motor-shaft drive parts | Not used. Production path uses a toothed timing belt stage with a supported roller shaft. |
 | A4988 stepper driver | TMC2209 only. Quieter, more efficient, has StallGuard. |
 | 2S LiPo | Requires 3S (11.1V) for 6V rail headroom via LM2596. |
 | Metal lever arm hardware | Lever arm is printed PLA. Forces are trivial. |

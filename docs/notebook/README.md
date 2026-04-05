@@ -33,7 +33,7 @@ Subsystems that need matrices:
 - Color sensor (TCS3200 GY-31 vs alternative color modules vs camera vs discrete photodiodes)
 - Trapdoor release actuation (class 3 lever with solenoid vs direct plunger vs sliding support)
 - Selector mechanism (4-index selector chute vs linear diverter vs hybrid gate)
-- Conveyor drive topology (direct drive vs off-axis timing-belt stage vs other supported shaft layouts)
+- Conveyor drive topology (active off-axis timing-belt stage, supported-shaft layout, and rejected alternatives)
 
 ## Rejected alternatives
 

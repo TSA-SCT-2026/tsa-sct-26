@@ -69,7 +69,7 @@ Timing stage intent:
 - Ratio can be changed by swapping pulley tooth counts.
 - The conveyor can be tuned without changing the supported shaft geometry.
 
-Current provisional timing-stage values:
+Timing-stage reference values:
 - Motor pulley: 16 teeth.
 - Drive pulley: 32 teeth.
 - Belt pitch: 2mm.
