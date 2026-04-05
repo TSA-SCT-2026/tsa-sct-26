@@ -12,8 +12,8 @@ Use this guide with:
 - `cad/DIMENSIONS.md`
 - `cad/MECHANICAL.md`
 - `wiring/ELECTRICAL.md`
-- `docs/CHECKLIST.md`
-- `docs/CALIBRATION.md`
+- `docs/build/CHECKLIST.md`
+- `docs/build/CALIBRATION.md`
 
 ## Safety and hard rules
 
@@ -192,7 +192,7 @@ Pre-power checks:
 
 ## Stage 8: Calibration
 
-Follow `docs/CALIBRATION.md`.
+Follow `docs/build/CALIBRATION.md`.
 
 Order:
 1. Lever release calibration
@@ -238,7 +238,7 @@ Chute feed jams:
 ## Where to put subsystem assembly guides
 
 Use this pattern:
-1. `docs/ASSEMBLY.md` for full-system workflow
+1. `docs/build/ASSEMBLY.md` for full-system workflow
 2. Subsystem assembly guides in subsystem folders
 
 Current subsystem guide:

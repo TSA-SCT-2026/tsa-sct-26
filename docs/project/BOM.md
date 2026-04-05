@@ -1,9 +1,9 @@
 # Bill of Materials
 
-**Source of truth:** `docs/BOM.xlsx` is the authoritative purchase record.
+**Source of truth:** `docs/project/BOM.xlsx` is the authoritative purchase record.
 
 Integrity rule:
-- Ordered sections in this markdown may summarize only rows that exist in `docs/BOM.xlsx`.
+- Ordered sections in this markdown may summarize only rows that exist in `docs/project/BOM.xlsx`.
 - If an item is not in the spreadsheet, this file must treat it as `not yet ordered`, `already owned`, or `unconfirmed`.
 - Do not turn inferred or recommended parts into ordered purchases.
 
@@ -12,15 +12,15 @@ Current architecture:
 - Selector drive is `NEMA 11` stepper
 
 Current receipt status:
-- AliExpress orders recorded in `docs/BOM.xlsx` are received.
-- Amazon orders recorded in `docs/BOM.xlsx` are not yet received.
+- AliExpress orders recorded in `docs/project/BOM.xlsx` are received.
+- Amazon orders recorded in `docs/project/BOM.xlsx` are not yet received.
 - Measurement is allowed for received AliExpress hardware now.
 - Amazon-dependent measurements stay blocked until Amazon delivery.
 
 ## Receipt checks
 
 **Solenoid recorded in the purchase log:**
-`0530 Linear Solenoid Electromagnet 12V` in `docs/BOM.xlsx`.
+`0530 Linear Solenoid Electromagnet 12V` in `docs/project/BOM.xlsx`.
 
 Important note:
 - Repo design documents previously assumed a `6V` JF-0530B variant.
@@ -29,7 +29,7 @@ Important note:
 - Before wiring, verify actual coil voltage, stroke, body size, and current draw on the received unit.
 
 **Color sensor recorded in the purchase log:**
-`TCS3200 GY-31 Color Sensor Module` in `docs/BOM.xlsx`.
+`TCS3200 GY-31 Color Sensor Module` in `docs/project/BOM.xlsx`.
 
 Important note:
 - Repo design documents previously assumed `TCS34725`.
@@ -41,7 +41,7 @@ Important note:
 - The actionable buying items left today are the timing-stage parts in the audit below.
 - Do not buy extra `MR115ZZ` bearings right now. The spreadsheet already records one `10pcs` pack, and current docs call for `2` idler bearings plus `2` supported-shaft bearings, leaving `6` spare.
 
-## Ordered Items From `docs/BOM.xlsx`
+## Ordered Items From `docs/project/BOM.xlsx`
 
 ### Amazon Mar 25
 
@@ -108,7 +108,7 @@ Order total from spreadsheet: `$174.50`
 
 ## Still Needed And Not Yet Ordered
 
-Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current conveyor CAD assumptions as the buying gate. Do not carry forward old `docs/BOM.md` assumptions just because they sounded useful.
+Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current conveyor CAD assumptions as the buying gate. Do not carry forward old `docs/project/BOM.md` assumptions just because they sounded useful.
 
 | Item | Classification | Why |
 |------|----------------|-----|
