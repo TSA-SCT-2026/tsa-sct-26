@@ -26,3 +26,7 @@ Read first:
 
 - `docs/notebook/README.md`: engineering notebook structure
 - `docs/runs/README.md`: run log format and expectations
+
+## Datasheets
+
+- `docs/datasheet/README.md`: datasheet storage rules and category map
