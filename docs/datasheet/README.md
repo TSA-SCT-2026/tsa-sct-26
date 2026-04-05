@@ -38,7 +38,7 @@ Only track parts here where datasheet or catalog can be treated as truth after a
 |------|--------------|------------------|
 | NEMA17 Stepper Motor `17HS4401S` | Yes | Required. Sanity-check shaft type and usable stickout first. |
 | NEMA11 stepper | Yes | Required only if exact maker or model is identifiable from label. |
-| `MR115ZZ` bearings | Yes | Required. Standard bearing family after marking and fit sanity check. |
+| `MR85ZZ` bearings | Yes | Required. Spreadsheet row is `MR85RS` (blue seal); confirm received bearing marking and geometry before using as CAD truth. |
 | `608ZZ` bearings | Yes | Required. Standard bearing family. |
 | `40mm` fan | Yes | Required if model label is present. |
 | Ordered `5mm` shaft stock | No | Required. Use industrial catalog as truth. |

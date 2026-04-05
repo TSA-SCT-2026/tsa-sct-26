@@ -39,7 +39,7 @@ Important note:
 
 **Timing-stage purchases:**
 - The actionable buying items left today are the timing-stage parts in the audit below.
-- Do not buy extra `MR115ZZ` bearings right now. The spreadsheet already records one `10pcs` pack, and current docs call for `2` idler bearings plus `2` supported-shaft bearings, leaving `6` spare.
+- Engineering decision: adapt roller and idler interfaces to `MR85` for the current build and finalize timing-stage purchases without a bearing reorder.
 
 ## Ordered Items From `docs/project/BOM.xlsx`
 
@@ -92,9 +92,9 @@ Spreadsheet trace: `AliExpress Mar 25` tab and `Summary` row for March 25.
 | Ceramic Capacitor 100nF 50V (100pcs) | 1 | `AliExpress Mar 25 / 8210696713865240` | `50V 100nF 0.1uF 104 100pcs` |
 | TCS3200 GY-31 Color Sensor Module | 2 | `AliExpress Mar 25 / 8210696713785240` | `TCS230/TCS3200 color recognition module` |
 | Biochemical Filter Foam Pad | 2 | `AliExpress Mar 25 / 8210696713765240` | `50x12x2cm 25PPI large hole black` |
-| MR115ZZ Flanged Ball Bearing (10pcs) | 1 | `AliExpress Mar 25 / 8210696713585240` | `5x11x4mm MR115ZZ flanged 10pcs` |
-| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713565240` | `2000x19x3mm neoprene belt strip target` |
-| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713545240` | `2000x19x3mm neoprene belt strip backup` |
+| MR85ZZ Ball Bearing (10pcs) | 1 | `AliExpress Mar 25 / 8210696713585240` | `5x8x2.5mm MR85RS 10pcs blue seals` |
+| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713565240` | `2000x15x3mm anti-vibration neoprene` |
+| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713545240` | `2000x25x3mm anti-vibration neoprene` |
 | Nylon Cable Ties (100pcs) | 1 | `AliExpress Mar 25 / 8210696714015240` | `Black 3x100mm 100pcs self-locking` |
 | IR Break Beam Sensor (4 Pairs) | 2 | `AliExpress Mar 25 / 8210696713845240` | `3mm LED 3-5V DC 100cm 4 pairs per set` |
 | NEMA17 Stepper Motor 17HS4401S | 1 | `AliExpress Mar 25 / 8210696713995240` | `42BYGH 1.5A 42N.cm 4-lead XH2.54 1pcs` |
