@@ -18,9 +18,13 @@ Provisional estimates:
 - Crown sagitta and flange envelope details
 - Magnet pocket details
 
-Double check when hardware arrives:
-- Confirm actual shaft diameter and flat dimension with calipers.
-- Confirm MR115 real OD and width from received lot.
-- Confirm belt strip measured width and thickness.
-- Confirm timing pulley tooth count, belt width, and center distance against the real parts.
-- Replace provisional fit values and regenerate STL files.
+Current receipt state:
+- AliExpress hardware is received and should be measured now where it affects this subsystem.
+- Amazon hardware is still pending and remains blocked for measurement-dependent updates.
+
+Double check with received hardware:
+- Confirm actual shaft diameter and flat dimension on the received NEMA17 motor shaft.
+- Confirm MR115 real OD and width from the received lot.
+- Confirm timing pulley tooth count and fit constraints against received motion hardware.
+- Keep belt strip width and thickness as provisional until Amazon belt material is received.
+- Replace only the provisional values that are now backed by received-part measurements, then regenerate STL files.

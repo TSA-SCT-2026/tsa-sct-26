@@ -46,3 +46,9 @@
   - Discussed that the hardest CAD design will be the entry chute and planned accordingly.
   - Discussed that early CAD designs are prototypes. Must wait for parts to arrive before exact measurements can be taken.
 - Create rough team roles based on skillset.
+
+## Status update: 4/5/26
+
+- AliExpress orders have arrived and are available for measurement and fit checks.
+- Amazon orders have not arrived yet. Keep Amazon-dependent dimensions and validation blocked until delivery.
+- CAD updates should now use measured AliExpress hardware where available and keep other dimensions provisional until Amazon parts are in hand.

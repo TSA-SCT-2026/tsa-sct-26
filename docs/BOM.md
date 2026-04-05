@@ -1,39 +1,34 @@
 # Bill of Materials
 
-**Source of Truth:** `docs/BOM.xlsx` is the authoritative purchase record. Everything recorded there is already ordered. This markdown file is the clean summary of what is ordered plus the few remaining timing-stage purchases.
+**Source of truth:** `docs/BOM.xlsx` is the authoritative purchase record.
+
+Integrity rule:
+- Ordered sections in this markdown may summarize only rows that exist in `docs/BOM.xlsx`.
+- If an item is not in the spreadsheet, this file must treat it as `not yet ordered`, `already owned`, or `unconfirmed`.
+- Do not turn inferred or recommended parts into ordered purchases.
 
 Current architecture:
 - Conveyor drive is an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
-- Selector drive is `NEMA 11 stepper`
+- Selector drive is `NEMA 11` stepper
 
----
+Current receipt status:
+- AliExpress orders recorded in `docs/BOM.xlsx` are received.
+- Amazon orders recorded in `docs/BOM.xlsx` are not yet received.
+- Measurement is allowed for received AliExpress hardware now.
+- Amazon-dependent measurements stay blocked until Amazon delivery.
 
 ## Receipt checks
 
-**Solenoid currently recorded in purchase log:**
+**Solenoid recorded in the purchase log:**
 `0530 Linear Solenoid Electromagnet 12V` in `docs/BOM.xlsx`.
 
 Important note:
-- Repo design documents previously assumed a 6V JF-0530B variant.
-- The spreadsheet purchase log currently points to a 12V 0530 listing instead.
+- Repo design documents previously assumed a `6V` JF-0530B variant.
+- The spreadsheet purchase log currently points to a `12V` `0530` listing instead.
 - Treat the spreadsheet as hardware truth until the received part is measured and photographed.
 - Before wiring, verify actual coil voltage, stroke, body size, and current draw on the received unit.
 
-**Conveyor and selector motion drivers:**
-Use dedicated stepper drivers for both motion axes. Conveyor uses NEMA 17.
-Selector uses NEMA 11. Reduce hold current when static and provide airflow near the drivers.
-
-**Timing-belt conveyor stage:**
-- Use a toothed belt between the NEMA 17 and the supported drive roller.
-- The only actionable buying items left in this markdown are the timing-stage parts below.
-- Use a guarded, adjustable tension path so ratio changes do not require a full rebuild.
-
-**PCF8574 I2C expander:**
-Default address 0x20. No conflict with SSD1306 (0x3C) or other reserved I2C peripherals.
-Shares existing SDA/SCL bus (GPIO 21/22). Adds 8 digital I/O pins for buffer/future use.
-Arduino library: PCF8574 by xreef (PlatformIO). Powers from 3.3V.
-
-**Color sensor currently recorded in purchase log:**
+**Color sensor recorded in the purchase log:**
 `TCS3200 GY-31 Color Sensor Module` in `docs/BOM.xlsx`.
 
 Important note:
@@ -42,152 +37,107 @@ Important note:
 - Treat the spreadsheet as hardware truth until the received module is verified.
 - Final firmware pin map and calibration flow must match the actual received sensor.
 
-**Fuse:**
-Inline blade fuse holder on LiPo positive lead before power switch. 5A automotive
-blade fuse. Replaceable. Bring 10 spare fuses to competition. If it blows you know
-immediately and can swap in 10 seconds.
+**Timing-stage purchases:**
+- The actionable buying items left today are the timing-stage parts in the audit below.
+- Do not buy extra `MR115ZZ` bearings right now. The spreadsheet already records one `10pcs` pack, and current docs call for `2` idler bearings plus `2` supported-shaft bearings, leaving `6` spare.
 
-**Remaining timing-stage purchases:**
+## Ordered Items From `docs/BOM.xlsx`
 
-Current CAD assumptions are:
-- `GT2 / 2mm pitch`
-- `6mm belt width`
-- `16T` motor pulley
-- `32T` driven pulley
-- `78mm` nominal pulley center distance
-- `8mm` tension-adjust travel
+### Amazon Mar 25
 
-That geometry works best if you buy the two standard closed-loop belt lengths that straddle the modeled pitch length instead of betting on a single custom size.
+Spreadsheet trace: `Amazon Mar 25` tab and `Summary` row for March 25.
 
-| Part | Qty | Exact spec / search term | Buy note |
-|------|-----|---------------------------|---------|
-| GT2 closed-loop timing belt, short | 2 | `GT2 closed loop belt 100T 200mm 6mm wide 2mm pitch` | One install candidate plus one spare. Fits if the printed stage lands slightly short. |
-| GT2 closed-loop timing belt, long | 2 | `GT2 closed loop belt 104T 208mm 6mm wide 2mm pitch` | One install candidate plus one spare. Fits if the printed stage lands slightly long. |
-| GT2 motor pulley | 2 | `GT2 16 tooth 5mm bore 6mm belt width aluminum pulley double flange` | One install plus one spare. Clamp or dual set-screw style is preferred. |
-| GT2 driven pulley | 2 | `GT2 32 tooth 5mm bore 6mm belt width aluminum pulley double flange` | One install plus one spare. Match belt pitch and width to the motor pulley. |
-| Supported drive shaft | 2 | `5mm precision ground shaft rod 200mm` | One install plus one spare. Cut to final length after frame landings are fixed. |
-| Drive-shaft bearings | 4 | `MR115ZZ flanged bearing 5x11x4` | Two active bearings for the supported shaft plus two spare. This is in addition to the idler-bearing count already recorded in `docs/BOM.xlsx`. |
-| Shaft collars | 4 | `5mm clamp shaft collar aluminum` | Two active collars for axial retention plus two spare. |
+| Part | Qty | Trace | Notes |
+|------|-----|-------|-------|
+| Throzzik 4700uF 25V Electrolytic Capacitor (10pcs) | 1 | `Amazon Mar 25` | `4700uF 25V 16x25mm` |
+| Zeee 3S Lipo Battery 2200mAh 50C XT60 (2 Pack) | 1 | `Amazon Mar 25` | `11.1V 2200mAh 50C Shorty Pack XT60` |
+| ISDT 608AC Lipo Balance Charger | 1 | `Amazon Mar 25` | `8A 200W 1-6S LiPo/Life/NiMH AC/DC XT60` |
+| Waveshare 2inch Mini LCD Screen | 1 | `Amazon Mar 25` | `240x320 IPS ST7789VW SPI 262K RGB` |
+| Hosyond ESP32 Dev Board (3 Pack) | 1 | `Amazon Mar 25` | `USB-C WiFi+BT Dual Core CP2102 Arduino IDE` |
 
-Preferred tension strategy:
-- Use the printed slotted `NEMA17` mount as the active tension adjuster.
-- Do not buy a separate belt tensioner unless packaging later proves the slot can not cover the full adjustment range.
+Order total from spreadsheet: `$149.52`
 
-Timing-stage subtotal is provisional and is not included in the grand total yet.
+### Amazon Mar 31
 
----
+Spreadsheet trace: `Amazon Mar 31` tab and `Summary` row for March 31.
 
-## AliExpress (already ordered via `docs/BOM.xlsx`)
+| Part | Qty | Trace | Notes |
+|------|-----|-------|-------|
+| BDS-HOME Spring Assortment Kit (200pcs) | 1 | `Amazon Mar 31` | `200pcs 20 sizes zinc plated compression and extension springs` |
+| MAIYUM 63-37 Solder Wire 0.8mm 50g | 3 | `Amazon Mar 31` | `63-37 tin/lead 0.8mm 50g rosin core` |
+| 18 AWG Wire 2-Pack Red/Black 25FT | 1 | `Amazon Mar 31` | `18AWG CCA stranded automotive 25FT per color red/black 2-pack` |
+| LM2596 DC-DC Buck Converter (5-Pack) | 1 | `Amazon Mar 31` | `3.0-40V to 1.5-35V step down 5pcs` |
 
-| # | Part | Qty | Est. Cost | Validated spec / ordering note |
-|---|------|-----|-----------|-------------------------------|
-| 1 | 0530 Linear Solenoid Electromagnet 12V | 3 | $17 | Spreadsheet purchase record item. Measure actual stroke, body size, and current draw on receipt before wiring. |
-| 2 | NEMA 11 stepper 34mm | 2 | $12 | Selector axis plus spare. 4-wire bipolar, 5mm shaft, 1.8 deg/step. |
-| 3 | NEMA17 Stepper Motor 17HS4401S | 1 | $10 | Conveyor feed axis. 42BYGH class, 1.5A, 4-lead. |
-| 4 | TMC2209 stepper driver | 3 | $6 | Two active axes plus one spare. UART-capable variant. |
-| 5 | IR break-beam 3mm (4-pair pack) | 3 | $21 | 12 pairs: 2 size beams + 1 entry + 1 home + 4 bin confirm + 4 spare. |
-| 6 | TCS3200 GY-31 color sensor module | 2 | $8 | Spreadsheet purchase record item. Firmware interface and calibration must be updated to the received module. |
-| 7 | LM2596 buck converter | 3 | $5 | 2 used (motor rail trim and logic rail) + 1 spare. |
-| 8 | IRLZ44N MOSFET | 10 | $8 | Logic-level N-channel. 1 used for solenoid driver. 9 spare. |
-| 10 | 22AWG silicone wire assorted | 1 | $5 | Permanent wiring. |
-| 11 | Perfboard 5x7cm | 2 packs | $4 | MOSFET driver board + spare. |
-| 12 | JST-XH connector kit (2-pin and 4-pin) | 1 | $6 | Transport connectors, polarized. |
-| 13 | Compression spring assortment (5-8mm OD) | 1 | $5 | Belt idler tensioner spring. Various rates. |
-| 14 | Tension spring assortment (4-6mm OD, 0.3-0.4mm wire) | 2 | $8 | Platform return spring AND lever return spring. Light rates only. |
-| 15 | Sub-miniature snap-action micro-switch (Omron D2F equiv) | 10 | $6 | Pin-plunger actuator type. Stop wall (1), selector home (1), shelf-level (1), 7 spare. |
-| 16 | TMC2209 heatsink (aluminum, adhesive) | 3 | $3 | For both active stepper drivers plus one spare. |
-| 17 | 5mm shaft hub (aluminum, set-screw or clamp) | 2 | $5 | Selector chute mounting. Non-negotiable. 1 primary + 1 spare. |
-| 18 | 3mm OD polished steel rod 200mm | 4 | $6 | Platform hinge rod. Cut to 25mm sections with Dremel. |
-| 19 | MR115ZZ flanged ball bearing (5mm ID x 11mm OD x 4mm) | 4 | $6 | Idler roller bearings. 2 used + 2 spare. |
-| 20 | NEMA 11 motor mount bracket (metal) | 2 | $8 | Selector axis bracket. 1 used + 1 spare. Do not rely on printed PLA alone. |
-| 21 | Heat shrink tubing assortment | 1 | $4 | |
-| 22 | M2 + M3 heat-set insert assortment | 1 | $5 | All printed structural parts at screw locations. |
-| 23 | M2 + M3 screw assortment + M3 nylon locknuts | 1 | $8 | Lever pivot: M3 x 12mm + nylon locknut. All fasteners. |
-| 24 | Small rubber foot pads (3mm, self-adhesive, 3M or equiv) | 1 pack | $4 | Stop wall damper, system feet. |
-| 25 | PCF8574 I2C GPIO expander module | 3 | $3 | Address 0x20 default. No bus conflict. 8 extra digital I/O. 1 primary + 2 spare. |
-| 26 | 30mm 5V brushless fan | 2 | $4 | Stepper driver thermal management. Runs from 5V rail. 1 primary + 1 spare. |
-| 27 | Inline blade fuse holder + 5A automotive blade fuses (10-pack) | 1 | $4 | LiPo main line protection. Replaceable at competition. |
+Order total from spreadsheet: `$62.87`
 
-**AliExpress subtotal: ~$171**
+### AliExpress Mar 25
 
----
+Spreadsheet trace: `AliExpress Mar 25` tab and `Summary` row for March 25.
 
-## Amazon (already ordered via `docs/BOM.xlsx`)
+| Part | Qty | Trace | Notes |
+|------|-----|-------|-------|
+| TMC2209 Silent Stepper Motor Driver | 3 | `AliExpress Mar 25 / 8210696713975240` | `TMC2209 replaces TMC2208/A4988` |
+| ACP4020 40mm Axial Cooling Fan | 3 | `AliExpress Mar 25 / 8210696713805240` | `40x40x20mm DC12V Double Ball No RGB` |
+| NEMA 11 Stepper Motor 1.8deg 34mm | 2 | `AliExpress Mar 25 / 8210696713745240` | `2-phase 4-lead 1.8deg 34mm high torque` |
+| Raspberry Pi Heatsink Set (3pcs) | 1 | `AliExpress Mar 25 / 8210696713665240` | `Adhesive pure aluminum 3pcs` |
+| 1N4007 Rectifier Diode (10pcs) | 1 | `AliExpress Mar 25 / 8210696713645240` | `1A 1000V DO-41 10pcs` |
+| Braided PET Cable Sleeve | 1 | `AliExpress Mar 25 / 8210696713955240` | `Black 2m ID 6mm flame retardant` |
+| Braided PET Cable Sleeve | 1 | `AliExpress Mar 25 / 8210696713925240` | `Black 3m ID 4mm flame retardant` |
+| Braided PET Cable Sleeve | 1 | `AliExpress Mar 25 / 8210696713925240` | `Black 5m ID 4mm flame retardant` |
+| Nylon Braid Sleeving Tight | 1 | `AliExpress Mar 25 / 8210696714075240` | `Black 5m 6mm flame retardant nylon` |
+| M2 Hex Socket Cap Screw Set (482pcs) | 1 | `AliExpress Mar 25 / 8210696713905240` | `M2 DIN912 12.9 Allen 482pcs black` |
+| PET Expandable Braided Sleeving | 1 | `AliExpress Mar 25 / 8210696713725240` | `Black 10m 2mm high density nylon mesh` |
+| 1/4W Metal Film Resistor Kit (300pcs) | 1 | `AliExpress Mar 25 / 8210696713885240` | `300pcs 30 kinds 1% - 1K/10K/100K/220ohm/1M` |
+| PTFE Thread Seal Tape 4M | 1 | `AliExpress Mar 25 / 8210696713705240` | `4M roll oil-free sealing tape` |
+| Ceramic Capacitor 100nF 50V (100pcs) | 1 | `AliExpress Mar 25 / 8210696713865240` | `50V 100nF 0.1uF 104 100pcs` |
+| TCS3200 GY-31 Color Sensor Module | 2 | `AliExpress Mar 25 / 8210696713785240` | `TCS230/TCS3200 color recognition module` |
+| Biochemical Filter Foam Pad | 2 | `AliExpress Mar 25 / 8210696713765240` | `50x12x2cm 25PPI large hole black` |
+| MR115ZZ Flanged Ball Bearing (10pcs) | 1 | `AliExpress Mar 25 / 8210696713585240` | `5x11x4mm MR115ZZ flanged 10pcs` |
+| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713565240` | `2000x19x3mm neoprene belt strip target` |
+| Neoprene Rubber Gasket Strip | 1 | `AliExpress Mar 25 / 8210696713545240` | `2000x19x3mm neoprene belt strip backup` |
+| Nylon Cable Ties (100pcs) | 1 | `AliExpress Mar 25 / 8210696714015240` | `Black 3x100mm 100pcs self-locking` |
+| IR Break Beam Sensor (4 Pairs) | 2 | `AliExpress Mar 25 / 8210696713845240` | `3mm LED 3-5V DC 100cm 4 pairs per set` |
+| NEMA17 Stepper Motor 17HS4401S | 1 | `AliExpress Mar 25 / 8210696713995240` | `42BYGH 1.5A 42N.cm 4-lead XH2.54 1pcs` |
+| Inline Fuse Holder 18AWG (2pcs) | 1 | `AliExpress Mar 25 / 8210696713825240` | `Mini ATC/ATO 12V 5A 18AWG 2pcs` |
+| PCB Prototype Board Double Sided (5pcs) | 1 | `AliExpress Mar 25 / 8210696713625240` | `5pcs 3x7cm blue double sided` |
+| IRLZ44N N-Channel MOSFET TO-220 (10pcs) | 1 | `AliExpress Mar 25 / 8210696713605240` | `IRLZ44N TO-220 10pcs` |
+| 0530 Linear Solenoid Electromagnet 12V | 3 | `AliExpress Mar 25 / 8210696714055240` | `0530 push/pull open frame DC 12V` |
+| 608ZZ Deep Groove Ball Bearing (5pcs) | 1 | `AliExpress Mar 25 / 8210696714035240` | `8x22x7mm carbon steel 5pcs` |
 
-| # | Part | Qty | Est. Cost | Validated spec / ordering note |
-|---|------|-----|-----------|-------------------------------|
-| 1 | LiPo 3S 11.1V 1300mAh XT60 | 2 | $30 | Competition + backup. **3S NOT 2S**. |
-| 2 | LiPo 3S balance charger | 1 | $15 | Required for safe charging. |
-| 3 | SSD1306 OLED 0.96" I2C 128x64 | 1 | $5 | Primary display. Address 0x3C. No GPIO conflict. |
-| 4 | Waveshare 1.69" IPS LCD (ST7789V2, SPI) | 1 | $12 | Attempt SPI at wiring time. Fallback to SSD1306. |
-| 5 | Neoprene rubber strip 1/8" x **3/4"** x 10ft | 1 | $8 | Belt. 19mm wide. **NOT 1 inch**. Search: TORRAMI neoprene strip. |
-| 6 | A3144 Hall sensor 3-pack | 1 | $4 | Optional diagnostic speed logging only. Not required for conveyor correctness. |
-| 7 | 3mm neodymium disc magnets 10-pack | 1 | $4 | Idler roller. 2 used + 8 spare. |
-| 8 | PTFE tape 1/2" (plumber tape) | 2 | $6 | Chute walls, belt channel, belt bed. |
-| 9 | UHMW tape 1/2" | 1 | $10 | Platform top surface. Non-negotiable for clean brick drop. |
-| 10 | 3mm aluminum flat bar 300mm | 1 | $5 | Belt bed support. Do not substitute with printed PLA. |
-| 11 | Loctite Ultragel flexible CA glue | 1 | $8 | Belt splice, rubber pads, assembly. Flexible grade only. |
-| 12 | 1N4007 diode 100-pack | 1 | $7 | Flyback on solenoid. 1 used, 99 spare. |
-| 13 | 100uF 25V electrolytic capacitors 10-pack | 1 | $5 | TMC2209 VM cap, 6V rail cap. |
-| 14 | 1000uF 25V electrolytic capacitors 5-pack | 1 | $6 | Logic 5V rail bulk cap near ESP32. |
-| 15 | 4.7k resistor 100-pack | 1 | $5 | I2C pull-ups (SDA/SCL). |
-| 16 | 10k resistor 100-pack | 1 | $5 | Pull-ups for input-only GPIO pins (34, 35, 36, 39). |
-| 17 | 1k resistor 100-pack | 1 | $5 | MOSFET gate resistors, TMC2209 UART series resistor. |
-| 18 | Passive piezo buzzers | 3 | $5 | 1 used + 2 spare. |
-| 19 | Braided cable sleeve 4mm (1m) | 1 | $6 | Wire bundle management. |
-| 20 | Zip tie assortment | 1 | $4 | |
-| 21 | Velcro cable ties | 1 | $6 | Reusable, for areas needing rework access. |
-| 22 | ESP32 heatsink (small aluminum or copper) | 2 | $5 | Optional thermal insurance for sustained runs. |
-| 23 | Isopropyl alcohol 99% 500ml | 1 | $6 | Cleaning all surfaces before assembly. |
-| 24 | Rocker switch 15A 12V DC (illuminated or plain) | 1 | $6 | Main system power on/off. Wires inline after fuse. Bring user's existing LED for panel indicator. |
+Order total from spreadsheet: `$174.50`
 
-**Amazon subtotal: ~$198**
+## Still Needed And Not Yet Ordered
 
----
+Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current conveyor CAD assumptions as the buying gate. Do not carry forward old `docs/BOM.md` assumptions just because they sounded useful.
 
-## Hardware store (already ordered or stock on hand)
+| Item | Classification | Why |
+|------|----------------|-----|
+| GT2 closed-loop timing belt, short | Needed now for next Amazon order | `100T`, `200mm`, `6mm` wide, `2mm` pitch. You confirmed you have no GT2 stock, and the current timing-stage geometry wants one install candidate plus one spare. |
+| GT2 closed-loop timing belt, long | Needed now for next Amazon order | `104T`, `208mm`, `6mm` wide, `2mm` pitch. This is the second install candidate plus one spare around the modeled center distance. |
+| GT2 motor pulley | Needed now for next Amazon order | `16T`, `5mm` bore, `6mm` belt width. Current architecture and `SHORT_TODO.md` call for this pulley pair, and you confirmed you have no GT2 hardware on hand. |
+| GT2 driven pulley | Needed now for next Amazon order | `32T`, `5mm` bore, `6mm` belt width. One install plus one spare remains the cleanest way to preserve ratio flexibility. |
+| Supported drive shaft | Needed now for next Amazon order | `5mm` precision shaft stock. You confirmed you have no shaft stock on hand, and the supported roller architecture requires it. |
+| Shaft collars | Needed now for next Amazon order | `5mm` clamp shaft collars. You confirmed you have none on hand, and the supported shaft needs axial retention. |
+| Separate belt tensioner hardware | Not actually needed under current architecture | Current plan is to use the slotted `NEMA17` mount first. Reopen only if packaging later proves the slot can not cover the adjustment range. |
 
-| Part | Est. Cost | Notes |
-|------|-----------|-------|
-| Sandpaper 220 and 400 grit | $5 | Smooth printed channel interiors. |
+No items currently fall into `Needed later but not urgent` for purchase planning. The remaining non-spreadsheet items that were previously listed as ordered are removed from the audit until a doc-backed need exists.
 
-**Hardware store subtotal: ~$5**
+## Already Owned / Stock On Hand
 
----
-
-## Already owned (verify before ordering)
-
-| Part | Check |
-|------|-------|
+| Part | Status |
+|------|--------|
 | ESP32 DevKit | Present and functional |
-| Breadboard + jumper wires | Present (bringup only, not in final build) |
+| Breadboard and jumper wires | Present for bringup only |
 | PLA filament | Confirmed at school printer |
-| Soldering iron + solder | Present |
+| Soldering iron and solder | Present |
 | LEGO bricks | 24 total: 6 red 2x2, 6 blue 2x2, 4 red 2x3, 8 blue 2x3 |
-| LED indicator | Present (user confirmed) |
+| LED indicator | Present |
 
----
+## Spreadsheet Totals
 
-## Total
-
-| Source | Est. Cost |
-|--------|-----------|
-| AliExpress | ~$171 |
-| Amazon | ~$198 |
-| Hardware store | ~$5 |
-| **Total** | **~$374** |
-
----
-
-## Do not order
-
-| Part | Why not |
-|------|---------|
-| L298N | Not used in the active dual-stepper architecture. |
-| Torsion springs | Not used. Lever mechanism uses only tension + compression springs. |
-| Servo motors | Not used anywhere. |
-| A4988 stepper driver | TMC2209 only. Quieter, more efficient, has StallGuard. |
-| 2S LiPo | Requires 3S (11.1V) for 6V rail headroom via LM2596. |
-| Metal lever arm hardware | Lever arm is printed PLA. Forces are trivial. |
-| Additional solenoids beyond 4 | 4 ordered, 1 used, 3 spare. |
-| Metal flywheel for selector indexer | Stepper + TMC2209 is smooth enough. Flywheel increases inertia and worsens stop accuracy. |
+| Source | Spreadsheet total |
+|--------|-------------------|
+| Amazon Mar 25 | `$149.52` |
+| Amazon Mar 31 | `$62.87` |
+| AliExpress Mar 25 | `$174.50` |
+| **Grand total** | **`$386.89`** |
