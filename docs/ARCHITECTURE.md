@@ -10,6 +10,8 @@ Success criteria:
 - Prioritize reliability and repeatability before chasing final cycle time
 - Reach sub-10-second total sorting only through measured, state-safe optimization
 
+If a high-level term is unclear, read `docs/GLOSSARY.md` before guessing from context.
+
 ## Numeric source of truth
 
 All mechanism geometry and derived transport values used by documentation must trace back to `cad/DIMENSIONS.md`.

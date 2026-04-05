@@ -18,6 +18,7 @@ Goal: first place at nationals.
 Read these in order:
 1. `docs/ARCHITECTURE.md`
 2. The subsystem doc for the area you are touching
+3. `docs/GLOSSARY.md` if any high-level architecture term is unclear
 
 ## Active system model
 
@@ -49,6 +50,7 @@ tsa-sct-26/
 
   docs/
     ARCHITECTURE.md
+    GLOSSARY.md
     ASSEMBLY.md
     BOM.md
     CALIBRATION.md
