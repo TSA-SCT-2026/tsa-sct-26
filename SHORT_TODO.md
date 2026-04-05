@@ -1,28 +1,31 @@
 # Short TODO
 
-Updated April 5, 2026 after architecture reset.
-Current priority: align the repo to the queue-fed chamber sorter that we are actually building.
+Updated April 5, 2026 after the selector-chute architecture reset and firmware build repair.
+Current priority: move from architecture cleanup into hardware-truth validation.
 
-## Immediate priorities
+## This session's next tasks
 
-1. Sync architecture truth
-- Remove old direct-drive conveyor assumptions
-- Remove old full-transport-per-brick timing assumptions
-- Make chamber pitch, reset confirmation, and weighted selector travel the active model
+1. Unblock CAD output generation
+- Install OpenSCAD CLI
+- Re-run `cad/frame/rollers/scripts/build_rollers.sh`
+- Confirm the timing-stage STL outputs generate cleanly
 
-2. Lock conveyor production path
-- Build the conveyor around off-axis NEMA17 drive, toothed timing belt, supported roller shaft, and smooth drive roller
-- Freeze packaging interfaces early enough that chamber and frame work do not drift
+2. Validate the highest-risk physical part
+- Print the chute transition prototype first
+- Test real-brick feed under full queue load
+- Record jam and double-feed results
 
-3. Repair firmware control contract
-- Align events, state machine, actuators, logger, harness, and docs to the same physical-truth model
-- Treat compile consistency as a gate before any optimization pass
+3. Lock real hardware truth
+- Measure the received NEMA17 shaft, selector hardware, color sensor, and solenoid
+- Compare those measurements against `cad/DIMENSIONS.md`
+- Update only the dimensions that are now known from real parts
 
-4. Protect the selector decision
-- Keep the 4-index selector chute active for now
-- Add the selector evidence gate, routing study, and bench-test expectations before final production freeze
+4. Run conveyor fit coupons
+- Print shaft-fit, bearing-fit, and crown coupons from the roller subsystem
+- Check supported-shaft fit, bearing fit, and tracking behavior
+- Adjust roller and pulley parameters only from measured results
 
-5. Raise documentation quality
-- Add local instruction files where missing
-- Expand notebook alternatives, calibration, testing, and run-log expectations
-- Keep operator-facing physical UX explicit in every subsystem
+5. Prepare deferred validation work
+- Keep color-sensor calibration deferred until the real sensor is mounted with the shroud installed
+- Keep the selector evidence gate deferred until real selector timing data exists
+- Bring both topics up automatically when work touches sensing, routing, or throughput claims
