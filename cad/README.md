@@ -2,8 +2,8 @@
 
 All printable parts for the chamber-drop sorter. Current production architecture uses a class 3 lever trapdoor, 4-index selector chute routing, and an off-axis timing-belt conveyor stage with a supported drive shaft.
 
-Brick orientation requirement: widthwise across conveyor, with brick length along travel.
-Why: this keeps across-channel fit constant for both sizes and makes size sensing deterministic from along-travel beam spacing.
+Brick orientation requirement: long-side-across conveyor, with the 23.7mm side of a 2x3 spanning the channel and the 15.8mm side running along travel.
+Why: this keys the chamber footprint to the long side so only one brick can occupy the trapdoor region at a time. The chamber and sensing geometry stay provisional until re-derived from this rule.
 
 ## Directory structure
 

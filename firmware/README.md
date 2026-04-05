@@ -16,6 +16,7 @@ ESP32 firmware for the queue-fed chamber sorter. Build with PlatformIO.
 - `selector ready`: the move to the target indexed position completed and is safe for release.
 - `drop window`: the bounded release-and-fall interval before bin confirmation is expected.
 - `platform level`: the reset truth that allows the next queued brick to enter the chamber.
+- `long-side-across`: the brick orientation assumption that keys the chamber footprint to the long side before final geometry is frozen.
 
 ## Architecture
 

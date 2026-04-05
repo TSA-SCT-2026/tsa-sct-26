@@ -6,7 +6,7 @@ Truth model:
 
 Current rule:
 - LEGO brick geometry is `LOCKED_TRUTH`
-- Widthwise brick orientation is `LOCKED_TRUTH`
+- Long-side-across brick orientation is `LOCKED_TRUTH`
 - Belt strip accommodation for that orientation is `LOCKED_TRUTH`
 - All purchased hardware fit values are `PROVISIONAL_ESTIMATE` until verified on receipt
 
@@ -24,8 +24,8 @@ Status for this section: `LOCKED_TRUTH`
 | Studs     | 1.7mm  | 1.7mm  |
 | Weight    | ~2g    | ~3g    |
 
-Orientation rule: bricks are widthwise across the conveyor, so the 15.8mm width runs across the channel and brick length runs along travel.
-Reason: this holds across-channel fit constant for 2x2 and 2x3 bricks, reduces yaw risk, and makes the along-travel dimension measurable by the two fixed size beams.
+Orientation rule: bricks are long-side-across the conveyor, so the 23.7mm side of a 2x3 spans across the channel and the 15.8mm side runs along travel.
+Reason: this keys the trapdoor region to the long side so only one brick can occupy the chamber footprint at a time. Chamber, chute, and sensor geometry must be re-derived from this rule before freeze.
 This orientation requirement is `LOCKED_TRUTH`.
 
 ---
@@ -33,11 +33,12 @@ This orientation requirement is `LOCKED_TRUTH`.
 ## Feed chute
 
 Status for this section: `PROVISIONAL_ESTIMATE`
+This geometry is provisional and must be re-derived for the long-side-across orientation before freeze.
 
 | Feature | Dimension |
 |---------|-----------|
-| Internal width | 20mm |
-| Internal depth | 28mm |
+| Internal width | 25mm target |
+| Internal depth | provisional re-derive |
 | Exit opening height | 13.5mm |
 | Top flare opening | 35mm x 40mm |
 | Flare transition length | 20mm |
@@ -50,17 +51,17 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 
 Status for this section:
 - `LOCKED_TRUTH` for belt strip accommodation constraints:
-  - Internal channel width = 20mm
-  - Belt material target width = 19mm strip
+  - Internal channel width = 25mm target
 - `PROVISIONAL_ESTIMATE` for all other values in this section
+The channel and sensing geometry below remain provisional until the long-side-across layout is re-derived.
 
 | Feature | Dimension |
 |---------|-----------|
-| Internal channel width | 20mm |
+| Internal channel width | 25mm target |
 | Channel wall height | 15mm |
 | Wall thickness | 3mm PLA |
 | Interior surface | PTFE tape |
-| Belt material | 19mm neoprene x 3mm |
+| Belt material | 25mm neoprene strip is the current target. Received stock recorded in `docs/project/BOM.xlsx` also includes 15mm neoprene at 3mm thickness |
 | Transport length | 100-120mm |
 | Chamber pitch | 18-22mm |
 | Drive roller OD | 25mm |
@@ -71,12 +72,12 @@ Status for this section:
 | Timing belt width | 6mm provisional |
 | Pulley center distance | 78mm provisional |
 | Tension adjustment travel | 8mm provisional |
-| Supported shaft bearing | MR115ZZ x2 provisional |
+| Supported shaft bearing | MR85ZZ x2 provisional |
 | Idler roller OD | 25mm (0.5mm crown) |
-| Idler roller bearings | MR115ZZ 5mm ID x 11mm OD x 4mm |
+| Idler roller bearings | MR85ZZ 5mm ID x 8mm OD x 2.5mm |
 | Roller flanges | 2mm both ends |
 | Belt speed (phase 1) | 100mm/s |
-| Belt bed | 3mm aluminum bar 22mm wide, PTFE tape |
+| Belt bed | 3mm aluminum bar 25mm target width, PTFE tape |
 | Hall sensor gap | Optional diagnostic only |
 | Hall magnets | Optional diagnostic only |
 
@@ -85,10 +86,11 @@ Status for this section:
 ## Isolation chamber
 
 Status for this section: `PROVISIONAL_ESTIMATE`
+This chamber geometry is provisional and must be re-derived for the long-side-across orientation before freeze.
 
 | Feature | Dimension |
 |---------|-----------|
-| Internal width (across belt) | 20mm |
+| Internal width (across belt) | 25mm target |
 | Internal depth (along belt) | 27mm |
 | Internal height above platform | 15mm |
 | Wall thickness | 3mm PLA |
@@ -96,16 +98,15 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Entry opening height | 13.5mm |
 | Stop wall micro-switch protrusion | 1.5mm |
 
-### Size beam positions (in 27mm depth dimension)
-
-Reference wall = entry side (opposite stop wall).
+### Size beam positions
+Reference wall = entry side (opposite stop wall). Re-derive beam positions for the long-side-across chamber before freezing the sensing layout.
 
 | Beam | From reference wall |
 |------|---------------------|
 | Beam 1 | 5mm |
 | Beam 2 | 21mm |
 
-Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
+Spacing and detection are provisional until the long-side-across sensing geometry is re-derived.
 
 ### Color sensor window
 
@@ -134,7 +135,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Feature | Dimension |
 |---------|-----------|
 | Platform width (along belt) | 22mm |
-| Platform depth (across belt, toward selector) | 20mm |
+| Platform depth (across belt, toward selector) | 25mm target |
 | Platform thickness | 3mm PLA |
 | Top surface | UHMW tape |
 | Hinge rod diameter | 3mm steel |
@@ -174,7 +175,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Lever return spring OD | 4mm |
 | Lever return spring force at rest | 0.05-0.10N |
 | Pivot bolt | M3 x 12mm with nylon locknut |
-| Pivot bracket | Printed PLA on chamber side wall (20mm outboard wall) |
+| Pivot bracket | Printed PLA on chamber side wall (25mm target outboard wall) |
 | Sweep direction | Outward, away from belt, horizontal plane |
 | Lever reset confirmation | Platform level, not fixed timer |
 
@@ -303,7 +304,7 @@ These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
 - Verify belt strip measured width and thickness from received strip stock.
 - Verify actual NEMA 17 shaft diameter, flat depth, and usable shaft length against modeled motor pulley assumptions.
 - Verify supported shaft diameter, bearing span, and usable shaft length against modeled drive roller assumptions.
-- Verify idler bearing seat fit with received MR115 bearings.
+- Verify idler bearing seat fit with received MR85 bearings.
 - Verify crown tracking behavior under powered belt run.
 
 ### Isolation chamber and sensing interfaces

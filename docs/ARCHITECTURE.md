@@ -24,7 +24,7 @@ If another doc needs a number, either:
 
 This repo is centered on one active architecture:
 - Preloaded 24-brick compressed queue
-- Widthwise brick orientation
+- Long-side-across brick orientation
 - One-brick isolation chamber
 - Static size and color sensing in the chamber
 - 4-index selector chute under the trapdoor, active for now
@@ -49,14 +49,13 @@ Timing matters for speed, but timing does not replace chamber truth, selector tr
 
 ## Brick orientation rule
 
-Bricks are widthwise across the conveyor:
-- 15.8mm width across the belt channel
-- Brick length along travel
+Bricks are long-side-across the conveyor:
+- 2x3 bricks present 23.7mm across the conveyor/channel and 15.8mm along travel
+- 2x2 bricks remain 15.8mm by 15.8mm
 
 Why:
-- Across-channel footprint stays constant for both sizes
-- Yaw risk is reduced in the narrow channel
-- Size sensing depends only on along-travel length at fixed beam positions
+- The chamber footprint is keyed to the long side so only one brick can occupy the trapdoor region at a time
+- Chamber, chute, and sensor geometry must be re-derived from this orientation before freeze
 
 ## Terminology
 

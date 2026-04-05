@@ -21,7 +21,7 @@ Use this guide with:
 2. Do not skip flyback diodes on solenoids.
 3. Do not skip bulk capacitors at the stepper driver motor inputs.
 4. Keep total footprint at or below 610mm by 610mm.
-5. Keep bricks widthwise across the conveyor.
+5. Keep bricks long-side-across the conveyor.
 6. Calibrate color sensing only with the shroud installed.
 
 ## What this machine does

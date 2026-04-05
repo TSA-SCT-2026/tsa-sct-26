@@ -8,7 +8,7 @@ Current priority: order the remaining timing-stage parts, validate the chute tra
 1. Order the timing-belt conveyor additions
 - Order only the remaining timing-stage items that are not already in `docs/project/BOM.xlsx`
 - Buy the `100T` and `104T` belts, `16T` and `32T` pulleys, `5mm` shaft stock, and `5mm` shaft collars
-- Do not buy extra `MR115ZZ` bearings right now: the spreadsheet already records one `10pcs` pack, and current docs only need `4` total for the active conveyor layout
+- Engineering decision: adapt roller and idler interfaces to `MR85` across CAD and assembly docs. No bearing reorder is required for this subsystem unless bench testing reveals retention or spin issues
 - Use the slotted `NEMA17` mount as the active tension plan instead of buying a separate tensioner first
 
 2. Review the refreshed timing-stage STL outputs
@@ -24,6 +24,7 @@ Current priority: order the remaining timing-stage parts, validate the chute tra
 4. Lock real hardware truth from received AliExpress hardware
 - AliExpress parts are in hand. Measure the received NEMA17 shaft, selector hardware, color sensor, and solenoid now
 - Keep Amazon-dependent dimensions and checks blocked until Amazon parts arrive
+- Treat the long-side-across chamber layout as provisional until the geometry is re-derived from the updated orientation rule
 - Compare those measurements against `cad/DIMENSIONS.md`
 - Update only the dimensions that are now known from real parts
 

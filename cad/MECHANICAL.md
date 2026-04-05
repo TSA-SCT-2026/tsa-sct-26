@@ -12,8 +12,8 @@ construction method, and assembly notes.
 | 2x2   | 15.8mm              | 15.8mm              | 11.4mm | 12 (6 red, 6 blue) |
 | 2x3   | 15.8mm              | 23.7mm              | 11.4mm | 12 (4 red, 8 blue) |
 
-Orientation rule: bricks are widthwise across the conveyor, meaning the 15.8mm brick width spans across the belt channel while brick length is along travel.
-Why this orientation is required: it keeps the across-belt footprint constant for both brick sizes, reduces yaw risk in the 20mm channel, and lets the along-travel dimension drive clean size discrimination at the X=5mm and X=21mm beam positions.
+Orientation rule: bricks are long-side-across the conveyor, meaning the 23.7mm side of a 2x3 spans across the belt channel while the 15.8mm side runs along travel.
+Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the trapdoor region at a time. The feed chute, chamber, and beam layout below are provisional until they are re-derived from this orientation.
 
 ---
 
@@ -30,11 +30,13 @@ Why this orientation is required: it keeps the across-belt footprint constant fo
 
 ## Feed chute
 
-Vertical rectangular tube, 20mm x 28mm internal.
+Vertical rectangular tube, 25mm target width with provisional depth.
 All 24 bricks load before the run. Gravity feeds the queue.
 
-- Width 20mm: 15.8mm brick + 2.1mm clearance per side.
-- Depth 28mm: 23.7mm brick + 2.15mm clearance per side.
+The listed width and depth are provisional placeholders until the long-side-across layout is re-derived.
+
+- Width 25mm target: long-side-across chamber width with clearance margin.
+- Depth: provisional until the long-side-across layout is re-derived.
 - Exit opening height: 13.5mm. One brick (11.4mm) exits freely. Two stacked (22.8mm)
   cannot fit. Double-feed is geometrically impossible at this dimension.
 - Do not print exit opening above 14.0mm. Measure with calipers after printing.
@@ -51,12 +53,14 @@ The retired `cad/escapement/` directory is historical only.
 
 The production conveyor is an off-axis timing-belt stage feeding a supported smooth drive roller.
 
-- Channel width: 20mm internal.
+- Channel width: 25mm target.
 - Channel walls: 3mm PLA, 15mm tall, PTFE-taped interior.
-- Belt material: 19mm (3/4") neoprene.
+- Belt material: final selected neoprene strip remains open. Current received stock in `docs/project/BOM.xlsx` is `15mm x 3mm` and `25mm x 3mm`.
 - Transport length: 100-120mm provisional.
 - Chamber pitch: 18-22mm provisional. This is the steady-state advance distance, not the full transport length.
 - Target belt speed: 100mm/s provisional.
+
+The channel width and chamber dimensions above are provisional until the long-side-across layout is re-derived.
 
 Drive architecture:
 - NEMA17 stepper drives a toothed timing belt.
@@ -79,7 +83,7 @@ Timing-stage reference values:
 
 Idler roller:
 - 25mm OD with 0.5mm crown.
-- MR115ZZ flanged ball bearings on M5 bolt axle.
+- MR85ZZ bearings on M5 bolt axle.
 - Spring-loaded tensioner slot.
 
 Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does not depend on it.
@@ -90,17 +94,19 @@ Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does
 
 One brick inside at a time. Geometry enforces this.
 
-- Width (across belt): 20mm.
+- Width (across belt): 25mm target.
 - Depth (along belt): 27mm.
 - Height above platform: 15mm.
+
+Width and depth are provisional until the long-side-across chamber is re-derived.
 
 Stop wall: entry side. 3M rubber foot pad (3mm) absorbs impact, prevents bounce.
 Stop-wall micro-switch (Omron D2F): 1.5mm actuator protrusion, brick contact = LOW.
 Side walls: continuous from belt channel. Brick cannot yaw.
 
 Sensor integration:
-- IR beam holes at X=5mm and X=21mm in the 20mm walls.
-- Color sensor window 12mm x 12mm in one 27mm wall face at 5.7mm above platform surface.
+- IR beam holes are provisional until the long-side-across sensing layout is re-derived.
+- Color sensor window 12mm x 12mm in one chamber side wall at 5.7mm above platform surface.
 - Black PLA shroud on sensor, 15mm deep.
 
 ---
@@ -141,7 +147,7 @@ The far edge drops when unsupported.
 - Lever arm: printed PLA at 100% infill, 0.15mm layers. Forces are very low; PLA is fine.
 - Length: 30mm total.
 - Fulcrum: one end of the lever arm. M3 bolt through printed bracket on the chamber
-  side wall (the 20mm wall on the selector-side outboard wall). M3 nylon locknut to prevent
+  side wall (the 25mm wall on the selector-side outboard wall). M3 nylon locknut to prevent
   vibration loosening. This is the pivot.
 - Lever tip: the other end (30mm from fulcrum). This end tucks under the platform tab.
   The tip has a 30-degree chamfer on its upper face for re-engagement.
