@@ -2,41 +2,35 @@
 #include <Arduino.h>
 #include "sensors.h"
 
-// All events that drive the state machine.
-// Hardware ISRs and the test harness produce events of these types.
-// The state machine processes them identically regardless of source.
+// Hardware inputs and the test harness both produce these events.
+// The state machine treats them the same way so the control contract
+// stays tied to physical truth instead of a special test path.
 
 enum class EventType : uint8_t {
     NONE = 0,
-    START_BUTTON,     // operator pressed start
-    SENSING_DONE,     // senseBrickInChamber() complete: senseResult contains result
-    BRICK_SEATED,     // stop switch triggered, brick ready for sensing
-    INDEXED,          // disc indexed to target bin position
-    PLATFORM_RELEASED,// platform release solenoid fired
-    BIN1_CONFIRM,     // bin 1 confirmation beam broke
-    BIN2_CONFIRM,     // bin 2 confirmation beam broke
-    BIN3_CONFIRM,     // bin 3 confirmation beam broke
-    BIN4_CONFIRM,     // bin 4 confirmation beam broke
-    CONFIRM_TIMEOUT,  // no bin confirmed within CONFIRM_TIMEOUT_MS
-    RESET,            // operator reset from ERROR_HALT
-    ENCODER_PULSE,    // optional diagnostic pulse from idler Hall sensor
+    START_BUTTON,
+    ENTRY_DETECTED,
+    CHAMBER_SEATED,
+    SENSING_DONE,
+    SELECTOR_READY,
+    DROP_WINDOW_DONE,
+    BIN_CONFIRMED,
+    PLATFORM_LEVEL,
+    CHAMBER_CLEAR,
+    PITCH_ADVANCE_DONE,
+    RESET,
+    ENCODER_PULSE,
 };
 
 struct Event {
-    EventType   type;
-    uint32_t    timestamp_ms;
-    union {
-        SenseResult senseResult;   // SENSING_DONE
-        uint8_t     binIdx;        // INDEXED: which bin (1-4)
-    };
-
-    Event() : type(EventType::NONE), timestamp_ms(0) {
-        senseResult = SenseResult{};
-    }
+    EventType   type         = EventType::NONE;
+    uint32_t    timestamp_ms = 0;
+    SenseResult senseResult  = SenseResult{};
+    uint8_t     binIdx       = 0;
+    bool        ok           = true;
+    uint16_t    steps        = 0;
 };
 
-// Ring buffer queue. ISRs and test harness push events here.
-// State machine pops in the main loop. Single consumer, multiple producers.
 class EventQueue {
 public:
     static constexpr uint8_t CAPACITY = 64;
@@ -54,7 +48,7 @@ private:
 
 extern EventQueue gEventQueue;
 
-// Convenience helpers for test harness
 void pushEvent(EventType type);
 void pushEventSensingDone(const SenseResult& result);
-void pushEventIndexed(uint8_t binIdx);
+void pushEventSelectorReady(uint8_t binIdx, bool ok, uint16_t steps);
+void pushEventBinConfirmed(uint8_t binIdx);

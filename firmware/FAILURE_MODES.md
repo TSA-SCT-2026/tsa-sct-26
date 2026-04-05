@@ -1,149 +1,70 @@
 # Failure Mode Analysis
 
-All failure modes, probability, detection, response, mitigation.
-
----
-
 ## Mechanical failure modes
 
-### FM-01: Brick jams at stop wall
+### FM-01: Brick jams before chamber seating
 
-Cause: Brick exits chute crooked.
-Probability: Low. 20mm channel constrains 15.8mm brick, corrects in 20-30mm of belt travel.
-Detection: APPROACH_TIMEOUT.
-Response: ERROR_HALT (JAM_APPROACH).
-Mitigation: PTFE tape on belt channel interior. 2mm x 45-deg chamfer on chamber entry.
+Cause: bad transition geometry or crooked entry
+Detection: `FEED_TIMEOUT_MS` or `APPROACH_TIMEOUT_MS`
+Response: `ERROR_HALT`
+Mitigation: keep channel geometry tight, smooth contact surfaces, validate with full queue load
 
-### FM-02: Double-feed
+### FM-02: Double-entry condition
 
-Cause: Exit opening too tall.
-Probability: Near zero. 13.5mm opening < 22.8mm two bricks. Geometrically impossible.
-Detection: DOUBLE_ENTRY event (entry beam while token = 0).
-Response: ERROR_HALT (DOUBLE_ENTRY).
-Mitigation: Print exit at 13.5mm. Measure with calipers.
+Cause: feed permission restored before platform level or chamber truth
+Detection: token false while a new feed attempt starts
+Response: `ERROR_HALT (DOUBLE_ENTRY)`
+Mitigation: restore feed only on `PLATFORM_LEVEL`
 
-### FM-03: Platform does not drop when lever fires
+### FM-03: Release occurs before selector-ready truth
 
-Cause: Lever tip does not fully clear the platform tab during the solenoid stroke.
-Probability: Low given 3x stroke margin (30mm tip travel vs 10mm required).
-Even at half solenoid stroke (4mm): tip travels 15mm, still 50% more than required.
-Detection: BIN_CONFIRM_TIMEOUT (brick never arrives in bin).
-Response: ERROR_HALT (MISS_BIN_N).
-Mitigation: Verify full lever travel clears tab during bench test before integration.
-If tab is not cleared: move effort point closer to fulcrum to increase tip travel at
-the cost of requiring more solenoid force.
+Cause: control bug or false ready signal
+Detection: wrong-bin confirm or internal state violation
+Response: `ERROR_HALT`
+Mitigation: release allowed only after `SELECTOR_READY`
 
-### FM-04: Platform does not return to level after drop
+### FM-04: Selector chute fails to reach indexed position
 
-Cause: Platform return spring too weak.
-Probability: Low if spring is correctly selected in bench testing.
-Detection: PIN_SHELF_LEVEL (GPIO 39) does not trigger within PLATFORM_RETURN_MS.
-Response: ERROR_HALT (PLATFORM_STUCK).
-Mitigation: Test 50 consecutive cycles before integration. Increase spring rate if
-platform fails to return in 200ms. Spring must not be so strong it resists lever re-engagement.
+Cause: jam, stall, or drift
+Detection: selector-ready failure or re-home mismatch
+Response: `ERROR_HALT (SELECTOR_JAM or POSITION_DRIFT)`
+Mitigation: deterministic home reference, periodic re-home checks, conservative motion profile
 
-### FM-05: Lever tip does not re-engage platform tab after platform returns
+### FM-05: Platform does not return to level
 
-Cause: Chamfer angle too shallow (lever tip doesn't get pushed aside by returning platform).
-Or lever return spring too weak to hold tip in correct position.
-Probability: Moderate if chamfer is not tuned. This is the primary iteration point.
-Detection: Next brick falls through open platform (no stop switch trigger) -> APPROACH_TIMEOUT.
-Response: ERROR_HALT (JAM_APPROACH).
-Mitigation: Tune chamfer angle empirically. Start at 30 degrees. Decrease toward 20 if
-re-engagement force is too high for the returning platform. Increase toward 45 if false
-releases occur during normal operation. Budget 3 lever arm reprints for this tuning.
-
-### FM-06: False release (lever tip pushed aside by brick weight or vibration)
-
-Cause: Brick's weight on platform creates a moment that pushes the lever tip outward.
-Or stepper vibration during indexing shakes the lever out.
-Analysis: Brick weight (3g) at 20mm from hinge = 0.59 mNm. Lever return spring force
-(0.1N) at 30mm from lever fulcrum = 3.0 mNm. Spring holds lever with 5x margin against
-brick-weight-induced lateral force at the tab. Vibration is lower amplitude than static load.
-Probability: Very low given 5x margin.
-Detection: Would appear as APPROACH_TIMEOUT on next brick (platform open, brick falls through).
-Mitigation: Do not use the weakest spring in the assortment. Target 0.08-0.12N return spring.
-Increase spring force if false releases are observed during stepper operation.
-
-### FM-07: Disc jams mid-rotation
-
-Cause: Disc catches on chamber floor edge.
-Detection: TMC2209 StallGuard triggers.
-Response: ERROR_HALT (DISC_JAM).
-Mitigation: 5mm disc-to-chamber-floor clearance. Bevel disc top edges. Tune SGTHRS.
-
-### FM-08: Brick drops into wrong funnel
-
-Cause: Solenoid fires before disc reaches target.
-Why impossible: INDEXED state must complete before RELEASED state begins. Solenoid
-does not fire until INDEXED is confirmed by step count. Not timer-based.
-
-### FM-09: Brick bounces out of bin
-
-Cause: Impact velocity too high. Bin walls too short.
-KE = 0.0023 J. Bounce height = 20mm. Bin walls 70-110mm. Margin 50-90mm.
-Probability: Near zero. Listed for completeness.
-
----
+Cause: spring, geometry, or latch issue
+Detection: missing `PLATFORM_LEVEL` before timeout
+Response: `ERROR_HALT (PLATFORM_STUCK)`
+Mitigation: bench-cycle the release and re-latch path before integration
 
 ## Electrical failure modes
 
-### FM-10: Solenoid MOSFET fails (shorts closed)
+### FM-06: Solenoid driver failure
 
-Cause: Back-EMF without flyback diode.
-Effect: Solenoid fires continuously. Lever stays swept out. Platform stays open.
-Next brick falls through. Detected as APPROACH_TIMEOUT on following brick.
-Mitigation: Flyback diode non-negotiable. 1k gate resistor. Verify polarity before power-on.
+Cause: missing flyback protection or MOSFET fault
+Detection: platform reset failure on subsequent cycle
+Response: `ERROR_HALT`
+Mitigation: diode, gate resistor, and pre-power verification remain non-negotiable
 
-### FM-11: I2C lockup
+### FM-07: Sensor bus or optical fault
 
-Detection: Wire.endTransmission() non-zero.
-Response: ERROR_HALT (SENSOR_FAULT).
-Mitigation: 4.7k pull-ups on SDA/SCL. Route away from motor leads.
-
-### FM-12: Conveyor stepper overheats or drops steps
-
-Detection: Missed seated confirmation, position inconsistency, or driver thermal warning.
-Response: ERROR_HALT.
-Mitigation: Conservative acceleration, reduced hold current, airflow on both stepper drivers,
-and sensor-confirmed chamber seating before every sensing cycle.
-
----
+Cause: wiring issue, noise, or color sensor integration fault
+Detection: `SENSING_DONE` reports `UNCERTAIN`
+Response: `ERROR_HALT (SENSOR_FAULT)`
+Mitigation: static sensing only, shroud installed, shielded routing where possible
 
 ## Firmware failure modes
 
-### FM-13: Step count drift
+### FM-08: Event contract drift
 
-Detection: Periodic re-home every RETHOME_PERIOD_BRICKS. Count mismatch.
-Response: ERROR_HALT (POSITION_DRIFT).
+Cause: docs, harness, and state machine naming diverge
+Detection: compile failures or harness mismatch
+Response: block optimization work until interfaces agree again
+Mitigation: keep `events.*`, `state_machine.*`, `test_harness.*`, and `EMBEDDED.md` synchronized
 
-### FM-14: Color misclassification
+### FM-09: False performance claim from logs
 
-Detection: Post-run count verification.
-Mitigation: Calibrate with shroud. 0.15 minimum gap between clusters.
-
----
-
-## Summary
-
-| ID | Failure | Probability | Detected | Response |
-|----|---------|-------------|----------|----------|
-| FM-01 | Jam at stop wall | Low | APPROACH_TIMEOUT | ERROR_HALT |
-| FM-02 | Double-feed | Near zero | DOUBLE_ENTRY | ERROR_HALT |
-| FM-03 | Platform doesn't drop | Low (3x margin) | BIN_CONFIRM_TIMEOUT | ERROR_HALT |
-| FM-04 | Platform doesn't return | Low | PLATFORM_STUCK | ERROR_HALT |
-| FM-05 | Lever doesn't re-engage | Moderate (requires tuning) | APPROACH_TIMEOUT | ERROR_HALT |
-| FM-06 | False release | Very low (5x margin) | APPROACH_TIMEOUT | ERROR_HALT |
-| FM-07 | Disc jams | Low | StallGuard | ERROR_HALT |
-| FM-08 | Wrong funnel | Impossible by design | N/A | N/A |
-| FM-09 | Brick bounces out | Near zero | Visual | None |
-| FM-10 | MOSFET shorts | Very low | APPROACH_TIMEOUT | ERROR_HALT |
-| FM-11 | I2C lockup | Low | Wire return | ERROR_HALT |
-| FM-12 | Conveyor stepper thermal or missed-step issue | Low | Seated mismatch or driver warning | ERROR_HALT |
-| FM-13 | Step drift | Low | Re-home check | ERROR_HALT |
-| FM-14 | Color misclassify | Low | Post-run count | None per-cycle |
-
-FM-05 (lever chamfer re-engagement) is the primary fabrication risk and the one
-item that requires empirical iteration. It is not a design flaw — it is a geometry
-tuning problem with a clear resolution path (adjust chamfer angle, reprint lever arm).
-Budget 3 prints of the lever arm before final assembly.
+Cause: count totals reported as accuracy without per-brick truth
+Detection: review of CSV schema and summaries
+Response: treat old summaries as invalid
+Mitigation: CSV-first per-event logs, counts-match summary instead of fake 24/24 accuracy

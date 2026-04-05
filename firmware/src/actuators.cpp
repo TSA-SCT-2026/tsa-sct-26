@@ -1,155 +1,115 @@
 #include "actuators.h"
-#include "logger.h"
 #include "config.h"
-
-// STUBS: All functions log what they would do. Replace with real hardware
-// calls when electronics are connected. The state machine calls these
-// identically whether stubs or real - no changes required above this layer.
+#include "logger.h"
 
 namespace actuators {
 
-// Internal state tracking
-static int16_t current_position_steps = 0;  // current disc position
+static int16_t current_selector_steps = 0;
+
+const char* selectorPositionLabel(uint8_t binIdx) {
+    switch (binIdx) {
+        case 1: return "BIN1_NW";
+        case 2: return "BIN2_NE";
+        case 3: return "BIN3_SE";
+        case 4: return "BIN4_SW";
+        default: return "UNKNOWN";
+    }
+}
 
 void begin() {
-    gLogger.info("STUB actuators::begin - pins not configured yet");
-    // Real: pinMode for all GPIO, init both stepper drivers, set reduced hold current when idle
+    gLogger.info("stub actuators begin: pins and drivers not configured yet");
 }
 
-void beltStart() {
-    gLogger.info("STUB belt START (conveyor stepper feed)");
-    // Real: enable conveyor stepper, run feed profile until chamber event advances state
+void startConveyorFeed() {
+    gLogger.info("stub conveyor feed start");
 }
 
-void beltStop() {
-    gLogger.info("STUB belt STOP");
-    // Real: stop conveyor stepper and reduce hold current for thermal control
+void stopConveyorFeed() {
+    gLogger.info("stub conveyor feed stop");
 }
 
-void beltSetDuty(uint8_t duty) {
-    char buf[48];
-    snprintf(buf, sizeof(buf), "STUB belt tuning hook=%d", duty);
+void tuneConveyorProfile(uint8_t profile) {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "stub conveyor profile=%u", profile);
     gLogger.info(buf);
-    // Real: map this temporary tuning hook to conveyor speed or microstep profile selection
 }
 
 void firePlatformRelease() {
     char buf[64];
-    snprintf(buf, sizeof(buf), "STUB firePlatformRelease on_ms=%d", SOLENOID_ON_MS);
+    snprintf(buf, sizeof(buf), "stub release pulse on_ms=%d", SOLENOID_ON_MS);
     gLogger.info(buf);
-    // Real:
-    // digitalWrite(PIN_RELEASE, HIGH);
-    // delay(SOLENOID_ON_MS);  // 80ms
-    // digitalWrite(PIN_RELEASE, LOW);
-    // Class 3 lever sweeps outward, platform drops, brick falls
 }
 
-bool homeDisc() {
-    gLogger.info("STUB homeDisc - run CW until PIN_HOME_SW LOW");
-    // Real:
-    // digitalWrite(PIN_ENABLE, LOW);  // enable stepper
-    // digitalWrite(PIN_DIR, HIGH);     // set CW
-    // while (digitalRead(PIN_HOME_SW) == HIGH) {
-    //     digitalWrite(PIN_STEP, HIGH);
-    //     delayMicroseconds(1000000 / STEPPER_START_SPS / 2);
-    //     digitalWrite(PIN_STEP, LOW);
-    //     delayMicroseconds(1000000 / STEPPER_START_SPS / 2);
-    //     // timeout check
-    // }
-    // current_position_steps = BIN4_STEPS;  // 225 deg home position
-    // Set TMC2209 hold current to STEPPER_HOLD_CURRENT via UART
-    current_position_steps = BIN4_STEPS;
-    gLogger.info("STUB homeDisc SUCCESS - position set to BIN4_STEPS (1000)");
+void releaseOff() {
+    gLogger.info("stub release off");
+}
+
+bool homeSelector() {
+    current_selector_steps = SELECTOR_BIN4_STEPS;
+    gLogger.info("stub selector homed to reference position");
     return true;
 }
 
-bool indexToBin(uint8_t bin_index) {
-    char buf[96];
-    
-    // Get target steps from bin_index
-    int16_t target_steps;
-    switch(bin_index) {
-        case 1: target_steps = BIN1_STEPS; break;  // 1400
-        case 2: target_steps = BIN2_STEPS; break;  // 200
-        case 3: target_steps = BIN3_STEPS; break;  // 600
-        case 4: target_steps = BIN4_STEPS; break;  // 1000
+bool indexSelectorToBin(uint8_t binIdx) {
+    int16_t targetSteps = 0;
+    switch (binIdx) {
+        case 1: targetSteps = SELECTOR_BIN1_STEPS; break;
+        case 2: targetSteps = SELECTOR_BIN2_STEPS; break;
+        case 3: targetSteps = SELECTOR_BIN3_STEPS; break;
+        case 4: targetSteps = SELECTOR_BIN4_STEPS; break;
         default:
-            gLogger.info("STUB indexToBin INVALID bin_index");
+            gLogger.info("stub selector index failed: invalid target bin");
             return false;
     }
-    
-    snprintf(buf, sizeof(buf), 
-             "STUB indexToBin bin=%d target=%d current=%d", 
-             bin_index, target_steps, current_position_steps);
+
+    char buf[96];
+    snprintf(buf, sizeof(buf), "stub selector index bin=%u target_steps=%d current_steps=%d",
+             binIdx, targetSteps, current_selector_steps);
     gLogger.info(buf);
-    
-    // Real: Compute shortest arc, set DIR, ramp profile
-    // int16_t delta = target_steps - current_position_steps;
-    // if (delta > STEPPER_STEPS_PER_REV / 2) delta -= STEPPER_STEPS_PER_REV;
-    // if (delta < -STEPPER_STEPS_PER_REV / 2) delta += STEPPER_STEPS_PER_REV;
-    // digitalWrite(PIN_DIR, delta > 0 ? HIGH : LOW);
-    // 
-    // Ramp: start at STEPPER_START_SPS, accel to STEPPER_RUN_SPS
-    // Run at STEPPER_RUN_SPS
-    // Decel: STEPPER_DECEL_STEPS before target, ramp down to STEPPER_START_SPS
-    // Final steps at STEPPER_START_SPS
-    // Set hold current via TMC2209 UART
-    // Read SGRESULT via UART for StallGuard detection
-    // if (stall_detected) return false;
-    
-    current_position_steps = target_steps;
-    gLogger.info("STUB indexToBin SUCCESS - StallGuard clear");
+    current_selector_steps = targetSteps;
     return true;
 }
 
 bool reHomeCheck() {
-    gLogger.info("STUB reHomeCheck - rotate to home by step count, verify PIN_HOME_SW");
-    // Real:
-    // Compute steps to home position BIN4_STEPS
-    // Rotate using step count
-    // Verify PIN_HOME_SW triggers within RETHOME_TOLERANCE_STEPS
-    // if (abs(expected_steps - actual_steps) > RETHOME_TOLERANCE_STEPS) {
-    //     return false;  // POSITION_DRIFT error
-    // }
-    // current_position_steps = BIN4_STEPS;
-    gLogger.info("STUB reHomeCheck SUCCESS - position verified");
+    gLogger.info("stub selector re-home check passed");
+    current_selector_steps = SELECTOR_BIN4_STEPS;
     return true;
 }
 
-void displayReady() {
-    gLogger.info("STUB display READY screen (LOAD 24 BRICKS / PRESS START)");
+void stopSelector() {
+    gLogger.info("stub selector stop");
 }
 
-void displaySorting(uint8_t brickNum, uint8_t total, uint8_t targetBin, 
+void displayReady() {
+    gLogger.info("display READY");
+}
+
+void displaySorting(uint8_t brickNum, uint8_t total, uint8_t targetBin,
                     const uint8_t binCounts[4]) {
-    char buf[96];
-    const char* discPos = "UNKNOWN";
-    switch (targetBin) {
-        case 1: discPos = "NW (315°)"; break;
-        case 2: discPos = "NE (45°)"; break;
-        case 3: discPos = "SE (135°)"; break;
-        case 4: discPos = "SW (225°)"; break;
-    }
-    snprintf(buf, sizeof(buf), 
-             "STUB display SORTING brick=%d/%d disc=%s bins=[%d,%d,%d,%d]",
-             brickNum, total, discPos, 
+    char buf[128];
+    snprintf(buf, sizeof(buf),
+             "display SORTING brick=%u/%u selector=%s bins=[%u,%u,%u,%u]",
+             brickNum, total, selectorPositionLabel(targetBin),
              binCounts[0], binCounts[1], binCounts[2], binCounts[3]);
     gLogger.info(buf);
 }
 
 void displayComplete(uint32_t totalMs, const uint8_t binCounts[4]) {
-    char buf[80];
-    snprintf(buf, sizeof(buf),
-             "STUB display COMPLETE time=%lums bins=[%d,%d,%d,%d]",
+    char buf[96];
+    snprintf(buf, sizeof(buf), "display COMPLETE time_ms=%lu bins=[%u,%u,%u,%u]",
              totalMs, binCounts[0], binCounts[1], binCounts[2], binCounts[3]);
     gLogger.info(buf);
 }
 
 void displayError(uint8_t brickNum, uint8_t expectedBin, const char* errorCode) {
-    char buf[64];
-    snprintf(buf, sizeof(buf), "STUB display ERROR brick=%d bin=%d code=%s",
+    char buf[96];
+    snprintf(buf, sizeof(buf), "display ERROR brick=%u target_bin=%u code=%s",
              brickNum, expectedBin, errorCode);
     gLogger.info(buf);
+}
+
+void buzzerError() {
+    gLogger.info("stub buzzer error");
 }
 
 }  // namespace actuators
