@@ -26,7 +26,7 @@
 - Platform-level switch responds
 - Chamber clear condition is detectable
 - Beam sensors report expected idle state
-- Color sensor detected on I2C
+- TCS3200 color sensor output responds in the expected test mode
 - Selector-ready event appears before release
 - Next-feed restart waits for physical reset confirmation
 - Display state transitions visible
