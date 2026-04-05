@@ -8,33 +8,33 @@
 
 ## Mates With
 
-- MR115ZZ flanged bearings
+- MR85ZZ bearings
 - M5 axle bolt or shaft
 - Belt strip
 - Optional Hall sensor path if magnets are installed for diagnostics
 
 ## Required Hardware
 
-- Two MR115ZZ flanged bearings
+- Two MR85ZZ bearings
 - One M5 axle with matching washers and locknut
 - Two 3mm magnets if diagnostic Hall sensing is used
 
 ## Core Geometry
 
 - 25mm outer diameter
-- 20mm crowned contact face
+- 25mm crowned contact face
 - 2mm flanges on both sides
 - Dual bearing pockets
 
 ## Locked Truth Dependency
 
-- Belt strip and channel geometry constraints needed for stable widthwise brick transport in the timing stage.
+- Belt strip and channel geometry constraints needed for stable long-side-across brick transport in the timing stage.
 
 ## Provisional Estimates Used
 
 - Crown sagitta: 0.50mm
-- Bearing pocket diameter: 11.15mm
-- Bearing pocket depth: 4.10mm
+- Bearing pocket diameter: 8.15mm
+- Bearing pocket depth: 2.60mm
 - Axle clearance diameter and magnet pocket offsets
 
 ## Basic Install Steps
@@ -65,6 +65,6 @@ Fail:
 
 ## Double Check When Hardware Arrives
 
-- Verify bearing pocket insertion force with real MR115 parts.
+- Verify bearing pocket insertion force with real MR85 parts.
 - Verify axial retention and smooth spin on real M5 axle.
 - Verify belt tracking and crown performance under run load.

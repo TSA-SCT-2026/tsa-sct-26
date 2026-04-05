@@ -8,7 +8,7 @@ Files:
 - `src/rollers_params.scad`: shared parameters, truth tags, asserts, and dimension report
 - `src/motor_pulley.scad`: timing pulley envelope for the NEMA17 motor shaft
 - `src/drive_roller.scad`: smooth drive roller on a supported shaft
-- `src/idler_roller.scad`: crowned idler with dual MR115 pockets
+- `src/idler_roller.scad`: crowned idler with dual MR85 pockets
 - `src/roller_coupons.scad`: bearing fit, shaft-fit, and crown test coupons
 - `scripts/build_rollers.sh`: validation and STL export script
 - `docs/`: part cards and parameter notes for the roller subsystem
@@ -24,5 +24,5 @@ Output:
 - STL files are written to `cad/frame/rollers/stl/`
 
 Status:
-- LEGO geometry and widthwise transport constraint are treated as `LOCKED_TRUTH`
+- LEGO geometry and long-side-across transport constraint are treated as `LOCKED_TRUTH`
 - Purchased hardware fit values are treated as `PROVISIONAL_ESTIMATE` until parts are measured

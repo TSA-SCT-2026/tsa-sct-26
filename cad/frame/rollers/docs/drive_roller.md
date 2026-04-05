@@ -8,7 +8,7 @@
 ## Mates With
 
 - Supported conveyor shaft
-- Belt strip in the 20mm channel
+- Belt strip in the 25mm channel
 - Idler roller on opposite end of belt path
 
 ## Required Hardware
@@ -20,13 +20,13 @@
 ## Core Geometry
 
 - 25mm outer diameter roller body
-- 20mm contact face width
+- 25mm contact face width
 - 2mm flanges on both sides
 - Split clamp shaft-fit hub
 
 ## Locked Truth Dependency
 
-- Belt strip target and channel constraints that support widthwise brick transport.
+- Belt strip target and channel constraints that support long-side-across brick transport.
 
 ## Provisional Estimates Used
 

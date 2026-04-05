@@ -9,19 +9,19 @@
 
 - NEMA17 motor shaft for timing pulley fit coupon
 - Supported conveyor shaft for drive roller fit coupon
-- MR115 bearings for bearing coupon
+- MR85 bearings for bearing coupon
 - Belt strip for crown coupon tracking checks
 
 ## Required Hardware For Testing
 
 - Real motor shaft from selected conveyor motor
 - Real supported conveyor shaft from the timing stage
-- Real MR115 bearings from current lot
+- Real MR85 bearings from current lot
 - Belt strip sample from build stock
 
 ## Coupon Set
 
-- Bearing fit ladder: 10.95, 11.10, 11.25
+- Bearing fit ladder: 7.95, 8.10, 8.25
 - Shaft-fit ladder pairs: 5.10 or 4.40, 5.20 or 4.50, 5.25 or 4.55
 - Crown ladder: 0.25, 0.50, 0.75 sagitta
 

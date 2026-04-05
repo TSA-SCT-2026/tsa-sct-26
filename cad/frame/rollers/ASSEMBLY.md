@@ -31,7 +31,7 @@ Read this with:
 - This is the free spinning roller on the other end.
 - It has a slight crown in the middle.
 - The crown helps the belt self center.
-- It has bearing pockets for MR115 bearings.
+- It has bearing pockets for MR85 bearings.
 - It has optional magnet pockets for diagnostic Hall sensing.
 
 `coupon_bearing_fit_v1.stl`
@@ -84,7 +84,7 @@ Recommended:
 
 ## Hardware needed for idler assembly
 
-- Two MR115ZZ flanged bearings
+- Two MR85ZZ bearings
 - One M5 axle bolt or shaft
 - Washer and nut set for your frame style
 - Two 3mm magnets only if you choose to keep diagnostic Hall sensing
@@ -115,7 +115,7 @@ Use your current baseline, then tune from coupons:
 ### Step 1: Run coupon fits first
 
 1. Print all coupon STL files.
-2. Test bearing coupon with real MR115 bearings.
+2. Test bearing coupon with real MR85 bearings.
 3. Test the shaft-fit coupon with the real shafts that will carry the timing pulley and drive roller.
 4. Test crown coupon with your belt strip.
 5. Record which option gives best fit and tracking.
@@ -142,8 +142,8 @@ Pass target:
 
 ### Step 4: Build idler roller
 
-1. Press first MR115 bearing into one side pocket.
-2. Press second MR115 bearing into the opposite side pocket.
+1. Press first MR85 bearing into one side pocket.
+2. Press second MR85 bearing into the opposite side pocket.
 3. Confirm both bearings seat square and flush to pocket shoulders.
 4. Add magnets to pockets only if using diagnostic Hall sensing.
 5. Place idler on M5 axle and check free spin.

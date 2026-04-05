@@ -1,7 +1,7 @@
 $fn = 128;
 
 // Canonical parameters for the conveyor timing stage and roller models.
-// LOCKED_TRUTH values derive from LEGO geometry and widthwise transport rule.
+// LOCKED_TRUTH values derive from LEGO geometry and long-side-across transport rule.
 // PROVISIONAL_ESTIMATE values depend on purchased hardware not yet measured.
 
 function kv(key, value) = [key, value];
@@ -11,14 +11,13 @@ function default_params() = [
   kv("truth_locked_brick_2x2_length", 15.8),
   kv("truth_locked_brick_2x3_length", 23.7),
   kv("truth_locked_brick_height", 11.4),
-  kv("truth_locked_orientation_widthwise", 1),
-  kv("truth_locked_channel_width", 20.0),
-  kv("truth_locked_belt_strip_target", 19.0),
-
+  kv("truth_locked_orientation_long_side_across", 1),
+  kv("truth_locked_channel_width", 25.0),
   kv("provisional_drive_roller_od", 25.0),
-  kv("provisional_drive_roller_face_width", 20.0),
+  kv("provisional_drive_roller_face_width", 25.0),
   kv("provisional_drive_roller_flange_width", 2.0),
   kv("provisional_drive_roller_flange_od", 27.0),
+  kv("provisional_belt_strip_selected_width", 25.0),
   kv("provisional_drive_roller_shaft_round", 5.20),
   kv("provisional_drive_roller_shaft_to_flat", 4.50),
   kv("provisional_drive_roller_split_slot", 1.8),
@@ -44,15 +43,15 @@ function default_params() = [
   kv("provisional_motor_pulley_hub_width", 10.0),
 
   kv("provisional_idler_roller_od", 25.0),
-  kv("provisional_contact_face_width", 20.0),
+  kv("provisional_contact_face_width", 25.0),
   kv("provisional_flange_width", 2.0),
   kv("provisional_flange_od", 27.0),
   kv("provisional_crown_sagitta", 0.50),
-  kv("provisional_bearing_od", 11.0),
-  kv("provisional_bearing_width", 4.0),
-  kv("provisional_bearing_pocket_d", 11.15),
-  kv("provisional_bearing_pocket_depth", 4.10),
-  kv("provisional_bearing_lead_chamfer", 0.50),
+  kv("provisional_bearing_od", 8.0),
+  kv("provisional_bearing_width", 2.5),
+  kv("provisional_bearing_pocket_d", 8.15),
+  kv("provisional_bearing_pocket_depth", 2.60),
+  kv("provisional_bearing_lead_chamfer", 0.35),
   kv("provisional_axle_clear_d", 5.20),
   kv("provisional_drive_shaft_bearing_span_mm", 38.0),
 
@@ -80,19 +79,21 @@ function pulley_outer_diameter(teeth, pitch_mm, tooth_depth_mm) =
 function timing_ratio(driver_teeth, driven_teeth) = driven_teeth / driver_teeth;
 
 module validate(params = default_params()) {
-  assert(pget(params, "truth_locked_orientation_widthwise") == 1,
-    "LOCKED_TRUTH failed: bricks must run widthwise across belt");
+  assert(pget(params, "truth_locked_orientation_long_side_across") == 1,
+    "LOCKED_TRUTH failed: bricks must run long-side-across the belt");
   assert(pget(params, "truth_locked_brick_width") == 15.8,
     "LOCKED_TRUTH failed: brick width changed");
-  assert(pget(params, "truth_locked_channel_width") == 20.0,
+  assert(pget(params, "truth_locked_channel_width") == 25.0,
     "LOCKED_TRUTH failed: channel width changed");
-  assert(pget(params, "truth_locked_belt_strip_target") == 19.0,
-    "LOCKED_TRUTH failed: belt strip target changed");
 
   assert(pget(params, "provisional_contact_face_width") <= pget(params, "truth_locked_channel_width"),
     "Contact face can not exceed channel width");
   assert(pget(params, "provisional_drive_roller_face_width") <= pget(params, "truth_locked_channel_width"),
     "Drive roller face can not exceed channel width");
+  assert(pget(params, "provisional_belt_strip_selected_width") > 0,
+    "Selected belt strip width must be positive");
+  assert(pget(params, "provisional_belt_strip_selected_width") <= pget(params, "truth_locked_channel_width"),
+    "Selected belt strip width can not exceed channel width");
   assert(pget(params, "provisional_drive_roller_shaft_to_flat") < pget(params, "provisional_drive_roller_shaft_round"),
     "D bore flat dimension must be less than round diameter");
   assert(pget(params, "provisional_drive_roller_clamp_axis_x") > (pget(params, "provisional_drive_roller_shaft_round") / 2),
@@ -122,8 +123,8 @@ module validate(params = default_params()) {
 
   if (pget(params, "provisional_drive_roller_shaft_round") == 5.20)
     echo("PROVISIONAL_ESTIMATE: shaft clamp bore round diameter set to 5.20mm");
-  if (pget(params, "provisional_bearing_pocket_d") == 11.15)
-    echo("PROVISIONAL_ESTIMATE: MR115 pocket diameter set to 11.15mm");
+  if (pget(params, "provisional_bearing_pocket_d") == 8.15)
+    echo("PROVISIONAL_ESTIMATE: MR85 pocket diameter set to 8.15mm");
   if (pget(params, "provisional_crown_sagitta") == 0.50)
     echo("PROVISIONAL_ESTIMATE: crown sagitta set to 0.50mm");
 }
@@ -141,7 +142,7 @@ module dimension_report(params = default_params()) {
   echo("ROLLER_DIMENSION_REPORT_START");
   echo(str("LOCKED_TRUTH brick_width=", pget(params, "truth_locked_brick_width")));
   echo(str("LOCKED_TRUTH channel_width=", pget(params, "truth_locked_channel_width")));
-  echo(str("LOCKED_TRUTH belt_strip_target=", pget(params, "truth_locked_belt_strip_target")));
+  echo(str("PROVISIONAL_ESTIMATE belt_strip_selected_width=", pget(params, "provisional_belt_strip_selected_width")));
   echo(str("PROVISIONAL_ESTIMATE drive_roller_od=", pget(params, "provisional_drive_roller_od")));
   echo(str("PROVISIONAL_ESTIMATE idler_roller_od=", pget(params, "provisional_idler_roller_od")));
   echo(str("PROVISIONAL_ESTIMATE contact_face_width=", face_w));

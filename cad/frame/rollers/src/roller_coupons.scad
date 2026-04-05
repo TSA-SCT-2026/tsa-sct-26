@@ -2,7 +2,7 @@ include <rollers_params.scad>
 
 function list_min_len(a, b) = len(a) < len(b) ? len(a) : len(b);
 
-module bearing_fit_coupon(od_list = [10.95, 11.10, 11.25], params = default_params()) {
+module bearing_fit_coupon(od_list = [7.95, 8.10, 8.25], params = default_params()) {
   validate(params);
 
   h = pget(params, "provisional_coupon_block_height");
