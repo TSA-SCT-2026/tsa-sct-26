@@ -1,25 +1,25 @@
 include <rollers_params.scad>
 
-module drive_pulley(params = default_params()) {
+module drive_roller(params = default_params()) {
   validate(params);
 
   roller_od = pget(params, "provisional_drive_roller_od");
-  face_w = pget(params, "provisional_contact_face_width");
-  flange_w = pget(params, "provisional_flange_width");
-  flange_od = pget(params, "provisional_flange_od");
+  face_w = pget(params, "provisional_drive_roller_face_width");
+  flange_w = pget(params, "provisional_drive_roller_flange_width");
+  flange_od = pget(params, "provisional_drive_roller_flange_od");
 
-  hub_od = pget(params, "provisional_drive_hub_od");
-  hub_w = pget(params, "provisional_drive_hub_width");
+  hub_od = pget(params, "provisional_drive_roller_hub_od");
+  hub_w = pget(params, "provisional_drive_roller_hub_width");
 
-  d_bore_round = pget(params, "provisional_d_bore_round");
-  d_bore_to_flat = pget(params, "provisional_d_bore_to_flat");
-  clamp_slot_w = pget(params, "provisional_split_clamp_slot");
-  clamp_screw_axis_x = pget(params, "provisional_clamp_screw_axis_x");
-  clamp_screw_d = pget(params, "provisional_clamp_screw_clear_d");
-  clamp_screw_head_d = pget(params, "provisional_clamp_screw_head_d");
-  clamp_screw_head_depth = pget(params, "provisional_clamp_screw_head_depth");
-  clamp_nut_flat = pget(params, "provisional_clamp_nut_flat");
-  clamp_nut_thickness = pget(params, "provisional_clamp_nut_thickness");
+  d_bore_round = pget(params, "provisional_drive_roller_shaft_round");
+  d_bore_to_flat = pget(params, "provisional_drive_roller_shaft_to_flat");
+  clamp_slot_w = pget(params, "provisional_drive_roller_split_slot");
+  clamp_screw_axis_x = pget(params, "provisional_drive_roller_clamp_axis_x");
+  clamp_screw_d = pget(params, "provisional_drive_roller_clamp_clear_d");
+  clamp_screw_head_d = pget(params, "provisional_drive_roller_clamp_head_d");
+  clamp_screw_head_depth = pget(params, "provisional_drive_roller_clamp_head_depth");
+  clamp_nut_flat = pget(params, "provisional_drive_roller_clamp_nut_flat");
+  clamp_nut_thickness = pget(params, "provisional_drive_roller_clamp_nut_thickness");
 
   total_w = face_w + (2 * flange_w);
   hub_start = (total_w - hub_w) / 2;
@@ -60,7 +60,7 @@ build_target = is_undef(build_target) ? "model" : build_target;
 params = is_undef(params) ? default_params() : params;
 
 if (build_target == "model") {
-  drive_pulley(params);
+  drive_roller(params);
 } else if (build_target == "validate") {
   validate(params);
   dimension_report(params);
@@ -69,5 +69,5 @@ if (build_target == "model") {
   dimension_report(params);
   cube([1, 1, 1]);
 } else {
-  drive_pulley(params);
+  drive_roller(params);
 }

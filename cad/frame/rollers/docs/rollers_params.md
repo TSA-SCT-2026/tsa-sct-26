@@ -1,7 +1,7 @@
 # rollers_params.scad Notes
 
 Intent:
-- Define one parameter contract for all roller CAD files.
+- Define one parameter contract for the timing pulley, drive roller, idler roller, and fit coupons.
 - Separate stable geometry constraints from provisional hardware estimates.
 
 Locked truth inputs:
@@ -11,8 +11,10 @@ Locked truth inputs:
 - Belt strip target width: 19mm
 
 Provisional estimates:
-- Clamp-bore fit values for a 5mm NEMA 17 shaft with flat
+- Shaft-fit values for the supported drive shaft and timing pulley shaft
 - MR115 bearing pocket fit values
+- Timing belt pitch, pulley tooth counts, and ratio
+- Center distance and tension adjustment travel
 - Crown sagitta and flange envelope details
 - Magnet pocket details
 
@@ -20,4 +22,5 @@ Double check when hardware arrives:
 - Confirm actual shaft diameter and flat dimension with calipers.
 - Confirm MR115 real OD and width from received lot.
 - Confirm belt strip measured width and thickness.
+- Confirm timing pulley tooth count, belt width, and center distance against the real parts.
 - Replace provisional fit values and regenerate STL files.

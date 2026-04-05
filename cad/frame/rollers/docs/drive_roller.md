@@ -1,13 +1,13 @@
-# drive_pulley.scad Part Card
+# drive_roller.scad Part Card
 
 ## Role
 
-- Powered roller that drives the conveyor belt strip.
-- Mounts on the motor shaft and transmits motor torque to belt motion.
+- Smooth roller that drives the neoprene conveyor belt.
+- Mounts on the supported conveyor shaft and transmits shaft torque to belt motion.
 
 ## Mates With
 
-- NEMA 17 conveyor motor shaft
+- Supported conveyor shaft
 - Belt strip in the 20mm channel
 - Idler roller on opposite end of belt path
 
@@ -15,7 +15,7 @@
 
 - One M3 socket head screw for the clamp
 - One M3 hex nut for the clamp nut trap
-- Motor shaft and mounting hardware from conveyor motor assembly
+- Supported shaft and frame bearing hardware from the conveyor assembly
 
 ## Core Geometry
 
@@ -40,33 +40,31 @@
 
 The split clamp is on one side of the hub, not through the shaft center.
 
-- The shaft-fit bore runs through the middle of the pulley.
+- The shaft-fit bore runs through the middle of the roller.
 - The split slot opens from the bore to the outer hub wall.
 - The M3 clamp screw crosses the hub beside the bore so it can squeeze the split closed.
 - One side has a recessed screw head pocket.
 - The other side has a recessed hex nut trap.
 
-If you saw no obvious screw hole before, that was a real issue in the earlier model. The clamp hole is now offset away from the shaft centerline so the shaft can actually pass through the bore.
-
 ## Basic Install Steps
 
-1. Slide pulley onto the motor shaft by hand.
-2. Align pulley centerline to conveyor channel centerline.
+1. Slide roller onto the supported shaft by hand.
+2. Align roller centerline to conveyor channel centerline.
 3. Press an M3 hex nut into the nut trap.
 4. Insert the M3 screw from the opposite recessed head side.
-5. Tighten in small steps until the pulley grips the shaft without cracking.
+5. Tighten in small steps until the roller grips the shaft without cracking.
 6. Verify no slip under light belt load.
 
 ## Pass or Fail Checks
 
 Pass:
-- Pulley sits square on shaft
+- Roller sits square on shaft
 - No visible wobble at operating speed
 - No shaft slip during repeated start and stop cycles
 
 Fail:
 - Cracking at split clamp slot
-- Pulley rubs frame or channel walls
+- Roller rubs frame or channel walls
 - Bore is loose enough to twist on shaft
 - Clamp screw path intersects the shaft bore
 
@@ -79,6 +77,6 @@ Fail:
 
 ## Double Check When Hardware Arrives
 
-- Verify NEMA 17 shaft fit on the real motor shaft.
+- Verify supported shaft fit on the real conveyor shaft.
 - Verify your real M3 screw head and hex nut match the modeled pockets.
-- Verify pulley runs true with no visible wobble at operating speed.
+- Verify roller runs true with no visible wobble at operating speed.

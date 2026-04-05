@@ -3,7 +3,8 @@
 This guide is for beginners and focuses on the parts in `cad/frame/rollers`.
 
 Use this when you are assembling:
-- Drive pulley on the motor shaft
+- Timing pulley on the motor shaft
+- Supported drive roller on the conveyor shaft
 - Idler roller on the axle
 - Belt tracking test setup
 
@@ -14,12 +15,17 @@ Read this with:
 
 ## What each STL does
 
-`drive_pulley_proto_v1.stl`
-- This is the powered roller.
-- It mounts to the motor shaft.
-- It has a shaft-fit bore and a split clamp so it can grip the shaft.
+`motor_pulley_proto_v1.stl`
+- This is the timing pulley on the NEMA17 motor shaft.
+- It drives the toothed belt stage.
+- It uses a shaft-fit bore and a split clamp so it can grip the shaft.
+- It is a timing envelope model, not a final tooth profile.
+
+`drive_roller_proto_v1.stl`
+- This is the smooth roller on the supported conveyor shaft.
+- It contacts the neoprene conveyor belt.
+- It uses a shaft-fit bore and a split clamp so it can grip the shaft.
 - It has side flanges to help keep the belt centered.
-- The clamp uses one recessed M3 screw head pocket and one recessed M3 hex nut trap.
 
 `idler_roller_proto_v1.stl`
 - This is the free spinning roller on the other end.
@@ -33,8 +39,8 @@ Read this with:
 - You press a real bearing into each test hole.
 - You pick the hole size that gives secure fit without damage.
 
-`coupon_d_bore_fit_v1.stl`
-- This is a test block for motor shaft fit.
+`coupon_shaft_fit_v1.stl`
+- This is a test block for shaft fit.
 - Each bore version has a different shaft-fit size.
 - You pick the bore that slides on by hand and does not wobble.
 
@@ -44,7 +50,7 @@ Read this with:
 
 ## What the split clamp is
 
-The split clamp is a slot in the pulley hub that lets the hub squeeze closed.
+The split clamp is a slot in the hub that lets the hub squeeze closed.
 
 Why it exists:
 - Printed plastic bores can vary by printer and material.
@@ -52,10 +58,10 @@ Why it exists:
 - It is more reliable than friction only fit.
 
 How it works:
-1. The pulley hub has a split gap.
+1. The hub has a split gap.
 2. A screw crosses the gap beside the shaft bore, not through the shaft center.
 3. Tightening the screw pulls both sides together.
-4. The bore grips the motor shaft.
+4. The bore grips the shaft.
 
 Beginner picture in words:
 - Imagine the shaft hole in the middle.
@@ -83,6 +89,14 @@ Recommended:
 - Washer and nut set for your frame style
 - Two 3mm magnets only if you choose to keep diagnostic Hall sensing
 
+## Hardware needed for the timing stage
+
+- One NEMA17 motor pulley, either purchased or printed to the envelope here
+- One supported conveyor shaft with bearings in the frame
+- One smooth drive roller on the supported shaft
+- One toothed timing belt with the chosen tooth count ratio
+- One tension adjustment feature with the travel called out in `cad/DIMENSIONS.md`
+
 ## Print setup for first assembly pass
 
 Use your current baseline, then tune from coupons:
@@ -90,7 +104,7 @@ Use your current baseline, then tune from coupons:
 - Material: PLA
 - Walls: at least 4
 - Infill:
-- Drive pulley: 100 percent
+- Motor pulley and drive roller: 100 percent
 - Idler: 80 to 100 percent
 - Orientation:
 - Print rollers standing on axis if bore and bearing circularity are priority
@@ -102,19 +116,31 @@ Use your current baseline, then tune from coupons:
 
 1. Print all coupon STL files.
 2. Test bearing coupon with real MR115 bearings.
-3. Test the shaft-fit coupon with the real motor shaft.
+3. Test the shaft-fit coupon with the real shafts that will carry the timing pulley and drive roller.
 4. Test crown coupon with your belt strip.
 5. Record which option gives best fit and tracking.
 
 Do not skip this step. It is the fastest way to avoid failed full size prints.
 
-### Step 2: Print final pulley and idler
+### Step 2: Print final timing stage parts
 
 1. If needed, update `src/rollers_params.scad`.
 2. Run `./scripts/build_rollers.sh`.
-3. Print `drive_pulley_proto_v1.stl` and `idler_roller_proto_v1.stl`.
+3. Print `motor_pulley_proto_v1.stl`, `drive_roller_proto_v1.stl`, and `idler_roller_proto_v1.stl`.
 
-### Step 3: Build idler roller
+### Step 3: Build drive roller
+
+1. Slide the drive roller onto the supported shaft.
+2. Align the roller centerline to the conveyor channel centerline.
+3. Insert the clamp hardware and tighten gradually while checking rotation.
+4. Verify the roller does not slip under expected belt load.
+
+Pass target:
+- Roller spins true.
+- No hub crack at split line.
+- No shaft slip under expected belt load.
+
+### Step 4: Build idler roller
 
 1. Press first MR115 bearing into one side pocket.
 2. Press second MR115 bearing into the opposite side pocket.
@@ -127,21 +153,21 @@ Pass target:
 - No scraping noise.
 - No visible wobble.
 
-### Step 4: Build drive pulley
+### Step 5: Build timing pulley
 
-1. Slide pulley onto the motor shaft.
-2. Align pulley so belt will run centered in channel.
+1. Slide the timing pulley onto the motor shaft.
+2. Align pulley so the belt will run centered in the timing stage.
 3. Press an M3 hex nut into the recessed nut trap.
 4. Insert the M3 screw from the recessed head side.
 5. Tighten gradually while checking rotation.
-6. Verify pulley does not slip by holding belt and applying light motor torque.
+6. Verify pulley does not slip by applying light motor torque.
 
 Pass target:
 - Pulley spins true.
 - No hub crack at split line.
 - No shaft slip under expected belt load.
 
-### Step 5: Install belt and align
+### Step 6: Install belt and align
 
 1. Mount both rollers in frame.
 2. Install belt strip and set tension.
@@ -152,17 +178,20 @@ Pass target:
 Pass target:
 - Belt stays centered during run.
 - Belt does not rub walls or flanges continuously.
+- Tensioner travel stays inside the documented range.
 
 ## Validation checks before system integration
 
 Mechanical checks:
-- Pulley clamp remains tight after repeated start stop cycles.
+- Motor pulley clamp remains tight after repeated start stop cycles.
 - Idler bearings remain seated.
 - No abnormal wear dust near flanges.
+- Supported shaft bearings remain aligned.
 
 Tracking checks:
 - Belt remains centered across low and moderate speed.
 - Crown behavior is stable with expected belt tension.
+- Center distance and ratio stay within the model envelope.
 
 Electrical checks:
 - Hall sensor reads clean pulses if optional diagnostic magnets are installed.
@@ -195,6 +224,11 @@ Hub crack near split:
 - Increase hub outer diameter or wall thickness.
 - Use lower clamp torque.
 - Verify the nut trap is not forcing the hub open before tightening.
+
+Motor pulley chatters under load:
+- Check belt alignment and center distance.
+- Reduce over tension.
+- Confirm the pulley ratio matches the timing-stage model.
 
 I do not understand why we use a split clamp:
 - It is okay to ask that. The reason is repeatability, not complexity for its own sake.

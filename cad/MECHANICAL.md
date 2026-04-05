@@ -17,6 +17,17 @@ Why this orientation is required: it keeps the across-belt footprint constant fo
 
 ---
 
+## Terminology
+
+- Selector chute: the four-position routing assembly that sends one brick to one of the four bins.
+- Index position: one of the four discrete selector chute states. The current mapping is 1 through 4, with the fourth position treated as home or default.
+- Chamber pitch: the advance distance from one seated brick to the next in the compressed queue.
+- Trapdoor platform: the hinged chamber floor that drops the brick after routing is committed.
+- Supported roller shaft: the conveyor shaft that rides in frame bearings and carries the smooth drive roller.
+- Safe restart condition: the combined physical confirmation that the chamber is clear, the platform is level, and the next feed can begin without overlap.
+
+---
+
 ## Feed chute
 
 Vertical rectangular tube, 20mm x 28mm internal.
@@ -32,22 +43,45 @@ All 24 bricks load before the run. Gravity feeds the queue.
 
 Bottom brick rests directly on belt. Belt friction pulls it out when belt is enabled.
 No cam. No escapement.
+The retired `cad/escapement/` directory is historical only.
 
 ---
 
-## Narrow conveyor belt
+## Conveyor stage
+
+The production conveyor is an off-axis timing-belt stage feeding a supported smooth drive roller.
 
 - Channel width: 20mm internal.
 - Channel walls: 3mm PLA, 15mm tall, PTFE-taped interior.
 - Belt material: 19mm (3/4") neoprene.
-- Transport length: 100-120mm.
-- Target belt speed: 100mm/s (phase 1).
+- Transport length: 100-120mm provisional.
+- Chamber pitch: 18-22mm provisional. This is the steady-state advance distance, not the full transport length.
+- Target belt speed: 100mm/s provisional.
 
-Drive: NEMA 17 stepper on the conveyor feed axis. Use controlled feed and approach
-motion with conservative acceleration at first.
-Drive roller: 25mm OD, 5mm clamp bore matched to the NEMA 17 shaft profile.
-Idler roller: 25mm OD (0.5mm crown), MR115ZZ flanged ball bearings on M5 bolt axle,
-spring-loaded tensioner slot.
+Drive architecture:
+- NEMA17 stepper drives a toothed timing belt.
+- Timing belt drives a supported shaft at the conveyor end.
+- Supported shaft carries the smooth drive roller that contacts the neoprene belt.
+- Drive roller is not mounted directly on the motor shaft.
+
+Timing stage intent:
+- Motor shaft load is isolated from the conveyor roller load.
+- Ratio can be changed by swapping pulley tooth counts.
+- The conveyor can be tuned without changing the supported shaft geometry.
+
+Current provisional timing-stage values:
+- Motor pulley: 16 teeth.
+- Drive pulley: 32 teeth.
+- Belt pitch: 2mm.
+- Belt width: 6mm.
+- Center distance: 78mm.
+- Tension adjustment travel: 8mm.
+
+Idler roller:
+- 25mm OD with 0.5mm crown.
+- MR115ZZ flanged ball bearings on M5 bolt axle.
+- Spring-loaded tensioner slot.
+
 Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does not depend on it.
 
 ---
@@ -79,7 +113,7 @@ The solenoid never carries brick weight. It only moves a lever arm against a lig
 ### Overview
 
 The chamber floor is a hinged platform. A class 3 lever arm runs alongside the platform's
-far edge (the disc-facing edge, away from the belt). The lever tip sits under a small
+far edge (the selector-side edge, away from the belt). The lever tip sits under a small
 printed tab on the platform far edge, supporting it. When the solenoid fires, the lever
 tip sweeps outward (away from the belt) and clears the tab. The platform far edge has
 nothing under it and drops under gravity. Brick falls straight down.
@@ -90,12 +124,12 @@ in force but amplifies the solenoid's short stroke into a larger arc at the leve
 
 ### Platform
 
-- Platform: 22mm wide (along belt) x 20mm deep (across belt, toward disc) x 3mm thick PLA.
+- Platform: 22mm wide (along belt) x 20mm deep (across belt, toward selector) x 3mm thick PLA.
 - Top surface: UHMW tape. Frictionless. Brick must not stick.
 - Hinge: 3mm steel rod through printed ears on the platform belt-side edge, passing
   through brackets on the chamber entry wall. Hinge axis runs across the belt (parallel
   to entry wall). Platform pivots about this axis.
-- Far edge: the disc-facing edge. This is the unsupported edge when the lever clears.
+- Far edge: the selector-side edge. This is the unsupported edge when the lever clears.
 - Platform tab: a 4mm wide x 3mm tall printed lip on the underside of the far edge,
   running the full 22mm width. The lever tip rests under this tab.
 
@@ -107,7 +141,7 @@ The far edge drops when unsupported.
 - Lever arm: printed PLA at 100% infill, 0.15mm layers. Forces are very low; PLA is fine.
 - Length: 30mm total.
 - Fulcrum: one end of the lever arm. M3 bolt through printed bracket on the chamber
-  side wall (the 20mm wall on the disc-outboard side). M3 nylon locknut to prevent
+  side wall (the 20mm wall on the selector-side outboard wall). M3 nylon locknut to prevent
   vibration loosening. This is the pivot.
 - Lever tip: the other end (30mm from fulcrum). This end tucks under the platform tab.
   The tip has a 30-degree chamfer on its upper face for re-engagement.
@@ -127,8 +161,8 @@ Lever geometry (class 3):
 - Available tip travel: 30mm. More than double what is needed.
 
 This means even at half solenoid stroke (4mm, e.g. due to weak battery or worn spring),
-the tip travels 15mm — still 50% more than required to clear the tab. The mechanism
-has inherent stroke tolerance built into the lever ratio.
+the tip travels 15mm. That is still 50% more than required to clear the tab. The
+mechanism has inherent stroke tolerance built into the lever ratio.
 
 ### Solenoid mounting
 
@@ -173,7 +207,7 @@ matching 30-degree lead-in. As the platform returns to level, the tab's lead-in 
 contacts the lever tip chamfer and pushes the lever tip outward slightly, then the tip
 snaps back under the tab once the tab clears the chamfer peak.
 
-This is identical to a slam latch — the platform closing re-engages the lever
+This is identical to a slam latch. The platform closing re-engages the lever
 automatically with no active control. The lever return spring provides the snap-back
 force. The chamfer angle determines the force required to push the lever tip aside
 during re-engagement. At 30 degrees with a 0.1N return spring: re-engagement force
@@ -187,7 +221,7 @@ Direct plunger (vertical): solenoid supports platform weight during retraction. 
 bore friction adds to load. Wear accumulates. Solenoid is working hardest when most
 loaded.
 
-Sliding platform: pusher. Depends on friction, stroke consistency, brick position.
+Sliding platform: moving support surface. Depends on friction, stroke consistency, brick position.
 Not a trapdoor.
 
 Class 3 lever sweeping laterally: solenoid decoupled from platform weight entirely.
@@ -197,22 +231,27 @@ partial actuation clears the tab. Failure modes are geometric and testable.
 
 ---
 
-## Chute selector disc
+## Selector chute
 
-NEMA 11 stepper drives disc directly via 5mm aluminum shaft hub (set-screw or clamp).
+NEMA 11 stepper indexes the four-position selector chute through a 5mm aluminum shaft hub or clamp interface.
 Not press-fit. Not printed bore. Non-negotiable.
+This is not a circular disc.
 
-Disc geometry:
-- Diameter: 100mm.
-- Thickness: 8mm.
-- 4 funnel openings: 32mm x 22mm at 40mm radius, at 315/45/135/225 degrees.
+Index geometry:
+- Four fixed outlet positions, one per bin.
+- Index spacing: 90 degrees equivalent between the four states.
+- Funnel opening size: 32mm x 22mm.
 - Funnel wall taper: 10 degrees inward, all sides.
 - Print: 0.15mm layers, 80% infill.
 
 Motor mount: metal bracket (commercial NEMA 11 mounting bracket or 2mm aluminum flat bar).
 Do not rely on printed PLA alone for motor mounting.
 
-Home sensor: Omron D2F micro-switch, disc rim flag at 225 deg (bin 4, default).
+Selector routing note:
+- The selector chute is the active routing path for now.
+- Downstream routing alternatives belong in the notebook, not in this active mechanical spec.
+
+Home sensor: Omron D2F micro-switch, index 4 flag, default.
 
 ---
 
@@ -228,13 +267,35 @@ Home sensor: Omron D2F micro-switch, disc rim flag at 225 deg (bin 4, default).
 | 4 | SW DEFAULT | 2x3 red | 4 | 40mm x 45mm x 70mm |
 
 Floor: 10 degrees toward back wall. Break-beam at entrance. Removable via slot-and-tab.
-Funnel guides between disc and bins: 60mm x 60mm entrance, angled to bin opening.
+Funnel guides between selector chute and bins: 60mm x 60mm entrance, angled to bin opening.
+
+---
+
+## Operator-facing packaging
+
+These features matter for first-time evaluator use and are part of the mechanical design.
+
+- Start button is labeled or engraved so the operator does not guess.
+- Display face is readable from arm's length while standing in front of the machine.
+- Bin labels are fixed and large: 2x2 RED, 2x2 BLUE, 2x3 BLUE, 2x3 RED.
+- Cable routing is kept outside the brick path, chute opening, and selector drop envelope.
+- Label flats are reserved on the front-facing frame surfaces and bin faces.
+- No harness crosses the conveyor belt top plane.
 
 ---
 
 ## Assembly order
 
-1. Print lever arm + platform + hinge bracket. Bench test mechanism:
+1. Print chute transition and validate with real bricks. Do not start larger prints until feed is clean.
+
+2. Print conveyor timing stage fit parts and validate packaging:
+   - Motor pulley
+   - Drive roller
+   - Idler roller
+   - Tensioner and supported shaft interfaces
+   - Confirm belt tracking envelope and pulley alignment
+
+3. Print lever arm + platform + hinge bracket. Bench test mechanism:
    - Platform pivots smoothly on hinge rod.
    - Lever tip tucks under platform tab cleanly with no play.
    - Solenoid pushes lever tip clear of tab.
@@ -243,18 +304,18 @@ Funnel guides between disc and bins: 60mm x 60mm entrance, angled to bin opening
    - 50 consecutive cycles with no failures.
    Gate: all pass before printing anything else.
 
-2. Print chute selector disc. Mount with shaft hub. Verify zero wobble at rim.
+4. Print selector chute prototype. Mount with shaft hub. Verify repeatable indexing at all 4 positions.
 
-3. Print chamber body. Fit real bricks. Test full drop: brick seated, lever fires,
+5. Print chamber body. Fit real bricks. Test full drop: brick seated, lever fires,
    brick falls, both springs return, lever re-latches. 20 consecutive cycles.
 
-4. Print feed chute. Single-brick exit test with all 24 bricks.
+6. Print feed chute. Single-brick exit test with all 24 bricks.
 
-5. Print belt channel. Assemble belt. Friction test.
+7. Print remaining frame parts. Assemble belt and timing stage. Friction test.
 
-6. Full integration: chute -> belt -> chamber -> disc -> bins.
+8. Full integration: chute -> timing stage -> chamber -> selector chute -> bins.
 
-7. Wire. Self-test. Calibrate. Run.
+9. Wire. Self-test. Calibrate. Run.
 
 ---
 
@@ -271,4 +332,4 @@ easily, but shallow enough that the lever holds the platform reliably when loade
   chamfer toward 20 degrees.
 
 This is the one geometry that requires iteration. Budget 3 prints of the lever arm
-and platform tab only — these are small parts, fast to print.
+and platform tab only. These are small parts, fast to print.

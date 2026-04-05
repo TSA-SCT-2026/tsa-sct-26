@@ -2,18 +2,20 @@
 
 ## Role
 
-- Fit test parts used before printing final pulley and idler.
+- Fit test parts used before printing the final timing pulley, drive roller, and idler.
 - Reduces failed full size prints by selecting fit values from real hardware tests.
 
 ## Mates With
 
-- NEMA 17 motor shaft for shaft-fit coupon
+- NEMA17 motor shaft for timing pulley fit coupon
+- Supported conveyor shaft for drive roller fit coupon
 - MR115 bearings for bearing coupon
 - Belt strip for crown coupon tracking checks
 
 ## Required Hardware For Testing
 
 - Real motor shaft from selected conveyor motor
+- Real supported conveyor shaft from the timing stage
 - Real MR115 bearings from current lot
 - Belt strip sample from build stock
 
@@ -47,6 +49,7 @@ Fail:
 ## Locked Truth Dependency
 
 - Coupon interpretation must preserve channel and belt strip constraints used by the real roller models.
+- Coupon results should be copied into the timing stage and roller model notes, not guessed from visual fit alone.
 
 ## Double Check When Hardware Arrives
 

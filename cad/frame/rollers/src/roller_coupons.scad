@@ -25,7 +25,7 @@ module bearing_fit_coupon(od_list = [10.95, 11.10, 11.25], params = default_para
   }
 }
 
-module d_bore_coupon(round_list = [5.10, 5.20, 5.25], flat_list = [4.40, 4.50, 4.55], params = default_params()) {
+module shaft_fit_coupon(round_list = [5.10, 5.20, 5.25], flat_list = [4.40, 4.50, 4.55], params = default_params()) {
   validate(params);
 
   h = pget(params, "provisional_coupon_block_height");
@@ -77,8 +77,8 @@ params = is_undef(params) ? default_params() : params;
 
 if (build_target == "bearing") {
   bearing_fit_coupon(params = params);
-} else if (build_target == "dbore") {
-  d_bore_coupon(params = params);
+} else if (build_target == "dbore" || build_target == "shaftfit") {
+  shaft_fit_coupon(params = params);
 } else if (build_target == "crown") {
   crown_coupon(params = params);
 } else if (build_target == "validate") {
@@ -89,7 +89,7 @@ if (build_target == "bearing") {
   union() {
     bearing_fit_coupon(params = params);
     translate([0, 40, 0])
-      d_bore_coupon(params = params);
+      shaft_fit_coupon(params = params);
     translate([0, 85, 0])
       crown_coupon(params = params);
   }

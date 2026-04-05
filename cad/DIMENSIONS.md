@@ -62,8 +62,16 @@ Status for this section:
 | Interior surface | PTFE tape |
 | Belt material | 19mm neoprene x 3mm |
 | Transport length | 100-120mm |
+| Chamber pitch | 18-22mm |
 | Drive roller OD | 25mm |
-| Drive roller bore | 5mm stepper shaft with clampable flat profile |
+| Drive roller bore | 5mm supported shaft with clampable flat profile |
+| Drive pulley teeth | 32T provisional |
+| Motor pulley teeth | 16T provisional |
+| Timing belt pitch | 2mm provisional |
+| Timing belt width | 6mm provisional |
+| Pulley center distance | 78mm provisional |
+| Tension adjustment travel | 8mm provisional |
+| Supported shaft bearing | MR115ZZ x2 provisional |
 | Idler roller OD | 25mm (0.5mm crown) |
 | Idler roller bearings | MR115ZZ 5mm ID x 11mm OD x 4mm |
 | Roller flanges | 2mm both ends |
@@ -108,6 +116,15 @@ Spacing: 16mm. Detection: BOTH beams LOW = 2x3. Anything else = 2x2.
 | Window height (above platform) | 5.7mm |
 | Shroud depth | 15mm external |
 
+### Queue pitch and timing
+
+| Feature | Dimension |
+|---------|-----------|
+| Brick seat pitch | 18-22mm provisional |
+| Reset-to-next-advance gap | 0-20ms safe overlap window, software only |
+| Cold-start transport window | 100-120mm provisional |
+| Steady-state advance distance | Chamber pitch only |
+
 ---
 
 ## Trapdoor platform
@@ -117,7 +134,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Feature | Dimension |
 |---------|-----------|
 | Platform width (along belt) | 22mm |
-| Platform depth (across belt, toward disc) | 20mm |
+| Platform depth (across belt, toward selector) | 20mm |
 | Platform thickness | 3mm PLA |
 | Top surface | UHMW tape |
 | Hinge rod diameter | 3mm steel |
@@ -132,6 +149,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Platform return spring OD | 4-5mm |
 | Platform return spring free length | 15mm |
 | Platform return spring force at level | < 0.01N (preload only) |
+| Platform level sensor | PROVISIONAL_ESTIMATE, required before feed restart |
 
 ---
 
@@ -158,6 +176,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Pivot bolt | M3 x 12mm with nylon locknut |
 | Pivot bracket | Printed PLA on chamber side wall (20mm outboard wall) |
 | Sweep direction | Outward, away from belt, horizontal plane |
+| Lever reset confirmation | Platform level, not fixed timer |
 
 ### Solenoid contact geometry
 
@@ -171,23 +190,41 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 
 ---
 
-## Chute selector disc
+## Operator-facing packaging
 
 Status for this section: `PROVISIONAL_ESTIMATE`
 
 | Feature | Dimension |
 |---------|-----------|
-| Disc diameter | 100mm |
-| Disc thickness | 8mm |
+| Start button label | Printed or engraved, visible at arm's length |
+| Display viewing distance | Arm's length readable from front of machine |
+| Display state words | READY, SORTING, SORT COMPLETE, ERROR |
+| Bin labels | 2x2 RED, 2x2 BLUE, 2x3 BLUE, 2x3 RED |
+| Label flats | Reserved on front frame surfaces and bin faces |
+| Cable routing clearance | Keep harness outside chute, belt, and drop envelope |
+| Conveyor service access | Motor pulley, drive roller, and tensioner must remain reachable without full teardown |
+
+---
+
+## Selector chute
+
+Status for this section: `PROVISIONAL_ESTIMATE`
+This is an indexed chute, not a circular disc.
+
+| Feature | Dimension |
+|---------|-----------|
+| Selector body envelope | 100mm class provisional |
+| Selector thickness | 8mm |
 | Center bore | 5mm (shaft hub, not direct bore) |
 | Funnel opening size | 32mm x 22mm |
-| Funnel center radius | 40mm |
-| Funnel positions | 315, 45, 135, 225 degrees |
+| Outlet offset from centerline | 40mm |
+| Index positions | 1, 2, 3, 4 |
 | Funnel wall taper | 10 degrees inward |
 | Shaft hub | 5mm aluminum, set-screw |
-| Disc top clearance from platform | 5mm |
+| Selector top clearance from platform | 5mm |
 | Home flag width | 3mm |
 | Home flag protrusion | 2mm from rim |
+| Routing mode | Active selector chute, evidence gate remains open in notebook only |
 
 ---
 
@@ -197,14 +234,14 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 
 1600 steps/rev (200 steps * 8x microstepping).
 
-| Bin | Direction | Degrees | Steps | At 400 sps | At 2000 sps |
-|-----|-----------|---------|-------|------------|-------------|
-| 1 | NW | 315 | 1400 | 3500ms | 700ms |
-| 2 | NE | 45 | 200 | 500ms | 100ms |
-| 3 | SE | 135 | 600 | 1500ms | 300ms |
-| 4 SW home | SW | 225 | 1000 | 2500ms | 500ms |
+| Index | Direction | Steps | At 400 sps | At 2000 sps |
+|-------|-----------|-------|------------|-------------|
+| 1 | NW | 1400 | 3500ms | 700ms |
+| 2 | NE | 200 | 500ms | 100ms |
+| 3 | SE | 600 | 1500ms | 300ms |
+| 4 home | SW | 1000 | 2500ms | 500ms |
 
-Firmware always takes shortest arc. Max adjacent move: 90 deg = 1000ms at 400 sps.
+Firmware always takes shortest arc. Max adjacent move: one index step in either direction = 1000ms at 400 sps.
 
 ---
 
@@ -217,7 +254,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | 1 | NW | 2x2 red | 6 | 40x40x90mm |
 | 2 | NE | 2x2 blue | 6 | 40x40x90mm |
 | 3 | SE | 2x3 blue | 8 | 40x45x110mm |
-| 4 SW DEFAULT | 2x3 red | 4 | 40x45x70mm |
+| 4 | SW default | 2x3 red | 4 | 40x45x70mm |
 
 ---
 
@@ -246,6 +283,7 @@ Status for this section: `PROVISIONAL_ESTIMATE` until full assembled CAD is vali
 | Base plate | 610mm x 610mm x 6mm MDF |
 | Mechanical envelope estimate | 380mm x 420mm |
 | Hard limit | 610mm x 610mm |
+| Conveyor packaging priority | Early, before large frame lock |
 
 Confirm in full CAD before printing frame.
 
@@ -263,7 +301,8 @@ These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
 ### Belt channel and rollers
 
 - Verify belt strip measured width and thickness from received strip stock.
-- Verify actual NEMA 17 shaft diameter, flat depth, and usable shaft length against modeled pulley assumptions.
+- Verify actual NEMA 17 shaft diameter, flat depth, and usable shaft length against modeled motor pulley assumptions.
+- Verify supported shaft diameter, bearing span, and usable shaft length against modeled drive roller assumptions.
 - Verify idler bearing seat fit with received MR115 bearings.
 - Verify crown tracking behavior under powered belt run.
 

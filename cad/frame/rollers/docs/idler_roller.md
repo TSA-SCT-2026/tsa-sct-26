@@ -28,7 +28,7 @@
 
 ## Locked Truth Dependency
 
-- Belt strip and channel geometry constraints needed for stable widthwise brick transport.
+- Belt strip and channel geometry constraints needed for stable widthwise brick transport in the timing stage.
 
 ## Provisional Estimates Used
 
