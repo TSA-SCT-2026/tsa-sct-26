@@ -1,0 +1,33 @@
+COMMIT GUIDE
+============
+
+Purpose
+- Keep commit history readable and reviewable.
+- Describe intent, not implementation details.
+
+Rules
+1) One concern per commit.
+2) Commit message describes outcome and intent.
+3) Do not include function names, variable names, or file paths in the subject.
+4) Do not include tooling or agent references in commit text.
+5) Do not include "Co-authored-by" trailers.
+6) Keep wording concise, plain, and ASCII-only.
+
+Message style
+- Subject should be short and action-oriented.
+- Prefer product/behavior framing over code internals.
+- Optional body may explain why the change was needed and user impact.
+- Brief high-level bullets in the body are good when a commit has a few related concerns.
+- Keep those bullets short, useful for someone scrolling history, and light on technical detail.
+- Use bullets sparingly.
+
+Good subject examples
+- feat(voice): improve state-aware command routing
+- fix(api): harden request validation for audio payloads
+- docs(frontend): simplify websocket integration flow
+- test(voice): expand websocket state transition coverage
+
+Avoid
+- "update process_ask_query in src/visual_memory/api/routes/ask.py"
+- "agent-generated changes"
+- "Co-authored-by: ..."
