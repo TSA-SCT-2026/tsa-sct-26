@@ -3,9 +3,9 @@
 **Source of Truth:** `docs/BOM.xlsx` is the authoritative BOM spreadsheet and purchase record. This markdown file is the architecture-facing summary and may lag the spreadsheet if purchase history changes first.
 
 Architecture-critical correction:
-- Conveyor drive is now treated as `NEMA 17 conveyor stepper`
+- Conveyor drive is now treated as an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
 - Selector drive is `NEMA 11 stepper`
-- Do not treat `JGB37-520 gearmotor` or `TB6612FNG conveyor drive` as the active plan
+- Do not treat `JGB37-520 gearmotor`, `TB6612FNG conveyor drive`, or direct motor-shaft drive as the active plan
 
 ---
 
@@ -23,6 +23,11 @@ Important note:
 **Conveyor and selector motion drivers:**
 Use dedicated stepper drivers for both motion axes. Conveyor uses NEMA 17.
 Selector uses NEMA 11. Reduce hold current when static and provide airflow near the drivers.
+
+**Timing-belt conveyor stage:**
+- Use a toothed belt between the NEMA 17 and the supported drive roller.
+- Keep pulley tooth count and belt series provisional until the final packaging pass is locked.
+- Use a guarded, adjustable tension path so ratio changes do not require a full rebuild.
 
 **PCF8574 I2C expander:**
 Default address 0x20. No conflict with SSD1306 (0x3C) or other reserved I2C peripherals.
@@ -43,6 +48,18 @@ Inline blade fuse holder on LiPo positive lead before power switch. 5A automotiv
 blade fuse. Replaceable. Bring 10 spare fuses to competition. If it blows you know
 immediately and can swap in 10 seconds.
 
+**Timing-belt stage provisional order items:**
+
+| Part | Qty | Est. Cost | Validated spec / ordering note |
+|------|-----|-----------|-------------------------------|
+| GT2 timing belt, final pitch provisional | 2 | $8 | Production conveyor ratio stage. Final pitch and length lock after packaging pass. |
+| Motor pulley for timing belt | 1 | $4 | Tooth count provisional until ratio is measured. |
+| Roller pulley for timing belt | 1 | $4 | Tooth count provisional until ratio is measured. |
+| Supported conveyor roller shaft hardware | 1 | $12 | Shaft, bearings, collars, and mount provisions. |
+| Belt tension hardware | 1 | $8 | Slotted mount or idler tensioner, final form provisional. |
+
+Timing-belt stage subtotal is provisional and is not included in the grand total yet.
+
 ---
 
 ## AliExpress (order now — 7-15 day lead time)
@@ -62,9 +79,9 @@ immediately and can swap in 10 seconds.
 | 12 | JST-XH connector kit (2-pin and 4-pin) | 1 | $6 | Transport connectors, polarized. |
 | 13 | Compression spring assortment (5-8mm OD) | 1 | $5 | Belt idler tensioner spring. Various rates. |
 | 14 | Tension spring assortment (4-6mm OD, 0.3-0.4mm wire) | 2 | $8 | Platform return spring AND lever return spring. Light rates only. |
-| 15 | Sub-miniature snap-action micro-switch (Omron D2F equiv) | 10 | $6 | Pin-plunger actuator type. Stop wall (1), disc home (1), shelf-level (1), 7 spare. |
+| 15 | Sub-miniature snap-action micro-switch (Omron D2F equiv) | 10 | $6 | Pin-plunger actuator type. Stop wall (1), selector home (1), shelf-level (1), 7 spare. |
 | 16 | TMC2209 heatsink (aluminum, adhesive) | 3 | $3 | For both active stepper drivers plus one spare. |
-| 17 | 5mm shaft hub (aluminum, set-screw or clamp) | 2 | $5 | Chute disc mounting. Non-negotiable. 1 primary + 1 spare. |
+| 17 | 5mm shaft hub (aluminum, set-screw or clamp) | 2 | $5 | Selector chute mounting. Non-negotiable. 1 primary + 1 spare. |
 | 18 | 3mm OD polished steel rod 200mm | 4 | $6 | Platform hinge rod. Cut to 25mm sections with Dremel. |
 | 19 | MR115ZZ flanged ball bearing (5mm ID x 11mm OD x 4mm) | 4 | $6 | Idler roller bearings. 2 used + 2 spare. |
 | 20 | NEMA 11 motor mount bracket (metal) | 2 | $8 | Selector axis bracket. 1 used + 1 spare. Do not rely on printed PLA alone. |
@@ -154,9 +171,9 @@ immediately and can swap in 10 seconds.
 | L298N | Not used in the active dual-stepper architecture. |
 | Torsion springs | Not used. Lever mechanism uses only tension + compression springs. |
 | Servo motors | Not used anywhere. |
-| GT2 belt or toothed pulleys | Not used. Belt is neoprene on smooth rollers. |
+| Direct motor-shaft drive parts | Not used. Production path uses a toothed timing belt stage with a supported roller shaft. |
 | A4988 stepper driver | TMC2209 only. Quieter, more efficient, has StallGuard. |
 | 2S LiPo | Requires 3S (11.1V) for 6V rail headroom via LM2596. |
 | Metal lever arm hardware | Lever arm is printed PLA. Forces are trivial. |
 | Additional solenoids beyond 4 | 4 ordered, 1 used, 3 spare. |
-| Metal flywheel for disc | Stepper + TMC2209 is smooth enough. Flywheel increases inertia and worsens stop accuracy. |
+| Metal flywheel for selector indexer | Stepper + TMC2209 is smooth enough. Flywheel increases inertia and worsens stop accuracy. |

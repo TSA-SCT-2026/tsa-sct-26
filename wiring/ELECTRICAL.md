@@ -18,10 +18,11 @@ Status date: April 3, 2026
 
 ## Motion drivers
 
-- Conveyor feed axis: NEMA 17 stepper with dedicated driver
-- Selector disc axis: NEMA 11 stepper with dedicated driver
+- Conveyor feed axis: NEMA 17 stepper with dedicated driver and off-axis timing-belt stage to a supported drive roller
+- Selector chute indexer axis: NEMA 11 stepper with dedicated driver
 - Do not share one stepper driver between both axes
 - Reduce hold current on both axes when static to limit heat
+- Keep the conveyor pulley path guarded and serviceable so ratio changes do not require a redesign
 
 ## Release solenoid path
 
@@ -42,6 +43,8 @@ Status date: April 3, 2026
 - Separate motor-current paths from signal paths where possible
 - Keep high-current loop areas small on solenoid and motor wiring
 - Add strain relief near all moving mechanical interfaces
+- Do not rely on motor-shaft support as the production roller mount
+- Keep the belt tension access and pulley guard removable for service
 
 ## Pre-power checks
 

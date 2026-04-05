@@ -1,15 +1,38 @@
 # Calibration Procedures
 
-Calibration is valid only with final mechanical geometry installed, including the color shroud and lever trapdoor mechanism.
+Calibration is valid only with final mechanical geometry installed, including the color shroud, lever trapdoor mechanism, selector chute, and timing-belt conveyor stage.
 
 ## Preconditions
 
 - 3S LiPo power, charged in normal operating range
 - Chamber, platform, lever, and springs installed
-- Selector disc mounted on aluminum hub and homing functional
+- Timing-belt stage aligned and tensioned
+- Selector chute mounted on its final indexer hardware and homing functional
 - Color shroud installed and light leaks closed
+- Display, start control, and bin labels installed
 
-## 1. Lever release calibration
+## 1. Conveyor pitch and queue cadence calibration
+
+Goal: confirm the steady-state feed advance that supports the compressed queue.
+
+Procedure:
+1. Load a full 24-brick queue.
+2. Run repeated seat and reset cycles while logging entry, seated, selector-ready, release, platform-level, and next-entry times.
+3. Measure the distance the belt advances between one brick clearing the chamber and the next brick reaching the stop wall.
+4. Compare the measured advance to the chamber pitch and the safe restart condition.
+
+Acceptance:
+- No double-entry during 24-brick runs
+- Chamber seats repeatably at the same stop wall position
+- Restart distance stays within the measured chamber pitch window across repeated runs
+- No seated-state oscillation
+
+If failures occur:
+- Tune belt ratio or pulley size first
+- Tune approach speed second
+- Recheck stop wall contact and chamber alignment after each change
+
+## 2. Lever release calibration
 
 Goal: guarantee reliable tab clearance and re-latch.
 
@@ -28,7 +51,7 @@ If failures occur:
 - Tune return spring force second
 - Re-run full loaded cycle test after each change
 
-## 2. Color threshold calibration
+## 3. Color threshold calibration
 
 Procedure:
 1. Place seated brick in chamber with belt off.
@@ -46,17 +69,20 @@ Calibration evidence template:
 |-----------|--------------------|-------------------------------|----------------|-----------------|------------|------------------|----------|------|
 | | | | | | | | | |
 
-## 3. Belt and approach timing calibration
+## 4. Selector and reset calibration
 
 Procedure:
-1. Confirm consistent seat detect timing from entry to stop switch.
-2. Tune belt target and settle window for stable static sensing.
-3. Validate no bounce-induced false transitions.
+1. Home the selector chute and verify the home switch repeatability.
+2. Index to each bin position and measure adjacent move time and worst-case move time.
+3. Confirm the selector-ready event occurs before release is allowed.
+4. Confirm the platform-level event occurs before the next feed is allowed.
 
 Acceptance:
-- No approach timeout during 24-brick runs
-- No seated-state oscillation
+- Selector moves cleanly to all four positions
+- Re-home penalty is repeatable and within the modeled allowance
+- Release does not start before selector-ready
+- Next feed does not start before platform-level confirmation
 
-## 4. Full-system verification
+## 5. Full-system verification
 
 Run at least 10 full 24-brick runs and log CSV data for notebook use.

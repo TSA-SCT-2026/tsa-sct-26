@@ -5,11 +5,19 @@ Current execution priority is CAD-first validation, so begin with mechanical dec
 
 Notebook source of truth lives in `docs/notebook/` and run CSV data lives in `docs/runs/`.
 
+## Short terms
+
+- Selector chute: the 4-index routing mechanism that indexes to the target bin
+- Chamber pitch: the feed distance needed to hand off the next brick after the chamber clears
+- Selector-ready: the routing path is aligned and locked, so release is allowed
+- Platform-level: the platform has re-latched, so the next feed is allowed
+
 ## Recommended notebook file set
 
 Keep the notebook authored in this directory with one file per section:
 
 - `decision_matrices.md`
+- `rejected_alternatives.md`
 - `calibration_records.md`
 - `equations_and_models.md`
 - `failure_mode_analysis.md`
@@ -24,7 +32,21 @@ Subsystems that need matrices:
 - Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
 - Color sensor (TCS3200 GY-31 vs alternative color modules vs camera vs discrete photodiodes)
 - Trapdoor release actuation (class 3 lever with solenoid vs direct plunger vs sliding support)
-- Selector mechanism (rotary selector disc vs linear diverter vs hybrid gate)
+- Selector mechanism (4-index selector chute vs linear diverter vs hybrid gate)
+- Conveyor drive topology (direct drive vs off-axis timing-belt stage vs other supported shaft layouts)
+
+## Rejected alternatives
+
+Keep `rejected_alternatives.md` as a short branch list. Use bullet sections for full designs first, then subdesigns inside each branch.
+
+Include at least these branches:
+- Continuous conveyor with singulator and fixed downstream diverters
+- Two-stage lane split with size first then color
+- Solenoid flap routing after release
+- Direct-drive conveyor with unsupported motor shaft
+- Rotary selector replacement concepts that were examined and rejected
+
+Each branch should record the subdesigns that were considered under it, such as singulator style, gate style, shaft support style, or routing layout.
 
 ## Calibration procedures
 
@@ -33,6 +55,8 @@ Write these after hardware exists. The procedure must specify: what hardware con
 ## Performance data
 
 Run at least 10 full 24-brick runs during reliability testing. Log all of them to CSV via serial output in `docs/runs/`. Summarize in a table: run number, time, per-bin totals, accuracy, any errors. This table is the core of the performance section.
+
+Make sure the selector gate study is represented in the notebook with modeled and measured routing latency, adjacent-move time, worst-case move time, homing penalty, and the decision rule that keeps the selector chute active unless the evidence says it cannot win.
 
 ## Failure mode analysis
 

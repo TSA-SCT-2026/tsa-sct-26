@@ -31,13 +31,11 @@
   - PTF tape to reduce friction on the conveyor
   - Create datasets of different aspects of the conveyor and make graphs, tables, and equations to show performance. Use that metric to improve design and regenerate statistics to show improved performance objectively.
   - Use Matlab alternatives such as SageMath, GNU Octave, Python, and Excel for modeling (whatever is efficient).
-- Team approach to using LLMs:
-  - Avoid having it make design decisions that we do not understand
-  - Always ground it in real dimensions, research, and preexisting projects online
-  - Quickly learn things we do not know
-  - Have it map out todos for the project
-  - Tell it ideas and solutions, and have it evaluate them using research
-  - Generate mock data and simulations for visualization
+- Team process:
+  - Ground design choices in measured parts, drawings, and test data
+  - Keep decision notes short enough that another builder can follow them later
+  - Separate ideas from proof so the notebook stays honest
+  - Use calculations and mock data only when they are clearly labeled as estimates
 
 ## Meeting 3: 4/3/26 (35 minutes)
 
