@@ -6,278 +6,255 @@ Build a fully automated LEGO brick sorter for TSA System Control Technology nati
 
 Success criteria:
 - Sort 24 bricks into 4 bins correctly
-- Prioritize reliability and repeatability first
-- Reach under 10 seconds only after 24/24 correctness is stable
-- Make operation obvious for a first-time evaluator using only written instructions
+- Make the evaluator flow obvious: load 24 bricks, press start, read clear status, remove sorted bins
+- Prioritize reliability and repeatability before chasing final cycle time
+- Reach sub-10-second total sorting only through measured, state-safe optimization
 
 ## Numeric source of truth
 
-All mechanism geometry and timing constants used by documentation must trace back to `cad/DIMENSIONS.md`.
+All mechanism geometry and derived transport values used by documentation must trace back to `cad/DIMENSIONS.md`.
 
 If another doc needs a number, either:
 - reference `cad/DIMENSIONS.md` directly, or
-- explicitly say it is a derived value and show the derivation source.
+- mark it as derived and identify the source dimensions
 
-## Current phase
+## Active production architecture
 
-Current phase is CAD completion before other work.
+This repo is centered on one active architecture:
+- Preloaded 24-brick compressed queue
+- Widthwise brick orientation
+- One-brick isolation chamber
+- Static size and color sensing in the chamber
+- 4-index selector chute under the trapdoor, active for now
+- Gravity release by support removal
+- NEMA17 conveyor feed axis
+- Off-axis toothed timing-belt stage to a supported smooth drive roller
+- Event-gated restart only after physical reset truth is satisfied
 
-Scope in this phase:
-- Lock core mechanical geometry
-- Print and validate the highest risk mechanism pieces
-- Freeze assembly interfaces before wiring and firmware integration
-
-Out of scope in this phase:
-- Throughput tuning
-- Firmware optimization
-- Final wiring harness finish work
+Rejected upstream singulation families such as cam, Geneva, star wheel, and dual-pin are not part of the active plan. Keep them in notebook alternatives only.
 
 ## Core design principle
 
-Every correctness guarantee is enforced by geometry and binary state, not timing.
+Correctness is closed by geometry and binary state, not by optimistic timing guesses.
 
-- One brick occupies the isolation chamber at a time: physical geometry prevents two
-- Sensing only happens while the chamber is static
-- Chute selector position is committed before release
+- One brick occupies the chamber at a time because geometry prevents two
+- Sensing happens only while the chamber is static
+- Selector position is committed before release
 - Release is support removal, then gravity
+- Restart happens only after physical reset truth is satisfied
 
-The conveyor must be sequenced correctly, but correctness is still closed by physical state and sensor confirmation.
+Timing matters for speed, but timing does not replace chamber truth, selector truth, bin confirmation, or platform-level confirmation.
 
-- Conveyor motion can be aggressive and repeatable because NEMA 17 step control governs feed distance and stop behavior.
-- Entry beam, stop switch, selector position, and platform reset still gate the state machine.
-- Step count improves sequencing. It does not replace chamber truth checks.
+## Brick orientation rule
 
-Brick orientation rule:
-- Bricks are widthwise across the conveyor: 15.8mm width across the belt channel, brick length along travel
-- Why: fixed across-channel footprint limits yaw and keeps size detection dependent on along-travel length at fixed beam positions
+Bricks are widthwise across the conveyor:
+- 15.8mm width across the belt channel
+- Brick length along travel
+
+Why:
+- Across-channel footprint stays constant for both sizes
+- Yaw risk is reduced in the narrow channel
+- Size sensing depends only on along-travel length at fixed beam positions
+
+## Terminology
+
+Use these terms consistently:
+- `selector`: the routing mechanism below the trapdoor
+- `selector chute`: the active 4-index gravity-routing mechanism with four deterministic target positions
+- `index position`: one of the four valid routed positions of the selector chute
+- `trapdoor platform`: the chamber floor that drops when support is removed
+- `chamber pitch`: effective steady-state distance from one seated brick to the next seated brick in the compressed queue
+- `cold start`: first-brick feed from the initial queue rest state
+- `steady state`: repeating cycle after the queue is already compressed against the chamber workflow
+- `safe restart condition`: the physical truth required before the next pitch advance begins
+
+Older repo text may say `disc`. Treat that as stale wording unless a specific circular geometry is being discussed historically.
 
 ## End-to-end pipeline
 
-```
-[feed chute: 24 bricks loaded]
-    -> [narrow belt: 20mm channel, 100-120mm transport]
-    -> [isolation chamber: stop wall + micro-switch confirm]
-    -> [STATIC: dual IR size beams + purchased color sensor module]
+```text
+[preloaded chute: 24 bricks compressed]
+    -> [narrow conveyor channel]
+    -> [one-brick isolation chamber]
+    -> [STATIC: size beams + color sensor]
     -> [classification lock]
-    -> [stepper indexes 4-position chute selector]
-    -> [solenoid actuates class 3 lever]
-    -> [lever clears platform tab]
-    -> [platform drops under gravity]
-    -> [brick falls through selector opening into target bin]
-    -> [bin entry beam confirms arrival]
-    -> [platform and lever return]
-    -> [token restored, belt feeds next brick]
+    -> [selector chute indexes to target]
+    -> [platform support removed]
+    -> [brick falls through aligned selector chute opening]
+    -> [bin entry confirmation]
+    -> [platform returns level]
+    -> [next brick advances by chamber pitch]
 ```
 
-## Mechanism summary
+## Throughput model
 
-The chamber floor is a hinged platform. A class 3 lever tip supports a tab on the platform far edge.
+Do not model this machine as one full conveyor traverse per brick.
 
-- Solenoid applies effort near the fulcrum
-- Lever tip sweeps outward and clears the tab
-- Platform loses support and drops under gravity
-- Brick falls through the selector opening
-- Springs return platform and lever to latched state
+The active model uses chamber pitch:
+- Cold-start phase: first brick travels from initial queue rest state to chamber seat
+- Steady-state phase: each following brick advances only far enough to refill the chamber from the compressed queue
 
-Design intent:
-- Solenoid does not carry platform weight
-- Actuation work is primarily spring preload
-- Re-latch is geometric with chamfered lead-in
+Top-level timing terms:
+- `cold_start_feed_time`: time for the first brick to reach chamber seat
+- `chamber_pitch_mm`: effective distance from one seated brick to the next seated brick in steady state
+- `pitch_advance_time`: time to move the next brick from queue-ready position into the seated chamber state
+- `settle_and_sense_time`: belt-off sensing window after seating
+- `selector_ready_time`: time from classification lock to selector-ready confirmation
+- `drop_window_time`: release pulse plus fall window until bin confirmation is expected
+- `reset_confirm_time`: time from release to confirmed platform-level reset
+- `safe_restart_condition`: the physical event combination required before pitch advance begins again
+
+### Cold-start model
+
+Cold-start is relevant for the first brick only and for recovery from large gaps.
+
+Cold-start sequence:
+1. Feed from queue rest state
+2. Chamber seat confirmation
+3. Static sensing
+4. Selector-ready confirmation
+5. Release and bin confirmation
+6. Platform-level reset
+
+### Steady-state model
+
+Steady-state is the performance model that matters for winning.
+
+Steady-state sequence:
+1. Chamber is free and reset-confirmed
+2. Next brick advances by chamber pitch
+3. Chamber seat confirmation
+4. Static sensing
+5. Selector-ready confirmation
+6. Release and bin confirmation
+7. Platform-level reset
+8. Next pitch advance begins when the safe restart condition is satisfied
+
+Safe overlap is allowed only when physical truth permits it. Examples:
+- Selector can start moving as soon as classification is locked
+- Feed can restart only after reset truth is confirmed
+- No release occurs until selector-ready is confirmed
+
+## Conveyor architecture
+
+The active conveyor path is:
+
+`NEMA17 stepper -> toothed timing-belt stage -> supported roller shaft -> smooth drive roller -> neoprene belt`
+
+Why this is the active production path:
+- Ratio flexibility without replacing the motor
+- Supported roller shaft instead of loading the motor shaft directly
+- Easier packaging inside the 610mm x 610mm footprint
+- Easier tuning of speed versus torque after real hardware arrives
+- Cleaner service and replacement path
+
+Direct-drive conveyor rollers are not the active plan.
 
 ## Sensing summary
 
 Size:
-- Two IR break-beams at X=5mm and X=21mm
-- Both blocked means 2x3
-- Any other valid pattern means 2x2
+- Two IR break-beams at chamber positions defined in `cad/DIMENSIONS.md`
+- Size classification depends on static beam state only
 
 Color:
-- Current purchase log points to a TCS3200 GY-31 module
-- Sensor mounts behind a 12mm x 12mm chamber window
-- Black PLA shroud installed during all calibration and runs
-- Final classification method must be locked from measured hardware behavior, not assumed from the earlier TCS34725 plan
+- Purchased module in the current hardware log is the TCS3200 GY-31 family
+- Final interface, calibration, and thresholds must be based on received hardware
+- Color calibration is valid only with the installed shroud and final geometry
 
 Sampling constraints:
-- Belt must be off
-- Chamber seated switch must confirm brick presence
+- Belt off
+- Chamber seated
+- No release motion active
 
-## Chute selector summary
+## Routing summary
 
-- NEMA 11 stepper with TMC2209
-- 100mm selector disc with 4 openings at 90-degree intervals
-- Disc mounted to 5mm aluminum shaft hub, not printed bore
-- Periodic re-home cadence to catch drift
+The active routing mechanism is a 4-index selector chute under the trapdoor.
 
-## Conveyor summary
+The selector chute is active, not permanently frozen.
 
-- NEMA 17 stepper on the conveyor feed axis
-- Controlled feed and approach motion, not open-loop PWM speed tuning
-- Chamber entry beam and stop-wall switch remain the final authority that a brick is actually seated
-- Conservative acceleration first, then speed tuning after repeatability is proven
+Optimization target:
+- Weighted selector transition cost
+- Reset latency
+- Total steady-state routing cost
 
-Rule:
-- Selector indexing completes before trapdoor release
+Do not treat “home equals rarest bin” as a sufficient speed argument. The relevant metric is weighted angular travel across the real brick distribution and real motion profile.
 
-## Bin mapping
+## Selector evidence gate
 
-| Bin | Direction | Category | Count | Selector angle |
-|-----|-----------|----------|-------|----------------|
-| 1 | NW | 2x2 red | 6 | 315 deg |
-| 2 | NE | 2x2 blue | 6 | 45 deg |
-| 3 | SE | 2x3 blue | 8 | 135 deg |
-| 4 | SW default | 2x3 red | 4 | 225 deg |
+The selector chute remains active unless evidence shows it cannot support a first-place system.
 
-Default bin is category 2x3 red because it is the rarest bucket.
+Required gate study before production freeze:
+- Adjacent-move time
+- Worst-case move time
+- Weighted-average move time across the real 24-brick distribution
+- Re-home penalty
+- Selector-inclusive steady-state per-brick routing cost
+- Comparison against at least one downstream fixed-diverter alternative documented in the notebook
+
+Use official motion references plus bench data:
+- MOONS' NEMA11 curves: https://www.moonsindustries.com/series/nema-11-standard-hybrid-stepper-motors-b020102
+- Oriental Motor speed-torque guidance: https://www.orientalmotor.com/stepper-motors/technology/speed-torque-curves-for-stepper-motors.html
+- TMC2209 datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.08.pdf
+
+Required interpretation rule:
+- Representative NEMA11 data suggests the motor class is not inherently too slow for a 4-position diverter
+- Actual selector cost still depends on the real motor, voltage, microstep choice, selector inertia, friction, and motion profile
+- If the selector-inclusive model and bench data do not credibly support sub-10-second sorting with margin, reopen downstream routing before freezing production CAD
+
+## Control philosophy
+
+The firmware contract must be built around physical truth events, not doc drift or guessed delays.
+
+Required event families:
+- `ENTRY_DETECTED`
+- `CHAMBER_SEATED`
+- `SENSING_DONE`
+- `SELECTOR_READY`
+- `DROP_WINDOW_DONE`
+- `BIN_CONFIRMED`
+- `PLATFORM_LEVEL`
+- optional `CHAMBER_CLEAR`
+- optional `PITCH_ADVANCE_DONE`
+
+The conveyor restart rule is:
+- do not feed the next brick until reset truth is satisfied
 
 ## Compliance coverage
 
 | Requirement | Implementation |
 |-------------|----------------|
-| Two or more sensors | Dual IR size beams, color sensor, chamber micro-switch, bin beams |
-| Manual start and stop | Momentary control button |
-| Programmable controller | ESP32 DevKit |
-| Feedback loop | Chamber and bin confirmations with halt on miss |
-| Motorized conveyor | NEMA 17 stepper conveyor |
-| Automated sorting mechanism | Stepper selector plus trapdoor release |
+| Two or more sensors | Size beams, color sensor, chamber seat confirm, bin confirm, optional platform-level confirm |
+| Manual start and stop | Labeled start control and power control |
+| Programmable controller | ESP32 |
+| Feedback loop | Chamber, selector, bin, and reset truth in the control loop |
+| Motorized conveyor | NEMA17 stepper conveyor with timing-belt stage |
+| Automated sorting mechanism | 4-index selector chute plus trapdoor release |
 
-## Timing budget
+## Current implementation priorities
 
-Conservative phase estimate:
+### Gate 1: chute transition truth
 
-| Phase | Duration |
-|-------|----------|
-| Belt transport | 1200ms |
-| Settle and sensor read | 247ms |
-| Selector index worst case | 2000ms |
-| Drop and return | 408ms |
-| Confirm and restart | 70ms |
-| Total per brick | about 3925ms |
-| Total for 24 bricks | about 94s |
-
-Optimization belongs to a later phase after reliability is proven.
-
-## Known limits right now
-
-- Current timing budget is intentionally conservative and not optimized for final speed scoring yet.
-- Throughput tuning is deferred until reliability gates pass repeatedly on real bricks.
-- Calibration values are expected to change with final hardware stack and shroud-installed optical conditions.
-- Firmware replay logging and simulation compare workflow are still pending integration items.
-
-## Locked decisions
-
-- Gravity trapdoor with class 3 lever
-- Lever tip sweeps outward away from belt
-- Static-only sensing
-- Routing pre-commit before release
-- Occupancy token as source of truth
-- 5mm aluminum hub interface for selector disc
-- Default bin is the rarest category
-
-## Dedicated TODO: CAD phase only
-
-Status date: April 3, 2026
-
-### A. Gate 1: isolate and validate trapdoor mechanism
-
-Goal: prove repeatable drop and re-latch before printing larger assemblies.
+Goal: validate the highest-risk geometry first.
 
 Tasks:
-- Print platform, hinge bracket, lever arm, lever pivot bracket, and solenoid bracket
-- Assemble and verify free motion at hinge and lever pivots
-- Validate lever-tip under-tab engagement at rest
-- Validate full tab clearance on solenoid actuation
-- Validate spring-assisted re-latch via chamfer geometry
-- Run 50-cycle reliability test with real bricks
+- Prototype chute transition first
+- Validate single-brick feed under full queue load
+- Validate transition into the narrow conveyor channel
 
 Exit criteria:
-- 0 failed drops in 50 cycles
-- 0 failed re-latches in 50 cycles
-- Return-to-level under 200ms
+- No jams in 50 feed attempts
+- No double-feed events in 50 feed attempts
 
-### B. Gate 2: chamber and sensing geometry lock
+### Gate 2: conveyor packaging and interface lock
 
-Goal: lock interfaces before any broad part print run.
+Goal: lock the production conveyor path before larger assemblies drift.
 
 Tasks:
-- Freeze chamber wall geometry and stop-wall switch mounting
-- Freeze dual beam hole placements at X=5mm and X=21mm
-- Freeze color window and shroud mount geometry
-- Confirm sensor hardware clearances with fast fit prints
+- Package motor, timing-belt stage, supported roller shaft, idler, and tension adjustment
+- Confirm service clearance, belt guard clearance, and cable-routing paths
+- Confirm chamber and frame interfaces based on the packaged conveyor module
 
 Exit criteria:
-- Sensors mount without forcing
-- Brick motion is unobstructed
-- No light leak paths around shroud interface
-
-### C. Gate 3: selector disc and drop alignment
-
-Goal: guarantee clean gravitational path from platform to bins.
-
-Tasks:
-- Print selector disc prototype with target opening geometry
-- Validate disc-to-platform concentric alignment
-- Validate drop path to each bin quadrant
-- Tune funnel edges if any corner contact appears
-
-Exit criteria:
-- Brick clears drop path in all 4 selector positions
-- No edge catch across at least 25 drops per bin
-
-### D. Gate 4: chute transition and belt interface
-
-Goal: de-risk highest-risk geometry before full mechanical print set.
-
-Tasks:
-- Prototype chute transition piece first and test with real bricks
-- Validate exit height and transition smoothness into belt channel
-- Validate single-brick feed behavior at target clearances
-- Build pulley and idler assembly CAD with motor, axle, and bearing hardware references
-- Validate pulley clamp clearance, bearing seating depth, and belt tracking envelope in assembly view
-
-Exit criteria:
-- No double-feed events in 50-feed trial
-- No jam at transition under full-height stack load
-- Pulley assembly CAD shows no hard interference at operating clearances
-
-### E. Gate 5: mechanical packaging and footprint check
-
-Goal: guarantee rules compliance and operator clarity.
-
-Tasks:
-- Confirm full assembly envelope stays within 610mm x 610mm
-- Place and verify bin labels and orientation cues in CAD
-- Confirm cable routing channels and anchor points
-- Confirm clear mounting surface for labeled start control
-
-Exit criteria:
-- Footprint hard limit met with margin documented
-- All operator-facing labels physically placeable and visible
-
-## Secondary TODOs after CAD lock
-
-These are not active until CAD gates are complete:
-- Firmware CSV event logging for replay integration
-- Simulation compare mode for expected versus replayed timing
-- Optional simulation import from `firmware/src/config.h`
-
-## Open questions
-
-- OQ-05: Selector funnel surface finish. Test plain PLA first. Add PTFE tape only if catch appears.
-- OQ-06: Belt transport length final value in 100-120mm window.
-- OQ-07: Lever chamfer angle tuning. Start at 30 degrees and validate empirically.
-
-## Document map
-
-Primary references:
-- Mechanical design: `cad/MECHANICAL.md`
-- Critical dimensions: `cad/DIMENSIONS.md`
-- Electrical design: `wiring/ELECTRICAL.md`
-- Firmware architecture: `firmware/EMBEDDED.md`
-- Parts list: `docs/BOM.md`
-- Calibration: `docs/CALIBRATION.md`
-- Test protocol: `docs/TEST_PROTOCOL.md`
-- Build checklist: `docs/CHECKLIST.md`
-- Assembly guide: `docs/ASSEMBLY.md`
-- Meeting log: `docs/MEETINGS.md`
-- Notebook guide: `docs/notebook/README.md`
-- Competition info: `docs/COMPETITION_INFO.md`
+- No hard interference in assembled CAD
+- Ratio, shaft support, and tension-adjust ranges documented
+- Conveyor module fits the system footprint with margin

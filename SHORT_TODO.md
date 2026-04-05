@@ -1,28 +1,28 @@
 # Short TODO
 
-Updated April 4, 2026 after architecture sync.
-Current phase: CAD first, with hardware truth lock only where it changes interfaces.
+Updated April 5, 2026 after architecture reset.
+Current priority: align the repo to the queue-fed chamber sorter that we are actually building.
 
-Details live in `docs/ARCHITECTURE.md` under `Dedicated TODO: CAD phase only`.
+## Immediate priorities
 
-## This session
+1. Sync architecture truth
+- Remove old direct-drive conveyor assumptions
+- Remove old full-transport-per-brick timing assumptions
+- Make chamber pitch, reset confirmation, and weighted selector travel the active model
 
-1. Lock real hardware truth
-- Measure and photograph the received NEMA 17, color sensor, and solenoid
-- Update any repo dimensions or assumptions that still differ from the real parts
+2. Lock conveyor production path
+- Build the conveyor around off-axis NEMA17 drive, toothed timing belt, supported roller shaft, and smooth drive roller
+- Freeze packaging interfaces early enough that chamber and frame work do not drift
 
-2. Rebuild and lock roller outputs
-- Regenerate all roller STL files from `cad/frame/rollers/scripts/build_rollers.sh`
-- Run shaft-fit, bearing-fit, and crown coupons, then lock final values in `cad/frame/rollers/src/rollers_params.scad`
+3. Repair firmware control contract
+- Align events, state machine, actuators, logger, harness, and docs to the same physical-truth model
+- Treat compile consistency as a gate before any optimization pass
 
-3. Build the Fusion conveyor module
-- Place the NEMA 17, pulley, idler, belt envelope, axle stack, and tensioner travel
-- Verify shaft fit, roller coplanarity, belt tracking envelope, and motor clearance
+4. Protect the selector decision
+- Keep the 4-index selector chute active for now
+- Add the selector evidence gate, routing study, and bench-test expectations before final production freeze
 
-4. De-risk the highest-risk mechanisms
-- Prototype the chute transition first
-- Bench-validate the trapdoor release and re-latch cycle with repeated runs
-
-5. Freeze control and packaging interfaces
-- Freeze the conveyor stepper driver interface and GPIO plan after the driver choice is final
-- Confirm footprint, labels, display visibility, and operator-facing layout
+5. Raise documentation quality
+- Add local instruction files where missing
+- Expand notebook alternatives, calibration, testing, and run-log expectations
+- Keep operator-facing physical UX explicit in every subsystem

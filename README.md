@@ -1,61 +1,92 @@
 # tsa-sct-26
 
-TSA System Control Technology 2026: Automated Warehouse Sorting and Conveyor System.
+TSA System Control Technology 2026: automated LEGO brick sorter for nationals on May 1, 2026.
 
-Sorts 24 LEGO bricks by size and color into 4 bins on a conveyor, automatically, in under 10 seconds. Competition: May 1 2026.
+The active production architecture sorts 24 LEGO bricks by size and color into 4 bins using:
+- Preloaded 24-brick compressed queue
+- One-brick isolation chamber
+- Static sensing in the chamber
+- NEMA17 conveyor feed axis
+- Off-axis toothed timing-belt stage to a supported smooth drive roller
+- 4-index selector chute under the trapdoor, active for now
+- Event-gated control with physical truth checks before each release and restart
+
+Goal: first place at nationals.
 
 ## Start here
 
-Read `docs/ARCHITECTURE.md` for the full system overview, design philosophy, pipeline, and build schedule.
+Read these in order:
+1. `docs/ARCHITECTURE.md`
+2. The subsystem doc for the area you are touching
 
-## System overview
+## Active system model
 
-Current design uses a **chamber isolation architecture**:
-- Narrow 20mm belt conveyor with side rails (brick isolation)
-- Bricks oriented widthwise across conveyor, with length along travel for stable fit and deterministic size sensing
-- Class 3 lever trapdoor (8mm solenoid stroke amplified to about 30mm tip travel)
-- Stepper-indexed 4-position rotating chute selector beneath trap
-- Four collection bins at stationary positions
+Do not model the machine as one full belt traverse per brick.
 
-This design eliminates lateral diverter complexity and achieves deterministic per-brick isolation through sequential chamber gating.
+The active throughput model is:
+- A compressed queue is already staged at the chute exit
+- Only one brick may occupy the chamber
+- The next brick advances by chamber pitch, not by full conveyor length
+- Static sensing, selector readiness, drop, bin confirm, and platform-level reset form the control loop
+- Safe overlap is allowed only when physical state confirms it
+
+The likely production bottleneck is selector motion plus reset latency, not conveyor transport length.
+
+## Selector status
+
+The 4-index selector chute is the active routing design.
+
+It is not permanently locked. The repo now treats it as an evidence-gated choice:
+- Keep the selector chute unless measured or modeled routing cost shows it cannot support a sub-10-second winning design with margin
+- Evaluate selector cost using official NEMA11 motion references plus real bench data from the actual mechanism
 
 ## Repo structure
 
-```
+```text
 tsa-sct-26/
-  cad/                     all printable parts, organized by subsystem
-    MECHANICAL.md          physical design and fabrication notes
-    DIMENSIONS.md          critical geometry and tolerances
-  firmware/                ESP32 embedded firmware (PlatformIO project)
-    EMBEDDED.md            firmware architecture and specification
-  wiring/
-    ELECTRICAL.md          power architecture, wiring, protection components
-  simulation/              browser-based system simulator (no server needed)
-    simulator.html         open this directly - interactive parameter tuning
-    CONFIG_REFERENCE.md    explanation of every parameter, timing math, warnings
+  SHORT_TODO.md
+  COMMIT_GUIDE.log
+
   docs/
-    ARCHITECTURE.md        master architecture and phase plan
-    MEETINGS.md            chronological team meeting notes and decisions
-    ASSEMBLY.md            full system assembly workflow
-    BOM.md                 parts list with ordering info
-    CALIBRATION.md         calibration process and targets
-    CHECKLIST.md           build and verification checklist
-    TEST_PROTOCOL.md       pass/fail protocol
-    COMPETITION_INFO.md    competition references and constraints
+    ARCHITECTURE.md
+    ASSEMBLY.md
+    BOM.md
+    CALIBRATION.md
+    CHECKLIST.md
+    COMPETITION_INFO.md
+    MEETINGS.md
+    TEST_PROTOCOL.md
     notebook/
-      README.md            engineering notebook guidance
-  SHORT_TODO.md            immediate session task list
+    runs/
+
+  cad/
+    MECHANICAL.md
+    DIMENSIONS.md
+    README.md
+    frame/rollers/
+
+  firmware/
+    EMBEDDED.md
+    README.md
+    src/
+
+  wiring/
+    ELECTRICAL.md
+
+  simulation/
+  reference/
 ```
 
-## Development tools
+## Development notes
 
-Open `simulation/simulator.html` in a browser for an interactive system simulator. No server needed. Defaults match `firmware/src/config.h`. Controls let you tune every parameter and see the effect on throughput, sensing, and thermal behavior before touching hardware. See `simulation/CONFIG_REFERENCE.md` for a full explanation of every parameter.
+- `simulation/` is a separate sandbox and should not drive mechanical truth by itself.
+- `reference/` is not part of the active implementation surface.
+- Numeric geometry and derived timing assumptions should trace back to `cad/DIMENSIONS.md`.
+- Judges score reliability, clarity, and documentation heavily. Operator-facing UX is not cosmetic.
 
-When firmware config values change, update `simulation/src/defaults.js` in the same change so simulator tuning remains aligned.
+## Competition constraints
 
-## Competition requirements summary
-
-- 2ft x 2ft maximum footprint
-- 24 LEGO bricks (12x 2x2, 12x 2x3) sorted by size then color into 4 bins
-- Minimum: 2 sensors, manual start/stop, programmable controller, feedback loop, motorized conveyor, 1 automated sorting mechanism
-- Full requirements: `docs/COMPETITION_INFO.md`
+- Footprint must stay within 610mm x 610mm
+- Evaluator operates the system alone with written instructions
+- Primary competition flow is: load 24 bricks, press start, machine sorts
+- LiPo power is the only meaningful run condition
