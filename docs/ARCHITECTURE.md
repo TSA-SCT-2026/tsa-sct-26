@@ -24,11 +24,13 @@ If another doc needs a number, either:
 
 This repo is centered on one active architecture:
 - Preloaded 24-brick compressed queue
+- Upstream start gate in the tall chute section to hold the queue off the transition before `START`
 - Long-side-across brick orientation
+- Chute stays parallel to the final chamber orientation in the first CAD pass. No orientation-swap transition
 - One-brick isolation chamber
 - Static size and color sensing in the chamber
-- 4-index selector chute under the trapdoor, active for now
-- Gravity release by support removal
+- 4-index selector chute below the chamber, active for now
+- Gravity release by a solenoid-driven retracting support
 - NEMA17 conveyor feed axis
 - Off-axis toothed timing-belt stage to a supported smooth drive roller
 - Event-gated restart only after physical reset truth is satisfied
@@ -45,7 +47,7 @@ Correctness is closed by geometry and binary state, not by optimistic timing gue
 - Release is support removal, then gravity
 - Restart happens only after physical reset truth is satisfied
 
-Timing matters for speed, but timing does not replace chamber truth, selector truth, bin confirmation, or platform-level confirmation.
+Timing matters for speed, but timing does not replace chamber truth, selector truth, bin confirmation, or reset confirmation.
 
 ## Brick orientation rule
 
@@ -54,16 +56,20 @@ Bricks are long-side-across the conveyor:
 - 2x2 bricks remain 15.8mm by 15.8mm
 
 Why:
-- The chamber footprint is keyed to the long side so only one brick can occupy the trapdoor region at a time
+- The chamber footprint is keyed to the long side so only one brick can occupy the release zone at a time
 - Chamber, chute, and sensor geometry must be re-derived from this orientation before freeze
 
 ## Terminology
 
 Use these terms consistently:
-- `selector`: the routing mechanism below the trapdoor
+- `start gate`: the upstream queue stop above the transition. It opens at run start and closes again after the run.
+- `selector`: the routing mechanism below the release gate
 - `selector chute`: the active 4-index gravity-routing mechanism with four deterministic target positions
 - `index position`: one of the four valid routed positions of the selector chute
-- `trapdoor platform`: the chamber floor that drops when support is removed
+- `home reference`: the required selector micro-switch reference used to restore selector position truth
+- `seat confirmation`: the required stop-wall micro-switch confirmation that the brick is fully seated in the chamber
+- `release gate`: the chamber support-removal mechanism. Active concept: solenoid-driven retracting support.
+- `trapdoor platform`: historical term for the earlier release concept. Treat as stale unless a specific legacy note is being discussed
 - `chamber pitch`: effective steady-state distance from one seated brick to the next seated brick in the compressed queue
 - `cold start`: first-brick feed from the initial queue rest state
 - `steady state`: repeating cycle after the queue is already compressed against the chamber workflow
@@ -74,16 +80,17 @@ Older repo text may say `disc`. Treat that as stale wording unless a specific ci
 ## End-to-end pipeline
 
 ```text
-[preloaded chute: 24 bricks compressed]
+[preloaded chute: 24 bricks compressed behind start gate]
+    -> [start gate opens]
     -> [narrow conveyor channel]
     -> [one-brick isolation chamber]
     -> [STATIC: size beams + color sensor]
     -> [classification lock]
     -> [selector chute indexes to target]
-    -> [platform support removed]
+    -> [release gate clears support]
     -> [brick falls through aligned selector chute opening]
     -> [bin entry confirmation]
-    -> [platform returns level]
+    -> [reset state confirmed]
     -> [next brick advances by chamber pitch]
 ```
 
@@ -102,7 +109,7 @@ Top-level timing terms:
 - `settle_and_sense_time`: belt-off sensing window after seating
 - `selector_ready_time`: time from classification lock to selector-ready confirmation
 - `drop_window_time`: release pulse plus fall window until bin confirmation is expected
-- `reset_confirm_time`: time from release to confirmed platform-level reset
+- `reset_confirm_time`: time from release to confirmed reset state
 - `safe_restart_condition`: the physical event combination required before pitch advance begins again
 
 ### Cold-start model
@@ -115,7 +122,7 @@ Cold-start sequence:
 3. Static sensing
 4. Selector-ready confirmation
 5. Release and bin confirmation
-6. Platform-level reset
+6. Reset confirmation
 
 ### Steady-state model
 
@@ -128,7 +135,7 @@ Steady-state sequence:
 4. Static sensing
 5. Selector-ready confirmation
 6. Release and bin confirmation
-7. Platform-level reset
+7. Reset confirmation
 8. Next pitch advance begins when the safe restart condition is satisfied
 
 Safe overlap is allowed only when physical truth permits it. Examples:
@@ -169,7 +176,7 @@ Sampling constraints:
 
 ## Routing summary
 
-The active routing mechanism is a 4-index selector chute under the trapdoor.
+The active routing mechanism is a 4-index selector chute below the chamber.
 
 The selector chute is active, not permanently frozen.
 
@@ -213,23 +220,27 @@ Required event families:
 - `SELECTOR_READY`
 - `DROP_WINDOW_DONE`
 - `BIN_CONFIRMED`
-- `PLATFORM_LEVEL`
+- `RESET_CONFIRMED`
 - optional `CHAMBER_CLEAR`
 - optional `PITCH_ADVANCE_DONE`
 
 The conveyor restart rule is:
 - do not feed the next brick until reset truth is satisfied
 
+Reset-truth rule:
+- `RESET_CONFIRMED` must come from a physical support-return truth, not from a timer or brick counter alone
+- First CAD pass must reserve a release-support return flag and switch-mount option even if the first prototype delays installing it
+
 ## Compliance coverage
 
 | Requirement | Implementation |
 |-------------|----------------|
-| Two or more sensors | Size beams, color sensor, chamber seat confirm, bin confirm, optional platform-level confirm |
+| Two or more sensors | Size beams, color sensor, selector home switch, chamber seat switch, and bin confirm |
 | Manual start and stop | Labeled start control and power control |
 | Programmable controller | ESP32 |
 | Feedback loop | Chamber, selector, bin, and reset truth in the control loop |
 | Motorized conveyor | NEMA17 stepper conveyor with timing-belt stage |
-| Automated sorting mechanism | 4-index selector chute plus trapdoor release |
+| Automated sorting mechanism | 4-index selector chute plus release gate |
 
 ## Current implementation priorities
 

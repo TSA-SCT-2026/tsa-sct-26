@@ -1,7 +1,7 @@
 # Engineering Documentation
 
 Competition documentation goes here. Judges score this heavily. Build it from logged run data, not from memory.
-Current execution priority is CAD-first validation, so begin with mechanical decision matrices and trapdoor test evidence.
+Current execution priority is CAD-first validation, so begin with mechanical decision matrices and release-gate test evidence.
 
 Notebook source of truth lives in `docs/notebook/` and run CSV data lives in `docs/runs/`.
 
@@ -10,7 +10,7 @@ Notebook source of truth lives in `docs/notebook/` and run CSV data lives in `do
 - Selector chute: the 4-index routing mechanism that indexes to the target bin
 - Chamber pitch: the feed distance needed to hand off the next brick after the chamber clears
 - Selector-ready: the routing path is aligned and locked, so release is allowed
-- Platform-level: the platform has re-latched, so the next feed is allowed
+- Reset confirmation: the release mechanism is back in a safe state, so the next feed is allowed
 
 ## Recommended notebook file set
 
@@ -31,7 +31,7 @@ Each decision matrix documents: what options were considered, what was chosen, a
 Subsystems that need matrices:
 - Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
 - Color sensor (TCS3200 GY-31 vs alternative color modules vs camera vs discrete photodiodes)
-- Trapdoor release actuation (class 3 lever with solenoid vs direct plunger vs sliding support)
+- Release actuation (servo-swept support vs direct cam vs coil pullback)
 - Selector mechanism (4-index selector chute vs linear diverter vs hybrid gate)
 - Conveyor drive topology (active off-axis timing-belt stage, supported-shaft layout, and rejected alternatives)
 
@@ -60,4 +60,4 @@ Make sure the selector gate study is represented in the notebook with modeled an
 
 ## Failure mode analysis
 
-For each potential failure: what is it, how likely, how is it detected, what does the system do. Format as a table. Include both detected failures (jam, solenoid misfire, sensor miss) and undetected failures (misclassification that lands in a bin) with explanation of why the latter is acceptable.
+For each potential failure: what is it, how likely, how is it detected, what does the system do. Format as a table. Include both detected failures (jam, release-actuator failure, sensor miss) and undetected failures (misclassification that lands in a bin) with explanation of why the latter is acceptable.

@@ -5,6 +5,7 @@ Short definitions for the main project terms. If a term in the architecture is u
 ## System flow
 
 - `compressed queue`: all 24 bricks are preloaded and packed closely enough that the next brick is already near the chamber workflow
+- `start gate`: the upstream queue stop that holds the full stack off the transition until the run begins
 - `cold start`: the first feed cycle from the initial queued rest state
 - `steady state`: the repeating cycle after the queue is already staged against the chamber workflow
 - `chamber pitch`: the effective advance distance from one seated brick to the next seated brick in the compressed queue
@@ -13,9 +14,10 @@ Short definitions for the main project terms. If a term in the architecture is u
 ## Core mechanisms
 
 - `isolation chamber`: the one-brick sensing and release area
-- `trapdoor platform`: the hinged chamber floor that drops when support is removed
-- `class 3 lever`: the lever geometry used to pull support away from the trapdoor platform
-- `selector`: the routing mechanism below the trapdoor
+- `release gate`: the chamber support-removal mechanism; exact actuation style is still under refactor
+- `trapdoor platform`: historical term for an earlier release concept. Do not use it as fixed truth
+- `class 3 lever`: historical term for an earlier release concept. Do not use it as fixed truth
+- `selector`: the routing mechanism below the release gate
 - `selector chute`: the active 4-index routing mechanism that sends bricks to one of four bins
 - `index position`: one of the four valid routed positions of the selector chute
 - `home reference`: the known selector position used to restore position truth and detect drift
@@ -33,7 +35,7 @@ Short definitions for the main project terms. If a term in the architecture is u
 - `static sensing`: size and color sensing while the brick is stopped in the chamber
 - `selector ready`: confirmation that the selector reached its target indexed position and release is safe
 - `drop window`: the bounded release-and-fall interval before bin confirmation is expected
-- `platform level`: the reset truth that restores permission to feed the next brick
+- `reset confirmation`: the physical truth that the release mechanism is back in a safe state and the next brick may feed
 - `event-gated control`: control logic that advances only when the required physical event is confirmed
 
 ## Evidence and validation

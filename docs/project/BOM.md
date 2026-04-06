@@ -38,8 +38,9 @@ Important note:
 - Final firmware pin map and calibration flow must match the actual received sensor.
 
 **Timing-stage purchases:**
-- The actionable buying items left today are the timing-stage parts in the audit below.
-- Engineering decision: adapt roller and idler interfaces to `MR85` for the current build and finalize timing-stage purchases without a bearing reorder.
+- The actionable buying items left today are the timing-stage parts, selector interface hardware, operator controls, low-friction liner, micro-switch kit, IO-expander insurance, and hardware-store fasteners.
+- Engineering refactor direction: prefer the simplest standard timing parts that preserve speed and accuracy. The baseline is now `20T/20T`, with an optional `16T` experiment pulley for later speed-up testing.
+- `MR85` remains the active support-bearing family for the current roller subsystem. No bearing reorder is required unless bench testing proves otherwise.
 
 ## Ordered Items From `docs/project/BOM.xlsx`
 
@@ -108,19 +109,33 @@ Order total from spreadsheet: `$174.50`
 
 ## Still Needed And Not Yet Ordered
 
-Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current conveyor CAD assumptions as the buying gate. Do not carry forward old `docs/project/BOM.md` assumptions just because they sounded useful.
+Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current refactor decisions as the buying gate. Treat stale mechanism text elsewhere in the repo as prior art, not fixed truth.
 
 | Item | Classification | Why |
 |------|----------------|-----|
 | GT2 closed-loop timing belt, short | Needed now for next Amazon order | `100T`, `200mm`, `6mm` wide, `2mm` pitch. You confirmed you have no GT2 stock, and the current timing-stage geometry wants one install candidate plus one spare. |
 | GT2 closed-loop timing belt, long | Needed now for next Amazon order | `104T`, `208mm`, `6mm` wide, `2mm` pitch. This is the second install candidate plus one spare around the modeled center distance. |
-| GT2 motor pulley | Needed now for next Amazon order | `16T`, `5mm` bore, `6mm` belt width. Current architecture and `SHORT_TODO.md` call for this pulley pair, and you confirmed you have no GT2 hardware on hand. |
-| GT2 driven pulley | Needed now for next Amazon order | `32T`, `5mm` bore, `6mm` belt width. One install plus one spare remains the cleanest way to preserve ratio flexibility. |
+| GT2 drive pulleys | Needed now for next Amazon order | Prefer a standard `20T` / `20T` pair with `5mm` bore and `6mm` belt width. This keeps the timing stage simple, easy to source, and still comfortably inside the target conveyor speed range. |
+| GT2 experiment pulley | Optional add-on for the next Amazon order | One extra `16T`, `5mm` bore, `6mm` belt pulley gives a future `1.25x` speed-up path without reopening the whole timing stage. It is not required to start CAD or first-pass prototype validation. |
 | Supported drive shaft | Needed now for next Amazon order | `5mm` precision shaft stock. You confirmed you have no shaft stock on hand, and the supported roller architecture requires it. |
 | Shaft collars | Needed now for next Amazon order | `5mm` clamp shaft collars. You confirmed you have none on hand, and the supported shaft needs axial retention. |
+| Start-gate actuator | Already owned | Use the owned small hobby servo first. Keep the heavier servo as backup only if the queue load proves too high. |
+| Release-gate actuator | Already owned | The purchase log already contains `0530` solenoids, and the release architecture is now based on that family. |
+| Selector hub | Needed now for next Amazon order | Buy a rigid `5mm` flange-mount hub with M3 face mounting. This is the cleanest way to mount the selector chute to the NEMA11 shaft without relying on a printed bore. |
+| Selector home and chamber switch kit | Needed now for next Amazon order | Buy a small pack of micro-switches. The base architecture now requires one selector home switch and one stop-wall seat switch. Keep extras for release-reset truth instrumentation if prototype evidence demands it. |
+| Low-friction liner material | Needed now for next Amazon order | Buy adhesive-backed UHMW tape. The purchase log only shows PTFE thread seal tape, which is not the production wear surface. |
+| Belt support path | CAD, not purchased hardware | Freeze the first-pass conveyor bed as an integrated printed flat support path. Do not add separate metal bed stock unless real testing proves it is necessary. |
+| Belt splice material | Needed now from hardware store or next Amazon order | The transport belt is raw neoprene strip, not a pre-made loop. Buy rubber contact cement or another proven neoprene splice adhesive so the strip can become a scarf-spliced endless belt. |
+| Operator controls | Needed now for next Amazon order | One real momentary start button and one real power switch. Do not rely on tiny PCB tact switches for evaluator-facing controls. |
+| M3 assembly hardware | Needed now from hardware store or existing stock | The roller clamps, selector mounting, and general prototype work need common `M3` screws, nuts, and washers. Current purchase log only shows an `M2` kit. |
+| M5 idler axle hardware | Needed now from hardware store or existing stock | One `M5` bolt, washers, and a locknut remain the simplest idler axle solution. |
+| Selector motor bracket | Needed now for next Amazon order | The `ST-M3` NEMA11 bracket is a clean low-risk shortcut compared with fabricating a one-off metal bracket. |
+| IO expander board | Needed now for next Amazon order | Buy one as spare insurance. Keep it out of the base architecture until the final IO map proves it is necessary. |
+| Rubber stop pad or foot | Needed now from hardware store or existing stock | Use one as the chamber stop-wall damper. Extra pieces can double as anti-slip feet if they do not hurt footprint or leveling. |
+| Base plate stock | Needed now from hardware store, school stock, or scrap inventory | Confirm a `610mm x 610mm x 6mm` base plate material before frame packaging drifts past the footprint rule. |
 | Separate belt tensioner hardware | Not actually needed under current architecture | Current plan is to use the slotted `NEMA17` mount first. Reopen only if packaging later proves the slot can not cover the adjustment range. |
 
-No items currently fall into `Needed later but not urgent` for purchase planning. The remaining non-spreadsheet items that were previously listed as ordered are removed from the audit until a doc-backed need exists.
+No items currently fall into `Needed later but not urgent` for purchase planning. Anything structural that is still missing belongs in the list above, not in a vague later bucket.
 
 ## Already Owned / Stock On Hand
 
@@ -132,6 +147,11 @@ No items currently fall into `Needed later but not urgent` for purchase planning
 | Soldering iron and solder | Present |
 | LEGO bricks | 24 total: 6 red 2x2, 6 blue 2x2, 4 red 2x3, 8 blue 2x3 |
 | LED indicator | Present |
+| 6x6 tactile switches | User-confirmed on hand, internal-use only, not evaluator-facing controls |
+| 0530 solenoids | Present from purchase log, active release actuators for the retracting-support design |
+| Small SG90-class hobby servo | User-confirmed on hand, active start-gate prototype actuator |
+| MG995 or MG996R-class servo | User-confirmed on hand, backup only if the small servo stalls under queue load |
+| 608ZZ bearings | Treat as unused stock for now. No active subsystem depends on them |
 
 ## Spreadsheet Totals
 

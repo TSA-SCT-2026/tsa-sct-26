@@ -46,3 +46,4 @@ Keep it short and honest. Expand a branch only when there is a real decision his
 - Singulation ideas were rejected because they move the hard problem upstream and add a second source of jam risk.
 - Routing ideas were compared by motion distance, reset time, packaging, and how easy a first-time operator can understand them.
 - Conveyor support ideas were compared by ratio flexibility, shaft loading, and how much the motor mounting choice constrains the rest of the frame.
+- Perpendicular loading chute with orientation swap at the transition was rejected for the first CAD pass because it makes the transition do both feeding and rotation. That adds jam risk in the highest-risk region. The active path keeps the chute parallel to the final long-side-across chamber orientation.

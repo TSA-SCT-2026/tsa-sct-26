@@ -6,15 +6,15 @@
 - Timing-belt stage mounted, aligned, tensioned, and guarded
 - Supported drive roller spins freely with no belt walk
 - Conveyor pitch advance reaches the chamber without overshoot or slip
-- Platform level at rest with lever tip under tab
-- Lever pivots freely with no binding
-- Springs attached and seated correctly
+- Release mechanism at rest in a safe state
+- Release path returns cleanly without binding
+- Return elements or reset elements attached and seated correctly
 - Selector chute indexes without edge contact
 
 ## Electrical
 
 - LiPo connected with inline fuse installed
-- Solenoid flyback diode present and polarity correct
+- Release actuator protection present and polarity correct if coil-based
 - Stepper VM bulk capacitor installed
 - All grounds common and secure
 - No loose wiring near moving parts
@@ -23,7 +23,6 @@
 
 - Home switch responds
 - Stop switch responds
-- Platform-level switch responds
 - Chamber clear condition is detectable
 - Beam sensors report expected idle state
 - TCS3200 color sensor output responds in the expected test mode
@@ -35,7 +34,7 @@
 
 - Self-test passes
 - Queue-fed start with 24 bricks loads and begins from READY
-- Manual release test: one clean drop and re-latch
+- Manual release test: one clean drop and safe reset
 - Reset-to-next-seat cycle repeats without double-entry
 - Index test to all 4 bins succeeds
 - Bin confirm sensors trigger as expected
@@ -46,7 +45,7 @@ Use this table for phase-gate acceptance evidence.
 
 | Gate | Pass criteria summary | Date | Operator | Result (PASS or FAIL) | Evidence path |
 |------|------------------------|------|----------|------------------------|---------------|
-| Gate 1: trapdoor mechanism | 50 loaded drop and re-latch cycles, zero failures | | | | |
+| Gate 1: release mechanism | 50 loaded drop and reset cycles, zero failures | | | | |
 | Gate 2: chamber and sensing fit | Sensor mounts fit, no obstructed motion, no shroud light leak | | | | |
 | Gate 3: selector alignment | Clean drop path for all 4 selector positions | | | | |
 | Gate 4: conveyor packaging and pitch | Timing-belt stage aligned, tensioned, and repeatable | | | | |
@@ -60,8 +59,8 @@ Track high-risk points and readiness before full integration.
 | Item | Current risk | Mitigation in place | Spare or fallback ready | Verified date |
 |------|--------------|---------------------|--------------------------|---------------|
 | Chute transition piece | High | Geometry validated with real bricks | | |
-| Lever tip and tab interface | Medium | Chamfer and spring tuning complete | | |
-| Solenoid driver path | Medium | Flyback diode and MOSFET checks complete | | |
+| Release interface and reset path | Medium | Geometry and reset path complete | | |
+| Release actuator driver path | Medium | Protection and drive checks complete | | |
 | Selector chute indexer interface | Medium | Mount hardware locked and anti-slip verified | | |
 | Conveyor timing-belt stage | Medium | Pulley ratio, tension, and guarded packaging verified | | |
 | Stop-wall sensing path | Medium | Switch response and seating repeatability verified | | |

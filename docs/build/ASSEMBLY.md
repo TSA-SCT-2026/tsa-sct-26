@@ -18,7 +18,7 @@ Use this guide with:
 ## Safety and hard rules
 
 1. Use LiPo power for any meaningful run.
-2. Do not skip flyback diodes on solenoids.
+2. Do not skip flyback diodes on coil-based actuators.
 3. Do not skip bulk capacitors at the stepper driver motor inputs.
 4. Keep total footprint at or below 610mm by 610mm.
 5. Keep bricks long-side-across the conveyor.
@@ -34,9 +34,9 @@ Pipeline summary:
 3. Belt stops.
 4. Size and color sensing happen while static.
 5. Selector chute indexes to the target bin.
-6. Trapdoor removes support and the brick falls.
+6. Release gate removes support and the brick falls.
 7. Bin confirmation verifies arrival.
-8. Platform returns level.
+8. Reset state is confirmed.
 9. Next brick advances by chamber pitch after reset truth is satisfied.
 
 ## Build sequence
@@ -45,7 +45,7 @@ Follow this order.
 
 1. Chute transition validation
 2. Conveyor packaging and interface lock
-3. Trapdoor gate parts and cycle test
+3. Release mechanism prototype and cycle test
 4. Chamber sensing geometry fit
 5. Selector chute alignment and routing-cost study
 6. Bin and drop-path fit check
@@ -93,27 +93,22 @@ Pass criteria:
 - Shaft support and tension ranges documented
 - Conveyor module fits the full-system envelope with margin
 
-## Stage 3: Trapdoor mechanism gate
+## Stage 3: Release mechanism gate
 
 Parts:
-- Platform
-- Hinge bracket
-- Lever arm
-- Lever pivot bracket
-- Solenoid bracket
+- Release mechanism prototype parts, still provisional until the refactor is frozen
 
 Steps:
-1. Assemble hinge with 3mm rod.
-2. Verify free platform pivot.
-3. Install lever and pivot fastener.
-4. Verify lever tip engages the platform tab at rest.
-5. Install solenoid and return springs.
-6. Trigger repeated loaded release cycles.
+1. Assemble the release mechanism prototype selected for the current refactor direction.
+2. Verify the release path clears support without binding.
+3. Verify the reset path returns to a safe state.
+4. Confirm the actuation hardware stays outside the chamber envelope.
+5. Trigger repeated loaded release cycles.
 
 Pass criteria:
 - Zero failed drops in 50 loaded cycles
-- Zero failed re-latch cycles in 50 loaded cycles
-- Return to level under target timing
+- Zero failed reset cycles in 50 loaded cycles
+- Return to safe state under target timing
 
 ## Stage 4: Chamber sensing fit
 
@@ -124,9 +119,10 @@ Steps:
 1. Print chamber fit parts.
 2. Fit size beam mounts at target chamber positions.
 3. Fit color sensor window and shroud.
-4. Install stop switch and verify actuator travel.
-5. Verify platform-level sensing path if used.
-6. Insert real bricks and check motion clearance.
+4. Install the required stop-wall seat switch and verify actuator travel.
+5. Keep the release-return flag and switch-mount provision in the printed parts.
+6. Install the release-return switch only if the first release prototype cannot provide physical reset truth another way.
+7. Insert real bricks and check motion clearance.
 
 Pass criteria:
 - No forced sensor fit
@@ -140,7 +136,7 @@ Goal:
 
 Steps:
 1. Print selector chute prototype.
-2. Mount on 5mm aluminum hub.
+2. Mount on 5mm hub or clamp interface.
 3. Mount to the stepper and homing hardware.
 4. Cycle each selector position.
 5. Perform repeated drop tests per bin.
@@ -179,7 +175,7 @@ Follow `wiring/ELECTRICAL.md`.
 
 Checklist:
 1. Common ground across logic and actuator rails
-2. Flyback diode polarity on the solenoid path
+2. Release actuator protection matches the chosen mechanism
 3. Stepper motor-input bulk capacitors installed
 4. Safe wire routing away from moving parts
 5. Strain relief at moving interfaces
@@ -188,14 +184,14 @@ Pre-power checks:
 1. No short between rails
 2. Correct connector pinouts
 3. MOSFET orientation verified
-4. Home, stop, and reset-related sensors actuate correctly
+4. Home and stop-related sensors actuate correctly
 
 ## Stage 8: Calibration
 
 Follow `docs/build/CALIBRATION.md`.
 
 Order:
-1. Lever release calibration
+1. Release mechanism calibration
 2. Chamber seat and pitch-advance timing calibration
 3. Color threshold calibration with shroud installed
 4. Selector timing and routing study
@@ -220,10 +216,10 @@ Belt walks sideways:
 - Reduce over-tension.
 - Confirm crown orientation and quality.
 
-Lever fails to re-latch:
-- Check tip and tab chamfer contact.
-- Check return spring preload.
-- Check pivot friction and binding.
+Release mechanism fails to reset:
+- Check release path clearance.
+- Check return bias or any reset element.
+- Check friction, binding, and actuator travel.
 
 Color classification unstable:
 - Confirm the shroud is installed.

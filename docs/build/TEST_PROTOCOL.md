@@ -17,8 +17,8 @@ Run 50 loaded release cycles.
 
 Pass criteria:
 - No missed drops
-- No failed re-latches
-- No platform-stuck events
+- No failed resets
+- No release-path stuck events
 
 ### Phase 2: Queue cadence and chamber pitch
 
@@ -27,7 +27,7 @@ Run 25 loaded seat and reset cycles with the compressed queue loaded.
 Pass criteria:
 - No double-entry events
 - Chamber seats repeatably at the same stop wall position
-- Next feed does not begin before platform-level confirmation
+- Next feed does not begin before reset confirmation
 - Measured restart distance stays within the chamber pitch window
 
 ### Phase 3: Routing and confirmation
@@ -43,11 +43,11 @@ Pass criteria:
 
 ### Phase 4: Reset and chamber clear
 
-Run 25 release and reload cycles while verifying chamber-clear and platform-level events.
+Run 25 release and reload cycles while verifying chamber-clear and reset-confirmation events.
 
 Pass criteria:
 - Chamber clear is detected before the next brick enters
-- Platform-level confirmation arrives before feed restart
+- Reset confirmation arrives before feed restart
 - No stale chamber occupancy remains after reset
 
 ### Phase 5: Full-run reliability
