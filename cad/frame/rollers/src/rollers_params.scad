@@ -30,11 +30,11 @@ function default_params() = [
   kv("provisional_drive_roller_hub_od", 14.0),
   kv("provisional_drive_roller_hub_width", 10.0),
 
-  kv("provisional_motor_pulley_teeth", 16),
-  kv("provisional_drive_pulley_teeth", 32),
+  kv("provisional_motor_pulley_teeth", 20),
+  kv("provisional_drive_pulley_teeth", 20),
   kv("provisional_timing_belt_pitch_mm", 2.0),
   kv("provisional_timing_belt_width_mm", 6.0),
-  kv("provisional_timing_center_distance_mm", 78.0),
+  kv("provisional_timing_center_distance_mm", 80.0),
   kv("provisional_tension_adjust_travel_mm", 8.0),
   kv("provisional_timing_tooth_depth_mm", 1.20),
   kv("provisional_motor_pulley_bore_round", 5.20),
@@ -106,8 +106,8 @@ module validate(params = default_params()) {
     "Flange width must be positive");
   assert(pget(params, "provisional_motor_pulley_teeth") > 0,
     "Motor pulley tooth count must be positive");
-  assert(pget(params, "provisional_drive_pulley_teeth") > pget(params, "provisional_motor_pulley_teeth"),
-    "Drive pulley should be larger than motor pulley for reduction");
+  assert(pget(params, "provisional_drive_pulley_teeth") > 0,
+    "Drive pulley tooth count must be positive");
   assert(pget(params, "provisional_timing_belt_pitch_mm") > 0,
     "Timing belt pitch must be positive");
   assert(pget(params, "provisional_timing_belt_width_mm") > 0,
