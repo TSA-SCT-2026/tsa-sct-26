@@ -22,8 +22,7 @@ firmware/.vscode/
 # Secrets / environment
 .env
 
-# Local developer notes (not for repo)
+# Local developer notes and memory (not for repo)
 CLAUDE.md
 AGENTS.md
-
-
+.claude/
