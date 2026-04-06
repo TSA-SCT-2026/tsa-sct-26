@@ -1,15 +1,15 @@
 # CAD
 
-All printable parts for the chamber-drop sorter. Current production architecture uses a class 3 lever trapdoor, 4-index selector chute routing, and an off-axis timing-belt conveyor stage with a supported drive shaft.
+All printable parts for the sorter. Current production architecture uses a release gate that is still under refactor, 4-index selector chute routing, and an off-axis timing-belt conveyor stage with a supported drive shaft.
 
 Brick orientation requirement: long-side-across conveyor, with the 23.7mm side of a 2x3 spanning the channel and the 15.8mm side running along travel.
-Why: this keys the chamber footprint to the long side so only one brick can occupy the trapdoor region at a time. The chamber and sensing geometry stay provisional until re-derived from this rule.
+Why: this keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The chamber and sensing geometry stay provisional until re-derived from this rule.
 
 ## Directory structure
 
 ```
 cad/
-  chute/          feed chute tube, transition, chamber body, stop-wall interfaces
+  chute/          feed chute tube, transition, chamber body, release interfaces
   chute_sensing/  color sensor shroud, IR break-beam mounts
   frame/          belt frame rails, end plates, channel walls, rollers, tensioner
   frame/rollers/  OpenSCAD timing stage, drive roller, idler, and fit coupon models
@@ -37,14 +37,11 @@ OpenSCAD roller workflow:
 - Validate the supported shaft, timing pulley, drive roller, idler, and tensioner travel before larger frame prints
 - Gate: pulley alignment, shaft support, and belt tracking envelope verified
 
-3. Trapdoor mechanism parts
-- Platform
-- Hinge bracket
-- Lever arm
-- Lever pivot bracket
-- Solenoid mount bracket
+3. Release mechanism prototype parts
+- Keep the actuation style provisional until the refactor is frozen
+- Use only the simplest geometry that proves support removal and reset
 
-Gate: 50 reliable drop and re-latch cycles before printing larger assemblies.
+Gate: 50 reliable release and reset cycles before printing larger assemblies.
 
 4. Chamber and sensing fit prints
 - Beam hole fit and alignment

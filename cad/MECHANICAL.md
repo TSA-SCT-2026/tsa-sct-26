@@ -10,10 +10,10 @@ construction method, and assembly notes.
 | Brick | Width (across belt) | Length (along belt) | Height | Count |
 |-------|---------------------|---------------------|--------|-------|
 | 2x2   | 15.8mm              | 15.8mm              | 11.4mm | 12 (6 red, 6 blue) |
-| 2x3   | 15.8mm              | 23.7mm              | 11.4mm | 12 (4 red, 8 blue) |
+| 2x3   | 23.7mm              | 15.8mm              | 11.4mm | 12 (4 red, 8 blue) |
 
 Orientation rule: bricks are long-side-across the conveyor, meaning the 23.7mm side of a 2x3 spans across the belt channel while the 15.8mm side runs along travel.
-Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the trapdoor region at a time. The feed chute, chamber, and beam layout below are provisional until they are re-derived from this orientation.
+Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The feed chute, chamber, and beam layout below are provisional until they are re-derived from this orientation.
 
 ---
 
@@ -22,26 +22,31 @@ Why this orientation is required: it keys the chamber footprint to the long side
 - Selector chute: the four-position routing assembly that sends one brick to one of the four bins.
 - Index position: one of the four discrete selector chute states. The current mapping is 1 through 4, with the fourth position treated as home or default.
 - Chamber pitch: the advance distance from one seated brick to the next in the compressed queue.
-- Trapdoor platform: the hinged chamber floor that drops the brick after routing is committed.
+- Start gate: the upstream queue stop above the transition. It holds the stack off the transition before the run begins.
+- Release gate: the chamber support-removal mechanism. Active actuation family: solenoid-driven retracting support.
+- Trapdoor platform: historical term for the earlier release concept. Treat as stale unless a legacy note is being discussed.
 - Supported roller shaft: the conveyor shaft that rides in frame bearings and carries the smooth drive roller.
-- Safe restart condition: the combined physical confirmation that the chamber is clear, the platform is level, and the next feed can begin without overlap.
+- Safe restart condition: the combined physical confirmation that the chamber is clear, the release path is reset, and the next feed can begin without overlap.
 
 ---
 
 ## Feed chute
 
 Vertical rectangular tube, 25mm target width with provisional depth.
-All 24 bricks load before the run. Gravity feeds the queue.
+All 24 bricks load before the run. Gravity feeds the queue, but the start gate keeps the full stack off the transition until the run begins.
 
 The listed width and depth are provisional placeholders until the long-side-across layout is re-derived.
 
 - Width 25mm target: long-side-across chamber width with clearance margin.
 - Depth: provisional until the long-side-across layout is re-derived.
+- Chute loading orientation: keep the chute parallel to the final long-side-across chamber orientation. Do not add an orientation-swap transition in the first CAD pass.
+- Start gate location: in the tall straight chute section above the transition, not in the one-brick throat.
+- Start gate motion: side-sweep rotary paddle that retracts flush or near-flush into a wall pocket.
 - Exit opening height: 13.5mm. One brick (11.4mm) exits freely. Two stacked (22.8mm)
   cannot fit. Double-feed is geometrically impossible at this dimension.
 - Do not print exit opening above 14.0mm. Measure with calipers after printing.
 - Top flare: 35mm x 40mm over 20mm.
-- Interior walls: PTFE tape on all 4 faces.
+- Interior walls: line with adhesive-backed UHMW tape. Do not treat plumber's thread tape as a wear surface.
 
 Bottom brick rests directly on belt. Belt friction pulls it out when belt is enabled.
 No cam. No escapement.
@@ -54,11 +59,11 @@ The retired `cad/escapement/` directory is historical only.
 The production conveyor is an off-axis timing-belt stage feeding a supported smooth drive roller.
 
 - Channel width: 25mm target.
-- Channel walls: 3mm PLA, 15mm tall, PTFE-taped interior.
-- Belt material: final selected neoprene strip remains open. Current received stock in `docs/project/BOM.xlsx` is `15mm x 3mm` and `25mm x 3mm`.
+- Channel walls: 3mm PLA, 15mm tall, with adhesive-backed UHMW tape on the brick-contact faces.
+- Belt material: `25mm x 3mm` neoprene strip is the active architecture. Treat the received `15mm x 3mm` strip as spare stock unless testing proves a real need to reopen it.
 - Transport length: 100-120mm provisional.
 - Chamber pitch: 18-22mm provisional. This is the steady-state advance distance, not the full transport length.
-- Target belt speed: 100mm/s provisional.
+- Target belt speed: 130-300mm/s tuning range. Design the baseline for stable low-speed validation first, then tune upward.
 
 The channel width and chamber dimensions above are provisional until the long-side-across layout is re-derived.
 
@@ -74,19 +79,20 @@ Timing stage intent:
 - The conveyor can be tuned without changing the supported shaft geometry.
 
 Timing-stage reference values:
-- Motor pulley: 16 teeth.
-- Drive pulley: 32 teeth.
+- Motor pulley: 20 teeth.
+- Drive pulley: 20 teeth.
 - Belt pitch: 2mm.
 - Belt width: 6mm.
-- Center distance: 78mm.
+- Center distance: 80mm nominal, with slot travel to cover nearby belt options.
 - Tension adjustment travel: 8mm.
 
 Idler roller:
 - 25mm OD with 0.5mm crown.
 - MR85ZZ bearings on M5 bolt axle.
-- Spring-loaded tensioner slot.
+- Fixed axle in the first-pass architecture. Use the slotted NEMA17 mount for tension first.
 
 Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does not depend on it.
+Conveyor bed: use an integrated printed flat support path in the first CAD pass. Do not add a separate metal bed unless real testing proves the printed path is insufficient.
 
 ---
 
@@ -96,150 +102,46 @@ One brick inside at a time. Geometry enforces this.
 
 - Width (across belt): 25mm target.
 - Depth (along belt): 27mm.
-- Height above platform: 15mm.
+- Height above chamber floor: 15mm.
 
 Width and depth are provisional until the long-side-across chamber is re-derived.
 
-Stop wall: entry side. 3M rubber foot pad (3mm) absorbs impact, prevents bounce.
-Stop-wall micro-switch (Omron D2F): 1.5mm actuator protrusion, brick contact = LOW.
+Stop wall: downstream end, opposite the chamber entry reference side. 3M rubber foot pad (3mm) absorbs impact and prevents bounce.
+Stop-wall micro-switch is required for chamber seat truth.
 Side walls: continuous from belt channel. Brick cannot yaw.
 
 Sensor integration:
 - IR beam holes are provisional until the long-side-across sensing layout is re-derived.
-- Color sensor window 12mm x 12mm in one chamber side wall at 5.7mm above platform surface.
+- Color sensor window 12mm x 12mm in one chamber side wall at 5.7mm above chamber floor.
 - Black PLA shroud on sensor, 15mm deep.
 
 ---
 
-## Trapdoor mechanism: class 3 lever
+## Release mechanism
 
-This is the drop mechanism. The design principle is: remove support, let gravity do it.
-The solenoid never carries brick weight. It only moves a lever arm against a light spring.
+The chamber release is a solenoid-driven retracting support.
+The support holds one seated brick, then retracts clear so gravity does the rest.
+The exact support geometry is still a prototype zone, but the actuation family is now frozen.
 
-### Overview
+### Requirements
 
-The chamber floor is a hinged platform. A class 3 lever arm runs alongside the platform's
-far edge (the selector-side edge, away from the belt). The lever tip sits under a small
-printed tab on the platform far edge, supporting it. When the solenoid fires, the lever
-tip sweeps outward (away from the belt) and clears the tab. The platform far edge has
-nothing under it and drops under gravity. Brick falls straight down.
+- Release support must be removed cleanly from one seated brick
+- The solenoid must only retract support. It should not carry brick weight as a permanent support.
+- The release path must not intrude into the conveyor, selector, or sensing envelopes
+- The mechanism must return to a safe reset state without relying on a hidden assumption
+- Reset confirmation must be physical, not guessed from time alone
+- First CAD pass must reserve a mechanical flag and micro-switch mounting provision for release-support return truth, even if the switch is not installed in the first prototype
 
-Class 3 lever: fulcrum at one end, load (platform tab) at the other end, effort
-(solenoid) between them, closer to the fulcrum. This gives mechanical disadvantage
-in force but amplifies the solenoid's short stroke into a larger arc at the lever tip.
+### Notes for CAD
 
-### Platform
-
-- Platform: 22mm wide (along belt) x 20mm deep (across belt, toward selector) x 3mm thick PLA.
-- Top surface: UHMW tape. Frictionless. Brick must not stick.
-- Hinge: 3mm steel rod through printed ears on the platform belt-side edge, passing
-  through brackets on the chamber entry wall. Hinge axis runs across the belt (parallel
-  to entry wall). Platform pivots about this axis.
-- Far edge: the selector-side edge. This is the unsupported edge when the lever clears.
-- Platform tab: a 4mm wide x 3mm tall printed lip on the underside of the far edge,
-  running the full 22mm width. The lever tip rests under this tab.
-
-The platform is flush with the chamber floor when level. The hinge is at the belt side.
-The far edge drops when unsupported.
-
-### Class 3 lever arm
-
-- Lever arm: printed PLA at 100% infill, 0.15mm layers. Forces are very low; PLA is fine.
-- Length: 30mm total.
-- Fulcrum: one end of the lever arm. M3 bolt through printed bracket on the chamber
-  side wall (the 25mm wall on the selector-side outboard wall). M3 nylon locknut to prevent
-  vibration loosening. This is the pivot.
-- Lever tip: the other end (30mm from fulcrum). This end tucks under the platform tab.
-  The tip has a 30-degree chamfer on its upper face for re-engagement.
-- Solenoid contact point: 8mm from the fulcrum (between fulcrum and tip). This is the
-  effort application point.
-- Sweep direction: the lever arm sweeps outward, away from the belt, in the horizontal
-  plane. The tip moves from under the tab to clear of it.
-
-Lever geometry (class 3):
-- Fulcrum at 0mm.
-- Effort (solenoid contact) at 8mm.
-- Load (platform tab) at 30mm.
-- Mechanical advantage: 8/30 = 0.27 (disadvantage in force, advantage in displacement).
-- Solenoid stroke: 8mm at effort point.
-- Lever tip travel: 8mm * (30/8) = 30mm arc at tip.
-- Required tip travel to clear tab: approximately 8-10mm.
-- Available tip travel: 30mm. More than double what is needed.
-
-This means even at half solenoid stroke (4mm, e.g. due to weak battery or worn spring),
-the tip travels 15mm. That is still 50% more than required to clear the tab. The
-mechanism has inherent stroke tolerance built into the lever ratio.
-
-### Solenoid mounting
-
-The purchased 0530-series solenoid mounts on the chamber side wall (same wall as the lever fulcrum),
-plunger axis parallel to the belt travel direction (pointing inward toward the belt).
-The plunger tip contacts the lever arm at the effort point (8mm from fulcrum).
-
-When solenoid fires:
-- Plunger extends toward the belt.
-- Lever arm rotates about the fulcrum.
-- Lever tip sweeps outward, away from the belt.
-- Tab is cleared. Platform drops.
-
-When solenoid de-energizes:
-- Plunger spring retracts.
-- Lever return spring (light tension spring anchored between lever arm mid-point and
-  chamber wall) pulls lever tip back inward.
-- Lever tip rides back under the platform tab via the chamfer as the platform returns.
-
-The solenoid plunger moves parallel to the belt axis. It is not fighting gravity.
-It is not supporting any weight. It is pushing a lever arm against a spring rated at
-approximately 0.05-0.1N. This is the lightest possible solenoid load in this design.
-
-### Platform return
-
-A second light tension spring runs from the platform far edge (underside) to a hook
-on the chamber wall above. This spring is in slight tension when the platform is level
-(preload only, < 0.01N). When the platform drops, this spring stretches and pulls the
-far edge back up once the brick has cleared.
-
-Spring specification: 0.3-0.4mm wire, 4-5mm OD, 15mm free length. Lightest spring
-in the assortment that reliably returns the platform in under 200ms.
-
-The platform return spring and the lever return spring are independent. The platform
-returns to level, and the lever tip rides under the tab simultaneously via the chamfer.
-No sequencing required.
-
-### Re-engagement (slam latch geometry)
-
-The lever tip upper face has a 30-degree chamfer. The platform tab underside has a
-matching 30-degree lead-in. As the platform returns to level, the tab's lead-in surface
-contacts the lever tip chamfer and pushes the lever tip outward slightly, then the tip
-snaps back under the tab once the tab clears the chamfer peak.
-
-This is identical to a slam latch. The platform closing re-engages the lever
-automatically with no active control. The lever return spring provides the snap-back
-force. The chamfer angle determines the force required to push the lever tip aside
-during re-engagement. At 30 degrees with a 0.1N return spring: re-engagement force
-is 0.1 * tan(30) = 0.058N, which a 3g platform falling under gravity provides easily.
-
-### Why this mechanism is correct
-
-The fundamental problem: remove the platform support so the brick falls under gravity.
-
-Direct plunger (vertical): solenoid supports platform weight during retraction. Plunger
-bore friction adds to load. Wear accumulates. Solenoid is working hardest when most
-loaded.
-
-Sliding platform: moving support surface. Depends on friction, stroke consistency, brick position.
-Not a trapdoor.
-
-Class 3 lever sweeping laterally: solenoid decoupled from platform weight entirely.
-Solenoid only overcomes the lever return spring (~0.05-0.1N). Platform weight is
-carried by the lever arm structure, not the solenoid. Stroke is amplified so even
-partial actuation clears the tab. Failure modes are geometric and testable.
-
----
+- Keep the retracting support geometry small and simple
+- Leave room for a light return spring or similar return bias
+- Keep the solenoid body outside the chamber envelope
+- Keep the wiring and protection consistent with a coil-based actuator
 
 ## Selector chute
 
-NEMA 11 stepper indexes the four-position selector chute through a 5mm aluminum shaft hub or clamp interface.
+NEMA 11 stepper indexes the four-position selector chute through a rigid 5mm flange-mount hub with M3 face mounting.
 Not press-fit. Not printed bore. Non-negotiable.
 This is not a circular disc.
 
@@ -257,9 +159,7 @@ Selector routing note:
 - The selector chute is the active routing path for now.
 - Downstream routing alternatives belong in the notebook, not in this active mechanical spec.
 
-Home sensor: Omron D2F micro-switch, index 4 flag, default.
-
----
+Selector home micro-switch is required in the base architecture.
 
 ## Bins
 
@@ -301,19 +201,18 @@ These features matter for first-time evaluator use and are part of the mechanica
    - Tensioner and supported shaft interfaces
    - Confirm belt tracking envelope and pulley alignment
 
-3. Print lever arm + platform + hinge bracket. Bench test mechanism:
-   - Platform pivots smoothly on hinge rod.
-   - Lever tip tucks under platform tab cleanly with no play.
-   - Solenoid pushes lever tip clear of tab.
-   - Lever return spring and platform return spring both reset within 200ms.
-   - Slam latch re-engages: platform returning to level auto-resets lever.
-   - 50 consecutive cycles with no failures.
+3. Print the release mechanism prototype for the chosen refactor direction. Bench test support removal and reset:
+   - Brick support is removed cleanly
+   - Brick falls without sticking
+   - Return path resets without binding
+   - Reset confirmation is physical and repeatable
+   - 50 consecutive cycles with no failures
    Gate: all pass before printing anything else.
 
 4. Print selector chute prototype. Mount with shaft hub. Verify repeatable indexing at all 4 positions.
 
-5. Print chamber body. Fit real bricks. Test full drop: brick seated, lever fires,
-   brick falls, both springs return, lever re-latches. 20 consecutive cycles.
+5. Print chamber body. Fit real bricks. Test full release: brick seated, release fires,
+   brick falls, reset returns. 20 consecutive cycles.
 
 6. Print feed chute. Single-brick exit test with all 24 bricks.
 
@@ -327,15 +226,13 @@ These features matter for first-time evaluator use and are part of the mechanica
 
 ## Highest fabrication risk
 
-The slam latch re-engagement. The chamfer angles on the lever tip and platform tab
-must work together: steep enough that the returning platform pushes the lever aside
-easily, but shallow enough that the lever holds the platform reliably when loaded.
+The release reset geometry. The chosen mechanism must clear support cleanly, reset
+repeatably, and stay inside the chamber envelope.
 
-30 degrees is the starting point. Test empirically:
-- If the platform pushes the lever aside during normal operation (false release): increase
-  chamfer angle toward 45 degrees.
-- If the returning platform cannot push the lever aside for re-engagement: decrease
-  chamfer toward 20 degrees.
+Test empirically:
+- If the release path sticks during normal operation, simplify the geometry before adding force.
+- If the reset path is unreliable, reduce friction and revisit the return bias.
+- If the mechanism intrudes into the chamber, selector, or conveyor envelope, shrink the mount.
 
-This is the one geometry that requires iteration. Budget 3 prints of the lever arm
-and platform tab only. These are small parts, fast to print.
+This is the one geometry that requires iteration. Budget a few small prototype prints
+around the final chosen release concept, not around the old release-concept assumption.
