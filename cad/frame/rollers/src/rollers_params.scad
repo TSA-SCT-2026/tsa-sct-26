@@ -60,7 +60,25 @@ function default_params() = [
   kv("provisional_magnet_radial_offset", 9.60),
 
   kv("provisional_coupon_block_height", 8.0),
-  kv("provisional_coupon_spacing", 4.0)
+  kv("provisional_coupon_spacing", 4.0),
+
+  // Motor mount bracket
+  kv("provisional_bracket_width_mm", 70.0),
+  kv("provisional_bracket_height_mm", 70.0),
+  kv("provisional_bracket_thickness_mm", 4.0),
+  kv("provisional_nema17_pilot_clear_d", 22.4),
+  kv("provisional_nema17_hole_spacing_mm", 31.0),
+  kv("provisional_motor_m3_clear_d", 3.4),
+  kv("provisional_frame_slot_w", 3.5),
+  kv("provisional_frame_slot_l", 12.0),
+  kv("provisional_frame_slot_cx", 28.0),
+  kv("provisional_frame_slot_cy", 28.0),
+
+  // Bearing block
+  kv("provisional_bearing_block_x_mm", 14.0),
+  kv("provisional_bearing_block_y_mm", 16.0),
+  kv("provisional_bearing_block_z_mm", 22.0),
+  kv("provisional_bearing_block_m3_z_offset", 7.0)
 ];
 
 function pget(params, key, fallback = undef, i = 0) =

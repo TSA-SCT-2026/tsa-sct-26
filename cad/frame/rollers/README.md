@@ -6,13 +6,15 @@ System level assembly flow is in `cad/MECHANICAL.md`.
 
 Files:
 - `src/rollers_params.scad`: shared parameters, truth tags, asserts, and dimension report
-- `src/motor_pulley.scad`: timing pulley envelope for the NEMA17 motor shaft
+- `src/motor_pulley.scad`: timing pulley envelope for the NEMA17 motor shaft (layout reference; active build uses purchased 20T GT2 pulley)
 - `src/drive_roller.scad`: smooth drive roller on a supported shaft
 - `src/idler_roller.scad`: crowned idler with dual MR85 pockets
+- `src/motor_mount_bracket.scad`: NEMA17 mount plate with 8mm belt tension slots
+- `src/bearing_block.scad`: single MR85ZZ bearing support block (two needed per shaft)
 - `src/roller_coupons.scad`: bearing fit, shaft-fit, and crown test coupons
 - `scripts/build_rollers.sh`: validation and STL export script
 - `docs/`: part cards and parameter notes for the roller subsystem
-- `ASSEMBLY.md`: beginner friendly in depth assembly and fit guide
+- `ASSEMBLY.md`: beginner-friendly assembly guide and Fusion 360 assembly procedure
 
 Run:
 ```bash

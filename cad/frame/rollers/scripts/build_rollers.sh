@@ -52,4 +52,10 @@ echo "[7/8] render shaft fit coupon"
 echo "[8/8] render crown coupon"
 "${OPENSCAD_CMD[@]}" -o "$OUT_DIR/coupon_crown_v1.stl" -D 'build_target="crown"' "$SRC_DIR/roller_coupons.scad"
 
+echo "[9/10] render motor mount bracket"
+"${OPENSCAD_CMD[@]}" -o "$OUT_DIR/motor_mount_bracket_v1.stl" -D 'build_target="model"' "$SRC_DIR/motor_mount_bracket.scad"
+
+echo "[10/10] render bearing block"
+"${OPENSCAD_CMD[@]}" -o "$OUT_DIR/bearing_block_v1.stl" -D 'build_target="model"' "$SRC_DIR/bearing_block.scad"
+
 echo "Done. STL outputs in $OUT_DIR"
