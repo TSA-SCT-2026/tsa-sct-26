@@ -21,13 +21,13 @@ function default_params() = [
   kv("provisional_drive_roller_shaft_round", 5.20),
   kv("provisional_drive_roller_shaft_to_flat", 4.50),
   kv("provisional_drive_roller_split_slot", 1.8),
-  kv("provisional_drive_roller_clamp_axis_x", 4.8),
+  kv("provisional_drive_roller_clamp_axis_x", 6.0),
   kv("provisional_drive_roller_clamp_clear_d", 3.2),
   kv("provisional_drive_roller_clamp_head_d", 5.8),
   kv("provisional_drive_roller_clamp_head_depth", 3.0),
   kv("provisional_drive_roller_clamp_nut_flat", 5.7),
   kv("provisional_drive_roller_clamp_nut_thickness", 2.6),
-  kv("provisional_drive_roller_hub_od", 14.0),
+  kv("provisional_drive_roller_hub_od", 20.0),
   kv("provisional_drive_roller_hub_width", 10.0),
 
   kv("provisional_motor_pulley_teeth", 20),
@@ -39,7 +39,7 @@ function default_params() = [
   kv("provisional_timing_tooth_depth_mm", 1.20),
   kv("provisional_motor_pulley_bore_round", 5.20),
   kv("provisional_motor_pulley_bore_to_flat", 4.50),
-  kv("provisional_motor_pulley_hub_od", 16.0),
+  kv("provisional_motor_pulley_hub_od", 20.0),
   kv("provisional_motor_pulley_hub_width", 10.0),
 
   kv("provisional_idler_roller_od", 25.0),
@@ -118,6 +118,10 @@ module validate(params = default_params()) {
     "Clamp screw axis must stay outside the shaft bore");
   assert(pget(params, "provisional_drive_roller_clamp_axis_x") < ((pget(params, "provisional_drive_roller_hub_od") / 2) - (pget(params, "provisional_drive_roller_clamp_clear_d") / 2)),
     "Clamp screw axis must stay inside the hub wall");
+  assert((pget(params, "provisional_drive_roller_hub_od") / 2) - pget(params, "provisional_drive_roller_clamp_axis_x") - (pget(params, "provisional_drive_roller_clamp_clear_d") / 2) >= 1.5,
+    "Hub outer wall beside clamp screw is too thin");
+  assert(pget(params, "provisional_drive_roller_clamp_axis_x") - (pget(params, "provisional_drive_roller_clamp_clear_d") / 2) - (pget(params, "provisional_drive_roller_shaft_round") / 2) >= 1.5,
+    "Hub inner wall between shaft bore and clamp screw is too thin");
   assert(pget(params, "provisional_bearing_pocket_d") >= pget(params, "provisional_bearing_od"),
     "Bearing pocket must be at least nominal bearing OD");
   assert(pget(params, "provisional_flange_width") > 0,

@@ -111,7 +111,7 @@ Use your current baseline, then tune from coupons:
 - Print coupons flat
 
 ## Step by step assembly
-
+ 
 ### Step 1: Run coupon fits first
 
 1. Print all coupon STL files.

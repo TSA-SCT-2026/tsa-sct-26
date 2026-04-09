@@ -32,8 +32,8 @@ module drive_roller(params = default_params()) {
       translate([0, 0, flange_w + face_w])
         cylinder(h = flange_w, d = flange_od);
 
-      translate([0, 0, hub_start])
-        cylinder(h = hub_w, d = hub_od);
+      translate([-hub_od / 2, -hub_od / 2, hub_start])
+        cube([hub_od, hub_od, hub_w]);
     }
 
     translate([0, 0, -0.25])

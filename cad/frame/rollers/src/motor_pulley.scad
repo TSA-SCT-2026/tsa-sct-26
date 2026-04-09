@@ -33,8 +33,8 @@ module motor_pulley(params = default_params()) {
         cylinder(h = belt_width, d = tooth_od);
       translate([0, 0, 1.5 + belt_width])
         cylinder(h = 1.5, d = tooth_od + 1.0);
-      translate([0, 0, hub_start])
-        cylinder(h = hub_w, d = hub_od);
+      translate([-hub_od / 2, -hub_od / 2, hub_start])
+        cube([hub_od, hub_od, hub_w]);
     }
 
     translate([0, 0, -0.25])
