@@ -14,7 +14,8 @@ Files:
 - `src/roller_coupons.scad`: bearing fit, shaft-fit, and crown test coupons
 - `scripts/build_rollers.sh`: validation and STL export script
 - `docs/`: part cards and parameter notes for the roller subsystem
-- `ASSEMBLY.md`: beginner-friendly assembly guide and Fusion 360 assembly procedure
+- `ASSEMBLY.md`: beginner-friendly physical assembly guide
+- `docs/FUSION360_ASSEMBLY.md`: step-by-step Fusion 360 CAD assembly guide for the timing stage
 
 Run:
 ```bash

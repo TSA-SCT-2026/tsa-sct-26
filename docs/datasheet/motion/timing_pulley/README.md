@@ -8,8 +8,9 @@ WINSINN GT2 20 Teeth 5mm Bore for 6mm Belt (from BOM, Amazon order pending deliv
 
 | File | Source | Status | Notes |
 |------|--------|--------|-------|
-| `Шкив GT2 20T b5.STEP` | Downloaded from parts library | Usable for layout | See caveats below |
-| `Шкив GT2 20T b5.SLDPRT` | Source CAD file | Ignore unless you have SolidWorks | Not needed for Fusion workflow |
+| `GT2_20T.STEP` | Downloaded from parts library | Usable for layout | See caveats below |
+| `gt2_20t_5mm.sldprt` | Source CAD file | Ignore unless you have SolidWorks | Not needed for Fusion workflow |
+| `gt2_20t_screenshot.png` | Reference image | Reference only | Original community model screenshot |
 | `pulley-gt2-20-tooth-5-bore-gt2-1.snapshot.1.zip` | Original download archive | Ignore | Unzip only if you need original sources |
 
 ## STEP file caveats
