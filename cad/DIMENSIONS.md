@@ -69,7 +69,7 @@ The channel and sensing geometry below remain provisional until the long-side-ac
 | Transport length | 100-120mm |
 | Chamber pitch | 18-22mm |
 | Drive roller OD | 25mm |
-| Drive roller bore | 5mm supported shaft with clampable flat profile |
+| Drive roller bore | 5mm D-bore, no clamp; axial retention by shaft collars, torque by D-flat |
 | Drive pulley teeth | 20T provisional baseline |
 | Motor pulley teeth | 20T provisional baseline |
 | Timing belt pitch | 2mm provisional |
@@ -102,15 +102,20 @@ This chamber geometry is provisional and must be re-derived for the long-side-ac
 | Entry opening height | 13.5mm |
 | Stop wall micro-switch protrusion | 1.5mm required seat switch |
 
-### Size beam positions
-Reference wall = entry side (opposite stop wall). Re-derive beam positions for the long-side-across chamber before freezing the sensing layout.
+### Size ToF keepouts
+Reference wall = stop wall. Two ToF modules mount on that wall and look across the chamber width toward the brick edge zones.
 
-| Beam | From reference wall |
-|------|---------------------|
-| Beam 1 | 5mm |
-| Beam 2 | 21mm |
+| Feature | Dimension |
+|---------|-----------|
+| Left ToF optical center from left chamber wall | 4-6mm provisional |
+| Right ToF optical center from right chamber wall | 4-6mm provisional |
+| Left and right symmetry tolerance | Match within 0.5mm target |
+| Sensor keepout depth behind wall | Module-dependent, reserve from CAD model |
 
-Spacing and detection are provisional until the long-side-across sensing geometry is re-derived.
+Classification intent:
+- `2x3` should leave both side clearances in the narrow-gap band
+- `2x2` should leave at least one side in the wider-gap band even with lateral offset
+- Final threshold comes from installed-sensor calibration, not from nominal CAD alone
 
 ### Color sensor window
 
@@ -260,7 +265,7 @@ These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
 
 ### Isolation chamber and sensing interfaces
 
-- Verify actual sensor body clearances for beam holders and color window stack.
+- Verify actual sensor body clearances for dual ToF mounts, XSHUT wiring, and color window stack.
 - Verify switch body and actuator positions against printed mounts.
 
 ### Release mechanism and reset interfaces

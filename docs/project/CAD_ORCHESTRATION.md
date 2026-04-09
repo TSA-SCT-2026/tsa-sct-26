@@ -41,7 +41,7 @@ The intended run sequence is:
 4. Start gate opens and stays open for the run.
 5. Conveyor advances one brick into the one-brick chamber.
 6. Chamber seat switch confirms the brick is fully seated.
-7. Size beams and color sensor read while the brick is static.
+7. Dual ToF size lanes and the color sensor read while the brick is static.
 8. Selector indexes to the correct routed position.
 9. Release support retracts by solenoid pulse.
 10. Brick drops through the selector chute to the correct bin.
@@ -97,7 +97,7 @@ Add these missing Amazon items:
 - `0530` solenoids
 - MR85ZZ bearings
 - 608ZZ bearings as spare stock only
-- Break-beam sets
+- Break-beam sets for bin confirmation or fallback-only experiments
 - TCS3200 GY-31 color sensor modules
 - Small hobby servo for start gate
 - MG995 or MG996R class servo as backup only
@@ -184,7 +184,6 @@ Parts:
 - Printed idler roller
 - `MR85ZZ` bearings
 - M5 idler bolt, washers, locknut
-- M3 clamp screws and nuts
 - `25mm x 3mm` neoprene strip
 - Printed flat support path
 - UHMW tape on brick-contact faces
@@ -211,21 +210,21 @@ Purpose:
 Chosen concept:
 - One-brick chamber keyed to long-side-across geometry
 - Required stop-wall micro-switch for seat truth
-- Break-beam size sensing
+- Dual rear-wall ToF size sensing
 - TCS3200 with installed shroud for color sensing
 
 Parts:
 - Printed chamber body
 - Stop-wall rubber pad
 - Stop-wall micro-switch
-- Break-beam sensors and mounts
+- Two ToF sensors and mounts
 - TCS3200 module and mount
 - Printed sensor shroud
 - M3 mounting hardware
 
 Why this is the simplest correct choice:
 - Seat truth is physical, not guessed from time
-- Break-beams and color sensor read while the chamber is static
+- ToF and color sensing both happen while the chamber is static
 - The chamber does the hard work of singulation by geometry
 
 Warning:
@@ -343,7 +342,7 @@ Source: `docs/OPTIMIZE_PLAN.log`
 
 Status:
 - The datasheet tree is not CAD-ready yet.
-- The worst gaps are the solenoid, color sensor, break-beam, and TMC2209 notes.
+- The worst gaps are the solenoid, color sensor, distance-sensor, and TMC2209 notes.
 - The closest to usable are NEMA17, NEMA11, and the fan, but even those still miss key CAD fields.
 
 ### What must be added before April 10
@@ -358,13 +357,13 @@ Add one structured truth block to every active part folder:
 
 Per-part additions:
 
-Break beam:
+Distance sensor:
 - Remove contradictory electrical claims
 - Add body `L x W x H`
 - Add hole size and hole-center location if present
-- Add emitter and receiver lead/polarity table
-- Add verified operating voltage and current
-- Add cable length, cable exit, and connector style
+- Add optical-center reference if it is visible in the CAD or vendor drawing
+- Add power, I2C, and `XSHUT` pin notes
+- Add cable length, cable exit, and connector style if the received module includes them
 
 Color sensor:
 - Confirm exact module identity from the received board
@@ -459,7 +458,7 @@ Human:
    - NEMA17
    - NEMA11
    - solenoid
-   - break beam
+   - distance sensor
    - color sensor
    - fan
    - TMC2209
