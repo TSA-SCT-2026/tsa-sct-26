@@ -1,6 +1,7 @@
 Usongshine Stepping Motor 17HS4401  
 Name: Nema 17 stepper motor
 Model: 17HS4401
+BOM order id: 8210696713995240
 Step Angle: 1.8* +/- .09*
 Rated voltage: DC 3.6V
 Rated current: DC 1.5A/Phase

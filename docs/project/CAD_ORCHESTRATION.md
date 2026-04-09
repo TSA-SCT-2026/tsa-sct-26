@@ -70,7 +70,6 @@ Keep the current cart items:
 - Supported drive shaft: `uxcell 5mm x 200mm hardened linear shaft`
 - Shaft collars: `PATIKIL 5mm double split clamp collars`
 - Long timing belt candidate: `uxcell 208-2GT-6 belts`
-- Short timing belt candidate: `200mm 2GT 6mm belts`
 
 Add these missing Amazon items:
 - One small micro-switch pack for selector home and chamber seat truth, with extras as spares

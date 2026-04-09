@@ -1,9 +1,7 @@
-GY-31 TCS230 color sensor
+
 Uses TCS230 chip
 Best detection distance: 10mm
 Input voltage: 3V-5V
-Output frequency voltage: 0 ~ 5V
-PCB Dimensions: 33.2mm*33.2mm*25mm
 
 Features:
 High­Resolution Conversion of Light
@@ -35,3 +33,11 @@ connect the green wire to Pin 3 and S0 of the microcontroller and sensor respect
 connect the blue wire to Pin 4 and S1 of the microcontroller and sensor respectively
 connect the purple wire to Pin 5 and S2 of the microcontroller and sensor respectively
 connect the pink wire to Pin 6 and S3 of the microcontroller and sensor respectively
+
+Part name: GY-31 TCS230 color sensor
+Spreadsheet ID: 8210696713785240
+Received: Yes
+CAD model source: grabcad https://grabcad.com/library/tcs3200-color-sensor-module-1 
+L x W x H: 33.2mm*33.2mm*25mm
+Voltage: 0 ~ 5V
+Notes: (slotted mount recommended if position critical)

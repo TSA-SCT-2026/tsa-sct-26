@@ -1,6 +1,7 @@
 Washer seperates spring from tip
 Tip has hole going thru, can use to hook or post somethign in there to move
 
+Cad ready: Yes, use lcoal stl file, dimensions should match
 Trip: 10
 end to end: 60.5
 shaft diameter: 5.8
@@ -10,3 +11,6 @@ body length: 30
 tail: 8.5
 width: 13
 thickness: 15
+
+Requires flyback diode
+ 
