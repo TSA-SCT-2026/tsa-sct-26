@@ -9,16 +9,49 @@ Read `cad/DIMENSIONS.md` lines 53-80 for all numeric references.
 
 ---
 
+## Known import issues (read before starting)
+
+### STL unit mismatch - parts appear 10x too large
+
+Fusion 360 defaults to centimeters when importing STL files. The printed parts are authored
+in millimeters in OpenSCAD. If you import an STL without changing the unit, a 70mm bracket
+will appear as 700mm.
+
+Fix: when the Insert Mesh dialog opens, change the unit dropdown to "Millimeter (mm)" before
+clicking OK. Do this for every STL file in this assembly.
+
+If you already imported at the wrong scale, delete the component and re-import with the
+correct unit selected.
+
+### STL gives a mesh body, not a solid - constraints are limited
+
+STL files import as mesh bodies. Fusion 360 can constrain to mesh faces but the workflow
+is less reliable than constraining to solid STEP geometry, especially for coaxial joints
+on bores.
+
+Convert mesh to BRep in Fusion 360 (no extra tools needed):
+
+1. Import the STL with mm units as above.
+2. In the browser, right-click the mesh component.
+3. Select "Mesh to BRep". Fusion will convert the mesh to a solid body.
+4. For simple parts like the bracket and bearing block this works cleanly.
+5. Use the converted solid body for all subsequent joint constraints.
+
+Note: complex curved surfaces (drive roller crown, idler crown) may produce many faces but
+the bore and flat reference surfaces are usable.
+
+---
+
 ## 1. Prerequisites
 
 ### Files to have open or imported before starting
 
 | File | Location | Notes |
 |------|----------|-------|
-| `motor_mount_bracket_v1.stl` | `cad/frame/rollers/stl/` | Printed bracket |
-| `bearing_block_v1.stl` | `cad/frame/rollers/stl/` | Print two copies |
-| `drive_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Smooth drive roller |
-| `idler_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Crowned idler |
+| `motor_mount_bracket_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. Convert to BRep after import. |
+| `bearing_block_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. Print two copies. |
+| `drive_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. |
+| `idler_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. |
 | `GT2_20T.STEP` | `docs/datasheet/motion/timing_pulley/` | Use for both pulleys |
 | NEMA17 STEP | Your motor datasheet folder | Community model acceptable for layout |
 
@@ -57,7 +90,7 @@ Work in this order. Each step anchors the next.
 
 ### Step 3: Place the motor pulley (first STEP instance)
 
-1. Import `Шкив GT2 20T b5.STEP` (or renamed copy) as Component 1 of 2.
+1. Import `GT2_20T.STEP` as Component 1 of 2.
 2. Apply a Cylindrical joint: pulley bore axis coincident with motor shaft axis.
 3. Set axial position so the pulley sits on the frame side of the bracket
    (motor pulley must not be between motor face and bracket).
@@ -100,7 +133,7 @@ Reference: `docs/drive_roller.md` for bore and flange geometry.
 
 ### Step 7: Place the driven pulley (second STEP instance)
 
-1. Import `Шкив GT2 20T b5.STEP` again as Component 2 of 2.
+1. Import `GT2_20T.STEP` again as Component 2 of 2.
 2. Apply a Cylindrical joint: pulley bore axis coincident with driven shaft axis.
 3. Position axially beyond the outer bearing block on the motor side (+X or -X,
    whichever faces the motor). This keeps the pulley in the belt plane.
