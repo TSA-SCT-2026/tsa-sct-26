@@ -41,7 +41,7 @@ This geometry is provisional and must be re-derived for the long-side-across ori
 | Internal depth | provisional re-derive |
 | Chute loading orientation | Parallel to final long-side-across chamber orientation |
 | Start gate location | Straight chute section above transition |
-| Start gate motion | Side-sweep paddle, flush or near-flush when open |
+| Start gate motion | Side-sweep paddle, swings to near-wall rest; true flush retract not required |
 | Exit opening height | 13.5mm |
 | Top flare opening | 35mm x 40mm |
 | Flare transition length | 20mm |
@@ -82,8 +82,6 @@ The channel and sensing geometry below remain provisional until the long-side-ac
 | Roller flanges | 2mm both ends |
 | Belt speed (phase 1) | 100mm/s |
 | Belt bed | Integrated printed flat support path in the first CAD pass |
-| Hall sensor gap | Optional diagnostic only |
-| Hall magnets | Optional diagnostic only |
 
 ---
 
@@ -184,12 +182,14 @@ This is an indexed chute, not a circular disc.
 | Hub interface | Rigid 5mm flange-mount hub with center clearance pocket and M3 face-mount bolt pattern |
 | Funnel opening size | 32mm x 22mm |
 | Outlet offset from centerline | 40mm |
-| Index positions | 1, 2, 3, 4 |
+| Index positions | 1, 2, 3, 4 (open - angles not yet locked) |
 | Funnel wall taper | 10 degrees inward |
 | Shaft hub | Rigid 5mm flange-mount hub with M3 face mounting |
 | Selector top clearance from chamber floor | 5mm |
 | Selector home method | Required micro-switch with mechanical flag |
 | Routing mode | Active selector chute, evidence gate remains open in notebook only |
+
+Index angular spacing is open. Do not treat the four positions as fixed at 90-degree intervals until physically confirmed.
 
 ---
 

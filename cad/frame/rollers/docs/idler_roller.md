@@ -4,20 +4,17 @@
 
 - Free spinning roller on the non driven side of the belt path.
 - Supports belt tension and tracking.
-- Includes optional magnet locations if diagnostic Hall sensing is ever used.
 
 ## Mates With
 
 - MR85ZZ bearings
 - M5 axle bolt or shaft
 - Belt strip
-- Optional Hall sensor path if magnets are installed for diagnostics
 
 ## Required Hardware
 
 - Two MR85ZZ bearings
 - One M5 axle with matching washers and locknut
-- Two 3mm magnets if diagnostic Hall sensing is used
 
 ## Core Geometry
 
@@ -35,15 +32,14 @@
 - Crown sagitta: 0.50mm
 - Bearing pocket diameter: 8.15mm
 - Bearing pocket depth: 2.60mm
-- Axle clearance diameter and magnet pocket offsets
+- Axle clearance diameter
 
 ## Basic Install Steps
 
 1. Press first bearing into one pocket until seated.
 2. Press second bearing into opposite pocket.
-3. Install magnets if Hall sensing is used.
-4. Mount idler on M5 axle and tighten hardware.
-5. Spin by hand and confirm smooth rotation.
+3. Mount idler on M5 axle and tighten hardware.
+4. Spin by hand and confirm smooth rotation.
 
 ## Pass or Fail Checks
 

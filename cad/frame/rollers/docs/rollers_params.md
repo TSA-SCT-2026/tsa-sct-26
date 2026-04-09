@@ -16,7 +16,6 @@ Provisional estimates:
 - Timing belt pitch, pulley tooth counts, and ratio
 - Center distance and tension adjustment travel
 - Crown sagitta and flange envelope details
-- Magnet pocket details
 
 Current receipt state:
 - AliExpress hardware is received and should be measured now where it affects this subsystem.

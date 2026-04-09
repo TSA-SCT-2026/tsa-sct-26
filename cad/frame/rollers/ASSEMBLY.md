@@ -32,7 +32,6 @@ Read this with:
 - It has a slight crown in the middle.
 - The crown helps the belt self center.
 - It has bearing pockets for MR85 bearings.
-- It has optional magnet pockets for diagnostic Hall sensing.
 
 `coupon_bearing_fit_v1.stl`
 - This is a test block for bearing fit.
@@ -53,7 +52,6 @@ Read this with:
 - Two MR85ZZ bearings
 - One M5 axle bolt or shaft
 - Washer and nut set for your frame style
-- Two 3mm magnets only if you choose to keep diagnostic Hall sensing
 
 ## Hardware needed for the timing stage
 
@@ -114,8 +112,7 @@ Pass target:
 1. Press first MR85 bearing into one side pocket.
 2. Press second MR85 bearing into the opposite side pocket.
 3. Confirm both bearings seat square and flush to pocket shoulders.
-4. Add magnets to pockets only if using diagnostic Hall sensing.
-5. Place idler on M5 axle and check free spin.
+4. Place idler on M5 axle and check free spin.
 
 Pass target:
 - Free spin is smooth.
@@ -164,7 +161,6 @@ Tracking checks:
 - Center distance and ratio stay within the model envelope.
 
 Electrical checks:
-- Hall sensor reads clean pulses if optional diagnostic magnets are installed.
 - No contact between moving belt and sensor body.
 
 ## Common beginner issues and fixes

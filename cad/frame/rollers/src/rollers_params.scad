@@ -44,10 +44,6 @@ function default_params() = [
   kv("provisional_axle_clear_d", 5.20),
   kv("provisional_drive_shaft_bearing_span_mm", 38.0),
 
-  kv("provisional_magnet_d", 3.20),
-  kv("provisional_magnet_depth", 2.20),
-  kv("provisional_magnet_radial_offset", 9.60),
-
   kv("provisional_coupon_block_height", 8.0),
   kv("provisional_coupon_spacing", 4.0),
 

@@ -48,10 +48,6 @@ module idler_roller(params = default_params()) {
   pocket_chamfer = pget(params, "provisional_bearing_lead_chamfer");
   axle_d = pget(params, "provisional_axle_clear_d");
 
-  magnet_d = pget(params, "provisional_magnet_d");
-  magnet_depth = pget(params, "provisional_magnet_depth");
-  magnet_r = pget(params, "provisional_magnet_radial_offset");
-
   total_w = face_w + (2 * flange_w);
 
   difference() {
@@ -72,13 +68,6 @@ module idler_roller(params = default_params()) {
 
     translate([0, 0, -0.25])
       cylinder(h = total_w + 0.5, d = axle_d);
-
-    for (a = [0, 180]) {
-      rotate([0, 0, a])
-        translate([magnet_r, 0, total_w / 2])
-          rotate([90, 0, 0])
-            cylinder(h = magnet_depth + 0.4, d = magnet_d, center = true);
-    }
   }
 }
 

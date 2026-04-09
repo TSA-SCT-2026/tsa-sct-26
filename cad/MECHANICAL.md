@@ -13,7 +13,7 @@ construction method, and assembly notes.
 | 2x3   | 23.7mm              | 15.8mm              | 11.4mm | 12 (4 red, 8 blue) |
 
 Orientation rule: bricks are long-side-across the conveyor, meaning the 23.7mm side of a 2x3 spans across the belt channel while the 15.8mm side runs along travel.
-Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The feed chute, chamber, and beam layout below are provisional until they are re-derived from this orientation.
+Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The feed chute, chamber, and sensing layout below are provisional until they are re-derived from this orientation.
 
 ---
 
@@ -41,7 +41,7 @@ The listed width and depth are provisional placeholders until the long-side-acro
 - Depth: provisional until the long-side-across layout is re-derived.
 - Chute loading orientation: keep the chute parallel to the final long-side-across chamber orientation. Do not add an orientation-swap transition in the first CAD pass.
 - Start gate location: in the tall straight chute section above the transition, not in the one-brick throat.
-- Start gate motion: side-sweep rotary paddle that retracts flush or near-flush into a wall pocket.
+- Start gate motion: side-sweep rotary paddle that swings to a near-wall rest position. True flush retract is not required. A near-wall rest that leaves the chute clear is sufficient.
 - Exit opening height: 13.5mm. One brick (11.4mm) exits freely. Two stacked (22.8mm)
   cannot fit. Double-feed is geometrically impossible at this dimension.
 - Do not print exit opening above 14.0mm. Measure with calipers after printing.
@@ -91,7 +91,6 @@ Idler roller:
 - MR85ZZ bearings on M5 bolt axle.
 - Fixed axle in the first-pass architecture. Use the slotted NEMA17 mount for tension first.
 
-Optional Hall sensing on the idler is diagnostic only. Conveyor correctness does not depend on it.
 Conveyor bed: use an integrated printed flat support path in the first CAD pass. Do not add a separate metal bed unless real testing proves the printed path is insufficient.
 
 ---
@@ -111,7 +110,9 @@ Stop-wall micro-switch is required for chamber seat truth.
 Side walls: continuous from belt channel. Brick cannot yaw.
 
 Sensor integration:
-- IR beam holes are provisional until the long-side-across sensing layout is re-derived.
+- Two rear-wall ToF modules are the active size-sensing path. Mount them near the left and right chamber edge zones so each reads side clearance across the chamber width.
+- Size classification rule: if both ToF clearances stay in the narrow-gap band, classify `2x3`; if either side shows the wider `2x2` clearance band, classify `2x2`.
+- Reserve XSHUT access and cable-routing room for two identical I2C modules on the same bus.
 - Color sensor window 12mm x 12mm in one chamber side wall at 5.7mm above chamber floor.
 - Black PLA shroud on sensor, 15mm deep.
 
@@ -155,11 +156,40 @@ Index geometry:
 Motor mount: metal bracket (commercial NEMA 11 mounting bracket or 2mm aluminum flat bar).
 Do not rely on printed PLA alone for motor mounting.
 
+Warning: Index positions and angular spacing are open. Do not finalize the selector chute body geometry, bin alignment geometry, or any part whose shape depends on index angles until bin positions are physically confirmed and index angles are bench-derived from the assembled NEMA11 prototype.
+
 Selector routing note:
 - The selector chute is the active routing path for now.
 - Downstream routing alternatives belong in the notebook, not in this active mechanical spec.
 
 Selector home micro-switch is required in the base architecture.
+
+### Selector indexing geometry: open questions and options
+
+The 90-degree spacing note in the table above is a placeholder. The actual angles between index positions depend on the physical bin layout relative to the selector rotation axis. None of the options below should be treated as decided until the real layout is measured.
+
+**Rotation strategy options**
+
+Unidirectional equal spacing: positions at 0, 90, 180, 270 degrees. Simple to implement. Worst case is 270 degrees of travel.
+
+Bidirectional equal spacing: same four positions, firmware picks the shortest path at each move. Worst case drops to 135 degrees. This is a firmware-only change with no hardware cost and is the highest-value speed improvement available without changing anything physical.
+
+Non-uniform spacing if bin geometry allows: the actual bin entry points from the selector rotation axis may not be at equal angles. If they are not, the index positions should match the real angles rather than forcing 90-degree increments. This cannot be determined until the physical layout is measured.
+
+**Home position**
+
+With bidirectional rotation, home position affects re-home penalty but not move cost for normal sequences. Place home at the rarest bin (2x3 red, 4 out of 24 bricks) to minimize re-home frequency. With unidirectional rotation only, home placement matters more and should be weighted by the actual 24-brick distribution.
+
+**Outlet offset**
+
+The 40mm outlet offset from rotation center is provisional. A shorter offset reduces physical arc travel for the same angle and reduces chute inertia, both of which help speed. A longer offset increases the spread at the bin entries, which helps routing reliability. Do not shrink it past the point where outlet separation between adjacent bins becomes tight.
+
+**Key things to confirm before freezing**
+
+- Actual angles from selector rotation axis to each bin entry center under the real frame layout.
+- Whether all four positions fit in a continuous arc under 270 degrees (or whether a 360-degree design is needed).
+- NEMA11 step rate achievable at the chosen selector inertia and voltage, measured on the bench.
+- Whether sensing-to-selector overlap (selector begins moving before belt fully stops) is safe given real settle time.
 
 ## Bins
 
@@ -172,7 +202,7 @@ Selector home micro-switch is required in the base architecture.
 | 3 | SE | 2x3 blue | 8 | 40mm x 45mm x 110mm |
 | 4 | SW DEFAULT | 2x3 red | 4 | 40mm x 45mm x 70mm |
 
-Floor: 10 degrees toward back wall. Break-beam at entrance. Removable via slot-and-tab.
+Bin-confirm sensor mount at entrance. Removable via slot-and-tab.
 Funnel guides between selector chute and bins: 60mm x 60mm entrance, angled to bin opening.
 
 ---
