@@ -16,6 +16,24 @@ firmware/.vscode/
 *.~lock.*
 *.bak
 
+# Proprietary CAD source files (not useful without those tools)
+*.SLDPRT
+*.SLDASM
+*.SLDDRW
+*.ipt
+*.iam
+*.f3d
+
+# Download archives and snapshot folders
+*.zip
+*snapshot*/
+
+# OS screenshot artifacts (Cyrillic filenames from Windows/macOS screen captures)
+*[сСнН]нимок*
+
+# Excel temp files
+~$*
+
 # Logs (keep CSVs in docs/runs, not scattered elsewhere)
 *.log
 
