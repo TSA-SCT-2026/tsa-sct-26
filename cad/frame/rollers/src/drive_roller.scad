@@ -1,5 +1,9 @@
 include <rollers_params.scad>
 
+// Drive roller for the supported conveyor shaft.
+// D-bore grips the shaft flat for torque. Shaft collars on each side handle axial retention.
+// No split clamp. No screw hardware.
+
 module drive_roller(params = default_params()) {
   validate(params);
 
@@ -8,21 +12,10 @@ module drive_roller(params = default_params()) {
   flange_w = pget(params, "provisional_drive_roller_flange_width");
   flange_od = pget(params, "provisional_drive_roller_flange_od");
 
-  hub_od = pget(params, "provisional_drive_roller_hub_od");
-  hub_w = pget(params, "provisional_drive_roller_hub_width");
-
   d_bore_round = pget(params, "provisional_drive_roller_shaft_round");
   d_bore_to_flat = pget(params, "provisional_drive_roller_shaft_to_flat");
-  clamp_slot_w = pget(params, "provisional_drive_roller_split_slot");
-  clamp_screw_axis_x = pget(params, "provisional_drive_roller_clamp_axis_x");
-  clamp_screw_d = pget(params, "provisional_drive_roller_clamp_clear_d");
-  clamp_screw_head_d = pget(params, "provisional_drive_roller_clamp_head_d");
-  clamp_screw_head_depth = pget(params, "provisional_drive_roller_clamp_head_depth");
-  clamp_nut_flat = pget(params, "provisional_drive_roller_clamp_nut_flat");
-  clamp_nut_thickness = pget(params, "provisional_drive_roller_clamp_nut_thickness");
 
   total_w = face_w + (2 * flange_w);
-  hub_start = (total_w - hub_w) / 2;
 
   difference() {
     union() {
@@ -31,28 +24,10 @@ module drive_roller(params = default_params()) {
         cylinder(h = face_w, d = roller_od);
       translate([0, 0, flange_w + face_w])
         cylinder(h = flange_w, d = flange_od);
-
-      translate([-hub_od / 2, -hub_od / 2, hub_start])
-        cube([hub_od, hub_od, hub_w]);
     }
 
     translate([0, 0, -0.25])
       d_bore_cutout(total_w + 0.5, d_bore_round, d_bore_to_flat);
-
-    translate([0, -clamp_slot_w / 2, -0.25])
-      cube([hub_od, clamp_slot_w, total_w + 0.5]);
-
-    translate([clamp_screw_axis_x, 0, total_w / 2])
-      rotate([90, 0, 0])
-        cylinder(h = hub_od + 2, d = clamp_screw_d, center = true);
-
-    translate([clamp_screw_axis_x, -(hub_od / 2) + (clamp_screw_head_depth / 2), total_w / 2])
-      rotate([90, 0, 0])
-        cylinder(h = clamp_screw_head_depth + 0.4, d = clamp_screw_head_d, center = true);
-
-    translate([clamp_screw_axis_x, (hub_od / 2) - (clamp_nut_thickness / 2), total_w / 2])
-      rotate([90, 0, 0])
-        cylinder(h = clamp_nut_thickness + 0.4, d = clamp_nut_flat / cos(30), center = true, $fn = 6);
   }
 }
 
