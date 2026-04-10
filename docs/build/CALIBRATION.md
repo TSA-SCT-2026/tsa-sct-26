@@ -51,7 +51,26 @@ If failures occur:
 - Tune return bias second
 - Re-run full loaded cycle test after each change
 
-## 3. Color threshold calibration
+## 3. Dual-ToF size threshold calibration
+
+Procedure:
+1. Install both ToF modules in the final chamber mounts.
+2. Seat real `2x2` and `2x3` bricks in the chamber with belt off.
+3. Record left, right, and wider-clearance readings for centered, left-offset, and right-offset seating cases.
+4. Set the size threshold bands so a laterally shifted `2x2` still stays distinguishable from a `2x3`.
+
+Acceptance:
+- `2x2` and `2x3` clearance patterns stay separated across centered and offset seating cases
+- Both sensors return stable readings at the seated stop-wall position
+- No classification rule depends on a brick being centered perfectly
+
+Calibration evidence template:
+
+| Brick | Seating case | Left clearance (mm) | Right clearance (mm) | Wider clearance (mm) | Size result | Operator | Date |
+|------|---------------|---------------------|----------------------|----------------------|-------------|----------|------|
+| | | | | | | | |
+
+## 4. Color threshold calibration
 
 Procedure:
 1. Place seated brick in chamber with belt off.
@@ -69,7 +88,7 @@ Calibration evidence template:
 |-----------|--------------------|-------------------------------|----------------|-----------------|------------|------------------|----------|------|
 | | | | | | | | | |
 
-## 4. Selector and reset calibration
+## 5. Selector and reset calibration
 
 Procedure:
 1. Home the selector chute and verify the selector home micro-switch repeatability.
@@ -83,6 +102,6 @@ Acceptance:
 - Release does not start before selector-ready
 - Next feed does not start before reset confirmation
 
-## 5. Full-system verification
+## 6. Full-system verification
 
 Run at least 10 full 24-brick runs and log CSV data for notebook use.
