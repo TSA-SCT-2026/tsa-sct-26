@@ -16,8 +16,14 @@ enum class BrickCategory : uint8_t {
 };
 
 struct SenseResult {
-    bool isLarge = false;
-    float rRatio = 0.0f;
+    bool leftLaneOccupied = false;
+    bool rightLaneOccupied = false;
+    bool isTwoByThree = false;
+    bool sizeValid = false;
+    uint16_t leftClearanceMm = 0;
+    uint16_t rightClearanceMm = 0;
+    uint16_t widerClearanceMm = 0;
+    float redRatio = 0.0f;
     uint8_t sampleCount = 0;
     BrickCategory category = BrickCategory::UNCERTAIN;
 };
@@ -25,6 +31,8 @@ struct SenseResult {
 namespace sensors {
     void begin();
     SenseResult senseBrickInChamber();
+    void setSimulatedSenseResult(const SenseResult& result);
+    void clearSimulatedSenseResult();
     void attachBinBeams();
     bool chamberExitBeamClear();
     float beltSpeedMms();

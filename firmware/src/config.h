@@ -9,7 +9,7 @@
 
 // ================================================================
 // Pin assignments
-// GPIO 34, 35, 36, 39 are input-only and need external pull-ups.
+// GPIO 35, 36, and 39 are input-only and need external pull-ups.
 // ================================================================
 
 // Selector chute stepper via TMC2209
@@ -25,12 +25,12 @@
 #define PIN_RELEASE         32
 
 // Chamber sensing
-#define PIN_SIZE_BEAM1      36
-#define PIN_SIZE_BEAM2      34
-#define PIN_ENTRY_BEAM      35
-#define PIN_STOP_SW         33
-#define PIN_HOME_SW         15
-#define PIN_SHELF_LEVEL     39
+#define PIN_ENTRY_BEAM            35
+#define PIN_STOP_SW               33
+#define PIN_HOME_SW               15
+#define PIN_SHELF_LEVEL           39
+#define PIN_SIZE_TOF_LEFT_XSHUT   13
+#define PIN_SIZE_TOF_RIGHT_XSHUT  14
 
 // Bin confirmation beams
 #define PIN_BIN1_BEAM       16
@@ -87,6 +87,13 @@
 #define COLOR_RED_THRESHOLD     0.42f
 #define C_MIN_VALID             100
 #define I2C_FREQ_HZ             400000
+#define SIZE_TOF_DEFAULT_ADDR   0x29
+#define SIZE_TOF_LEFT_ADDR      0x30
+#define SIZE_TOF_RIGHT_ADDR     0x31
+#define SIZE_TOF_TIMEOUT_MS     80
+#define SIZE_TOF_VALID_MIN_MM   0
+#define SIZE_TOF_VALID_MAX_MM   40
+#define SIZE_TOF_OCCUPIED_MAX_MM 8
 
 // ================================================================
 // 4-index selector chute

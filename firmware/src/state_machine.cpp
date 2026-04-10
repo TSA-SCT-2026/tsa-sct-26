@@ -2,6 +2,7 @@
 #include "actuators.h"
 #include "config.h"
 #include "logger.h"
+#include "sensors.h"
 #include "thermal.h"
 #include <string.h>
 
@@ -30,6 +31,7 @@ void StateMachine::poll() {
                 _deadlineMs = 0;
                 transition(S_SENSING);
                 gLogger.info("chamber settled; waiting for SENSING_DONE");
+                pushEventSensingDone(sensors::senseBrickInChamber());
             }
             break;
         case S_RELEASED:
