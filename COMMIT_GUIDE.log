@@ -27,6 +27,13 @@ Good subject examples
 - docs(frontend): simplify websocket integration flow
 - test(voice): expand websocket state transition coverage
 
+Example with body bullets
+- Subject: docs(project): update BOM for dual-ToF chamber sizing
+- Body:
+  - Document active chamber-sizing concept shift to dual rear-wall ToF
+  - Note that BOM.xlsx row is pending hardware reception
+  - Add timing-stage purchasing guidance and part categories
+
 Avoid
 - "update process_ask_query in src/visual_memory/api/routes/ask.py"
 - "agent-generated changes"
