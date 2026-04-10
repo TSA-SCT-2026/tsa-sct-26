@@ -30,7 +30,22 @@ Pass criteria:
 - Next feed does not begin before reset confirmation
 - Measured restart distance stays within the chamber pitch window
 
-### Phase 3: Routing and confirmation
+### Phase 3: Size sensing validation
+
+Run 20 seated checks for each case:
+- empty chamber
+- `2x2` left-biased
+- `2x2` centered
+- `2x2` right-biased
+- `2x3`
+
+Pass criteria:
+- Empty chamber keeps both ToF lanes clear
+- Every `2x2` trial occupies exactly one lane
+- Every `2x3` trial occupies both lanes
+- Repeated seat and reset cycles do not drift out of the calibrated threshold bands
+
+### Phase 4: Routing and confirmation
 
 Run 25 drops per bin target using forced category/test mode.
 
@@ -41,7 +56,7 @@ Pass criteria:
 - Re-home penalty remains repeatable
 - Wrong-bin confirm events are never observed in normal routing
 
-### Phase 4: Reset and chamber clear
+### Phase 5: Reset and chamber clear
 
 Run 25 release and reload cycles while verifying chamber-clear and reset-confirmation events.
 
@@ -50,7 +65,7 @@ Pass criteria:
 - Reset confirmation arrives before feed restart
 - No stale chamber occupancy remains after reset
 
-### Phase 5: Full-run reliability
+### Phase 6: Full-run reliability
 
 Run 10 full 24-brick sessions on LiPo power.
 
