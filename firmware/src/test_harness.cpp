@@ -44,20 +44,44 @@ static SenseResult senseResultFor(BrickCategory cat) {
     result.category = cat;
     switch (cat) {
         case BrickCategory::CAT_2x2_RED:
-            result.isLarge = false;
-            result.rRatio = 0.87f;
+            result.leftLaneOccupied = true;
+            result.rightLaneOccupied = false;
+            result.isTwoByThree = false;
+            result.sizeValid = true;
+            result.leftClearanceMm = 8;
+            result.rightClearanceMm = 12;
+            result.widerClearanceMm = 12;
+            result.redRatio = 0.87f;
             break;
         case BrickCategory::CAT_2x2_BLUE:
-            result.isLarge = false;
-            result.rRatio = 0.06f;
+            result.leftLaneOccupied = false;
+            result.rightLaneOccupied = true;
+            result.isTwoByThree = false;
+            result.sizeValid = true;
+            result.leftClearanceMm = 12;
+            result.rightClearanceMm = 8;
+            result.widerClearanceMm = 12;
+            result.redRatio = 0.06f;
             break;
         case BrickCategory::CAT_2x3_RED:
-            result.isLarge = true;
-            result.rRatio = 0.87f;
+            result.leftLaneOccupied = true;
+            result.rightLaneOccupied = true;
+            result.isTwoByThree = true;
+            result.sizeValid = true;
+            result.leftClearanceMm = 2;
+            result.rightClearanceMm = 3;
+            result.widerClearanceMm = 3;
+            result.redRatio = 0.87f;
             break;
         case BrickCategory::CAT_2x3_BLUE:
-            result.isLarge = true;
-            result.rRatio = 0.06f;
+            result.leftLaneOccupied = true;
+            result.rightLaneOccupied = true;
+            result.isTwoByThree = true;
+            result.sizeValid = true;
+            result.leftClearanceMm = 3;
+            result.rightClearanceMm = 2;
+            result.widerClearanceMm = 3;
+            result.redRatio = 0.06f;
             break;
         default:
             break;
@@ -94,15 +118,11 @@ static uint8_t binForCat(BrickCategory cat) {
 }
 
 static bool simulateBrick(BrickCategory cat) {
+    sensors::setSimulatedSenseResult(senseResultFor(cat));
     pushEvent(EventType::ENTRY_DETECTED);
     drainEvents();
 
     pushEvent(EventType::CHAMBER_SEATED);
-    drainEvents();
-
-    if (!waitForState(S_SENSING, SETTLE_MS + 20)) return false;
-
-    pushEventSensingDone(senseResultFor(cat));
     drainEvents();
 
     if (!waitForState(S_CONFIRM, DROP_WINDOW_MS + 20)) return false;
@@ -171,7 +191,8 @@ static void handleSim(const char* args) {
             Serial.println("[harness] usage: sim sensing <2x2_RED|2x2_BLUE|2x3_RED|2x3_BLUE>");
             return;
         }
-        pushEventSensingDone(senseResultFor(cat));
+        sensors::setSimulatedSenseResult(senseResultFor(cat));
+        pushEventSensingDone(sensors::senseBrickInChamber());
     } else if (strncmp(args, "bin ", 4) == 0) {
         int bin = atoi(args + 4);
         if (bin < 1 || bin > 4) {
