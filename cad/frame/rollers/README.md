@@ -6,11 +6,10 @@ System level assembly flow is in `cad/MECHANICAL.md`.
 
 Files:
 - `src/rollers_params.scad`: shared parameters, truth tags, asserts, and dimension report
+- `src/conveyor_trough.scad`: integrated conveyor trough body with drive-end motor mount and drive-end coupon
 - `src/motor_pulley.scad`: timing pulley envelope for the NEMA17 motor shaft (layout reference; active build uses purchased 20T GT2 pulley)
 - `src/drive_roller.scad`: smooth drive roller on a supported shaft
 - `src/idler_roller.scad`: crowned idler with dual MR85 pockets
-- `src/motor_mount_bracket.scad`: NEMA17 mount plate with 8mm belt tension slots
-- `src/bearing_block.scad`: single MR85ZZ bearing support block (two needed per shaft)
 - `src/roller_coupons.scad`: bearing fit, shaft-fit, and crown test coupons
 - `scripts/build_rollers.sh`: validation and STL export script
 - `docs/`: part cards and parameter notes for the roller subsystem
@@ -25,6 +24,8 @@ cd cad/frame/rollers
 
 Output:
 - STL files are written to `cad/frame/rollers/stl/`
+- Main timing-stage prints are `conveyor_trough_v1.stl`, `drive_roller_proto_v1.stl`, and `idler_roller_proto_v1.stl`
+- Print `trough_end_cap_coupon_v1.stl` before committing to the full trough
 
 Status:
 - LEGO geometry and long-side-across transport constraint are treated as `LOCKED_TRUTH`

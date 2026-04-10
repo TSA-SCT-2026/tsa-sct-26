@@ -67,6 +67,7 @@ The channel and sensing geometry below remain provisional until the long-side-ac
 | Belt material | `25mm x 3mm` neoprene strip is the active architecture. Treat `15mm x 3mm` as spare stock only |
 | Belt closure | Scarf-spliced neoprene loop with rubber contact cement, prototype and validate before frame freeze |
 | Transport length | 100-120mm |
+| Trough body length | 110mm provisional |
 | Chamber pitch | 18-22mm |
 | Drive roller OD | 25mm |
 | Drive roller bore | 5mm D-bore, no clamp; axial retention by shaft collars, torque by D-flat |
@@ -76,10 +77,18 @@ The channel and sensing geometry below remain provisional until the long-side-ac
 | Timing belt width | 6mm provisional |
 | Pulley center distance | 80mm nominal with slot travel |
 | Tension adjustment travel | 8mm provisional |
+| NEMA17 pilot clearance | 22.4mm provisional |
+| NEMA17 mounting hole spacing | 31mm provisional |
+| NEMA17 mounting slot clearance | 3.4mm provisional |
 | Supported shaft bearing | MR85ZZ x2 provisional |
 | Idler roller OD | 25mm (0.5mm crown) |
 | Idler roller bearings | MR85ZZ 5mm ID x 8mm OD x 2.5mm |
 | Roller flanges | 2mm both ends |
+| Belt bed shelf thickness | 3mm provisional |
+| Bottom mounting flange width | 8mm provisional |
+| Bottom mounting hole clearance | 4.5mm provisional for M4 |
+| Bottom mounting hole inset from trough ends | 10mm provisional |
+| Bottom mounting hole spacing along trough | 90mm provisional |
 | Belt speed (phase 1) | 100mm/s |
 | Belt bed | Integrated printed flat support path in the first CAD pass |
 

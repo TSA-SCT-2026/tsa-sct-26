@@ -13,6 +13,7 @@ function default_params() = [
   kv("truth_locked_brick_height", 11.4),
   kv("truth_locked_orientation_long_side_across", 1),
   kv("truth_locked_channel_width", 25.0),
+  kv("provisional_channel_wall_thickness_mm", 3.0),
   kv("provisional_drive_roller_od", 25.0),
   kv("provisional_drive_roller_face_width", 25.0),
   kv("provisional_drive_roller_flange_width", 2.0),
@@ -43,6 +44,16 @@ function default_params() = [
   kv("provisional_bearing_lead_chamfer", 0.35),
   kv("provisional_axle_clear_d", 5.20),
   kv("provisional_drive_shaft_bearing_span_mm", 38.0),
+  kv("provisional_belt_strip_thickness_mm", 3.0),
+
+  // Integrated trough body
+  kv("provisional_trough_length_mm", 110.0),
+  kv("provisional_trough_wall_height_mm", 15.0),
+  kv("provisional_trough_shelf_thickness_mm", 3.0),
+  kv("provisional_trough_flange_width_mm", 8.0),
+  kv("provisional_trough_mount_hole_d_mm", 4.5),
+  kv("provisional_trough_mount_hole_inset_mm", 10.0),
+  kv("provisional_motor_offset_mm", 80.0),
 
   kv("provisional_coupon_block_height", 8.0),
   kv("provisional_coupon_spacing", 4.0),
@@ -54,6 +65,7 @@ function default_params() = [
   kv("provisional_nema17_pilot_clear_d", 22.4),
   kv("provisional_nema17_hole_spacing_mm", 31.0),
   kv("provisional_motor_m3_clear_d", 3.4),
+  kv("provisional_motor_slot_travel_mm", 8.0),
   kv("provisional_frame_slot_w", 3.5),
   kv("provisional_frame_slot_l", 12.0),
   kv("provisional_frame_slot_cx", 28.0),
@@ -91,6 +103,8 @@ module validate(params = default_params()) {
 
   assert(pget(params, "provisional_contact_face_width") <= pget(params, "truth_locked_channel_width"),
     "Contact face can not exceed channel width");
+  assert(pget(params, "provisional_channel_wall_thickness_mm") == 3.0,
+    "Channel wall thickness must match the current dimension source");
   assert(pget(params, "provisional_drive_roller_face_width") <= pget(params, "truth_locked_channel_width"),
     "Drive roller face can not exceed channel width");
   assert(pget(params, "provisional_belt_strip_selected_width") > 0,
@@ -115,6 +129,28 @@ module validate(params = default_params()) {
     "Timing center distance must be positive");
   assert(pget(params, "provisional_tension_adjust_travel_mm") > 0,
     "Tension travel must be positive");
+  assert(pget(params, "provisional_belt_strip_thickness_mm") > 0,
+    "Belt strip thickness must be positive");
+  assert(pget(params, "provisional_trough_length_mm") >= 100.0,
+    "Trough length must remain inside documented range");
+  assert(pget(params, "provisional_trough_length_mm") <= 120.0,
+    "Trough length must remain inside documented range");
+  assert(pget(params, "provisional_trough_wall_height_mm") == 15.0,
+    "Trough wall height must match the current dimension source");
+  assert(pget(params, "provisional_trough_shelf_thickness_mm") == 3.0,
+    "Trough shelf thickness must match the current dimension source");
+  assert(pget(params, "provisional_trough_flange_width_mm") > 0,
+    "Trough flange width must be positive");
+  assert(pget(params, "provisional_trough_mount_hole_d_mm") > 0,
+    "Trough mounting hole diameter must be positive");
+  assert(pget(params, "provisional_trough_mount_hole_inset_mm") > 0,
+    "Trough mounting hole inset must be positive");
+  assert(pget(params, "provisional_motor_slot_travel_mm") >= 0,
+    "Motor slot travel can not be negative");
+  assert(pget(params, "provisional_motor_offset_mm") == pget(params, "provisional_timing_center_distance_mm"),
+    "Motor offset must match timing center distance");
+  assert((2 * pget(params, "provisional_trough_mount_hole_inset_mm")) < pget(params, "provisional_trough_length_mm"),
+    "Mounting hole inset must leave span between hole centers");
   assert(pget(params, "provisional_timing_center_distance_mm") >
       ((pulley_pitch_diameter(pget(params, "provisional_motor_pulley_teeth"), pget(params, "provisional_timing_belt_pitch_mm")) +
         pulley_pitch_diameter(pget(params, "provisional_drive_pulley_teeth"), pget(params, "provisional_timing_belt_pitch_mm"))) / 2),
@@ -141,6 +177,7 @@ module dimension_report(params = default_params()) {
   echo("ROLLER_DIMENSION_REPORT_START");
   echo(str("LOCKED_TRUTH brick_width=", pget(params, "truth_locked_brick_width")));
   echo(str("LOCKED_TRUTH channel_width=", pget(params, "truth_locked_channel_width")));
+  echo(str("PROVISIONAL_ESTIMATE channel_wall_thickness_mm=", pget(params, "provisional_channel_wall_thickness_mm")));
   echo(str("PROVISIONAL_ESTIMATE belt_strip_selected_width=", pget(params, "provisional_belt_strip_selected_width")));
   echo(str("PROVISIONAL_ESTIMATE drive_roller_od=", pget(params, "provisional_drive_roller_od")));
   echo(str("PROVISIONAL_ESTIMATE idler_roller_od=", pget(params, "provisional_idler_roller_od")));
@@ -161,6 +198,13 @@ module dimension_report(params = default_params()) {
   echo(str("PROVISIONAL_ESTIMATE timing_ratio=", timing_ratio(motor_teeth, drive_teeth)));
   echo(str("PROVISIONAL_ESTIMATE center_distance_mm=", pget(params, "provisional_timing_center_distance_mm")));
   echo(str("PROVISIONAL_ESTIMATE tension_adjust_travel_mm=", pget(params, "provisional_tension_adjust_travel_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_length_mm=", pget(params, "provisional_trough_length_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_wall_height_mm=", pget(params, "provisional_trough_wall_height_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_shelf_thickness_mm=", pget(params, "provisional_trough_shelf_thickness_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_flange_width_mm=", pget(params, "provisional_trough_flange_width_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_mount_hole_d_mm=", pget(params, "provisional_trough_mount_hole_d_mm")));
+  echo(str("PROVISIONAL_ESTIMATE trough_mount_hole_inset_mm=", pget(params, "provisional_trough_mount_hole_inset_mm")));
+  echo(str("PROVISIONAL_ESTIMATE motor_offset_mm=", pget(params, "provisional_motor_offset_mm")));
   echo("ROLLER_DIMENSION_REPORT_END");
 }
 
