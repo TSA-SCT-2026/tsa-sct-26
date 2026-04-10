@@ -10,6 +10,7 @@ Integrity rule:
 Current architecture:
 - Conveyor drive is an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
 - Selector drive is `NEMA 11` stepper
+- Chamber size sensing uses two rear-wall `ToF` lanes plus static color sensing
 
 Current receipt status:
 - AliExpress orders recorded in `docs/project/BOM.xlsx` are received.
@@ -36,6 +37,12 @@ Important note:
 - The spreadsheet purchase log currently points to `TCS3200 GY-31`.
 - Treat the spreadsheet as hardware truth until the received module is verified.
 - Final firmware pin map and calibration flow must match the actual received sensor.
+
+**Distance sensor architecture note:**
+- The active chamber-sizing concept now uses two rear-wall ToF modules.
+- `docs/datasheet/sensing/distance_sensor/` contains the reference CAD assets for that family.
+- `docs/project/BOM.xlsx` does not yet contain a corresponding row, so this markdown must not mark the ToF modules as ordered yet.
+- Update the spreadsheet first, then update the ordered-items section here in the same change.
 
 **Timing-stage purchases:**
 - The actionable buying items left today are the timing-stage parts, selector interface hardware, operator controls, low-friction liner, micro-switch kit, IO-expander insurance, and hardware-store fasteners.
