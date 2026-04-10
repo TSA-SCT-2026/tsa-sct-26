@@ -61,7 +61,7 @@
       "2x3_blue": 8,
       "2x3_red": 4
     },
-    // Disc absolute positions in steps [bin1, bin2, bin3, bin4]
+    // Selector absolute positions in steps [bin1, bin2, bin3, bin4]
     bin_steps: [1400, 200, 600, 1e3],
     home_bin_index: 3,
     // Multi-run and sequencing
@@ -100,7 +100,7 @@
           min: 5,
           max: 40,
           step: 1,
-          desc: "Delay between entry beam trigger and seated confirmation."
+          desc: "Delay between entry detection and seated confirmation."
         },
         {
           id: "settle_ms",
@@ -133,7 +133,7 @@
           min: 1,
           max: 20,
           step: 1,
-          desc: "Dual beam evaluation time in static chamber."
+          desc: "Dual ToF lane evaluation time in the static chamber."
         },
         {
           id: "color_sample_count",
@@ -184,7 +184,7 @@
           min: 200,
           max: 2200,
           step: 50,
-          desc: "Disc indexing speed at nominal thermal state."
+          desc: "Selector indexing speed at nominal thermal state."
         },
         {
           id: "stepper_start_sps",
@@ -227,7 +227,7 @@
     },
     {
       id: "release",
-      label: "Trapdoor Release",
+      label: "Release Mechanism",
       controls: [
         {
           id: "solenoid_on_ms",
@@ -263,7 +263,7 @@
           min: 20,
           max: 200,
           step: 5,
-          desc: "Expected beam confirm delay after drop completes."
+          desc: "Expected bin-confirm delay after drop completes."
         },
         {
           id: "bin_confirm_timeout_ms",
@@ -905,22 +905,27 @@
     ctx.strokeStyle = "#6b7280";
     ctx.lineWidth = 2;
     ctx.strokeRect(c.x, c.y, c.w, c.h);
-    const beam1x = c.x + 22;
-    const beam2x = c.x + c.w - 22;
+    const tofX = c.x + c.w;
+    const tof1y = c.y + 20;
+    const tof2y = c.y + c.h - 20;
     ctx.setLineDash([3, 2]);
     ctx.strokeStyle = "#ef4444";
     ctx.beginPath();
-    ctx.moveTo(beam1x, c.y - 12);
-    ctx.lineTo(beam1x, c.y + c.h + 12);
+    ctx.moveTo(tofX, tof1y);
+    ctx.lineTo(c.x + 14, tof1y);
     ctx.stroke();
     ctx.strokeStyle = "#fb923c";
     ctx.beginPath();
-    ctx.moveTo(beam2x, c.y - 12);
-    ctx.lineTo(beam2x, c.y + c.h + 12);
+    ctx.moveTo(tofX, tof2y);
+    ctx.lineTo(c.x + 14, tof2y);
     ctx.stroke();
     ctx.setLineDash([]);
-    drawText(ctx, "B1", beam1x, c.y - 16, "#f87171", "10px monospace");
-    drawText(ctx, "B2", beam2x, c.y - 16, "#fb923c", "10px monospace");
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(tofX - 4, tof1y - 6, 8, 12);
+    ctx.fillStyle = "#fb923c";
+    ctx.fillRect(tofX - 4, tof2y - 6, 8, 12);
+    drawText(ctx, "T1", tofX + 12, tof1y + 3, "#f87171", "10px monospace", "left");
+    drawText(ctx, "T2", tofX + 12, tof2y + 3, "#fb923c", "10px monospace", "left");
     const colorX = c.x + c.w + 18;
     const colorY = c.y + c.h * 0.55;
     ctx.fillStyle = "#60a5fa";
@@ -983,7 +988,7 @@
       ctx.fillRect(sx - 10, sy - 6, 20, 12);
     }
     ctx.restore();
-    drawText(ctx, `Disc ${Math.round(scene.discAngleDeg || 225)}deg`, discCx, discCy + discR + 16, "#94a3b8", "10px monospace");
+    drawText(ctx, `Selector ${Math.round(scene.discAngleDeg || 225)}deg`, discCx, discCy + discR + 16, "#94a3b8", "10px monospace");
     for (let i = 0; i < 4; i++) {
       const deg = [315, 45, 135, 225][i];
       const ax = discCx + Math.cos(deg * DEG) * 118;

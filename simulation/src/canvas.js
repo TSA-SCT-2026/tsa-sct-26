@@ -1,5 +1,5 @@
 // canvas.js
-// Lightweight V6 visualization: chamber, trapdoor, disc, bins.
+// Lightweight V6 visualization: chamber, release mechanism, selector, bins.
 
 'use strict';
 
@@ -28,23 +28,28 @@ function drawChamber(ctx, W, H, scene) {
   ctx.lineWidth = 2;
   ctx.strokeRect(c.x, c.y, c.w, c.h);
 
-  const beam1x = c.x + 22;
-  const beam2x = c.x + c.w - 22;
+  const tofX = c.x + c.w;
+  const tof1y = c.y + 20;
+  const tof2y = c.y + c.h - 20;
   ctx.setLineDash([3, 2]);
   ctx.strokeStyle = '#ef4444';
   ctx.beginPath();
-  ctx.moveTo(beam1x, c.y - 12);
-  ctx.lineTo(beam1x, c.y + c.h + 12);
+  ctx.moveTo(tofX, tof1y);
+  ctx.lineTo(c.x + 14, tof1y);
   ctx.stroke();
   ctx.strokeStyle = '#fb923c';
   ctx.beginPath();
-  ctx.moveTo(beam2x, c.y - 12);
-  ctx.lineTo(beam2x, c.y + c.h + 12);
+  ctx.moveTo(tofX, tof2y);
+  ctx.lineTo(c.x + 14, tof2y);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  drawText(ctx, 'B1', beam1x, c.y - 16, '#f87171', '10px monospace');
-  drawText(ctx, 'B2', beam2x, c.y - 16, '#fb923c', '10px monospace');
+  ctx.fillStyle = '#ef4444';
+  ctx.fillRect(tofX - 4, tof1y - 6, 8, 12);
+  ctx.fillStyle = '#fb923c';
+  ctx.fillRect(tofX - 4, tof2y - 6, 8, 12);
+  drawText(ctx, 'T1', tofX + 12, tof1y + 3, '#f87171', '10px monospace', 'left');
+  drawText(ctx, 'T2', tofX + 12, tof2y + 3, '#fb923c', '10px monospace', 'left');
 
   const colorX = c.x + c.w + 18;
   const colorY = c.y + c.h * 0.55;
@@ -52,7 +57,7 @@ function drawChamber(ctx, W, H, scene) {
   ctx.fillRect(colorX - 8, colorY - 8, 16, 16);
   drawText(ctx, 'COLOR', colorX, colorY - 14, '#60a5fa', '9px monospace');
 
-  // Trapdoor platform
+  // Release support
   const hingeX = c.x + 24;
   const platW = 86;
   const platY = c.y + c.h - 18;
@@ -118,7 +123,7 @@ function drawDiscAndBins(ctx, W, H, scene, binCounts, numRuns, expectedCounts) {
   }
   ctx.restore();
 
-  drawText(ctx, `Disc ${Math.round(scene.discAngleDeg || 225)}deg`, discCx, discCy + discR + 16, '#94a3b8', '10px monospace');
+  drawText(ctx, `Selector ${Math.round(scene.discAngleDeg || 225)}deg`, discCx, discCy + discR + 16, '#94a3b8', '10px monospace');
 
   for (let i = 0; i < 4; i++) {
     const deg = [315, 45, 135, 225][i];

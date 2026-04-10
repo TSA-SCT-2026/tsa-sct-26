@@ -68,7 +68,7 @@ export const DEFAULTS = {
     '2x3_red': 4,
   },
 
-  // Disc absolute positions in steps [bin1, bin2, bin3, bin4]
+  // Selector absolute positions in steps [bin1, bin2, bin3, bin4]
   bin_steps: [1400, 200, 600, 1000],
   home_bin_index: 3,
 
@@ -108,7 +108,7 @@ export const SECTIONS = [
         min: 5,
         max: 40,
         step: 1,
-        desc: 'Delay between entry beam trigger and seated confirmation.',
+        desc: 'Delay between entry detection and seated confirmation.',
       },
       {
         id: 'settle_ms',
@@ -141,7 +141,7 @@ export const SECTIONS = [
         min: 1,
         max: 20,
         step: 1,
-        desc: 'Dual beam evaluation time in static chamber.',
+        desc: 'Dual ToF lane evaluation time in the static chamber.',
       },
       {
         id: 'color_sample_count',
@@ -192,7 +192,7 @@ export const SECTIONS = [
         min: 200,
         max: 2200,
         step: 50,
-        desc: 'Disc indexing speed at nominal thermal state.',
+        desc: 'Selector indexing speed at nominal thermal state.',
       },
       {
         id: 'stepper_start_sps',
@@ -235,7 +235,7 @@ export const SECTIONS = [
   },
   {
     id: 'release',
-    label: 'Trapdoor Release',
+    label: 'Release Mechanism',
     controls: [
       {
         id: 'solenoid_on_ms',
@@ -271,7 +271,7 @@ export const SECTIONS = [
         min: 20,
         max: 200,
         step: 5,
-        desc: 'Expected beam confirm delay after drop completes.',
+        desc: 'Expected bin-confirm delay after drop completes.',
       },
       {
         id: 'bin_confirm_timeout_ms',
