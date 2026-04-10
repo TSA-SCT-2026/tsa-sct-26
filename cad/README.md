@@ -10,7 +10,7 @@ Why: this keys the chamber footprint to the long side so only one brick can occu
 ```
 cad/
   chute/          feed chute tube, transition, chamber body, release interfaces
-  chute_sensing/  color sensor shroud, IR break-beam mounts
+  chute_sensing/  color sensor shroud, dual ToF mounts
   frame/          belt frame rails, end plates, channel walls, rollers, tensioner
   frame/rollers/  OpenSCAD timing stage, drive roller, idler, and fit coupon models
   bins/           four bin guides with angled floor and entrance beam slot
@@ -44,7 +44,7 @@ OpenSCAD roller workflow:
 Gate: 50 reliable release and reset cycles before printing larger assemblies.
 
 4. Chamber and sensing fit prints
-- Beam hole fit and alignment
+- Dual ToF fit and sightline clearance
 - Color sensor window and shroud fit
 - Stop-wall switch fit
 
@@ -67,4 +67,4 @@ FDM variance is 0.2-0.5mm. All brick-facing channels and interfaces need explici
 
 - Undersized channels cause jams
 - Oversized channels allow yaw and mis-seat risk
-- Sensor mount tolerance must preserve beam alignment and shroud seal
+- Sensor mount tolerance must preserve ToF sightlines and shroud seal
