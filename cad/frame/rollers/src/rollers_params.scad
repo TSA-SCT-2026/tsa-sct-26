@@ -1,4 +1,4 @@
-$fn = 128;
+$fn = 64;
 
 // Canonical parameters for the conveyor timing stage and roller models.
 // LOCKED_TRUTH values derive from LEGO geometry and long-side-across transport rule.

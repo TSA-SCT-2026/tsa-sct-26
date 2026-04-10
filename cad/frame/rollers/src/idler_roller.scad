@@ -1,6 +1,6 @@
 include <rollers_params.scad>
 
-module crowned_band(face_w, center_od, crown_sagitta, slices = 72) {
+module crowned_band(face_w, center_od, crown_sagitta, slices = 32) {
   edge_d = crown_edge_diameter(center_od, crown_sagitta);
 
   for (i = [0 : slices - 1]) {

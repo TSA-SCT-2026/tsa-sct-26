@@ -1,282 +1,252 @@
 # Fusion 360 Assembly Guide: Timing Conveyor Stage
 
-Quick reference for assembling the full timing stage in Fusion 360.
-Covers: NEMA17 motor, motor mount bracket, both GT2 pulleys, timing belt, supported shaft,
-drive roller, idler roller, and two bearing blocks.
+Covers: NEMA17 motor, motor mount bracket, GT2 pulleys (x2), timing belt path, supported
+shaft, drive roller, idler roller, and two bearing blocks.
 
-Read the part cards in `cad/frame/rollers/docs/` for detailed geometry.
-Read `cad/DIMENSIONS.md` lines 53-80 for all numeric references.
+Part geometry is in `cad/frame/rollers/docs/`. All numeric references trace to `cad/DIMENSIONS.md`.
 
 ---
 
-## Known import issues (read before starting)
+## Before you start: import issues
 
-### STL unit mismatch - parts appear 10x too large
+### STL parts appear 10x too large
 
-Fusion 360 defaults to centimeters when importing STL files. The printed parts are authored
-in millimeters in OpenSCAD. If you import an STL without changing the unit, a 70mm bracket
-will appear as 700mm.
+Fusion 360 defaults the import unit to centimeters for STL files. The parts are authored in
+millimeters. A 70mm bracket will show as 700mm if you import without changing the unit.
 
-Fix: when the Insert Mesh dialog opens, change the unit dropdown to "Millimeter (mm)" before
-clicking OK. Do this for every STL file in this assembly.
+Fix: in the Insert Mesh dialog, set the unit dropdown to "Millimeter (mm)" before clicking OK.
+Do this for every STL. If you already imported at the wrong scale, delete and re-import.
 
-If you already imported at the wrong scale, delete the component and re-import with the
-correct unit selected.
+### Convert STLs to solid bodies before constraining
 
-### STL gives a mesh body, not a solid - constraints are limited
+Mesh bodies have limited constraint surfaces. Convert each STL to a BRep solid after import:
 
-STL files import as mesh bodies. Fusion 360 can constrain to mesh faces but the workflow
-is less reliable than constraining to solid STEP geometry, especially for coaxial joints
-on bores.
+1. Import the STL (mm units as above).
+2. Right-click the component in the browser.
+3. Select "Mesh to BRep".
+4. Use the resulting solid for all joints.
 
-Convert mesh to BRep in Fusion 360 (no extra tools needed):
-
-1. Import the STL with mm units as above.
-2. In the browser, right-click the mesh component.
-3. Select "Mesh to BRep". Fusion will convert the mesh to a solid body.
-4. For simple parts like the bracket and bearing block this works cleanly.
-5. Use the converted solid body for all subsequent joint constraints.
-
-Note: complex curved surfaces (drive roller crown, idler crown) may produce many faces but
-the bore and flat reference surfaces are usable.
+All printed parts in this assembly are under 7,000 triangles and have been verified manifold,
+so BRep conversion should succeed for all of them.
 
 ---
 
-## 1. Prerequisites
+## 1. Files needed
 
-### Files to have open or imported before starting
+| File | Location | Type | Notes |
+|------|----------|------|-------|
+| `stepper_17HS4401S.STEP` | `docs/datasheet/motion/nema17/` | STEP | Ground this as the assembly origin |
+| `motor_mount_bracket_v1.stl` | `cad/frame/rollers/stl/` | STL | Import mm, convert to BRep |
+| `bearing_block_v1.stl` | `cad/frame/rollers/stl/` | STL | Import mm, convert to BRep. Import twice. |
+| `drive_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | STL | Import mm, convert to BRep |
+| `idler_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | STL | Import mm, convert to BRep |
+| `GT2_20T.STEP` | `docs/datasheet/motion/timing_pulley/` | STEP | Import twice, one instance per shaft |
 
-| File | Location | Notes |
-|------|----------|-------|
-| `motor_mount_bracket_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. Convert to BRep after import. |
-| `bearing_block_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. Print two copies. |
-| `drive_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. |
-| `idler_roller_proto_v1.stl` | `cad/frame/rollers/stl/` | Import with unit = mm. |
-| `GT2_20T.STEP` | `docs/datasheet/motion/timing_pulley/` | Use for both pulleys |
-| NEMA17 STEP | Your motor datasheet folder | Community model acceptable for layout |
+### Key dimensions before constraining
 
+| Dimension | Value |
+|-----------|-------|
+| Motor shaft diameter | 5mm D-profile |
+| Driven shaft diameter | 5mm round, 200mm long |
+| Driven shaft bore in roller/block | 5.2mm clearance |
+| GT2 20T pitch diameter | 12.73mm |
+| GT2 20T hub width | ~11mm (verify against received part) |
+| Center distance, 100T belt | 80mm |
+| Center distance, 104T belt | 84mm |
+| Bracket slot travel | 8.5mm in Y |
 
-### Hardware dimensions to know before constraining
-
-- Driven shaft: 5mm diameter, 200mm long
-- Motor shaft: 5mm D-profile, NEMA17 standard
-- Pulley pitch diameter: 12.73mm (GT2 20T)
-- Pulley hub width: approximately 11mm (verify against received part before finalizing)
-- Center distance: 80mm nominal (100T belt) or 84mm nominal (104T belt)
-- Bracket slot travel: 8.5mm, oriented in the Y direction
+Commit to a belt length before Step 3. Center distance is fixed by frame geometry.
 
 ---
 
-## 2. Import and Placement Order
+## 2. Placement sequence
 
-Work in this order. Each step anchors the next.
+Import everything and convert STLs to BRep before constraining anything. Then work through
+these steps in order - each step anchors the next.
 
-### Step 1: Ground the NEMA17 motor
+### Step 1: Ground the motor
 
-1. Insert > Import > select your NEMA17 STEP file.
-2. Ground the motor body (right-click component > Ground).
-3. Orient so the motor shaft points in the +X direction (shaft axis = X).
-4. This is your assembly origin. Everything else constrains to this.
+1. Insert > Import > select `stepper_17HS4401S.STEP`.
+2. Right-click the motor component > Ground.
+3. Orient so the motor shaft points in the +X direction.
+
+This is the assembly origin. All other parts constrain to the motor or to the driven shaft.
 
 ### Step 2: Place the motor mount bracket
 
-1. Import `motor_mount_bracket_v1.stl` and convert to a Fusion body if needed
-   (Insert > Insert Mesh, or re-export the SCAD as STEP for clean constraint surfaces).
-2. Mate the bracket face (motor-facing side) flush to the motor mounting face.
-3. Align the four M3 holes on the bracket to the four M3 holes on the NEMA17 face.
-   Use a Coincident joint on one hole pair and a Tangent or Parallel constraint to
-   lock rotation.
-4. Leave the frame bolt slots free for now. You will set the Y offset in Step 9.
+1. Insert > Insert Mesh > select `motor_mount_bracket_v1.stl`, unit = mm.
+2. Right-click > Mesh to BRep.
+3. Rigid joint: mate the bracket's motor-facing face flush to the NEMA17 mounting face.
+4. Align one M3 motor hole on the bracket to the matching tapped hole on the motor face
+   (Coincident joint). Add a Parallel constraint on the bracket face to lock rotation.
 
-### Step 3: Place the motor pulley (first STEP instance)
+Physical note: the four frame slots allow 8.5mm of Y travel. In the final physical assembly
+you slide the motor toward or away from the shaft to set center distance, then lock the
+frame bolts. Keep the motor at mid-slot in the CAD layout so you have margin in both
+directions. The slot center positions are 28mm from the bracket center in both X and Y.
 
-1. Import `GT2_20T.STEP` as Component 1 of 2.
-2. Apply a Cylindrical joint: pulley bore axis coincident with motor shaft axis.
-3. Set axial position so the pulley sits on the frame side of the bracket
-   (motor pulley must not be between motor face and bracket).
-4. Leave rotational degree of freedom free (belt will determine this).
+See `cad/frame/rollers/docs/motor_mount_bracket.md` for full geometry.
 
-Reference: `docs/motor_mount_bracket.md` - motor attachment section.
+### Step 3: Place the motor pulley
 
-### Step 4: Set up the driven shaft
+1. Insert > Import > select `GT2_20T.STEP` (Component 1 of 2, label it "motor_pulley").
+2. Cylindrical joint: pulley bore axis coincident with motor shaft axis.
+3. Set axial position so the pulley sits on the frame side of the bracket. The pulley must
+   not be between the motor face and the bracket - it will be trapped and contact the bracket
+   under load.
+4. Note the axial distance from the motor shaft shoulder to the center of the pulley tooth
+   section. You will need this value in Step 7 to match belt planes.
 
-1. Insert > Create > New Component named "driven_shaft".
-2. Sketch a cylinder: 5mm diameter, 200mm long.
-3. Position the shaft axis parallel to the motor shaft axis (both along X).
-4. Set shaft center 80mm from motor shaft center, measured along Y
-   (the belt travel direction). This is the nominal center distance.
-5. Set Z height equal to motor shaft Z unless your frame intentionally offsets the motor
-   lower for packaging. Keep both shafts coplanar in Z for a first-pass layout.
+### Step 4: Create the driven shaft and set center distance
 
-### Step 5: Place the bearing blocks (x2)
+1. Insert > Create > New Component, name it "driven_shaft".
+2. In the component, sketch a 5mm diameter cylinder, 200mm long.
+3. Place the shaft axis parallel to the motor shaft axis (both along X).
+4. Set shaft center Y-distance from motor shaft center to your target center distance:
+   - 80mm for 100T (200mm) belt
+   - 84mm for 104T (208mm) belt
+5. Set shaft Z equal to motor shaft Z. Both shafts must be coplanar in Z.
 
-1. Import `bearing_block_v1.stl` twice, as separate components.
-2. For each block: mate the 5.2mm bore axis to the driven shaft axis (Cylindrical joint).
-3. Space the blocks symmetrically about the drive roller position.
-   From `docs/bearing_block.md` layout table:
-   - Bearing block centers at approximately +/-21.5mm from roller center
-   - Adjust to clear the drive roller flanges (roller edge at +/-14.5mm)
-4. Orient each block so its bearing pocket (8.15mm bore side) faces outward,
-   away from the roller center.
-5. The frame bolt holes run through the Y faces. Confirm these faces point toward
-   your frame wall geometry.
+This distance is the frame geometry commitment. Do not change it after Step 5.
+
+### Step 5: Place the bearing blocks
+
+1. Insert the first `bearing_block_v1.stl` instance (mm, BRep convert).
+2. Insert the second instance as a separate component.
+3. For each block: Cylindrical joint on the 5.2mm bore axis coincident with the driven shaft.
+4. Space the blocks symmetrically about the shaft center in X:
+   - Block centers at approximately +/-21.5mm from roller center
+   - Keep block bodies clear of the drive roller flanges (roller edge at +/-14.5mm)
+5. Orient each block so the bearing pocket face (8.15mm bore, 2.6mm deep) faces outward.
+6. The two M3 mounting holes run through the Y faces. Confirm those faces point toward
+   your frame walls.
+
+See `cad/frame/rollers/docs/bearing_block.md` for full geometry.
 
 ### Step 6: Place the drive roller
 
-1. Import `drive_roller_proto_v1.stl`.
-2. Apply a Cylindrical joint: roller bore axis coincident with driven shaft axis.
-3. Center the roller on the shaft (roller center = shaft center in X).
-   The 25mm contact face spans the belt channel width.
-4. Leave the roller free to spin (rotational DOF free).
+1. Insert `drive_roller_proto_v1.stl` (mm, BRep convert).
+2. Cylindrical joint: roller bore axis coincident with driven shaft axis.
+3. Center the roller on the shaft in X. The 25mm contact face spans the belt channel.
+4. Leave rotational DOF free.
 
-Reference: `docs/drive_roller.md` for bore and flange geometry.
+See `cad/frame/rollers/docs/drive_roller.md` for bore and flange geometry.
 
-### Step 7: Place the driven pulley (second STEP instance)
+### Step 7: Place the driven pulley and check belt plane alignment
 
-1. Import `GT2_20T.STEP` again as Component 2 of 2.
-2. Apply a Cylindrical joint: pulley bore axis coincident with driven shaft axis.
-3. Position axially beyond the outer bearing block on the motor side (+X or -X,
-   whichever faces the motor). This keeps the pulley in the belt plane.
-4. Set the pulley axial position so its belt plane (center of the tooth section)
-   aligns with the motor pulley belt plane. This is the single most critical
-   geometric constraint in this assembly.
+1. Insert `GT2_20T.STEP` again (Component 2 of 2, label it "driven_pulley").
+2. Cylindrical joint: pulley bore axis coincident with driven shaft axis.
+3. Position axially on the motor-facing side of the outer bearing block. The pulley must
+   clear the bearing block face.
+4. Adjust axial position until the driven pulley belt-section center is at the same Z
+   as the motor pulley belt-section center. This is the most critical constraint.
 
-### Step 8: Check belt plane alignment
+How to verify belt plane alignment:
+- Inspect > Measure: distance from motor shaft axis to center of motor pulley tooth section.
+- Inspect > Measure: same measurement on the driven shaft and driven pulley.
+- The two values must match within 0.5mm. 0mm is the target.
+- If misaligned, slide the driven pulley axially until they match.
 
-Before proceeding: verify motor pulley belt plane Z height equals driven pulley belt
-plane Z height. Misalignment here causes belt tracking failure.
+Do not proceed past this step with misaligned belt planes. Axial misalignment causes belt
+walk and is not adjustable after physical assembly.
 
-How to check:
-- Measure from the motor shaft centerline to the center of the motor pulley tooth section.
-- Measure from the driven shaft centerline to the center of the driven pulley tooth section.
-- These two values must match (within approximately 0.5mm for layout; 0mm is the target).
-- Adjust axial position of either pulley until they match.
+### Step 8: Place the idler roller
 
-If the motor is intentionally lower for packaging, adjust driven pulley axial offset to
-compensate. Do not skip this check.
-
-### Step 9: Set motor mount bracket Y offset (tension slot)
-
-1. Re-visit the motor mount bracket from Step 2.
-2. Move the entire motor + bracket assembly in +Y (away from driven shaft)
-   until the center distance reads your target value:
-   - 80mm for 100T belt (200mm belt)
-   - 84mm for 104T belt (208mm belt)
-3. The bracket slot provides 8.5mm of adjustment range. Keep the motor at
-   mid-slot for the initial layout so you have adjustment room in both directions.
-4. Confirm: center distance from motor shaft center to driven shaft center in Y
-   equals your target (80mm or 84mm).
-
-### Step 10: Place the idler roller
-
-1. Import `idler_roller_proto_v1.stl`.
-2. The idler mounts on a separate M5 axle at the opposite end of the belt path
-   from the drive roller. This is not on the supported shaft.
+1. Insert `idler_roller_proto_v1.stl` (mm, BRep convert).
+2. The idler mounts on a separate M5 axle at the far end of the conveyor belt path.
+   It is not on the supported shaft.
 3. Set idler axle parallel to the driven shaft (both along X).
-4. Position idler so the neoprene belt wraps from the drive roller to the idler
-   at the conveyor belt end. Exact axial placement depends on your frame and channel
-   geometry.
-5. Idler Z height: set so the belt bed (top face of belt) is at the correct channel height
-   for brick transport.
+4. Position so the neoprene belt wraps from the drive roller to the idler at the channel end.
+   Exact X position depends on your frame and channel geometry.
+5. Set idler Z so the belt bed (top face of the neoprene belt) is at the correct channel
+   height for brick transport.
 
-Reference: `docs/idler_roller.md` for crown and bearing geometry.
+See `cad/frame/rollers/docs/idler_roller.md` for crown and bearing pocket geometry.
 
-### Step 11: Visualize the timing belt path
+### Step 9: Sketch the timing belt path
 
-Fusion 360 does not have a native belt tool. Approximate the belt path manually:
+Fusion 360 has no native belt tool. Sketch the path manually:
 
-1. Sketch > create two tangent lines from the outer edge of the motor pulley to the
-   outer edge of the driven pulley (one on each side).
-2. Add two arcs at each pulley to close the loop (arc radius = pulley OD / 2).
-3. This gives a visual check of belt wrap angle and path clearance.
-4. Verify the belt path does not intersect any part of the frame, bracket, or bearing blocks.
+1. Create a sketch on a plane containing both shaft axes.
+2. Draw two tangent lines from the outside edge of the motor pulley to the outside edge
+   of the driven pulley (one on each side).
+3. Add arcs at each pulley closing the loop (arc radius = pulley OD / 2 = ~7.9mm).
+4. Verify the path clears the bracket edges, bearing block tops, and any frame walls by
+   at least 1mm.
 
-Minimum wrap angle on the smaller pulley: 120 degrees is acceptable. Less than 90 degrees
-is a slip risk. Both pulleys are identical (20T), so wrap angle is symmetric at 80mm center
-distance.
+Wrap angle check: both pulleys are 20T at 80mm center distance. Wrap angle is symmetric.
+Minimum acceptable wrap: 120 degrees. Below 90 degrees is a slip risk.
 
 ---
 
-## 3. Key Constraint Checks
+## 3. Checks
 
-Run these in order after completing placement. Each check must pass before moving on.
+Run in order. All must pass before physical build.
 
 ### Check 1: Shaft parallelism
 
-- Select motor shaft axis and driven shaft axis.
-- Use Inspect > Measure or the Section Analysis tool to confirm the axes are parallel.
-- They must be parallel. Any angular offset causes belt skew and tracking failure.
-- Tolerance: visually parallel in all views. Zero angular error in layout.
+- Inspect > Measure between motor shaft axis and driven shaft axis.
+- Axes must be exactly parallel. Any angular offset causes belt skew.
 
 ### Check 2: Belt plane alignment
 
-- Motor pulley belt-section center Z = driven pulley belt-section center Z.
-- Check from a front view (looking along X axis).
-- If misaligned: adjust the axial position of the pulley that is easier to move.
-- Tolerance: 0.5mm max for initial layout. Match as closely as possible.
+- Motor pulley tooth-section center Z = driven pulley tooth-section center Z.
+- Check in the front view (looking along X).
+- Max allowed offset: 0.5mm. Target: 0.
 
 ### Check 3: Center distance
 
-- Measure distance between motor shaft axis and driven shaft axis in the Y direction.
-- Must match your chosen belt length:
-  - 100T belt = 80mm center distance
-  - 104T belt = 84mm center distance
-- Bracket slot mid-position gives adjustment room in both directions.
+- Measure Y-distance between motor shaft center and driven shaft center.
+- Must match your belt choice: 80mm (100T) or 84mm (104T), within 0.5mm.
 
 ### Check 4: No hard interference
 
-- Inspect > Interference between all components.
-- Common interference points to check:
-  - Motor pulley vs. bracket face (pulley must be on frame side of bracket)
-  - Drive roller flanges vs. bearing block bodies
-  - Driven pulley vs. outer bearing block face
-  - Idler roller body vs. frame channel walls
-- Zero hard interference required before any part goes to print.
+- Inspect > Interference on all components.
+- Zero red interference volumes required.
+- Common problem points:
+  - Motor pulley vs bracket face
+  - Drive roller flanges vs bearing block bodies
+  - Driven pulley vs outer bearing block face
+  - Idler body vs frame channel walls
 
 ### Check 5: Belt path clearance
 
-- Trace the timing belt path sketch from Step 11.
-- Check clearance to bracket edges, bearing block tops, and any frame walls.
-- Minimum 1mm clearance around belt at all points.
+- Belt sketch must clear all parts by at least 1mm at all points.
 
 ---
 
-## 4. Pass / Fail Validation Criteria
+## 4. Pass / Fail table
 
 | Check | Pass | Fail |
 |-------|------|------|
-| Shaft parallelism | Axes parallel in all views | Any visible angular offset |
-| Belt plane alignment | Z positions match within 0.5mm | Offset visible in front view |
-| Center distance | Matches chosen belt length +/-0.5mm | Outside range, no room for adjustment |
-| Hard interference | Zero red interference volumes | Any overlapping solid volumes |
-| Belt path clearance | 1mm+ all around belt path | Belt sketch intersects any part |
-| Bracket slot position | Motor at mid-slot | Motor at hard end of slot |
-| Pulley axial position | Pulley on frame side of bracket | Pulley between motor face and bracket |
-| Idler height | Belt bed at correct channel height | Idler too high or low for brick transport |
+| Shaft parallelism | Parallel in all views | Any visible angular offset |
+| Belt plane alignment | Z match within 0.5mm | Offset visible in front view |
+| Center distance | Within 0.5mm of target | Out of range, slot at limit |
+| Hard interference | Zero overlapping volumes | Any red interference volume |
+| Belt path clearance | 1mm+ everywhere | Belt sketch intersects any part |
+| Pulley side of bracket | Pulley on frame side | Pulley between motor face and bracket |
+| Bearing block orientation | Pocket face outward on both blocks | Either pocket faces inward |
+| Idler belt height | Belt bed at channel height | Idler too high or too low |
 
-The assembly is ready for physical build when all checks pass.
+Assembly is ready for physical build when all checks pass.
 
 ---
 
-## 5. Common Pitfalls
+## 5. Common pitfalls
 
-**Pulley between motor and bracket**: the purchased pulley goes on the motor shaft
-on the frame side of the bracket only. If it sits between the motor face and the bracket,
-it will be inaccessible and will contact the bracket under load.
+**Pulley between motor face and bracket**: the GT2 pulley goes on the motor shaft on the
+frame side of the bracket. If it is between the motor face and the bracket it will be
+inaccessible and will contact the bracket under belt load.
 
-**Skipping belt plane check**: shafts can be parallel but pulleys offset axially. These
-are independent checks. A parallel shaft with misaligned pulleys still causes belt walk.
+**Belt plane skipped**: shaft parallelism and belt plane alignment are independent checks.
+Parallel shafts with axially offset pulleys still cause belt walk. Do not skip Check 2.
 
-**Motor at end of slot**: if you set the motor at the maximum slot extension during layout,
-you have no room to take up belt stretch during physical assembly. Start at mid-slot.
+**Hub width from STEP vs received part**: the GT2_20T.STEP hub width may differ from the
+WINSINN pulleys you received. Verify the received hub width before finalizing axial positions.
+See `docs/datasheet/motion/timing_pulley/README.md` for the caveat on this file.
 
-**Using the printed motor_pulley.scad model as the purchased part**: the printed envelope
-is a cylinder with no teeth. It is for layout only. The STEP file from the timing_pulley
-datasheet is the correct geometry to use for both pulley instances.
+**Two bearing block instances**: the STL is one block. You need two separate imported
+instances. Both pocket faces point outward from roller center.
 
-**Hub width assumption**: the STEP model hub width may differ slightly from your received
-WINSINN pulleys. Verify the received pulley hub width before finalizing axial positions.
-See `docs/datasheet/motion/timing_pulley/README.md` for the caveat on this STEP file.
-
-**Two bearing blocks, one for each end**: the bearing block STL is a single unit. You
-need two instances. Both pocket faces point outward from the roller center.
+**Motor pulley is a layout proxy**: `motor_pulley_proto_v1.stl` is a featureless cylinder
+for spatial reference only. Use `GT2_20T.STEP` for both pulley instances in this assembly.
