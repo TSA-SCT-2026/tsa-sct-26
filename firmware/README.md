@@ -31,6 +31,7 @@ Optional future events remain available for tighter instrumentation:
 ## Key constraints
 
 - Classification happens only while the brick is static in the chamber
+- Chamber size is determined from dual rear-wall ToF readings, not cross-chamber break-beams
 - The selector chute must provide 4 deterministic positions plus a home reference
 - Release is allowed only after selector-ready truth
 - Feed restart is allowed only after platform-level truth

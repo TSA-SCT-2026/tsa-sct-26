@@ -10,7 +10,7 @@ Goals:
 ## Folder map
 
 - `motion/`: stepper motors, timing belts, pulleys, bearings
-- `sensing/`: break-beam sensors, color sensors, switches, Hall sensors
+- `sensing/`: ToF distance sensors, break-beam sensors, color sensors, switches, Hall sensors
 - `power/`: batteries, chargers, buck converters, fuse holders
 - `electrical/`: semiconductors and passives (drivers, MOSFETs, diodes, capacitors, resistors)
 - `materials/`: tapes, rubber strips, structural material sheets

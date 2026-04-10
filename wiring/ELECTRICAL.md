@@ -33,7 +33,8 @@ Status date: April 3, 2026
 
 ## Sensor wiring notes
 
-- Size beams and bin beams use stable pull-up strategy per input type
+- Dual ToF modules need clean shared I2C wiring plus independent XSHUT control for address assignment
+- Bin-confirm beams use stable pull-up strategy per input type
 - Color sensor wiring must be shielded from motor leads where possible
 - Keep shroud installed for all calibration and validation runs
 

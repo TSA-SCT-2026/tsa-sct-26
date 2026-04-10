@@ -94,6 +94,7 @@ Optional events reserved for future instrumentation:
 - Feed timing is modeled around queued chamber pitch, not full conveyor length per brick
 - The chamber footprint assumes the long-side-across brick orientation until the final geometry is frozen
 - Classification, routing, release, confirm, and reset remain event-gated
+- Chamber size sensing now depends on dual ToF gap readings from the rear wall, not break-beam block state
 
 ## Config focus
 

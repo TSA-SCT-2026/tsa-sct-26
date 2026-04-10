@@ -18,8 +18,8 @@ No server or install is required for use.
 
 - State flow: `IDLE -> FEED -> APPROACH -> SEATED -> SENSING -> INDEXED -> RELEASED -> CONFIRM -> RESET`
 - Chamber-static sensing timing
-- Selector disc indexing time from steps and SPS
-- Trapdoor release and confirmation windows
+- Selector chute indexing time from steps and SPS
+- Release-mechanism and confirmation windows
 - Thermal accumulation and cooldown across multi-run sessions
 - Replay of run logs from CSV
 

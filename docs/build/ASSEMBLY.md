@@ -117,7 +117,7 @@ Goal:
 
 Steps:
 1. Print chamber fit parts.
-2. Fit size beam mounts at target chamber positions.
+2. Fit dual ToF mounts on the stop wall and verify their sightlines to the chamber edge zones.
 3. Fit color sensor window and shroud.
 4. Install the required stop-wall seat switch and verify actuator travel.
 5. Keep the release-return flag and switch-mount provision in the printed parts.
@@ -126,6 +126,7 @@ Steps:
 
 Pass criteria:
 - No forced sensor fit
+- Both ToF modules have clean line of sight and cable clearance
 - No light leaks around the shroud
 - No brick obstruction during seat or release
 

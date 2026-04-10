@@ -16,7 +16,7 @@ Required additions that do not currently exist in firmware output:
 - `state`: exact state or phase label (`FEED`, `APPROACH`, `SEATED`, `SENSING_DONE`, `INDEXED`, `RELEASED`, `BIN_CONFIRM`, `RESET`, `ERROR_HALT`).
 - `ts_state_ms`: timestamp for each state transition row, not only entry and confirm summaries.
 - `target_bin`: controller intent at classification time.
-- `actual_bin`: confirmed bin from beam feedback.
+- `actual_bin`: confirmed bin from bin-confirm feedback.
 - `index_steps`: selector movement in steps for that brick.
 - `index_ms`: selector movement duration.
 - `solenoid_on_ms`: applied pulse width for that release event.
@@ -71,13 +71,13 @@ Minimum approach:
 
 **[DONE] Replace legacy model with chamber simulation**
 
-- Replaced belt and plow model with chamber state flow and trapdoor release timing.
-- Added selector disc indexing timing from step count and SPS.
+- Replaced belt and plow model with chamber state flow and release-mechanism timing.
+- Added selector chute indexing timing from step count and SPS.
 - Added deterministic category-to-bin routing aligned with docs.
 
 **[DONE] Update visualization for current mechanisms**
 
-- Canvas now shows chamber, trapdoor, lever, selector disc, and bin layout.
+- Canvas now shows chamber, release mechanism, lever, selector, and bin layout.
 - Timeline shows state transitions and key actuator events.
 - Per-brick table now reports target vs actual bin and index timing.
 

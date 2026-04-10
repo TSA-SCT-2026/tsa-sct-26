@@ -13,7 +13,7 @@ Read first:
 - `docs/build/CALIBRATION.md`: calibration procedures
 - `docs/build/CHECKLIST.md`: build and validation checklist
 - `docs/build/TEST_PROTOCOL.md`: pass/fail test protocol
-- `docs/OPTIMIZE_PLAN.log`: optimization work order, measurement plan, and speed-max program
+- `docs/project/OPTIMIZE_PLAN.md`: optimization work order, measurement plan, and speed-max program
 
 ## Project docs
 

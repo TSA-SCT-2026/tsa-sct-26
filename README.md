@@ -5,10 +5,10 @@ TSA System Control Technology 2026: automated LEGO brick sorter for nationals on
 The active production architecture sorts 24 LEGO bricks by size and color into 4 bins using:
 - Preloaded 24-brick compressed queue
 - One-brick isolation chamber
-- Static sensing in the chamber
+- Dual ToF size sensing and color sensing in the chamber
 - NEMA17 conveyor feed axis
 - Off-axis toothed timing-belt stage to a supported smooth drive roller
-- 4-index selector chute under the trapdoor, active for now
+- 4-index selector chute below the release mechanism, active for now
 - Event-gated control with physical truth checks before each release and restart
 
 Goal: first place at nationals.

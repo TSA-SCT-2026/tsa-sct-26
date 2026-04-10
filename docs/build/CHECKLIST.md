@@ -24,7 +24,7 @@
 - Home switch responds
 - Stop switch responds
 - Chamber clear condition is detectable
-- Beam sensors report expected idle state
+- Dual ToF sensors report expected idle and seated ranges
 - TCS3200 color sensor output responds in the expected test mode
 - Selector-ready event appears before release
 - Next-feed restart waits for physical reset confirmation
