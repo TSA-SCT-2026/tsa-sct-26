@@ -44,3 +44,6 @@ firmware/.vscode/
 CLAUDE.md
 AGENTS.md
 .claude/
+
+# Archived / superseded CAD parts (kept for rollback, not for build)
+**/_archive/
