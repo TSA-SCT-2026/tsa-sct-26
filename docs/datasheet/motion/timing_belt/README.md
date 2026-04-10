@@ -36,11 +36,11 @@ For the 208mm belt (ordered part), the belt path in Fusion will have a slightly 
 | 200mm | 100T | 200mm | 80mm |
 | 208mm | 104T | 208mm | 84mm |
 
-The motor mount bracket slots (12mm long, 3.5mm wide) give 8.5mm of travel, covering both belt options from a single bracket position.
+The integrated trough motor slots give 8mm of travel in the belt direction, covering the 80mm nominal center distance and nearby belt-fit adjustments from one printed body.
 
 ## Installation notes
 
-- Loop the belt around both pulleys before mounting them on the shafts.
-- Install the belt in the conveyor last. Routing into the frame after the shaft is installed is difficult.
+- Install both pulleys first, then route the timing belt through the trough bridge window.
+- Snug pulley set screws before belt installation so axial position can still be corrected during dry alignment.
 - Belt tension should be firm but not banjo-tight. The neoprene conveyor belt requires low slip force; over-tensioning the timing belt adds unnecessary bearing load.
 - If the belt skips teeth under load, increase tension incrementally. If it skips immediately at any tension, recheck pulley alignment.

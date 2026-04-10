@@ -12,7 +12,8 @@ Files:
 - `src/idler_roller.scad`: crowned idler with dual MR85 pockets
 - `src/roller_coupons.scad`: bearing fit, shaft-fit, and crown test coupons
 - `scripts/build_rollers.sh`: validation and STL export script
-- `docs/`: part cards and parameter notes for the roller subsystem
+- `docs/`: active part cards, Fusion assembly flow, and parameter notes for the roller subsystem
+- `docs/_archieve/`: retired reference docs from the earlier separate bracket and bearing-block layout
 - `ASSEMBLY.md`: beginner-friendly physical assembly guide
 - `docs/FUSION360_ASSEMBLY.md`: step-by-step Fusion 360 CAD assembly guide for the timing stage
 

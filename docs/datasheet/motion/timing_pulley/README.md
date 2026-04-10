@@ -58,4 +58,8 @@ With two 20T pulleys and 2mm pitch GT2 belt:
 - 100T belt (200mm): center distance = 80mm
 - 104T belt (208mm): center distance = 84mm
 
-The motor mount bracket slots provide up to 8.5mm of adjustment to cover both belt options.
+The integrated trough motor slots provide 8mm of adjustment in the belt direction around the 80mm nominal center distance.
+
+Before freezing pulley placement in CAD:
+- check that the belt path clears the trough bridge window
+- check that the drive-pulley set screw is reachable before belt installation

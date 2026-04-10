@@ -1,5 +1,9 @@
 # Motor Mount Bracket
 
+Retired reference only.
+This separate bracket is no longer part of the active timing-stage architecture.
+Use the integrated trough motor face in `cad/frame/rollers/src/conveyor_trough.scad` for current work.
+
 ## Purpose
 
 Mounts the NEMA17 to the frame with 8mm of belt tension travel in the Y direction.

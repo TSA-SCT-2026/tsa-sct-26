@@ -4,6 +4,7 @@ Covers: integrated trough body, NEMA17 motor, GT2 pulleys, timing belt path, sup
 drive shaft, drive roller, fixed-axle idler, and the neoprene transport belt path.
 
 Part geometry is in `cad/frame/rollers/docs/`. All numeric references trace to `cad/DIMENSIONS.md`.
+Ground the trough first. The motor model is a referenced component, not the assembly origin.
 
 ---
 
@@ -88,6 +89,7 @@ The drive shaft is supported by the two drive-end MR85 pockets built into the tr
 2. Cylindrical joint: pulley bore axis coincident with the drive-shaft axis.
 3. Place the pulley on the motor side of the trough, outside the right wall.
 4. Leave enough shaft length between the trough outer face and pulley hub for real hardware access.
+5. Check that the set screw remains reachable before the timing belt is installed.
 
 ### Step 5: Place the motor
 
@@ -115,6 +117,7 @@ How to verify belt-plane alignment:
 3. Insert `idler_roller_proto_v1.stl`, unit = mm, then convert it to BRep.
 4. Constrain the idler roller to the M5 axle.
 5. Center the roller in the channel.
+6. If you want hardware-clearance truth in the same model, add simple washer keep-outs at the two outer wall faces.
 
 The idler uses its own internal MR85 bearings. The trough only locates the fixed axle.
 
@@ -169,6 +172,7 @@ Run in order. All must pass before physical build.
 - Motor body vs trough motor leg
 - Timing belt path vs bridge window
 - Drive pulley vs trough outer wall
+- Drive-pulley set screw vs reachable tool path
 - Idler body vs trough wall tops
 - Drive-roller flanges vs wall interior
 
@@ -201,6 +205,8 @@ Assembly is ready for physical build when all checks pass.
 **Pulley plane skipped**: parallel shafts alone are not enough. Axially offset pulleys still cause belt walk.
 
 **Drive pulley too close to the wall**: leave real wrench and set-screw access. CAD that only barely clears is not serviceable during testing.
+
+**Motor treated as the grounded origin**: the trough is now the assembly datum. Grounding the motor first hides interface drift at the idler, flanges, and mounting feet.
 
 **Idler treated like a supported shaft**: the idler keeps its own internal bearings. The trough only needs the fixed M5 axle line at that end.
 

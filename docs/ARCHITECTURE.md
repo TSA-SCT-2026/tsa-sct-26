@@ -33,6 +33,7 @@ This repo is centered on one active architecture:
 - Gravity release by a solenoid-driven retracting support
 - NEMA17 conveyor feed axis
 - Off-axis toothed timing-belt stage to a supported smooth drive roller
+- One integrated conveyor trough body carrying the belt bed, drive-end shaft support, idler axle line, and motor face
 - Event-gated restart only after physical reset truth is satisfied
 
 Rejected upstream singulation families such as cam, Geneva, star wheel, and dual-pin are documented in the notebook alternatives.
@@ -84,7 +85,7 @@ Older repo text may say `disc`. Treat that as stale wording unless a specific ci
     -> [start gate opens]
     -> [narrow conveyor channel]
     -> [one-brick isolation chamber]
-    -> [STATIC: size beams + color sensor]
+    -> [STATIC: dual ToF size sensing + color sensor]
     -> [classification lock]
     -> [selector chute indexes to target]
     -> [release gate clears support]
@@ -158,11 +159,18 @@ Why this is the active production path:
 
 The conveyor uses an off-axis timing-belt stage to a supported smooth drive roller.
 
+Current packaging direction:
+- Integrated trough body instead of separate bearing blocks and motor bracket
+- Drive-end MR85 support pockets built into the trough walls
+- Idler remains a fixed M5 axle with bearings inside the roller
+- Trough-based Fusion assembly must pass before the full trough print is treated as ready
+
 ## Sensing summary
 
 Size:
-- Two IR break-beams at chamber positions defined in `cad/DIMENSIONS.md`
-- Size classification depends on static beam state only
+- Two rear-wall ToF sensors measure left and right chamber-side clearances while the brick is seated
+- Size classification is based on the static ToF gap pattern, not an in-flight beam break
+- The pair must still classify correctly if a 2x2 seats left or right of chamber center
 
 Color:
 - Purchased module in the current hardware log is the TCS3200 GY-31 family
@@ -235,7 +243,7 @@ Reset-truth rule:
 
 | Requirement | Implementation |
 |-------------|----------------|
-| Two or more sensors | Size beams, color sensor, selector home switch, chamber seat switch, and bin confirm |
+| Two or more sensors | Dual ToF size sensors, color sensor, selector home switch, chamber seat switch, and bin confirm |
 | Manual start and stop | Labeled start control and power control |
 | Programmable controller | ESP32 |
 | Feedback loop | Chamber, selector, bin, and reset truth in the control loop |
@@ -263,10 +271,13 @@ Goal: lock the production conveyor path before larger assemblies drift.
 
 Tasks:
 - Package motor, timing-belt stage, supported roller shaft, idler, and tension adjustment
+- Complete the integrated-trough Fusion 360 assembly before the first full trough print
+- Verify bridge belt window clearance, pulley set-screw service access, and idler hardware keep-out
 - Confirm service clearance, belt guard clearance, and cable-routing paths
 - Confirm chamber and frame interfaces based on the packaged conveyor module
 
 Exit criteria:
-- No hard interference in assembled CAD
+- Integrated trough assembly passes in Fusion with zero hard interference
+- Service-clearance checks for the belt window, pulley access, and idler hardware are documented
 - Ratio, shaft support, and tension-adjust ranges documented
 - Conveyor module fits the system footprint with margin

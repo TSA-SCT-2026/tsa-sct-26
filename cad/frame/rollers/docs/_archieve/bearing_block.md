@@ -1,5 +1,9 @@
 # Bearing Block
 
+Retired reference only.
+This separate bearing block is no longer part of the active timing-stage architecture.
+Use the integrated drive-end support pockets in `cad/frame/rollers/src/conveyor_trough.scad` for current work.
+
 ## Purpose
 
 Supports the driven 5mm shaft at two points so the shaft load does not reach the motor bearings. Two blocks are needed per shaft.

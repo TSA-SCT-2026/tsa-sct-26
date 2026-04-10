@@ -13,7 +13,8 @@ Observed received-part note: a 5mm ID bearing fit the shaft very snugly, so trea
 ## CAD model
 
 STEP file: `stepper_17HS4401S.STEP` (this directory)
-Use this file as the grounded assembly origin in Fusion 360 layout.
+Use this file as the referenced motor geometry in the trough-based Fusion 360 assembly.
+Ground the integrated trough first, then constrain the motor to the trough motor face.
 See `cad/frame/rollers/docs/FUSION360_ASSEMBLY.md` for assembly procedure.
 
 ### Dimension(mm): 

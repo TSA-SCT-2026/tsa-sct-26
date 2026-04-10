@@ -30,7 +30,7 @@ The NSK STEP model is from the NSK bearing manufacturer. It matches standard MR8
 
 Use it for:
 - Confirming bearing pocket geometry in Fusion
-- Verifying clearance in the idler roller and bearing block designs
+- Verifying clearance in the idler roller and integrated trough drive-end support pockets
 
 ## CAD pocket values
 
@@ -49,7 +49,7 @@ These values come from the bearing fit coupon. Verify with your printer before p
 | Location | Quantity | Notes |
 |----------|----------|-------|
 | Idler roller | 2 | One per side, pressed into roller pockets |
-| Driven shaft support (bearing blocks) | 2 | One per bearing block, pressed in |
+| Supported shaft support in trough drive end | 2 | One per integrated drive-end pocket, pressed in |
 | Total active use | 4 | Out of 10 in the purchased set |
 
 The remaining 6 bearings are spare stock.
