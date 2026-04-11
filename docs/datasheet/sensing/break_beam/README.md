@@ -1,21 +1,50 @@
-Exact purchased name: 4 Pairs Infrared Circuit Breaker Sensor 3mm LED Lamp Distance Sensor Counting Module DC 3-5V (AliExpress)
-Spreadsheet trace: Order ID: 8210696713845240
-Received status: Yes, received
-Source of dimensions: AliExpress listing (20x10x8mm body, 3mm light hole) + physical verification possible now
-Date checked: 2026-04-06
-CAD-ready: Yes (modifying adafruit cad in this dir)
+# IR Break-Beam Sensor
+
+Active status: active candidate for the undecided states size sensor.
+
+## Traceability
+
+| Field | Value |
+|-------|-------|
+| Purchased name | 4 Pairs Infrared Circuit Breaker Sensor 3mm LED Lamp Distance Sensor Counting Module DC 3-5V |
+| BOM trace | AliExpress Mar 25, order ID `8210696713845240` |
+| Received status | Yes |
+| States-build use | Candidate size sensing at the conveyor sensing station |
+| Trust level | AliExpress listing plus received-part verification possible now |
+| Next action | Test timing or beam geometry with real bricks before choosing this as the final size sensor |
+
+## CAD Status
+
+CAD-ready: yes, using the reference model in this directory as a modifiable starting point.
 
 Note: Light hole center location is not required for CAD in this project. The LEGO brick sorter's tolerance, about 2mm to 3mm, and the use of adjustable slotted mounts make precise hole center unnecessary. Assume the 3mm hole is roughly centered on the 10mm x 8mm face and proceed with slotted mounting.
 
-Body L x W x H: 20 mm x 10 mm x 8 mm
-Hole size: 3 mm diameter
+## Dimensions
 
-Lead/polarity table:
-Transmitter: Red = VCC (+3-5V), Black = GND
-Receiver: Red = VCC (+3-5V), Black = GND, White = OUT (NPN active low, requires 10k pull-up to VCC)
+| Feature | Value |
+|---------|-------|
+| Body length | 20mm |
+| Body width | 10mm |
+| Body height | 8mm |
+| Light hole diameter | 3mm |
+| Cable length | 300mm |
+| Cable exit | Rear of body |
+| Connector style | Bare tinned ends or 2.54mm female Dupont |
 
-Verified operating voltage: DC 3-5V
-Verified current: Emitter 20mA @5V, Receiver output sinks up to 100mA
-Cable length: 300mm
-Cable exit: rear of body
-Connector style: bare tinned ends / 2.54mm female Dupont
+## Wiring
+
+| Side | Wire | Function |
+|------|------|----------|
+| Transmitter | Red | VCC, 3V to 5V |
+| Transmitter | Black | GND |
+| Receiver | Red | VCC, 3V to 5V |
+| Receiver | Black | GND |
+| Receiver | White | OUT, NPN active low, requires 10k pull-up to VCC |
+
+## Electrical Notes
+
+| Feature | Value |
+|---------|-------|
+| Operating voltage | 3V to 5V DC |
+| Emitter current | 20mA at 5V |
+| Receiver output | Sinks up to 100mA |

@@ -1,21 +1,45 @@
 # Heavy Servo Reference
 
-All metal MG996-class 180 degree servo.
+Active status: active actuator for the states-build servo rotary chute selector.
 
-Active use: states-build servo rotary chute selector.
+## Traceability
 
-Power Supply: Through External Adapter.
-Connector Wire Length 300mm
+| Field | Value |
+|-------|-------|
+| BOM trace | User-confirmed on hand, not yet traced to a spreadsheet row |
+| Received status | Yes |
+| Servo class | MG995/MG996/MG996R-class heavy servo |
+| States-build use | Rotates the chute toward four labeled bins |
+| Trust level | Listing transcription plus local CAD references |
+| Next action | Verify exact horn fit, usable throw, and final chute angles with the real servo installed |
 
-Specification:
-Dimension : 40mm x 19mm x 43mm
-Original box: NO
-Net weight: 69g
-Package weight: 75g
-Color: Black
-Operating Speed : 0.17sec / 60 degrees (4.8V no load)
-Operating Speed : 0.13sec / 60 degrees (6.0V no load)
-Stall Torque : 13 kg-cm (180.5 oz-in) at 4.8V
-Stall Torque : 15 kg-cm (208.3 oz-in) at 6V
-Operation Voltage : 4.8 - 7.2Volts
-Connector Wire: Heavy Duty, 11.81\\\" (300mm)
+## CAD References
+
+This folder intentionally keeps two useful CAD sources:
+
+| Path | Why it matters |
+|------|----------------|
+| Root SolidWorks files | Include horn attachments and assembly context |
+| `step_version/Servo MG996R.STEP` | Use this for Fusion layout when the SolidWorks assembly is not directly usable |
+
+Keep the SolidWorks files unless a replacement STEP assembly with horns is confirmed. The horn and screw context matters for the chute pivot interface.
+
+## Key Specs
+
+| Feature | Value |
+|---------|-------|
+| Body dimensions | 40mm x 19mm x 43mm |
+| Operating voltage | 4.8V to 7.2V |
+| Speed at 4.8V, no load | 0.17s per 60 degrees |
+| Speed at 6.0V, no load | 0.13s per 60 degrees |
+| Stall torque at 4.8V | 13 kg-cm |
+| Stall torque at 6.0V | 15 kg-cm |
+| Connector wire length | 300mm |
+| Weight | 69g listed |
+
+## Integration Notes
+
+- Power the servo from an appropriate external rail, not directly from an ESP32 pin.
+- Keep servo wiring clear of the horn, chute sweep, and brick path.
+- Final chute angles must be tested with real bricks and the actual bins.
+- Do not assume the STEP body alone proves horn geometry. Use the SolidWorks horn files or measure the real horn before freezing the pivot adapter.
