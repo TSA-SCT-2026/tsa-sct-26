@@ -10,8 +10,16 @@ Active status: active conveyor driver candidate for the NEMA17 conveyor motor.
 | Received status | Yes |
 | Purchased description | TMC2209 silent stepper motor driver, includes heatsink |
 | States-build use | NEMA17 conveyor driver |
-| Trust level | Listing transcription plus module reference images in this folder |
+| Trust level | Listing transcription plus module reference images |
 | Next action | Verify current limit on the real module before conveyor run testing |
+
+## Reference Files
+
+| Path | Purpose |
+|------|---------|
+| `images/board.png` | Module reference image |
+| `images/steps.png` | Listing step or configuration reference |
+| `images/wiring.png` | Listing wiring reference |
 
 ## Key Specs
 

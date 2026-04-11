@@ -32,9 +32,19 @@ The 4.5mm drawing value appears to be the flat-related dimension, not the full s
 
 ## CAD model
 
-STEP file: `stepper_17HS4401S.STEP` (this directory)
+STEP file: `cad/stepper_17hs4401s.step`
 Use this file as the referenced conveyor motor geometry in Fusion 360.
 The old trough-based assembly can be used as fallback prior art, but the active states plan first tries a proven downloaded conveyor assembly.
+
+## Reference Files
+
+| Path | Purpose |
+|------|---------|
+| `cad/stepper_17hs4401s.step` | Usable CAD layout model |
+| `images/manufacturer_drawing.png` | Manufacturer drawing reference |
+| `images/motor.png` | Visual reference |
+| `images/schematic.png` | Listing schematic reference |
+| `images/specs.png` | Listing specs reference |
 
 ## Drawing Dimensions
 

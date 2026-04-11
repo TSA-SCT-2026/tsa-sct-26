@@ -8,14 +8,13 @@ User reports a recent pulley and GT2 belt order, but this markdown should not ma
 
 Reference part: 20T GT2 pulley, 5mm bore, for 6mm belt.
 
-## Reference files in this directory
+## Reference Files
 
-| File | Source | Status | Notes |
+| Path | Source | Status | Notes |
 |------|--------|--------|-------|
-| `GT2_20T.STEP` | Downloaded from parts library | Usable for layout | See caveats below |
-| `gt2_20t_5mm.sldprt` | Source CAD file | Ignore unless you have SolidWorks | Not needed for Fusion workflow |
-| `gt2_20t_screenshot.png` | Reference image | Reference only | Original community model screenshot |
-| `pulley-gt2-20-tooth-5-bore-gt2-1.snapshot.1.zip` | Original download archive | Ignore | Unzip only if you need original sources |
+| `cad/gt2_20t_5mm.step` | Downloaded from parts library | Usable for layout | See caveats below |
+| `cad/gt2_20t_5mm_source.sldprt` | Source CAD file | Reference | Not needed for Fusion workflow |
+| `images/gt2_20t_screenshot.png` | Reference image | Reference only | Original community model screenshot |
 
 ## STEP file caveats
 

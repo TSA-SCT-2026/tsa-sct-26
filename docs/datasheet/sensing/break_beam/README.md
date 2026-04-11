@@ -15,7 +15,7 @@ Active status: active candidate for the undecided states size sensor.
 
 ## CAD Status
 
-CAD-ready: yes, using the reference model in this directory as a modifiable starting point.
+CAD-ready: yes, using `cad/ir_break_beam_5mm.step` as a modifiable starting point.
 
 Note: Light hole center location is not required for CAD in this project. The LEGO brick sorter's tolerance, about 2mm to 3mm, and the use of adjustable slotted mounts make precise hole center unnecessary. Assume the 3mm hole is roughly centered on the 10mm x 8mm face and proceed with slotted mounting.
 

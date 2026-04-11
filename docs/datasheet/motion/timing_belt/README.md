@@ -10,14 +10,13 @@ Reference candidates:
 - 104T, 208mm, 6mm wide, 2mm pitch
 - 100T, 200mm, 6mm wide, 2mm pitch
 
-## Reference files in this directory
+## Reference Files
 
-| File | Source | Status | Notes |
+| Path | Source | Status | Notes |
 |------|--------|--------|-------|
-| `gt2 belt C200.STEP` | Community model, C200 = 200mm = 100T | Usable for layout | See caveats |
-| `gt2 belt C200.SLDPRT` | Source CAD file | Ignore | SolidWorks source |
-| `gt2 belt C200.PNG` | Preview image | Reference | |
-| `gt2-belt-w6_c200-1.snapshot.3.zip` | Original archive | Ignore | |
+| `cad/gt2_belt_c200.step` | Community model, C200 = 200mm = 100T | Usable for layout | See caveats |
+| `cad/gt2_belt_c200_source.sldprt` | Source CAD file | Reference | SolidWorks source |
+| `images/gt2_belt_c200.png` | Preview image | Reference | |
 
 ## STEP file notes
 

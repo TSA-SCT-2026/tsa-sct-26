@@ -14,6 +14,17 @@ Active status: active color sensor for the states build.
 | Trust level | BOM-backed part plus module datasheets and community CAD |
 | Next action | Calibrate with the final shroud and final belt geometry installed |
 
+## Reference Files
+
+| Path | Purpose |
+|------|---------|
+| `datasheets/gy31_color_module.pdf` | Module reference |
+| `datasheets/tcs230.pdf` | Sensor datasheet reference |
+| `cad/tcs3200_color_sensor_module.step` | Usable CAD layout model |
+| `cad/tcs3200_color_sensor_module.stl` | Mesh CAD reference |
+| `cad/tcs3200_color_sensor_module.sldprt` | Source CAD reference |
+| `images/module.png` | Visual reference |
+
 ## Key Specs
 
 | Feature | Value |

@@ -15,6 +15,17 @@ Active status: candidate only for the undecided states size sensor.
 | CAD-ready | Preliminary only |
 | Next action | Do not choose ToF until the hardware status, conveyor bracket, and calibration method are documented in `docs/project/OPEN_DECISIONS.md` |
 
+## Reference Files
+
+| Path | Purpose |
+|------|---------|
+| `cad/vl53l0x.step` | Usable CAD layout model |
+| `cad/vl53l0x.f3d` | Source CAD reference |
+| `images/components.png` | Component reference |
+| `images/dimensions.jpg` | Dimension reference |
+| `images/module.png` | Visual reference |
+| `images/sensor.png` | Sensor reference |
+
 ## Integration Notes
 
 - Distance sensing is only a candidate for the undecided states size sensor.

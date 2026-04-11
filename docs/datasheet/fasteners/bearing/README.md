@@ -16,13 +16,12 @@ Listed in BOM as: `5x8x2.5mm MR85RS 10pcs blue seals`.
 | Type | Deep groove ball bearing, double-sealed |
 | Material | Chrome steel |
 
-## Reference files in this directory
+## Reference Files
 
-| File | Source | Status | Notes |
+| Path | Source | Status | Notes |
 |------|--------|--------|-------|
-| `NSK_MR85ZZ.stp` | NSK manufacturer model | Usable for layout | See caveats |
-| `PARTserver22026040816232479510624d0b6156e.zip` | Original download | Ignore | Archive only |
-| `readme-and-terms-of-use-3d-cad-models.txt` | Download terms | Reference only | |
+| `cad/nsk_mr85zz.stp` | NSK manufacturer model | Usable for layout | See caveats |
+| `archive/cad_model_terms.txt` | Download terms | Reference only | |
 
 ## STEP file caveats
 

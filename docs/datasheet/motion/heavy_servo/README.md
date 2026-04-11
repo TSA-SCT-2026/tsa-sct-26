@@ -19,8 +19,9 @@ This folder intentionally keeps two useful CAD sources:
 
 | Path | Why it matters |
 |------|----------------|
-| Root SolidWorks files | Include horn attachments and assembly context |
-| `step_version/Servo MG996R.STEP` | Use this for Fusion layout when the SolidWorks assembly is not directly usable |
+| `cad/solidworks/` | Includes horn attachments, screw, and assembly context |
+| `cad/step/servo_mg996r.step` | Use this for Fusion layout when the SolidWorks assembly is not directly usable |
+| `images/` | Visual references for the assembly and STEP source |
 
 Keep the SolidWorks files unless a replacement STEP assembly with horns is confirmed. The horn and screw context matters for the chute pivot interface.
 
