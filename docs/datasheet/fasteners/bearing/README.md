@@ -30,11 +30,11 @@ The NSK STEP model is from the NSK bearing manufacturer. It matches standard MR8
 
 Use it for:
 - Confirming bearing pocket geometry in Fusion
-- Verifying clearance in the idler roller and integrated trough drive-end support pockets
+- Verifying clearance if the chosen conveyor uses MR85ZZ bearing pockets
 
-## CAD pocket values
+## CAD Pocket Values
 
-The printed pocket targets from `rollers_params.scad`:
+The archived roller subsystem used these printed pocket targets from `rollers_params.scad`:
 
 | Feature | Value |
 |---------|-------|
@@ -44,14 +44,10 @@ The printed pocket targets from `rollers_params.scad`:
 
 These values come from the bearing fit coupon. Verify with your printer before printing final parts.
 
-## Usage in this project
+## Usage In This Project
 
 | Location | Quantity | Notes |
 |----------|----------|-------|
-| Idler roller | 2 | One per side, pressed into roller pockets |
-| Supported shaft support in trough drive end | 2 | One per integrated drive-end pocket, pressed in |
-| Total active use | 4 | Out of 10 in the purchased set |
+| States conveyor | TBD | Use only if the selected conveyor path needs MR85ZZ bearings |
 
-The remaining 6 bearings are spare stock.
-
-The 608ZZ bearings in the BOM are not used in the active design. They are spare stock only.
+The 608ZZ bearings in the BOM are also candidate conveyor inventory only if the selected conveyor uses them.

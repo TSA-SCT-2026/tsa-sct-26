@@ -1,29 +1,43 @@
 # Open Decisions
 
-Use this file for unresolved design choices that should not be treated as active architecture yet.
+Use this file for unresolved states-build choices that should not be treated as active architecture yet.
 
 Status rule:
 - `OPEN`: still undecided
 - `DECIDED`: resolved and ready to move into the main architecture docs
 - `DROPPED`: no longer worth pursuing
+- `ARCHIVED`: preserved only for later nationals work
 
-## Active open items
+## Active Open Items
 
 | Topic | Status | Current options | Current guidance |
 |------|--------|-----------------|------------------|
-| Timing-stage tooth count after baseline runtime | OPEN | `20T/20T` baseline first, `16T/20T` later only if real data justifies more timing-stage work | Start runtime testing from `20T/20T`. Do not freeze a ratio change into core architecture before logs show that conveyor refill still limits cycle time after release and selector optimization |
-| Final conveyor target speed | OPEN | Keep baseline speed, raise speed within `20T/20T`, or try a later ratio change if runtime data still points at the conveyor | Derive this from measured `reset_confirm` and selector/chute-clear data. Do not optimize from bin-arrival time alone |
-| Selector overlap gate | OPEN | Allow selector move after chute clear, require full bin confirm, or use another safety truth | Prefer the earliest physical truth that still prevents selector-path interference. Keep this open until drop-path data exists |
+| Size sensor family | OPEN | Break-beam timing, ToF or distance sensor, another simple sensor layout | Choose the simplest method that separates 2x2 from 2x3 during one-at-a-time conveyor feed. Do not freeze bracket geometry until tested |
+| Conveyor CAD source | OPEN | Downloaded NEMA17 conveyor assembly, adapted existing roller design, simple scratch-built conveyor | Try downloaded geometry first. Use current custom roller work only if import or adaptation fails |
+| Final chute angle | OPEN | 30, 35, 40, or 45 degrees | Print a short chute section and test real bricks before final selector CAD |
+| Servo position table | OPEN | Four positions around 35 degrees apart, adjusted to real bin guides | Start near 37, 72, 107, and 142 degrees. Lock only after CAD and physical bin alignment |
+| Frame construction details | OPEN | Wood frame, 3D printed frame, hybrid frame | Use available material. Do not design around 2020 extrusion unless the user changes the material plan |
+| Optional feed chute | OPEN | Stay manual one-at-a-time, add simple feed guide, add simple chute | Manual feed is the base states build. Add a feed chute only after the sorter works reliably |
 
-## Frozen recently
+## Decided For States
 
 | Topic | Status | Decision |
 |------|--------|----------|
-| Start gate | DECIDED | Active subsystem. Side-sweep servo gate above the transition, not in the one-brick throat |
-| Release actuator family | DECIDED | `0530`-class solenoid driving a retracting support |
-| Conveyor strip width | DECIDED | Freeze to `25mm` active strip width. Treat `15mm` stock as spare only unless testing proves a real need to reopen it |
-| Low-friction liner material | DECIDED | Freeze to adhesive-backed UHMW tape. PTFE thread-seal tape is not a production wear surface |
-| Conveyor belt bed | DECIDED | Freeze to an integrated printed flat support path. Do not add a separate metal bed in the first CAD pass |
-| Selector home truth | DECIDED | Required selector home micro-switch |
-| Chamber seat truth | DECIDED | Required stop-wall micro-switch for chamber seat truth |
-| Release reset switch | DECIDED | No dedicated release-reset switch in the initial build, but reserve mounting provision and use physical support-return truth before production freeze |
+| Feed mode | DECIDED | Manual one-at-a-time feed is active for states |
+| Selector actuator | DECIDED | MG995/MG996/MG996R-class heavy servo from `docs/datasheet/motion/heavy_servo/` |
+| Conveyor motor | DECIDED | NEMA17 remains active for conveyor motion |
+| Color sensor | DECIDED | TCS3200/GY-31 color sensor, calibrated only with shroud installed |
+| Frame material family | DECIDED | Wood or 3D printed structure from available stock |
+| Footprint | DECIDED | Stay within 610mm x 610mm |
+
+## Archived For Later Nationals Work
+
+| Topic | Status | Notes |
+|------|--------|-------|
+| Compressed 24-brick queue | ARCHIVED | Preserved under `_archive/previous-chamber-release-design-2026-04/` |
+| Start gate | ARCHIVED | Not part of the states build |
+| Isolation chamber | ARCHIVED | Not part of the states build |
+| Solenoid release gate | ARCHIVED | Purchased solenoids remain inventory, but not active architecture |
+| Dual-ToF chamber sizing | ARCHIVED | ToF can be reconsidered only as a states size-sensor candidate |
+| NEMA11 selector | ARCHIVED | Purchased NEMA11 motors remain inventory, but not active selector architecture |
+| 2020 extrusion frame | ARCHIVED | Not active because available materials are wood or printed structure |

@@ -2,293 +2,180 @@
 
 Truth model:
 - `LOCKED_TRUTH`: stable, physically invariant constraints
-- `PROVISIONAL_ESTIMATE`: best estimate before purchased hardware is in hand
-
-Current rule:
-- LEGO brick geometry is `LOCKED_TRUTH`
-- Long-side-across brick orientation is `LOCKED_TRUTH`
-- Belt strip accommodation for that orientation is `LOCKED_TRUTH`
-- All purchased hardware fit values are `PROVISIONAL_ESTIMATE` until verified on receipt
-
----
+- `DECIDED_FOR_STATES`: active states-build choice
+- `PROVISIONAL_ESTIMATE`: best estimate before CAD import or physical testing
+- `OPEN_DECISION`: unresolved and tracked in `docs/project/OPEN_DECISIONS.md`
 
 ## Bricks
 
 Status for this section: `LOCKED_TRUTH`
 
-| Dimension | 2x2    | 2x3    |
-|-----------|--------|--------|
-| Width     | 15.8mm | 15.8mm |
-| Length    | 15.8mm | 23.7mm |
-| Height    | 11.4mm | 11.4mm |
-| Studs     | 1.7mm  | 1.7mm  |
-| Weight    | ~2g    | ~3g    |
+| Dimension | 2x2 | 2x3 |
+|-----------|-----|-----|
+| Width | 15.8mm | 15.8mm |
+| Length | 15.8mm | 23.7mm |
+| Height without studs | 11.4mm | 11.4mm |
+| Stud height | 1.7mm | 1.7mm |
+| Weight | about 2g | about 3g |
 
-Orientation rule: bricks are long-side-across the conveyor, so the 23.7mm side of a 2x3 spans across the channel and the 15.8mm side runs along travel.
-Reason: this keys the release zone to the long side so only one brick can occupy the chamber footprint at a time. Chamber, chute, and sensor geometry must be re-derived from this rule before freeze.
-This orientation requirement is `LOCKED_TRUTH`.
+Manual feed orientation target: studs up, long side along conveyor travel.
 
----
+Reason: this is easiest for an evaluator to place repeatably and gives the sensing station a predictable in-flight profile. If physical testing shows a different orientation is more reliable, update this file and the feed label together.
 
-## Feed chute
+## Footprint
 
-Status for this section: `PROVISIONAL_ESTIMATE`
-This geometry is provisional and must be re-derived for the long-side-across orientation before freeze.
+Status for this section: `LOCKED_TRUTH`
 
 | Feature | Dimension |
 |---------|-----------|
-| Internal width | 25mm target |
-| Internal depth | provisional re-derive |
-| Chute loading orientation | Parallel to final long-side-across chamber orientation |
-| Start gate location | Straight chute section above transition |
-| Start gate motion | Side-sweep paddle, swings to near-wall rest; true flush retract not required |
-| Exit opening height | 13.5mm |
-| Top flare opening | 35mm x 40mm |
-| Flare transition length | 20mm |
-| Wall thickness | 3mm PLA |
-| Interior surface | Adhesive-backed UHMW tape |
+| Maximum footprint | 610mm x 610mm |
+| CAD boundary | 610mm x 610mm construction rectangle |
+| Bin access | Front or front-side removal preferred |
+| Cable routing | Outside conveyor, chute, servo horn, and bin paths |
 
----
+## Frame
 
-## Belt channel
+Status for this section: `DECIDED_FOR_STATES` for material family, `PROVISIONAL_ESTIMATE` for exact dimensions
 
-Status for this section:
-- `LOCKED_TRUTH` for belt strip accommodation constraints:
-  - Internal channel width = 25mm target
-- `PROVISIONAL_ESTIMATE` for all other values in this section
-The channel and sensing geometry below remain provisional until the long-side-across layout is re-derived.
+| Feature | Dimension or guidance |
+|---------|-----------------------|
+| Material | Wood or 3D printed structure from available stock |
+| 2020 extrusion | Not active for states |
+| Belt surface height | 200mm to 300mm target |
+| Minimum height check | Bin height plus chute vertical drop plus 20mm clearance |
+| Base plate | Fit within 610mm x 610mm |
+| Stiffness target | No visible sensor or chute drift during servo motion |
 
-| Feature | Dimension |
-|---------|-----------|
-| Internal channel width | 25mm target |
-| Channel wall height | 15mm |
-| Wall thickness | 3mm PLA |
-| Interior surface | Adhesive-backed UHMW tape on brick-contact faces |
-| Belt material | `25mm x 3mm` neoprene strip is the active architecture. Treat `15mm x 3mm` as spare stock only |
-| Belt closure | Scarf-spliced neoprene loop with rubber contact cement, prototype and validate before frame freeze |
-| Transport length | 100-120mm |
-| Trough body length | 110mm provisional |
-| Chamber pitch | 18-22mm |
-| Drive roller OD | 25mm |
-| Drive roller bore | 5mm D-bore, no clamp; axial retention by shaft collars, torque by D-flat |
-| Drive pulley teeth | 20T provisional baseline |
-| Motor pulley teeth | 20T provisional baseline |
-| Timing belt pitch | 2mm provisional |
-| Timing belt width | 6mm provisional |
-| Pulley center distance | 80mm nominal with slot travel |
-| Tension adjustment travel | 8mm provisional |
-| NEMA17 pilot clearance | 22.4mm provisional |
-| NEMA17 mounting hole spacing | 31mm provisional |
-| NEMA17 mounting slot clearance | 3.4mm provisional |
-| Supported shaft bearing | MR85ZZ x2 provisional |
-| Idler roller OD | 25mm (0.5mm crown) |
-| Idler roller bearings | MR85ZZ 5mm ID x 8mm OD x 2.5mm |
-| Roller flanges | 2mm both ends |
-| Belt bed shelf thickness | 3mm provisional |
-| Bottom mounting flange width | 8mm provisional |
-| Bottom mounting hole clearance | 4.5mm provisional for M4 |
-| Bottom mounting hole inset from trough ends | 10mm provisional |
-| Bottom mounting hole spacing along trough | 90mm provisional |
-| Belt speed (phase 1) | 100mm/s |
-| Belt bed | Integrated printed flat support path in the first CAD pass |
-
----
-
-## Isolation chamber
-
-Status for this section: `PROVISIONAL_ESTIMATE`
-This chamber geometry is provisional and must be re-derived for the long-side-across orientation before freeze.
-
-| Feature | Dimension |
-|---------|-----------|
-| Internal width (across belt) | 25mm target |
-| Internal depth (along belt) | 27mm |
-| Internal height above chamber floor | 15mm |
-| Wall thickness | 3mm PLA |
-| Stop wall damper | 3M rubber foot, 3mm |
-| Entry opening height | 13.5mm |
-| Stop wall micro-switch protrusion | 1.5mm required seat switch |
-
-### Size ToF keepouts
-Reference wall = stop wall. Two ToF modules mount on that wall and look across the chamber width toward the brick edge zones.
-
-| Feature | Dimension |
-|---------|-----------|
-| Left ToF optical center from left chamber wall | 4-6mm provisional |
-| Right ToF optical center from right chamber wall | 4-6mm provisional |
-| Left and right symmetry tolerance | Match within 0.5mm target |
-| Sensor keepout depth behind wall | Module-dependent, reserve from CAD model |
-
-Classification intent:
-- `2x3` should leave both side clearances in the narrow-gap band
-- `2x2` should leave at least one side in the wider-gap band even with lateral offset
-- Final threshold comes from installed-sensor calibration, not from nominal CAD alone
-
-### Color sensor window
-
-| Feature | Dimension |
-|---------|-----------|
-| Window size | 12mm x 12mm |
-| Window position (depth) | Centered at 13.5mm from reference wall |
-| Window height (above chamber floor) | 5.7mm |
-| Shroud depth | 15mm external |
-
-### Queue pitch and timing
-
-| Feature | Dimension |
-|---------|-----------|
-| Brick seat pitch | 18-22mm provisional |
-| Reset-to-next-advance gap | 0-20ms safe overlap window, software only |
-| Cold-start transport window | 100-120mm provisional |
-| Steady-state advance distance | Chamber pitch only |
-
----
-
-## Release mechanism
+## Conveyor
 
 Status for this section: `PROVISIONAL_ESTIMATE`
 
-The actuation family is frozen, but the exact support geometry still needs prototype work.
+| Feature | Dimension or guidance |
+|---------|-----------------------|
+| CAD source | Downloaded NEMA17 mini conveyor preferred, custom roller work is fallback |
+| Motor | NEMA17 17HS4401S reference |
+| Usable belt length | 300mm to 400mm target |
+| Belt width | 40mm to 50mm target |
+| Minimum clear brick width | 23.7mm brick plus side clearance |
+| Belt speed phase 1 | Start slow enough for reliable sensing, then tune |
+| Belt exit | Direct handoff into servo chute entry |
+| Tension method | Use downloaded assembly tensioner if available, otherwise simple slotted idler or motor mount |
+| Timing belt and pulley | Keep as active if the imported conveyor uses or benefits from the existing GT2 parts |
+| 25mm neoprene strip | Available material, use only if it fits the chosen conveyor path |
+| 15mm neoprene strip | Spare stock unless testing shows a use |
 
-| Feature | Dimension |
-|---------|-----------|
-| Support removal method | Retracting support |
-| Actuator style | 0530-class solenoid |
-| Release envelope | Must clear chamber, selector, and conveyor envelopes |
-| Reset confirmation | Physical confirmation required before feed restart |
-| Return bias | Light spring or equivalent |
-| Mounting interface | Printed support and solenoid mount, still provisional |
-| Reset timing | PROVISIONAL_ESTIMATE |
-| Reset-truth provision | Reserve a return-flag and micro-switch mounting feature in the first CAD pass |
+## Sensing Station
 
----
+Status for this section: `OPEN_DECISION` for size sensor, `DECIDED_FOR_STATES` for color sensor
 
-## Operator-facing packaging
+| Feature | Dimension or guidance |
+|---------|-----------------------|
+| Sensing location | Near belt exit, before chute handoff |
+| Size sensor family | Open: break-beam timing, ToF or distance sensor, or another simple option |
+| Size sensor spacing | Leave adjustable mounting room until selected |
+| Color sensor | TCS3200/GY-31 module |
+| Color shroud inner width | Belt width plus clearance |
+| Color shroud inner length | About 30mm first pass |
+| Color shroud height | About 20mm first pass |
+| Brick clearance under shroud | More than 13.5mm including studs if studs-up feed is used |
+| Sensor order | Size first, color second, belt exit last |
 
-Status for this section: `PROVISIONAL_ESTIMATE`
+Color calibration is valid only with the shroud installed in final geometry.
 
-| Feature | Dimension |
-|---------|-----------|
-| Start button label | Printed or engraved, visible at arm's length |
-| Display viewing distance | Arm's length readable from front of machine |
-| Display state words | READY, SORTING, SORT COMPLETE, ERROR |
-| Bin labels | 2x2 RED, 2x2 BLUE, 2x3 BLUE, 2x3 RED |
-| Label flats | Reserved on front frame surfaces and bin faces |
-| Cable routing clearance | Keep harness outside chute, belt, and drop envelope |
-| Conveyor service access | Motor pulley, drive roller, and tensioner must remain reachable without full teardown |
-
----
-
-## Selector chute
-
-Status for this section: `PROVISIONAL_ESTIMATE`
-This is an indexed chute, not a circular disc.
-
-| Feature | Dimension |
-|---------|-----------|
-| Selector body envelope | 100mm class provisional |
-| Selector thickness | 8mm |
-| Hub interface | Rigid 5mm flange-mount hub with center clearance pocket and M3 face-mount bolt pattern |
-| Funnel opening size | 32mm x 22mm |
-| Outlet offset from centerline | 40mm |
-| Index positions | 1, 2, 3, 4 (open - angles not yet locked) |
-| Funnel wall taper | 10 degrees inward |
-| Shaft hub | Rigid 5mm flange-mount hub with M3 face mounting |
-| Selector top clearance from chamber floor | 5mm |
-| Selector home method | Required micro-switch with mechanical flag |
-| Routing mode | Active selector chute, evidence gate remains open in notebook only |
-
-Index angular spacing is open. Do not treat the four positions as fixed at 90-degree intervals until physically confirmed.
-
----
-
-## Selector motion model
+## Servo Rotary Chute Selector
 
 Status for this section: `PROVISIONAL_ESTIMATE`
 
-The selector is a 4-position indexer, but do not freeze exact step counts or timing from this document yet.
-The final motion model must be bench-derived from the real NEMA11, real microstepping choice, real selector inertia, and the chosen homing method.
+| Feature | Dimension or guidance |
+|---------|-----------------------|
+| Servo family | MG995/MG996/MG996R-class heavy servo |
+| Servo reference path | `docs/datasheet/motion/heavy_servo/` |
+| Chute internal width | 30mm first pass |
+| Chute internal height | 15mm first pass |
+| Chute wall thickness | 3mm first pass |
+| Chute length | 100mm to 150mm |
+| Chute angle | Test 30, 35, 40, and 45 degrees |
+| First CAD angle | 35 degrees from horizontal |
+| Total servo sweep | About 105 degrees first pass |
+| Example servo positions | 37, 72, 107, 142 degrees |
+| Position spacing | About 35 degrees first pass |
+| Pivot axis | Vertical servo output shaft, aligned to chute pivot |
+| Servo mount | Pocket or cradle matching the real servo body |
+| Chute connection | Servo horn adapter or horn screwed into pivot boss |
+| Wire keepout | Clear of horn, chute sweep, and brick path |
 
----
+Before final printing, verify chute exit overlap with all four bin guides in Fusion using a revolute joint or equivalent position checks.
 
 ## Bins
 
 Status for this section: `PROVISIONAL_ESTIMATE`
 
-| Bin | Direction | Category | Count | Internal |
-|-----|-----------|----------|-------|----------|
-| 1 | NW | 2x2 red | 6 | 40x40x90mm |
-| 2 | NE | 2x2 blue | 6 | 40x40x90mm |
-| 3 | SE | 2x3 blue | 8 | 40x45x110mm |
-| 4 | SW default | 2x3 red | 4 | 40x45x70mm |
+| Bin label | Count target | Internal target |
+|-----------|--------------|-----------------|
+| 2x2 RED | 6 bricks | 80mm x 80mm x 60mm |
+| 2x2 BLUE | 6 bricks | 80mm x 80mm x 60mm |
+| 2x3 RED | 4 bricks | 80mm x 80mm x 60mm |
+| 2x3 BLUE | 8 bricks | 80mm x 80mm x 60mm |
 
----
+Arrangement: four bins under the chute arc. Exact positions are derived from the final pivot point, chute length, and tested servo angles.
 
-## Drop fall geometry
+## Manual Feed Guide
 
-Status for this section: `PROVISIONAL_ESTIMATE` (derived estimate)
+Status for this section: `DECIDED_FOR_STATES`
 
-| Feature | Value |
-|---------|-------|
-| Fall height | ~80mm |
-| Fall time | 128ms |
-| Brick velocity at bin entrance | 1.25 m/s |
-| KE at impact | 0.0023 J |
-| Bounce height (COR 0.5) | 20mm |
-| Bin wall height | 70-110mm |
-| Margin | 50-90mm |
+| Feature | Dimension or guidance |
+|---------|-----------------------|
+| Base feed mode | One brick at a time |
+| Optional later feature | Simple feed chute only after the base sorter works |
+| Orientation label | Studs up, long side along travel |
+| Guide width | Belt width or narrower guide that still clears 23.7mm brick length as oriented |
+| Anti-wander guide | Low side rails if belt wandering hurts sensing repeatability |
 
----
+## Operator-Facing Packaging
 
-## Footprint
+Status for this section: `DECIDED_FOR_STATES`
 
-Status for this section: `PROVISIONAL_ESTIMATE` until full assembled CAD is validated
+| Feature | Requirement |
+|---------|-------------|
+| Start button label | Printed or engraved, visible at arm's length |
+| Display viewing distance | Arm's length readable from front of machine |
+| Display state words | READY, SORTING, SORT COMPLETE, ERROR |
+| Bin labels | 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE |
+| Label flats | Reserved on bin faces and control area |
+| Cable routing | Clean and strain-relieved |
+| Fan | Keep if needed for electronics cooling |
 
-| Feature | Dimension |
-|---------|-----------|
-| Base plate | 610mm x 610mm x 6mm MDF or equivalent confirmed stock sheet |
-| Mechanical envelope estimate | 380mm x 420mm |
-| Hard limit | 610mm x 610mm |
-| Conveyor packaging priority | Early, before large frame lock |
+## Validation Checklists
 
-Confirm in full CAD before printing frame.
+These checks apply to `PROVISIONAL_ESTIMATE` and `OPEN_DECISION` values above.
 
----
+### Conveyor
 
-## Validation On Receipt Checklists
+- Import or model the chosen conveyor
+- Verify belt width and brick clearance
+- Verify motor and pulley clearance
+- Verify handoff from belt exit to chute entry
+- Verify footprint with frame and bins visible
 
-These checklists apply to all `PROVISIONAL_ESTIMATE` values above.
+### Sensing
 
-### Feed chute
+- Choose size sensor family
+- Fit the size sensor bracket without blocking brick travel
+- Fit the color sensor shroud and verify no light leaks
+- Verify shroud clearance with real bricks
+- Record calibration with the final shroud installed
 
-- Verify printed chute internal width and depth with calipers.
-- Verify single brick exit gate at 13.5mm target with real bricks.
+### Servo Chute
 
-### Belt channel and rollers
+- Measure or import the actual servo model
+- Test chute angle with real bricks
+- Verify four servo angles in CAD
+- Verify bin guide overlap at each position
+- Verify servo power and wiring clearance
 
-- Verify belt strip measured width and thickness from received strip stock.
-- Verify actual NEMA 17 shaft diameter, flat depth, and usable shaft length against modeled motor pulley assumptions.
-- Verify supported shaft diameter, bearing span, and usable shaft length against modeled drive roller assumptions.
-- Verify idler bearing seat fit with received MR85 bearings.
-- Verify crown tracking behavior under powered belt run.
+### Frame And UX
 
-### Isolation chamber and sensing interfaces
-
-- Verify actual sensor body clearances for dual ToF mounts, XSHUT wiring, and color window stack.
-- Verify switch body and actuator positions against printed mounts.
-
-### Release mechanism and reset interfaces
-
-- Verify the chosen release mechanism clears support cleanly without intruding into the chamber envelope.
-- Verify any required return element or actuator mount against received unit dimensions.
-- Verify physical reset confirmation using the chosen hardware once the concept is frozen.
-
-### Selector and indexing interfaces
-
-- Verify actual stepper shaft and hub dimensions from received hardware.
-- Verify the required selector home switch using final mounted hardware.
-
-### Bins and packaging
-
-- Verify printed bin internal dimensions with real brick stack tests.
-- Verify assembled footprint remains within 610mm x 610mm.
+- Verify 610mm x 610mm footprint
+- Verify bin removal clearance
+- Verify labels are visible
+- Verify the start control and display are readable from arm's length

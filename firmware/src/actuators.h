@@ -9,14 +9,11 @@ namespace actuators {
     void stopConveyorFeed();
     void tuneConveyorProfile(uint8_t profile);
 
-    void firePlatformRelease();
-    void releaseOff();
-
     bool homeSelector();
-    bool indexSelectorToBin(uint8_t binIdx);
-    bool reHomeCheck();
+    bool routeServoToBin(uint8_t binIdx);
     void stopSelector();
 
+    uint16_t servoAngleForBin(uint8_t binIdx);
     const char* selectorPositionLabel(uint8_t binIdx);
 
     void displayReady();

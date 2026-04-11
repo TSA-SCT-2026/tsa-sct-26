@@ -42,45 +42,26 @@ static SenseResult senseResultFor(BrickCategory cat) {
     SenseResult result;
     result.sampleCount = 6;
     result.category = cat;
+    result.sizeValid = true;
     switch (cat) {
         case BrickCategory::CAT_2x2_RED:
-            result.leftLaneOccupied = true;
-            result.rightLaneOccupied = false;
             result.isTwoByThree = false;
-            result.sizeValid = true;
-            result.leftClearanceMm = 8;
-            result.rightClearanceMm = 12;
-            result.widerClearanceMm = 12;
+            result.sizeSignal = 12;
             result.redRatio = 0.87f;
             break;
         case BrickCategory::CAT_2x2_BLUE:
-            result.leftLaneOccupied = false;
-            result.rightLaneOccupied = true;
             result.isTwoByThree = false;
-            result.sizeValid = true;
-            result.leftClearanceMm = 12;
-            result.rightClearanceMm = 8;
-            result.widerClearanceMm = 12;
+            result.sizeSignal = 12;
             result.redRatio = 0.06f;
             break;
         case BrickCategory::CAT_2x3_RED:
-            result.leftLaneOccupied = true;
-            result.rightLaneOccupied = true;
             result.isTwoByThree = true;
-            result.sizeValid = true;
-            result.leftClearanceMm = 2;
-            result.rightClearanceMm = 3;
-            result.widerClearanceMm = 3;
+            result.sizeSignal = 24;
             result.redRatio = 0.87f;
             break;
         case BrickCategory::CAT_2x3_BLUE:
-            result.leftLaneOccupied = true;
-            result.rightLaneOccupied = true;
             result.isTwoByThree = true;
-            result.sizeValid = true;
-            result.leftClearanceMm = 3;
-            result.rightClearanceMm = 2;
-            result.widerClearanceMm = 3;
+            result.sizeSignal = 24;
             result.redRatio = 0.06f;
             break;
         default:
@@ -119,18 +100,12 @@ static uint8_t binForCat(BrickCategory cat) {
 
 static bool simulateBrick(BrickCategory cat) {
     sensors::setSimulatedSenseResult(senseResultFor(cat));
-    pushEvent(EventType::ENTRY_DETECTED);
+    pushEvent(EventType::BRICK_DETECTED);
     drainEvents();
 
-    pushEvent(EventType::CHAMBER_SEATED);
-    drainEvents();
-
-    if (!waitForState(S_CONFIRM, DROP_WINDOW_MS + 20)) return false;
+    if (!waitForState(S_CONFIRM, HANDOFF_WINDOW_MS + 20)) return false;
 
     pushEventBinConfirmed(binForCat(cat));
-    drainEvents();
-
-    pushEvent(EventType::PLATFORM_LEVEL);
     drainEvents();
     return gStateMachine.currentState() != S_ERROR_HALT;
 }
@@ -176,10 +151,8 @@ static void handleLine(const char* line) {
 static void handleSim(const char* args) {
     if (strcmp(args, "start") == 0) {
         pushEvent(EventType::START_BUTTON);
-    } else if (strcmp(args, "entry") == 0) {
-        pushEvent(EventType::ENTRY_DETECTED);
-    } else if (strcmp(args, "seated") == 0) {
-        pushEvent(EventType::CHAMBER_SEATED);
+    } else if (strcmp(args, "brick") == 0) {
+        pushEvent(EventType::BRICK_DETECTED);
     } else if (strncmp(args, "sensing ", 8) == 0) {
         const char* catStr = args + 8;
         BrickCategory cat = BrickCategory::UNCERTAIN;
@@ -192,7 +165,7 @@ static void handleSim(const char* args) {
             return;
         }
         sensors::setSimulatedSenseResult(senseResultFor(cat));
-        pushEventSensingDone(sensors::senseBrickInChamber());
+        pushEventSensingDone(sensors::senseBrickAtStation());
     } else if (strncmp(args, "bin ", 4) == 0) {
         int bin = atoi(args + 4);
         if (bin < 1 || bin > 4) {
@@ -200,8 +173,6 @@ static void handleSim(const char* args) {
             return;
         }
         pushEventBinConfirmed((uint8_t)bin);
-    } else if (strcmp(args, "platform") == 0) {
-        pushEvent(EventType::PLATFORM_LEVEL);
     } else if (strcmp(args, "reset") == 0) {
         pushEvent(EventType::RESET);
     } else {
@@ -212,13 +183,6 @@ static void handleSim(const char* args) {
 }
 
 static void handleTest(const char* args) {
-    if (strcmp(args, "release") == 0) {
-        uint32_t startMs = millis();
-        actuators::firePlatformRelease();
-        Serial.printf("[harness] release fired in %lums\n", millis() - startMs);
-        return;
-    }
-
     if (strcmp(args, "home") == 0) {
         uint32_t startMs = millis();
         bool ok = actuators::homeSelector();
@@ -226,15 +190,15 @@ static void handleTest(const char* args) {
         return;
     }
 
-    if (strncmp(args, "index ", 6) == 0) {
+    if (strncmp(args, "route ", 6) == 0) {
         int bin = atoi(args + 6);
         if (bin < 1 || bin > 4) {
-            Serial.println("[harness] usage: test index <1-4>");
+            Serial.println("[harness] usage: test route <1-4>");
             return;
         }
         uint32_t startMs = millis();
-        bool ok = actuators::indexSelectorToBin((uint8_t)bin);
-        Serial.printf("[harness] index %s in %lums\n", ok ? "ok" : "fail", millis() - startMs);
+        bool ok = actuators::routeServoToBin((uint8_t)bin);
+        Serial.printf("[harness] route %s in %lums\n", ok ? "ok" : "fail", millis() - startMs);
         return;
     }
 
@@ -244,11 +208,10 @@ static void handleTest(const char* args) {
         ThermalModel sim;
         Serial.println("[harness] thermal evolution");
         for (int i = 1; i <= n; i++) {
-            sim.onSolenoidFire(1);
-            sim.onSelectorMove();
+            sim.onServoMove();
             sim.update();
-            Serial.printf("  %d: sol=%.3f selector=%.3f state=%s\n",
-                          i, sim.solenoidHeat(1), sim.stepperHeat(), sim.stateName());
+            Serial.printf("  %d: servo=%.3f state=%s\n",
+                          i, sim.servoHeat(), sim.stateName());
         }
         return;
     }
@@ -300,15 +263,12 @@ static void handleStatus() {
 
 static void printHelp() {
     Serial.println("sim start");
-    Serial.println("sim entry");
-    Serial.println("sim seated");
+    Serial.println("sim brick");
     Serial.println("sim sensing <2x2_RED|2x2_BLUE|2x3_RED|2x3_BLUE>");
     Serial.println("sim bin <1-4>");
-    Serial.println("sim platform");
     Serial.println("sim reset");
-    Serial.println("test release");
     Serial.println("test home");
-    Serial.println("test index <1-4>");
+    Serial.println("test route <1-4>");
     Serial.println("test fullrun");
     Serial.println("test thermal [n]");
     Serial.println("log csv");

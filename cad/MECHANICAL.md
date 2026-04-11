@@ -1,268 +1,158 @@
 # Mechanical Design
 
-All dimensions are in `cad/DIMENSIONS.md`. This document covers design rationale,
-construction method, and assembly notes.
+All dimensions are in `cad/DIMENSIONS.md`. This document covers design rationale, construction method, and assembly notes for the simplified states build.
 
----
+## Strategy
 
-## Brick dimensions (source of truth)
+The active mechanical plan is to steal proven conveyor geometry, modify only what matters, and spend custom CAD time on the servo chute, sensor mounts, bins, and frame.
 
-| Brick | Width (across belt) | Length (along belt) | Height | Count |
-|-------|---------------------|---------------------|--------|-------|
-| 2x2   | 15.8mm              | 15.8mm              | 11.4mm | 12 (6 red, 6 blue) |
-| 2x3   | 23.7mm              | 15.8mm              | 11.4mm | 12 (4 red, 8 blue) |
+The previous chamber, release-gate, and NEMA11 selector design is archived for later nationals work. It should not drive current states CAD unless the user explicitly reopens that path.
 
-Orientation rule: bricks are long-side-across the conveyor, meaning the 23.7mm side of a 2x3 spans across the belt channel while the 15.8mm side runs along travel.
-Why this orientation is required: it keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The feed chute, chamber, and sensing layout below are provisional until they are re-derived from this orientation.
+## Brick Handling
 
----
+Feed mode is manual one-at-a-time.
 
-## Terminology
+The evaluator places one brick on the conveyor, studs up and long side along travel. This removes the highest-risk singulation problem from the states build. A simple feed chute can be added later only after the base sorter is reliable.
 
-- Selector chute: the four-position routing assembly that sends one brick to one of the four bins.
-- Index position: one of the four discrete selector chute states. The current mapping is 1 through 4, with the fourth position treated as home or default.
-- Chamber pitch: the advance distance from one seated brick to the next in the compressed queue.
-- Start gate: the upstream queue stop above the transition. It holds the stack off the transition before the run begins.
-- Release gate: the chamber support-removal mechanism. Active actuation family: solenoid-driven retracting support.
-- Trapdoor platform: historical term for the earlier release concept. Treat as stale unless a legacy note is being discussed.
-- Supported roller shaft: the conveyor shaft that rides in frame bearings and carries the smooth drive roller.
-- Safe restart condition: the combined physical confirmation that the chamber is clear, the release path is reset, and the next feed can begin without overlap.
+Why:
+- The rules do not require automated feeding
+- Manual feed is easier for an evaluator to understand
+- It reduces jam risk
+- It lets the team focus on sorting accuracy and documentation
 
----
+## Conveyor
 
-## Feed chute
+Use a downloaded NEMA17 mini conveyor assembly if it imports cleanly into Fusion 360.
 
-Vertical rectangular tube, 25mm target width with provisional depth.
-All 24 bricks load before the run. Gravity feeds the queue, but the start gate keeps the full stack off the transition until the run begins.
+Modify as needed:
+- Widen belt path to roughly 40mm to 50mm
+- Adjust usable length to roughly 300mm to 400mm
+- Keep motor and tensioner serviceable
+- Mount to the wood or printed frame without exceeding 610mm x 610mm
+- Keep the belt exit aligned with the chute entry
 
-The listed width and depth are provisional placeholders until the long-side-across layout is re-derived.
+If the downloaded model fails, use the existing custom roller work as fallback prior art. Do not spend the first CAD window re-inventing a conveyor if a proven assembly works.
 
-- Width 25mm target: long-side-across chamber width with clearance margin.
-- Depth: provisional until the long-side-across layout is re-derived.
-- Chute loading orientation: keep the chute parallel to the final long-side-across chamber orientation. Do not add an orientation-swap transition in the first CAD pass.
-- Start gate location: in the tall straight chute section above the transition, not in the one-brick throat.
-- Start gate motion: side-sweep rotary paddle that swings to a near-wall rest position. True flush retract is not required. A near-wall rest that leaves the chute clear is sufficient.
-- Exit opening height: 13.5mm. One brick (11.4mm) exits freely. Two stacked (22.8mm)
-  cannot fit. Double-feed is geometrically impossible at this dimension.
-- Do not print exit opening above 14.0mm. Measure with calipers after printing.
-- Top flare: 35mm x 40mm over 20mm.
-- Interior walls: line with adhesive-backed UHMW tape. Do not treat plumber's thread tape as a wear surface.
+The existing NEMA17, fan, timing belt, timing pulley, bearings, and neoprene stock remain useful where they fit the chosen conveyor path.
 
-Bottom brick rests directly on belt. Belt friction pulls it out when belt is enabled.
-No cam. No escapement.
-The retired `cad/escapement/` directory is historical only.
+## Frame
 
----
+The active frame is wood or 3D printed, based on what is actually on hand.
 
-## Conveyor stage
+The frame needs to:
+- Lift the belt high enough for the chute and bins
+- Keep the servo pivot stable
+- Keep sensing brackets from moving during operation
+- Leave the bins removable
+- Leave wiring visible enough to look deliberate and clean
 
-The production conveyor is an off-axis timing-belt stage feeding a supported smooth drive roller.
+Do not design around 2020 extrusion unless the user confirms a material change.
 
-- Channel width: 25mm target.
-- Channel walls: 3mm PLA, 15mm tall, with adhesive-backed UHMW tape on the brick-contact faces.
-- Belt material: `25mm x 3mm` neoprene strip is the active architecture. Treat the received `15mm x 3mm` strip as spare stock unless testing proves a real need to reopen it.
-- Transport length: 100-120mm provisional.
-- Chamber pitch: 18-22mm provisional. This is the steady-state advance distance, not the full transport length.
-- Target belt speed: 130-300mm/s tuning range. Design the baseline for stable low-speed validation first, then tune upward.
+## Sensing Station
 
-The channel width and chamber dimensions above are provisional until the long-side-across layout is re-derived.
+The sensing station mounts near the conveyor exit.
 
-Drive architecture:
-- NEMA17 stepper drives a toothed timing belt.
-- Timing belt drives a supported shaft at the conveyor end.
-- Supported shaft carries the smooth drive roller that contacts the neoprene belt.
-- Drive roller is not mounted directly on the motor shaft.
+Order along travel:
+1. Size sensing
+2. Color sensing with shroud
+3. Belt exit into servo chute
 
-Timing stage intent:
-- Motor shaft load is isolated from the conveyor roller load.
-- Ratio can be changed by swapping pulley tooth counts.
-- The conveyor can be tuned without changing the supported shaft geometry.
+Size sensing is open. Keep CAD brackets adjustable until the sensor family is chosen. Candidate paths include break-beam timing and distance sensing.
 
-Timing-stage reference values:
-- Motor pulley: 20 teeth.
-- Drive pulley: 20 teeth.
-- Belt pitch: 2mm.
-- Belt width: 6mm.
-- Center distance: 80mm nominal, with slot travel to cover nearby belt options.
-- Tension adjustment travel: 8mm.
+Color sensing uses the TCS3200/GY-31 module. The shroud is required. Open-air color calibration is not valid for this build.
 
-Idler roller:
-- 25mm OD with 0.5mm crown.
-- MR85ZZ bearings on M5 bolt axle.
-- Fixed axle in the first-pass architecture. Use the slotted NEMA17 mount for tension first.
+Shroud design goals:
+- Block side light
+- Clear the brick including studs
+- Avoid catching bricks
+- Mount rigidly enough that calibration does not drift
+- Leave wiring exit away from the belt and servo sweep
 
-Conveyor bed: use an integrated printed flat support path in the first CAD pass. Do not add a separate metal bed unless real testing proves the printed path is insufficient.
+## Servo Rotary Chute Selector
 
----
+This is the main custom mechanical subsystem.
 
-## Isolation chamber
+The MG995/MG996/MG996R-class heavy servo rotates an angled chute so its exit points at one of four bin guides.
 
-One brick inside at a time. Geometry enforces this.
+Chute body:
+- Rectangular channel
+- Internal width around 30mm
+- Internal height around 15mm
+- Top open or partly open at the entry
+- Smooth interior surface
+- Pivot boss or adapter tied to the servo horn
 
-- Width (across belt): 25mm target.
-- Depth (along belt): 27mm.
-- Height above chamber floor: 15mm.
+Servo mount:
+- Servo output shaft points upward
+- Servo body sits in a pocket or cradle
+- Mount plate ties into the frame
+- Chute pivot axis stays vertical and aligned with the horn
+- Wires leave away from the horn and chute sweep
 
-Width and depth are provisional until the long-side-across chamber is re-derived.
+Chute angle:
+- Start CAD at 35 degrees from horizontal
+- Print a short test chute and test 30, 35, 40, and 45 degrees with real bricks
+- Increase angle if bricks hesitate or stick
+- Avoid surface treatments until angle and geometry have been tested first
 
-Stop wall: downstream end, opposite the chamber entry reference side. 3M rubber foot pad (3mm) absorbs impact and prevents bounce.
-Stop-wall micro-switch is required for chamber seat truth.
-Side walls: continuous from belt channel. Brick cannot yaw.
-
-Sensor integration:
-- Two rear-wall ToF modules are the active size-sensing path. Mount them near the left and right chamber edge zones so each reads side clearance across the chamber width.
-- Size classification rule: if both ToF clearances stay in the narrow-gap band, classify `2x3`; if either side shows the wider `2x2` clearance band, classify `2x2`.
-- Reserve XSHUT access and cable-routing room for two identical I2C modules on the same bus.
-- Color sensor window 12mm x 12mm in one chamber side wall at 5.7mm above chamber floor.
-- Black PLA shroud on sensor, 15mm deep.
-
----
-
-## Release mechanism
-
-The chamber release is a solenoid-driven retracting support.
-The support holds one seated brick, then retracts clear so gravity does the rest.
-The exact support geometry is still a prototype zone, but the actuation family is now frozen.
-
-### Requirements
-
-- Release support must be removed cleanly from one seated brick
-- The solenoid must only retract support. It should not carry brick weight as a permanent support.
-- The release path must not intrude into the conveyor, selector, or sensing envelopes
-- The mechanism must return to a safe reset state without relying on a hidden assumption
-- Reset confirmation must be physical, not guessed from time alone
-- First CAD pass must reserve a mechanical flag and micro-switch mounting provision for release-support return truth, even if the switch is not installed in the first prototype
-
-### Notes for CAD
-
-- Keep the retracting support geometry small and simple
-- Leave room for a light return spring or similar return bias
-- Keep the solenoid body outside the chamber envelope
-- Keep the wiring and protection consistent with a coil-based actuator
-
-## Selector chute
-
-NEMA 11 stepper indexes the four-position selector chute through a rigid 5mm flange-mount hub with M3 face mounting.
-Not press-fit. Not printed bore. Non-negotiable.
-This is not a circular disc.
-
-Index geometry:
-- Four fixed outlet positions, one per bin.
-- Index spacing: 90 degrees equivalent between the four states.
-- Funnel opening size: 32mm x 22mm.
-- Funnel wall taper: 10 degrees inward, all sides.
-- Print: 0.15mm layers, 80% infill.
-
-Motor mount: metal bracket (commercial NEMA 11 mounting bracket or 2mm aluminum flat bar).
-Do not rely on printed PLA alone for motor mounting.
-
-Warning: Index positions and angular spacing are open. Do not finalize the selector chute body geometry, bin alignment geometry, or any part whose shape depends on index angles until bin positions are physically confirmed and index angles are bench-derived from the assembled NEMA11 prototype.
-
-Selector routing note:
-- The selector chute is the active routing path for now.
-- Downstream routing alternatives belong in the notebook, not in this active mechanical spec.
-
-Selector home micro-switch is required in the base architecture.
-
-### Selector indexing geometry: open questions and options
-
-The 90-degree spacing note in the table above is a placeholder. The actual angles between index positions depend on the physical bin layout relative to the selector rotation axis. None of the options below should be treated as decided until the real layout is measured.
-
-**Rotation strategy options**
-
-Unidirectional equal spacing: positions at 0, 90, 180, 270 degrees. Simple to implement. Worst case is 270 degrees of travel.
-
-Bidirectional equal spacing: same four positions, firmware picks the shortest path at each move. Worst case drops to 135 degrees. This is a firmware-only change with no hardware cost and is the highest-value speed improvement available without changing anything physical.
-
-Non-uniform spacing if bin geometry allows: the actual bin entry points from the selector rotation axis may not be at equal angles. If they are not, the index positions should match the real angles rather than forcing 90-degree increments. This cannot be determined until the physical layout is measured.
-
-**Home position**
-
-With bidirectional rotation, home position affects re-home penalty but not move cost for normal sequences. Place home at the rarest bin (2x3 red, 4 out of 24 bricks) to minimize re-home frequency. With unidirectional rotation only, home placement matters more and should be weighted by the actual 24-brick distribution.
-
-**Outlet offset**
-
-The 40mm outlet offset from rotation center is provisional. A shorter offset reduces physical arc travel for the same angle and reduces chute inertia, both of which help speed. A longer offset increases the spread at the bin entries, which helps routing reliability. Do not shrink it past the point where outlet separation between adjacent bins becomes tight.
-
-**Key things to confirm before freezing**
-
-- Actual angles from selector rotation axis to each bin entry center under the real frame layout.
-- Whether all four positions fit in a continuous arc under 270 degrees (or whether a 360-degree design is needed).
-- NEMA11 step rate achievable at the chosen selector inertia and voltage, measured on the bench.
-- Whether sensing-to-selector overlap (selector begins moving before belt fully stops) is safe given real settle time.
+Bin alignment:
+- Use four construction rays from the pivot
+- Start with about 35 degrees between positions
+- Verify chute exit overlaps each fixed bin guide
+- Use a revolute joint or equivalent Fusion position check before printing
 
 ## Bins
 
-4 bins at NW, NE, SE, SW (45 degrees from belt axis).
+Use four simple open-top bins under the chute arc.
 
-| Bin | Direction | Category | Count | Internal W x D x H |
-|-----|-----------|----------|-------|---------------------|
-| 1 | NW | 2x2 red | 6 | 40mm x 40mm x 90mm |
-| 2 | NE | 2x2 blue | 6 | 40mm x 40mm x 90mm |
-| 3 | SE | 2x3 blue | 8 | 40mm x 45mm x 110mm |
-| 4 | SW DEFAULT | 2x3 red | 4 | 40mm x 45mm x 70mm |
+Each bin should:
+- Hold its expected brick count with margin
+- Have a clear label on the front
+- Be removable without bumping the chute
+- Accept the brick even if the chute exit has small alignment error
 
-Bin-confirm sensor mount at entrance. Removable via slot-and-tab.
-Funnel guides between selector chute and bins: 60mm x 60mm entrance, angled to bin opening.
+Add static entry guides if testing shows the chute exit needs a wider capture area.
 
----
+## Operator-Facing Packaging
 
-## Operator-facing packaging
+These features directly affect score because the evaluator operates alone:
+- Feed orientation cue
+- Labeled start button
+- Display states: READY, SORTING, SORT COMPLETE, ERROR
+- Bin labels
+- Clean cable routing
+- Stable frame and controlled footprint
 
-These features matter for first-time evaluator use and are part of the mechanical design.
+The machine should look like a finished competition device, not a temporary bench test.
 
-- Start button is labeled or engraved so the operator does not guess.
-- Display face is readable from arm's length while standing in front of the machine.
-- Bin labels are fixed and large: 2x2 RED, 2x2 BLUE, 2x3 BLUE, 2x3 RED.
-- Cable routing is kept outside the brick path, chute opening, and selector drop envelope.
-- Label flats are reserved on the front-facing frame surfaces and bin faces.
-- No harness crosses the conveyor belt top plane.
+## CAD Build Order
 
----
+1. Create or import top-level assembly and 610mm x 610mm boundary.
+2. Import downloaded conveyor and NEMA17 reference.
+3. Place conveyor on a provisional wood or printed frame.
+4. Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`.
+5. Model servo mount, chute body, pivot interface, and first-pass bin rays.
+6. Model four bins and bin entry guides.
+7. Model color shroud and provisional size sensor mounting space.
+8. Check footprint, bin access, cable keepouts, and chute sweep.
+9. Export only the print parts needed for first validation.
 
-## Assembly order
+## First Physical Tests
 
-1. Print chute transition and validate with real bricks. Do not start larger prints until feed is clean.
+Run these before committing to large prints:
+1. Short chute angle test with real bricks at 30, 35, 40, and 45 degrees.
+2. Conveyor-to-chute handoff test with a real brick.
+3. Servo sweep test without a brick.
+4. Servo sweep test with chute installed.
+5. Bin alignment test for all four categories.
+6. Color sensor shroud clearance test.
 
-2. Print conveyor timing stage fit parts and validate packaging:
-   - Motor pulley
-   - Drive roller
-   - Idler roller
-   - Tensioner and supported shaft interfaces
-   - Confirm belt tracking envelope and pulley alignment
+## Highest Fabrication Risks
 
-3. Print the release mechanism prototype for the chosen refactor direction. Bench test support removal and reset:
-   - Brick support is removed cleanly
-   - Brick falls without sticking
-   - Return path resets without binding
-   - Reset confirmation is physical and repeatable
-   - 50 consecutive cycles with no failures
-   Gate: all pass before printing anything else.
+1. Conveyor-to-chute handoff
+2. Chute slide angle and surface friction
+3. Servo horn or pivot slop
+4. Size sensor geometry after the sensor choice is made
+5. Frame stiffness around the servo and sensing station
 
-4. Print selector chute prototype. Mount with shaft hub. Verify repeatable indexing at all 4 positions.
-
-5. Print chamber body. Fit real bricks. Test full release: brick seated, release fires,
-   brick falls, reset returns. 20 consecutive cycles.
-
-6. Print feed chute. Single-brick exit test with all 24 bricks.
-
-7. Print remaining frame parts. Assemble belt and timing stage. Friction test.
-
-8. Full integration: chute -> timing stage -> chamber -> selector chute -> bins.
-
-9. Wire. Self-test. Calibrate. Run.
-
----
-
-## Highest fabrication risk
-
-The release reset geometry. The chosen mechanism must clear support cleanly, reset
-repeatably, and stay inside the chamber envelope.
-
-Test empirically:
-- If the release path sticks during normal operation, simplify the geometry before adding force.
-- If the reset path is unreliable, reduce friction and revisit the return bias.
-- If the mechanism intrudes into the chamber, selector, or conveyor envelope, shrink the mount.
-
-This is the one geometry that requires iteration. Budget a few small prototype prints
-around the final chosen release concept, not around the old release-concept assumption.
+Solve these with small prototypes and real-brick tests before making larger frame parts.

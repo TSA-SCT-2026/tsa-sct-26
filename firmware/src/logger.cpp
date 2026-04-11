@@ -19,7 +19,7 @@ void Logger::setMode(LogMode mode) {
 }
 
 void Logger::printCsvHeader() {
-    Serial.println("event,ts_ms,brick,state,category,target_bin,actual_bin,selector_steps,samples,ok,error,heat,message");
+    Serial.println("event,ts_ms,brick,state,category,target_bin,actual_bin,servo_angle,samples,ok,error,heat,message");
 }
 
 void Logger::printHumanPrefix(const char* label) {
@@ -32,7 +32,7 @@ void Logger::printCsvRow(const char* eventName,
                          const char* category,
                          uint8_t targetBin,
                          uint8_t actualBin,
-                         uint16_t selectorSteps,
+                         uint16_t servoAngle,
                          uint8_t samples,
                          const char* okField,
                          const char* errorCode,
@@ -46,7 +46,7 @@ void Logger::printCsvRow(const char* eventName,
 
     if (targetBin > 0) Serial.printf("%u,", targetBin); else Serial.print(",");
     if (actualBin > 0) Serial.printf("%u,", actualBin); else Serial.print(",");
-    if (selectorSteps > 0) Serial.printf("%u,", selectorSteps); else Serial.print(",");
+    if (servoAngle > 0) Serial.printf("%u,", servoAngle); else Serial.print(",");
     if (samples > 0) Serial.printf("%u,", samples); else Serial.print(",");
 
     Serial.printf("%s,%s,%.3f,%s\n",
@@ -59,12 +59,12 @@ void Logger::printCsvRow(const char* eventName,
 void Logger::stateChange(const char* from, const char* to) {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("STATE");
-        Serial.printf("%s -> %s\n", from, to);
+        Serial.printf("%s to %s\n", from, to);
         return;
     }
 
     char msg[48];
-    snprintf(msg, sizeof(msg), "%s->%s", from, to);
+    snprintf(msg, sizeof(msg), "%s to %s", from, to);
     printCsvRow("state_change", 0, to, "", 0, 0, 0, 0, "", "", msg);
 }
 
@@ -79,34 +79,25 @@ void Logger::classified(uint8_t brickNum, BrickCategory cat, uint8_t targetBin, 
     printCsvRow("classified", brickNum, "SENSING", category, targetBin, 0, 0, samples, "1", "", "");
 }
 
-void Logger::selectorReady(uint8_t brickNum, uint8_t targetBin, uint16_t steps, bool ok,
-                           const char* positionLabel) {
+void Logger::routeReady(uint8_t brickNum, uint8_t targetBin, uint16_t servoAngle, bool ok,
+                        const char* positionLabel) {
     if (_mode == LogMode::HUMAN) {
-        printHumanPrefix("SELECTOR_READY");
-        Serial.printf("brick=%u target_bin=%u pos=%s steps=%u ok=%s\n",
-                      brickNum, targetBin, positionLabel, steps, ok ? "yes" : "no");
+        printHumanPrefix("ROUTE_READY");
+        Serial.printf("brick=%u target_bin=%u pos=%s angle=%u ok=%s\n",
+                      brickNum, targetBin, positionLabel, servoAngle, ok ? "yes" : "no");
         return;
     }
-    printCsvRow("selector_ready", brickNum, "INDEXED", "", targetBin, 0, steps, 0,
-                ok ? "1" : "0", ok ? "" : "SELECTOR_JAM", positionLabel);
+    printCsvRow("route_ready", brickNum, "ROUTING", "", targetBin, 0, servoAngle, 0,
+                ok ? "1" : "0", ok ? "" : "ROUTE_FAIL", positionLabel);
 }
 
-void Logger::releaseFired(uint8_t brickNum, uint8_t targetBin) {
+void Logger::handoffDone(uint8_t brickNum, uint8_t targetBin) {
     if (_mode == LogMode::HUMAN) {
-        printHumanPrefix("RELEASE");
+        printHumanPrefix("HANDOFF");
         Serial.printf("brick=%u target_bin=%u\n", brickNum, targetBin);
         return;
     }
-    printCsvRow("release_fired", brickNum, "RELEASED", "", targetBin, 0, 0, 0, "1", "", "");
-}
-
-void Logger::dropWindowDone(uint8_t brickNum, uint8_t targetBin) {
-    if (_mode == LogMode::HUMAN) {
-        printHumanPrefix("DROP_WINDOW");
-        Serial.printf("brick=%u target_bin=%u\n", brickNum, targetBin);
-        return;
-    }
-    printCsvRow("drop_window_done", brickNum, "CONFIRM", "", targetBin, 0, 0, 0, "1", "", "");
+    printCsvRow("handoff_done", brickNum, "CONFIRM", "", targetBin, 0, 0, 0, "1", "", "");
 }
 
 void Logger::binConfirm(uint8_t brickNum, uint8_t expectedBin, uint8_t actualBin,
@@ -124,22 +115,10 @@ void Logger::binConfirm(uint8_t brickNum, uint8_t expectedBin, uint8_t actualBin
                 ok ? "1" : "0", ok ? "" : "MISS_BIN", msg);
 }
 
-void Logger::platformLevel(uint8_t brickNum) {
-    if (_mode == LogMode::HUMAN) {
-        printHumanPrefix("PLATFORM_LEVEL");
-        Serial.printf("brick=%u\n", brickNum);
-        return;
-    }
-    printCsvRow("platform_level", brickNum, "RESET", "", 0, 0, 0, 0, "1", "", "");
-}
-
 void Logger::thermal() {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("THERMAL");
-        Serial.printf("sol=[%.2f, %.2f, %.2f] selector=%.2f state=%s\n",
-                      gThermal.solenoidHeat(1), gThermal.solenoidHeat(2),
-                      gThermal.solenoidHeat(3), gThermal.stepperHeat(),
-                      gThermal.stateName());
+        Serial.printf("servo=%.2f state=%s\n", gThermal.servoHeat(), gThermal.stateName());
         return;
     }
     printCsvRow("thermal", 0, "", "", 0, 0, 0, 0, "", "", gThermal.stateName());

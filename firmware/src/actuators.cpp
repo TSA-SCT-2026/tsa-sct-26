@@ -4,20 +4,30 @@
 
 namespace actuators {
 
-static int16_t current_selector_steps = 0;
+static uint16_t current_servo_angle = SELECTOR_BIN4_ANGLE_DEG;
+
+uint16_t servoAngleForBin(uint8_t binIdx) {
+    switch (binIdx) {
+        case 1: return SELECTOR_BIN1_ANGLE_DEG;
+        case 2: return SELECTOR_BIN2_ANGLE_DEG;
+        case 3: return SELECTOR_BIN3_ANGLE_DEG;
+        case 4: return SELECTOR_BIN4_ANGLE_DEG;
+        default: return SELECTOR_BIN4_ANGLE_DEG;
+    }
+}
 
 const char* selectorPositionLabel(uint8_t binIdx) {
     switch (binIdx) {
-        case 1: return "BIN1_NW";
-        case 2: return "BIN2_NE";
-        case 3: return "BIN3_SE";
-        case 4: return "BIN4_SW";
+        case 1: return "BIN1_2x2_RED";
+        case 2: return "BIN2_2x2_BLUE";
+        case 3: return "BIN3_2x3_BLUE";
+        case 4: return "BIN4_2x3_RED";
         default: return "UNKNOWN";
     }
 }
 
 void begin() {
-    gLogger.info("stub actuators begin: pins and drivers not configured yet");
+    gLogger.info("stub actuators begin: conveyor and servo not configured yet");
 }
 
 void startConveyorFeed() {
@@ -34,50 +44,29 @@ void tuneConveyorProfile(uint8_t profile) {
     gLogger.info(buf);
 }
 
-void firePlatformRelease() {
-    char buf[64];
-    snprintf(buf, sizeof(buf), "stub release pulse on_ms=%d", SOLENOID_ON_MS);
-    gLogger.info(buf);
-}
-
-void releaseOff() {
-    gLogger.info("stub release off");
-}
-
 bool homeSelector() {
-    current_selector_steps = SELECTOR_BIN4_STEPS;
-    gLogger.info("stub selector homed to reference position");
+    current_servo_angle = servoAngleForBin(SELECTOR_HOME_BIN);
+    gLogger.info("stub selector servo moved to home bin angle");
     return true;
 }
 
-bool indexSelectorToBin(uint8_t binIdx) {
-    int16_t targetSteps = 0;
-    switch (binIdx) {
-        case 1: targetSteps = SELECTOR_BIN1_STEPS; break;
-        case 2: targetSteps = SELECTOR_BIN2_STEPS; break;
-        case 3: targetSteps = SELECTOR_BIN3_STEPS; break;
-        case 4: targetSteps = SELECTOR_BIN4_STEPS; break;
-        default:
-            gLogger.info("stub selector index failed: invalid target bin");
-            return false;
+bool routeServoToBin(uint8_t binIdx) {
+    if (binIdx < 1 || binIdx > 4) {
+        gLogger.info("stub servo route failed: invalid target bin");
+        return false;
     }
 
+    uint16_t targetAngle = servoAngleForBin(binIdx);
     char buf[96];
-    snprintf(buf, sizeof(buf), "stub selector index bin=%u target_steps=%d current_steps=%d",
-             binIdx, targetSteps, current_selector_steps);
+    snprintf(buf, sizeof(buf), "stub servo route bin=%u target_angle=%u current_angle=%u",
+             binIdx, targetAngle, current_servo_angle);
     gLogger.info(buf);
-    current_selector_steps = targetSteps;
-    return true;
-}
-
-bool reHomeCheck() {
-    gLogger.info("stub selector re-home check passed");
-    current_selector_steps = SELECTOR_BIN4_STEPS;
+    current_servo_angle = targetAngle;
     return true;
 }
 
 void stopSelector() {
-    gLogger.info("stub selector stop");
+    gLogger.info("stub selector servo stop");
 }
 
 void displayReady() {

@@ -52,3 +52,11 @@
 - AliExpress orders have arrived and are available for measurement and fit checks.
 - Amazon orders have not arrived yet. Keep Amazon-dependent dimensions and validation blocked until delivery.
 - CAD updates should now use measured AliExpress hardware where available and keep other dimensions provisional until Amazon parts are in hand.
+
+## Status update: 4/11/26
+
+- States build simplified to manual one-at-a-time conveyor feed, sensing station, and MG995/MG996-class servo rotary chute selector.
+- Previous chamber and release-gate architecture moved to archive context for later nationals work.
+- Size sensor remains undecided and must be resolved with test evidence before final bracket geometry.
+- Frame material is wood or 3D printed structure from available stock, not 2020 extrusion.
+- BOM purchase truth still traces to `docs/project/BOM.xlsx`; do not convert recommendations into ordered status without spreadsheet rows.

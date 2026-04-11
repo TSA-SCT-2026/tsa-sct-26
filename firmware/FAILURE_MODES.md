@@ -1,68 +1,61 @@
 # Failure Mode Analysis
 
-## Mechanical failure modes
+## Mechanical Failure Modes
 
-### FM-01: Brick jams before chamber seating
+### FM-01: Brick misses chute entry
 
-Cause: bad transition geometry or crooked entry
-Detection: `FEED_TIMEOUT_MS` or `APPROACH_TIMEOUT_MS`
+Cause: belt exit gap, chute entry height, or servo position error
+Detection: missing or wrong `BIN_CONFIRMED`
 Response: `ERROR_HALT`
-Mitigation: keep channel geometry tight, smooth contact surfaces, validate with full queue load
+Mitigation: validate conveyor-to-chute handoff with real bricks before large prints
 
-### FM-02: Double-entry condition
+### FM-02: Brick sticks in chute
 
-Cause: feed permission restored before platform level or chamber truth
-Detection: token false while a new feed attempt starts
-Response: `ERROR_HALT (DOUBLE_ENTRY)`
-Mitigation: restore feed only on `PLATFORM_LEVEL`
-
-### FM-03: Release occurs before selector-ready truth
-
-Cause: control bug or false ready signal
-Detection: wrong-bin confirm or internal state violation
+Cause: chute angle too shallow, rough surface, or undersized channel
+Detection: missing `BIN_CONFIRMED`
 Response: `ERROR_HALT`
-Mitigation: release allowed only after `SELECTOR_READY`
+Mitigation: test 30, 35, 40, and 45 degree chute angles with real bricks
 
-### FM-04: Selector chute fails to reach indexed position
+### FM-03: Servo chute fails to reach target
 
-Cause: jam, stall, or drift
-Detection: selector-ready failure or re-home mismatch
-Response: `ERROR_HALT (SELECTOR_JAM or POSITION_DRIFT)`
-Mitigation: deterministic home reference, periodic re-home checks, conservative motion profile
-
-### FM-05: Platform does not return to level
-
-Cause: spring, geometry, or latch issue
-Detection: missing `PLATFORM_LEVEL` before timeout
-Response: `ERROR_HALT (PLATFORM_STUCK)`
-Mitigation: bench-cycle the release and re-latch path before integration
-
-## Electrical failure modes
-
-### FM-06: Solenoid driver failure
-
-Cause: missing flyback protection or MOSFET fault
-Detection: platform reset failure on subsequent cycle
+Cause: power sag, horn slop, hard-stop contact, or bad angle table
+Detection: route-ready failure or wrong-bin result
 Response: `ERROR_HALT`
-Mitigation: diode, gate resistor, and pre-power verification remain non-negotiable
+Mitigation: calibrate four servo angles and verify power rail under load
 
-### FM-07: Sensor bus or optical fault
+### FM-04: Belt walking or stall
 
-Cause: wiring issue, noise, or color sensor integration fault
+Cause: tension, roller alignment, or belt rubbing
+Detection: brick fails to reach sensing station or chute handoff
+Response: `ERROR_HALT`
+Mitigation: low-speed conveyor check before full runs
+
+## Electrical Failure Modes
+
+### FM-05: Servo power sag
+
+Cause: servo current draw exceeds the regulator or wiring capacity
+Detection: route undershoot, reset, jitter, or serial brownout evidence
+Response: stop tuning speed and fix power path
+Mitigation: use a power rail appropriate for the MG995/MG996-class servo and share ground with logic
+
+### FM-06: Sensor optical fault
+
+Cause: wiring issue, noise, shroud leak, or unresolved size-sensor geometry
 Detection: `SENSING_DONE` reports `UNCERTAIN`
-Response: `ERROR_HALT (SENSOR_FAULT)`
-Mitigation: static sensing only, shroud installed, shielded routing where possible
+Response: `ERROR_HALT`
+Mitigation: shroud-installed color calibration and documented size-sensor thresholds
 
-## Firmware failure modes
+## Firmware Failure Modes
 
-### FM-08: Event contract drift
+### FM-07: Event contract drift
 
 Cause: docs, harness, and state machine naming diverge
 Detection: compile failures or harness mismatch
 Response: block optimization work until interfaces agree again
 Mitigation: keep `events.*`, `state_machine.*`, `test_harness.*`, and `EMBEDDED.md` synchronized
 
-### FM-09: False performance claim from logs
+### FM-08: False performance claim from logs
 
 Cause: count totals reported as accuracy without per-brick truth
 Detection: review of CSV schema and summaries

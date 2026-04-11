@@ -1,10 +1,14 @@
 # GT2 Closed-Loop Timing Belt
 
-## Ordered parts (pending delivery)
+## Status
 
-From BOM (Amazon order pending):
-- Primary candidate: `uxcell 208-2GT-6` (104T, 208mm, 6mm wide, 2mm pitch)
-- Secondary candidate: 100T (200mm) closed loop belt (if ordered separately)
+Active only if the selected states conveyor uses a GT2 timing stage.
+
+User reports a recent GT2 belt and pulley order, but this markdown should not mark those parts ordered until matching rows exist in `docs/project/BOM.xlsx`.
+
+Reference candidates:
+- 104T, 208mm, 6mm wide, 2mm pitch
+- 100T, 200mm, 6mm wide, 2mm pitch
 
 ## Reference files in this directory
 
@@ -27,7 +31,7 @@ Do not use it for:
 - Tooth profile accuracy (the model may be simplified)
 - Exact belt thickness (belt thickness varies slightly by brand; treat as ~1.5mm)
 
-For the 208mm belt (ordered part), the belt path in Fusion will have a slightly longer straight section. Use the 200mm model for initial layout and adjust the center distance annotation for 208mm.
+For a 208mm belt, the belt path in Fusion will have a slightly longer straight section. Use the 200mm model for initial layout and adjust the center distance annotation for 208mm.
 
 ## Belt sizing reference
 
@@ -36,11 +40,11 @@ For the 208mm belt (ordered part), the belt path in Fusion will have a slightly 
 | 200mm | 100T | 200mm | 80mm |
 | 208mm | 104T | 208mm | 84mm |
 
-The integrated trough motor slots give 8mm of travel in the belt direction, covering the 80mm nominal center distance and nearby belt-fit adjustments from one printed body.
+The previous integrated trough used 8mm of travel in the belt direction. Treat that as fallback reference, not active states conveyor truth.
 
 ## Installation notes
 
-- Install both pulleys first, then route the timing belt through the trough bridge window.
+- Install both pulleys first, then route the timing belt through the chosen conveyor belt path.
 - Snug pulley set screws before belt installation so axial position can still be corrected during dry alignment.
 - Belt tension should be firm but not banjo-tight. The neoprene conveyor belt requires low slip force; over-tensioning the timing belt adds unnecessary bearing load.
 - If the belt skips teeth under load, increase tension incrementally. If it skips immediately at any tension, recheck pulley alignment.

@@ -1,70 +1,75 @@
 # CAD
 
-All printable parts for the sorter. Current production architecture uses a release gate that is still under refactor, 4-index selector chute routing, and an off-axis timing-belt conveyor stage with a supported drive shaft.
+CAD for the simplified states sorter.
 
-Brick orientation requirement: long-side-across conveyor, with the 23.7mm side of a 2x3 spanning the channel and the 15.8mm side running along travel.
-Why: this keys the chamber footprint to the long side so only one brick can occupy the release zone at a time. The chamber and sensing geometry stay provisional until re-derived from this rule.
+Active production architecture:
+- Manual one-at-a-time feed
+- NEMA17 conveyor
+- Conveyor-mounted sensing station
+- MG995/MG996-class servo rotary chute selector
+- Four labeled bins
+- Wood or 3D printed frame
 
-## Directory structure
+The previous chamber, release-gate, and NEMA11 selector CAD work is archived for later nationals work. Use it only as fallback reference.
 
-```
+## Directory Structure
+
+```text
 cad/
-  chute/          feed chute tube, transition, chamber body, release interfaces
-  chute_sensing/  color sensor shroud, dual ToF mounts
-  frame/          belt frame rails, end plates, channel walls, rollers, tensioner
-  frame/rollers/  OpenSCAD timing stage, drive roller, idler, and fit coupon models
-  bins/           four bin guides with angled floor and entrance beam slot
-  escapement/     retired placeholder only, not part of the active design
+  DIMENSIONS.md    critical geometry source of truth
+  MECHANICAL.md    mechanism rationale and build order
+  frame/           conveyor and frame prior work or future active parts
+  bins/            future bin models
+  sensing/         future size and color sensor brackets
+  selector/        future servo chute selector models
 ```
 
-Non-CAD references:
-- `cad/DIMENSIONS.md`: critical geometry source of truth
-- `cad/MECHANICAL.md`: mechanism rationale and tradeoffs
-- `docs/ARCHITECTURE.md`: full pipeline and active CAD gates
+Existing directories may still contain prior work from the archived design until they are pruned or replaced. Do not treat old chamber or release files as active without checking `docs/ARCHITECTURE.md`.
 
-OpenSCAD roller workflow:
-- `cad/frame/rollers/scripts/build_rollers.sh`
-- `cad/frame/rollers/stl/` output directory
-- `cad/frame/rollers/ASSEMBLY.md` in depth roller assembly guide
+## CAD Priority
 
-## Print order
+1. Top-level assembly with 610mm x 610mm boundary
+2. Downloaded or adapted NEMA17 conveyor
+3. Wood or printed frame layout
+4. Servo mount and rotary chute body
+5. Four bin positions and bin entry guides
+6. Color sensor shroud
+7. Provisional size sensor mounting space
+8. Labels, display, start control, and cable routing keepouts
 
-1. Chute transition piece first
-- Validate with real bricks before any major print run
-- Gate: no jams and no double-feed behavior
+## First Print Order
 
-2. Conveyor timing stage and fit lock
-- Validate the supported shaft, timing pulley, drive roller, idler, and tensioner travel before larger frame prints
-- Gate: pulley alignment, shaft support, and belt tracking envelope verified
+1. Short chute angle coupon
+- Test 30, 35, 40, and 45 degrees with real bricks
+- Gate: bricks slide without sticking
 
-3. Release mechanism prototype parts
-- Keep the actuation style provisional until the refactor is frozen
-- Use only the simplest geometry that proves support removal and reset
+2. Servo mount and chute pivot coupon
+- Gate: servo horn alignment, low slop, no wire interference
 
-Gate: 50 reliable release and reset cycles before printing larger assemblies.
+3. Conveyor-to-chute handoff prototype
+- Gate: brick exits belt and enters chute repeatably
 
-4. Chamber and sensing fit prints
-- Dual ToF fit and sightline clearance
-- Color sensor window and shroud fit
-- Stop-wall switch fit
+4. Color shroud fit part
+- Gate: brick clearance and no obvious light leaks
 
-5. Selector chute prototype
-- Validate repeatable indexing and clean drop path to all 4 bins
+5. Bin guide and one bin
+- Gate: chute exit overlaps guide at the target servo angle
 
-6. Remaining structural parts
-- Frame, channel walls, bin shells, covers, cable guides
+6. Remaining frame and bin parts
+- Gate: footprint, bin removal, and label visibility verified
 
 ## Conventions
 
 - Export STL files alongside source files
-- Use descriptive versioned names: `platform_v3.stl`, `selector_chute_v2.stl`, `motor_pulley_v1.stl`, `drive_roller_v1.stl`
-- Record any critical dimension deviation in commit context
-- Do not freeze geometry from simulation alone: validate with real bricks
+- Use descriptive versioned names
+- Record critical dimension deviations in docs
+- Do not freeze geometry from CAD alone
+- Validate with real bricks before large print commitments
 
-## Tolerance notes
+## Tolerance Notes
 
-FDM variance is 0.2-0.5mm. All brick-facing channels and interfaces need explicit tolerance.
+FDM variance is usually about 0.2mm to 0.5mm. Brick-facing paths, sensor brackets, and servo pivots need explicit clearance.
 
-- Undersized channels cause jams
-- Oversized channels allow yaw and mis-seat risk
-- Sensor mount tolerance must preserve ToF sightlines and shroud seal
+- Undersized chutes cause jams
+- Oversized chutes allow yaw and poor bin alignment
+- Sensor mount tolerance must preserve the color shroud and the selected size sensor geometry

@@ -1,49 +1,43 @@
 # Rejected Alternatives
 
-This file is a branch list of ideas that were considered and not selected for the active production path.
+This file is a branch list of ideas that were considered and not selected for the active states path.
 Keep it short and honest. Expand a branch only when there is a real decision history to record.
 
-## Full designs
+## Full Designs
 
-- Continuous conveyor with singulator and fixed downstream diverters
+- Archived chamber and release-gate sorter
+  - Included compressed queue, chamber sensing, release gate, and NEMA11 selector
+  - Reason it is not selected for states: too much mechanism risk for the remaining sprint
+  - Status: preserved in `_archive/previous-chamber-release-design-2026-04/` for later nationals work
+
+- Automated compressed queue for states
   - Singulator branch: escapement
   - Singulator branch: cam gate
   - Singulator branch: Geneva style indexer
   - Singulator branch: star wheel
   - Singulator branch: dual pin feed
-  - Routing branch: stationary flipper array
-  - Routing branch: short-travel diverter gate
-  - Reason it was not selected: the feed still becomes the bottleneck and the singulation risk is too high for the clutched LEGO queue
+  - Reason it is not selected: manual one-at-a-time feed removes a major jam source and is allowed by the event
 
-- Solenoid flap routing
-  - Flap branch: direct support flap
-  - Flap branch: spring biased flap
-  - Flap branch: flap with guide gate
-  - Flap branch: flap with sensor assisted reset
-  - Reason it was not selected: the flap has too much overlap risk and the reset path is harder to make deterministic than support removal
+- NEMA11 selector for states
+  - Branch: four-position stepper chute
+  - Branch: hub-mounted indexed selector
+  - Reason it is not selected: the MG995/MG996-class servo chute is simpler to wire, mount, and tune for four positions
+
+- 2020 extrusion frame
+  - Reason it is not selected: available materials are wood and 3D printing, so the active frame must match what can be built now
+
+- Full custom conveyor before import attempt
+  - Reason it is not selected: downloaded NEMA17 conveyor geometry can save the CAD weekend if it imports cleanly
 
 - Two-stage lane split
   - First split branch: size then color
   - First split branch: color then size
   - Routing branch: separate lanes for each size
   - Routing branch: separate lanes for each color
-  - Reason it was not selected: it increases packaging pressure inside the footprint and adds hardware without removing the main reset bottleneck
+  - Reason it is not selected: it increases packaging pressure inside the footprint and adds hardware without improving the sprint risk profile
 
-- Direct-drive conveyor
-  - Roller branch: motor shaft clamp
-  - Roller branch: printed motor bore
-  - Roller branch: unsupported roller shaft
-  - Reason it was not selected: ratio changes are too limited and the production packaging story is weaker than the supported shaft timing-belt stage
+## Subdesign Notes
 
-- Downstream fixed diverter after trapdoor
-  - Gate branch: short-travel flap
-  - Gate branch: pop-up tab
-  - Gate branch: fixed diverter wall
-  - Reason it is not selected now: the selector chute remains the current active path, but the evidence gate can reopen this branch if timing or reliability demands it
-
-## Subdesign notes
-
-- Singulation ideas were rejected because they move the hard problem upstream and add a second source of jam risk.
-- Routing ideas were compared by motion distance, reset time, packaging, and how easy a first-time operator can understand them.
-- Conveyor support ideas were compared by ratio flexibility, shaft loading, and how much the motor mounting choice constrains the rest of the frame.
-- Perpendicular loading chute with orientation swap at the transition was rejected for the first CAD pass because it makes the transition do both feeding and rotation. That adds jam risk in the highest-risk region. The active path keeps the chute parallel to the final long-side-across chamber orientation.
+- Feed automation can be revisited only after the manual-feed sorter works.
+- Size sensor choice remains open and should be decided by the simplest reliable test evidence.
+- Servo chute angle should be chosen from real-brick testing, not from CAD alone.

@@ -1,20 +1,19 @@
-Fan size: 40x40x20 mm
+# ACP4020 40mm Fan
+
+Active use: driver or electronics cooling if the states build needs it.
+
+Fan size: 40mm x 40mm x 20mm
 Fan speed: 6200 rpm
 Voltage: 12V DC
-2 pin
+Connector: 2 pin
 Module number: ACP4020-12S
-Amps: .10 A
-cable: 280 mm long
-oil bearing
-1.2W
+Current: 0.10A
+Cable: 280mm long
+Bearing: oil bearing
+Power: 1.2W
 
-Part name: ACP4020
+Part name: ACP4020 40mm fan
 Spreadsheet ID: 8210696713805240
 Received: Yes
-CAD model source: (Adafruit / self-modeled / generic block)
-L x W x H: 
-Hole size / mount: 
-Pinout: 
-Voltage: 
-Current: 
-Notes: (slotted mount recommended if position critical)
+CAD model source: generic fan CAD reference in this folder
+Notes: use a slotted mount if position is critical

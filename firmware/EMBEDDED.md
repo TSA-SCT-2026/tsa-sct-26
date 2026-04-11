@@ -2,120 +2,91 @@
 
 ## Terminology
 
-- `selector chute`: the 4-index routing mechanism under the chamber. It can be rotary or another deterministic indexed mechanism.
-- `home reference`: the known selector position used to recover truth and detect drift.
-- `selector ready`: the target indexed position is reached and safe for release.
-- `drop window`: the bounded release and fall interval before bin confirmation.
-- `platform level`: the reset truth that restores feed permission for the next queued brick.
-- `chamber pitch`: the queued advance distance needed to bring the next brick into the chamber-ready region.
+- `sensing station`: the conveyor-mounted sensor area before the belt exit
+- `servo chute`: the MG995/MG996-class rotary chute that points at one of four bins
+- `route ready`: the target servo angle has been reached or the current stub has accepted the route command
+- `handoff window`: the bounded time where the brick leaves the belt and enters the chute
+- `manual feed`: one brick at a time from the evaluator or tester
 
-## State machine
+## State Machine
 
+```text
+IDLE -> FEED -> SENSING -> ROUTING -> HANDOFF -> CONFIRM -> FEED
+                                                               |
+                                                        COMPLETE after brick 24
+                                             ERROR_HALT from any state on fault
 ```
-IDLE -> FEED -> APPROACH -> SEATED -> SENSING -> INDEXED -> RELEASED -> CONFIRM -> RESET -> FEED
-                                                                                    |
-                                                                             COMPLETE (after brick 24)
-                                                          ERROR_HALT from any state on fault
-```
 
-## Physical-truth event contract
+## Physical Event Contract
 
 Required events:
 - `START_BUTTON`
-- `ENTRY_DETECTED`
-- `CHAMBER_SEATED`
+- `BRICK_DETECTED`
 - `SENSING_DONE`
-- `SELECTOR_READY`
-- `DROP_WINDOW_DONE`
+- `ROUTE_READY`
+- `HANDOFF_DONE`
 - `BIN_CONFIRMED`
-- `PLATFORM_LEVEL`
 - `RESET`
 
-Optional events reserved for future instrumentation:
-- `CHAMBER_CLEAR`
-- `PITCH_ADVANCE_DONE`
+Optional future events reserved for tighter instrumentation:
 - `ENCODER_PULSE`
+- `SIZE_SENSOR_READY`
+- `COLOR_SENSOR_READY`
 
-## State definitions
+## State Definitions
 
 **IDLE**
-- Token true
-- Platform level confirmed
-- Selector chute homed to reference position
 - Display: READY
+- Wait for `START_BUTTON`
 
 **FEED**
-- Conveyor feed axis advances the queued brick stream toward the chamber
-- Wait for `ENTRY_DETECTED`
-- Timeout: `FEED_TIMEOUT_MS` -> `ERROR_HALT (JAM_CHUTE)`
-
-**APPROACH**
-- Entry detected, chamber is about to seat
-- Wait for `CHAMBER_SEATED`
-- Timeout: `APPROACH_TIMEOUT_MS` -> `ERROR_HALT (JAM_APPROACH)`
-
-**SEATED**
-- Belt off
-- Token false
-- Wait `SETTLE_MS`
-- Then transition to `SENSING`
+- Conveyor moves the manually placed brick through the sensing station
+- Wait for `BRICK_DETECTED`
+- Timeout: `FEED_TIMEOUT_MS` gives `ERROR_HALT`
 
 **SENSING**
-- Brick is static in the chamber
-- Wait for `SENSING_DONE`
-- If category is `UNCERTAIN`: `ERROR_HALT (SENSOR_FAULT)`
-- Map category to target bin and selector position
+- Firmware reads the current size and color result
+- If category is `UNCERTAIN`: `ERROR_HALT`
+- Map category to target bin and servo angle
 
-**INDEXED**
-- Command selector chute to target indexed position
-- Wait for `SELECTOR_READY`
-- If selector reports failure: `ERROR_HALT (SELECTOR_JAM)`
+**ROUTING**
+- Command servo chute to target bin angle
+- Wait for `ROUTE_READY`
+- If servo route fails: `ERROR_HALT`
 
-**RELEASED**
-- Release pulse fires
-- Wait for the timed `DROP_WINDOW_DONE` event
+**HANDOFF**
+- Conveyor continues long enough for the brick to leave the belt and enter the chute
+- Wait for `HANDOFF_DONE`
 
 **CONFIRM**
-- Wait for `BIN_CONFIRMED`
-- Wrong bin or timeout: `ERROR_HALT (MISS_BIN)`
-
-**RESET**
-- Wait for `PLATFORM_LEVEL`
-- Timeout: `PLATFORM_LEVEL_TIMEOUT_MS` -> `ERROR_HALT (PLATFORM_STUCK)`
+- Wait for `BIN_CONFIRMED` in instrumented or test mode
+- Wrong bin or timeout: `ERROR_HALT`
 
 **COMPLETE**
 - All 24 bricks processed
 - Count totals checked against expected bin counts
 
-## Control philosophy
+## Control Philosophy
 
-- Firmware depends on deterministic indexed positions, not a specific selector geometry
-- The selector can be a circular disc or a near-vertical chute if it still provides 4 repeatable positions and selector-ready truth
-- Feed timing is modeled around queued chamber pitch, not full conveyor length per brick
-- The chamber footprint assumes the long-side-across brick orientation until the final geometry is frozen
-- Classification, routing, release, confirm, and reset remain event-gated
-- Chamber size sensing now depends on dual ToF gap readings from the rear wall, not break-beam block state
+- Keep state names and run logs aligned with the states machine
+- Keep size sensing abstract until the sensor family is selected
+- Keep the color sensor shroud as a calibration requirement
+- Keep the servo chute deterministic with four recorded target angles
+- Do not add feed automation until manual one-at-a-time sorting is reliable
 
-## Config focus
+## Config Focus
 
-`config.h` now groups:
-- conveyor kinematics and pitch-advance assumptions
-- chamber dwell and timeout windows
-- selector indexing constants
-- thermal throttling targets
+`config.h` groups:
+- conveyor timing and timeout assumptions
+- sensing sample counts and thresholds
+- servo target angles
+- expected bin counts
+- display and serial settings
 
-The conveyor model is parameterized around:
-- motor steps per rev
-- microsteps
-- stage ratio
-- effective roller travel
-- chamber pitch advance
-- approach slow-zone behavior
-
-## Validation target
+## Validation Target
 
 Before performance tuning, firmware should satisfy these source-level conditions:
 - event names, docs, and code match
-- selector terminology is geometry-agnostic
-- no pusher-era or disc-only control assumptions remain in active interfaces
-- CSV logging is usable for notebook evidence
+- test harness can simulate a full 24-brick run
+- CSV logging includes per-brick classification, route, handoff, and bin result
+- no chamber, release-gate, or NEMA11 selector assumptions remain in active interfaces

@@ -1,54 +1,48 @@
 # Electrical System Documentation
 
-Status date: April 3, 2026
+Status date: April 11, 2026
 
-## Power architecture
+## Power Architecture
 
 - Main supply: LiPo pack for all meaningful runs
 - Logic rail: regulated 3.3V for ESP32 and sensors
-- Actuator rail: motor-voltage path for conveyor stepper driver, selector stepper driver, and release actuator supply
-- Common ground across logic and actuator rails
+- Servo rail: voltage and current appropriate for the MG995/MG996-class chute servo
+- Motor rail: conveyor stepper driver motor supply
+- Common ground across logic, servo, and motor rails
 
-## Non-negotiable protection
+## Non-Negotiable Protection
 
-- Flyback diode on every inductive release coil
-- Bulk capacitor at each stepper driver motor power input
-- Gate resistor on any low-side coil driver MOSFET
-- Shared ground return sized for both stepper phases and any release actuator current
+- Bulk capacitor at the stepper driver motor power input
+- Shared ground return sized for conveyor and servo current
+- Strain relief at moving interfaces
+- Flyback diode on any coil used in experimental or accessory wiring
 
-## Motion drivers
+## Motion Drivers
 
-- Conveyor feed axis: NEMA 17 stepper with dedicated driver and off-axis timing-belt stage to a supported drive roller
-- Selector chute indexer axis: NEMA 11 stepper with dedicated driver
-- Do not share one stepper driver between both axes
-- Reduce hold current on both axes when static to limit heat
-- Keep the conveyor pulley path guarded and serviceable so ratio changes do not require a redesign
+- Conveyor feed axis: NEMA17 stepper with dedicated driver
+- Sorting mechanism: MG995/MG996-class servo rotary chute selector
+- Fan remains available for driver or electronics cooling
+- Do not wire a NEMA11 selector as part of the active states build
 
-## Release actuator path
+## Sensor Wiring Notes
 
-- Final release actuator and driver depend on the chosen mechanism
-- If the release actuator is coil-based, use logic-level low-side switching and keep the flyback diode in place
-- If the release actuator is servo-based or another positional device, wire it per the vendor guidance and keep the power rail isolated from motor noise
-- Verify the actual voltage, current, and connector style on the received part before final wiring
+- Size sensor family is undecided
+- Break-beam sensors are candidate size hardware
+- Distance or ToF sensing is candidate size hardware only until selected
+- Color sensor wiring must be kept away from motor and servo leads where possible
+- Keep the color shroud installed for all calibration and validation runs
 
-## Sensor wiring notes
+## Routing Constraints
 
-- Dual ToF modules need clean shared I2C wiring plus independent XSHUT control for address assignment
-- Bin-confirm beams use stable pull-up strategy per input type
-- Color sensor wiring must be shielded from motor leads where possible
-- Keep shroud installed for all calibration and validation runs
+- Separate motor-current paths from signal paths where practical
+- Keep high-current loop areas small on motor and servo wiring
+- Add strain relief near the servo and any moving harness
+- Keep belt tension access and pulley guards serviceable if the chosen conveyor uses them
 
-## Routing constraints
+## Pre-Power Checks
 
-- Separate motor-current paths from signal paths where possible
-- Keep high-current loop areas small on actuator and motor wiring
-- Add strain relief near all moving mechanical interfaces
-- Do not rely on motor-shaft support as the production roller mount
-- Keep the belt tension access and pulley guard removable for service
-
-## Pre-power checks
-
-- Verify diode polarity on all coil-based actuators
-- Verify MOSFET drain/source orientation
-- Verify no shorts between actuator rail and logic rail
+- Verify no shorts between motor, servo, and logic rails
 - Verify connector pinout matches the current hardware map
+- Verify servo power polarity before plugging into the servo
+- Verify conveyor direction at low speed
+- Verify sensor values appear in serial output before a full run

@@ -1,6 +1,6 @@
 # Full System Assembly Guide
 
-This is the primary assembly guide for the complete sorter.
+This is the primary assembly guide for the simplified states sorter.
 
 Audience:
 - A beginner builder
@@ -15,228 +15,198 @@ Use this guide with:
 - `docs/build/CHECKLIST.md`
 - `docs/build/CALIBRATION.md`
 
-## Safety and hard rules
+## Safety And Hard Rules
 
 1. Use LiPo power for any meaningful run.
-2. Do not skip flyback diodes on coil-based actuators.
-3. Do not skip bulk capacitors at the stepper driver motor inputs.
-4. Keep total footprint at or below 610mm by 610mm.
-5. Keep bricks long-side-across the conveyor.
-6. Calibrate color sensing only with the shroud installed.
+2. Keep total footprint at or below 610mm by 610mm.
+3. Calibrate color sensing only with the shroud installed.
+4. Keep the stepper driver motor-input bulk capacitor installed.
+5. Keep wiring clear of the conveyor, chute, servo horn, and bins.
+6. Do not add feed automation until one-at-a-time sorting is reliable.
 
-## What this machine does
+## What This Machine Does
 
 The system sorts 24 LEGO bricks into 4 bins by size and color.
 
 Pipeline summary:
-1. Bricks start preloaded in a compressed queue.
-2. One brick enters the chamber and seats at the stop wall.
-3. Belt stops.
-4. Size and color sensing happen while static.
-5. Selector chute indexes to the target bin.
-6. Release gate removes support and the brick falls.
-7. Bin confirmation verifies arrival.
-8. Reset state is confirmed.
-9. Next brick advances by chamber pitch after reset truth is satisfied.
+1. Operator places one brick on the conveyor in the marked orientation.
+2. Conveyor carries the brick through the size sensor.
+3. Conveyor carries the brick through the shrouded color sensor.
+4. Firmware classifies the target bin.
+5. Servo chute rotates to the target position.
+6. Brick exits the belt, enters the chute, and slides into the labeled bin.
+7. System returns to READY for the next brick.
 
-## Build sequence
+## Build Sequence
 
 Follow this order.
 
-1. Chute transition validation
-2. Conveyor packaging and interface lock
-3. Release mechanism prototype and cycle test
-4. Chamber sensing geometry fit
-5. Selector chute alignment and routing-cost study
-6. Bin and drop-path fit check
-7. Full mechanical packaging and labels
-8. Wiring and power checks
-9. Calibration
-10. Full 24-brick reliability runs
+1. Conveyor import and frame layout
+2. Servo chute angle and pivot prototype
+3. Servo mount and bin arc alignment
+4. Sensing station and color shroud
+5. Bins, labels, and operator UX
+6. Wiring and power checks
+7. Calibration
+8. Full 24-brick reliability runs
 
-## Stage 1: Chute transition first
+## Stage 1: Conveyor And Frame Layout
 
 Goal:
-- Prove reliable feed before broader printing
+- Establish a working belt path inside the footprint
 
 Steps:
-1. Print chute transition prototype only.
-2. Deburr and smooth contact surfaces.
-3. Feed real bricks under expected stack load.
-4. Verify no jam and no double-feed behavior.
+1. Import or model the NEMA17 conveyor.
+2. Set belt width to about 40mm to 50mm.
+3. Set usable belt length to about 300mm to 400mm.
+4. Place the conveyor on a wood or printed frame.
+5. Keep the 610mm x 610mm boundary visible.
+6. Leave space under the belt exit for chute sweep and bins.
 
 Pass criteria:
-- Zero jams in 50 feed attempts
-- Zero double-feed events in 50 feed attempts
+- Conveyor fits footprint with bins and chute space reserved
+- Motor and belt tension adjustment remain serviceable
+- Belt exit can hand off to the chute without a large gap
 
-## Stage 2: Conveyor packaging and interface lock
+## Stage 2: Servo Chute Prototype
 
 Goal:
-- Lock the production conveyor path before chamber and frame work drift
-
-The active conveyor path is:
-- NEMA17 motor
-- Toothed timing-belt stage
-- Supported drive roller shaft
-- Smooth drive roller
-- Neoprene conveyor belt
+- Prove bricks slide reliably before designing the full selector
 
 Steps:
-1. Run roller and fit coupons first.
-2. Package the motor, pulleys, belt envelope, supported shaft, bearings, idler, and tension adjust travel.
-3. Confirm chamber interface height and belt plane.
-4. Confirm service access, belt guard clearance, and cable-routing path.
-5. Confirm footprint impact before printing larger structural parts.
+1. Print a short chute section.
+2. Test real bricks at 30, 35, 40, and 45 degrees.
+3. Choose the lowest angle that slides reliably.
+4. Record the result for the inventor's log.
 
 Pass criteria:
-- No hard interference in packaging CAD
-- Shaft support and tension ranges documented
-- Conveyor module fits the full-system envelope with margin
+- Brick slides without sticking
+- No studs, corners, or edges catch in the channel
+- Chosen angle is recorded
 
-## Stage 3: Release mechanism gate
-
-Parts:
-- Release mechanism prototype parts, still provisional until the refactor is frozen
-
-Steps:
-1. Assemble the release mechanism prototype selected for the current refactor direction.
-2. Verify the release path clears support without binding.
-3. Verify the reset path returns to a safe state.
-4. Confirm the actuation hardware stays outside the chamber envelope.
-5. Trigger repeated loaded release cycles.
-
-Pass criteria:
-- Zero failed drops in 50 loaded cycles
-- Zero failed reset cycles in 50 loaded cycles
-- Return to safe state under target timing
-
-## Stage 4: Chamber sensing fit
+## Stage 3: Servo Mount And Bin Arc
 
 Goal:
-- Freeze chamber interfaces before wiring is finalized
+- Align the rotating chute with all four bin entries
 
 Steps:
-1. Print chamber fit parts.
-2. Fit dual ToF mounts on the stop wall and verify their sightlines to the chamber edge zones.
-3. Fit color sensor window and shroud.
-4. Install the required stop-wall seat switch and verify actuator travel.
-5. Keep the release-return flag and switch-mount provision in the printed parts.
-6. Install the release-return switch only if the first release prototype cannot provide physical reset truth another way.
-7. Insert real bricks and check motion clearance.
+1. Fit the MG995/MG996-class servo in its mount.
+2. Align the output shaft vertically with the chute pivot.
+3. Attach the chute through a horn adapter or pivot boss.
+4. Create four construction rays from the pivot.
+5. Place the four bins and guides under the chute arc.
+6. Rotate the chute to each target position in CAD.
 
 Pass criteria:
-- No forced sensor fit
-- Both ToF modules have clean line of sight and cable clearance
-- No light leaks around the shroud
-- No brick obstruction during seat or release
+- Chute exit overlaps each bin guide
+- Servo horn and screws remain accessible
+- Chute clears frame and wires across the full sweep
 
-## Stage 5: Selector chute alignment and routing study
+## Stage 4: Sensing Station
 
 Goal:
-- Guarantee a clean drop path and quantify selector cost honestly
+- Mount sensors without blocking the brick path
 
 Steps:
-1. Print selector chute prototype.
-2. Mount on 5mm hub or clamp interface.
-3. Mount to the stepper and homing hardware.
-4. Cycle each selector position.
-5. Perform repeated drop tests per bin.
-6. Record adjacent, worst-case, and weighted selector motion cost for the real brick mix.
+1. Reserve adjustable space for the size sensor.
+2. Install the chosen size sensor only after the decision is documented.
+3. Mount the TCS3200/GY-31 color sensor in the shroud.
+4. Verify brick clearance through the shroud.
+5. Route sensor wiring away from motor and servo wiring where practical.
 
 Pass criteria:
-- Clean path in all four positions
-- No edge catch in at least 25 drops per bin
-- Selector gate study created for the notebook
+- Size sensor has a clean measurement path
+- Color shroud has no obvious light leaks
+- Bricks do not catch on sensor brackets
+- Color calibration can be repeated without moving the sensor
 
-## Stage 6: Bins, labels, and operator UX
+## Stage 5: Bins, Labels, And Operator UX
 
 Install and verify:
 1. Bin labels:
 - 2x2 RED
 - 2x2 BLUE
-- 2x3 BLUE
 - 2x3 RED
+- 2x3 BLUE
 2. Start control label
 3. Display states:
 - READY
 - SORTING
 - SORT COMPLETE
 - ERROR
-4. Orientation cue at chute entrance:
+4. Feed orientation cue:
 - studs up
-- length along travel axis
+- long side along travel
 5. Cable routing and strain relief
 
 Goal:
 - A first-time evaluator can operate the system without assistance
 
-## Stage 7: Wiring and power integration
+## Stage 6: Wiring And Power Integration
 
 Follow `wiring/ELECTRICAL.md`.
 
 Checklist:
-1. Common ground across logic and actuator rails
-2. Release actuator protection matches the chosen mechanism
-3. Stepper motor-input bulk capacitors installed
-4. Safe wire routing away from moving parts
-5. Strain relief at moving interfaces
+1. Common ground across logic and motor or servo power rails
+2. Stepper motor-input bulk capacitor installed
+3. Servo power checked for current capacity
+4. Fan installed if driver cooling needs it
+5. Safe wire routing away from moving parts
+6. Strain relief at moving interfaces
 
 Pre-power checks:
 1. No short between rails
 2. Correct connector pinouts
-3. MOSFET orientation verified
-4. Home and stop-related sensors actuate correctly
+3. Servo signal and power polarity verified
+4. Conveyor motor direction verified at low speed
+5. Sensor readings visible in serial output
 
-## Stage 8: Calibration
+## Stage 7: Calibration
 
 Follow `docs/build/CALIBRATION.md`.
 
 Order:
-1. Release mechanism calibration
-2. Chamber seat and pitch-advance timing calibration
-3. Color threshold calibration with shroud installed
-4. Selector timing and routing study
+1. Conveyor speed and handoff calibration
+2. Servo chute position calibration
+3. Size sensor calibration after the sensor choice is made
+4. Color threshold calibration with shroud installed
 5. Full-system validation runs
 
 Data rule:
 - Keep run data in CSV logs for notebook use
 
-## Stage 9: Full-run acceptance
+## Stage 8: Full-Run Acceptance
 
 Before calling the system ready:
 1. Run at least 10 complete 24-brick sets.
 2. Log all failures by type and stage.
 3. Confirm repeatability, not just one successful run.
 4. Verify packaging and footprint compliance again.
-5. Verify the selector evidence gate decision is recorded.
+5. Verify labels, display states, and feed instructions are installed.
 
-## Common build mistakes and fixes
+## Common Build Mistakes And Fixes
 
 Belt walks sideways:
 - Check roller parallel alignment.
 - Reduce over-tension.
-- Confirm crown orientation and quality.
+- Confirm the belt path is not rubbing a guide.
 
-Release mechanism fails to reset:
-- Check release path clearance.
-- Check return bias or any reset element.
-- Check friction, binding, and actuator travel.
+Brick misses chute:
+- Reduce belt-exit gap.
+- Raise or widen the chute entry.
+- Recheck servo pivot alignment.
+
+Brick sticks in chute:
+- Increase chute angle.
+- Smooth the channel.
+- Recheck width and height clearance.
 
 Color classification unstable:
 - Confirm the shroud is installed.
 - Recalibrate threshold from fresh sample windows.
-- Shield color sensor wiring from motor wiring.
+- Keep color sensor wiring away from motor wiring where practical.
 
-Chute feed jams:
-- Reinspect transition geometry.
-- Verify printed clearances with calipers.
-- Smooth friction points.
-
-## Where to put subsystem assembly guides
-
-Use this pattern:
-1. `docs/build/ASSEMBLY.md` for full-system workflow
-2. Subsystem assembly guides in subsystem folders
-
-Current subsystem guide:
-- `cad/frame/rollers/ASSEMBLY.md`
+Servo buzzes or undershoots:
+- Check servo power voltage and current capacity.
+- Reduce chute friction or horn slop.
+- Verify target angles are not hitting hard stops.

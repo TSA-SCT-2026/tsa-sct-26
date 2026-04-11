@@ -13,13 +13,13 @@ Read first:
 - `docs/build/CALIBRATION.md`: calibration procedures
 - `docs/build/CHECKLIST.md`: build and validation checklist
 - `docs/build/TEST_PROTOCOL.md`: pass/fail test protocol
-- `docs/project/OPTIMIZE_PLAN.md`: optimization work order, measurement plan, and speed-max program
+- `docs/project/OPTIMIZE_PLAN.md`: states optimization order after accuracy is proven
 
 ## Project docs
 
 - `docs/project/BOM.md`: ordered items and remaining purchase gaps
 - `docs/project/BOM.xlsx`: purchase source of truth
-- `docs/project/CAD_ORCHESTRATION.md`: exhaustive April 6 to April 10 plan, final buy list, and CAD handoff
+- `docs/project/CAD_PLAN.md`: active states CAD execution plan
 - `docs/project/COMPETITION_INFO.md`: TSA event references
 - `docs/project/GLOSSARY.md`: shared terminology
 - `docs/project/MEETINGS.md`: meeting notes and status updates

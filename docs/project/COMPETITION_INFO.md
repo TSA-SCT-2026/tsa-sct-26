@@ -72,7 +72,7 @@ Implications:
 
 - The 2ft x 2ft footprint constraint is hard. Current design targets 610mm x 610mm exactly. Verify every major component placement fits before committing to frame CAD.
 - "Sorted by size into 2 containers, then by color" describes the outcome, not the mechanism. Our single-pass approach (classify both attributes in one sensing zone, route directly to the correct bin) satisfies the requirement.
-- "At least two sensors" is satisfied by the dual ToF size sensors alone. The color sensor and bin-confirm sensors are additional. Exceeding this looks good.
+- "At least two sensors" must be satisfied by the final states sensor set. The active plan already includes color sensing and an undecided size sensor, so document the final choice before competition.
 - Manual start/stop is required. A button in the firmware is not optional.
 - No school or individual names on the project. State Conference ID only on all parts (device, log, documentation).
 

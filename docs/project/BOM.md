@@ -8,26 +8,26 @@ Integrity rule:
 - Do not turn inferred or recommended parts into ordered purchases.
 
 Current architecture:
-- Conveyor drive is an off-axis `NEMA 17` timing-belt stage with a supported roller shaft
-- Selector drive is `NEMA 11` stepper
-- Chamber size sensing uses two rear-wall `ToF` lanes plus static color sensing
+- States build uses a `NEMA 17` conveyor, conveyor-mounted sensing station, and MG995/MG996-class servo rotary chute selector
+- Size sensing is undecided and must not be recorded as a purchased active subsystem until the selected sensor traces to the spreadsheet or existing inventory
+- Color sensing uses the BOM-backed `TCS3200 GY-31` module with shroud-installed calibration
 
 Current receipt status:
 - AliExpress orders recorded in `docs/project/BOM.xlsx` are received.
-- Amazon orders recorded in `docs/project/BOM.xlsx` are not yet received.
-- Measurement is allowed for received AliExpress hardware now.
-- Amazon-dependent measurements stay blocked until Amazon delivery.
+- Amazon orders recorded in `docs/project/BOM.xlsx` are treated as ordered. The user reports Amazon orders excluding the most recent pulley and belt order are in hand.
+- Measurement is allowed for received hardware now.
+- Any most-recent order not yet represented in `docs/project/BOM.xlsx` must be added to the spreadsheet before this markdown calls it ordered.
 
 ## Receipt checks
 
-**Solenoid recorded in the purchase log:**
+**Solenoid recorded in the purchase log, now inactive for states:**
 `0530 Linear Solenoid Electromagnet 12V` in `docs/project/BOM.xlsx`.
 
 Important note:
 - Repo design documents previously assumed a `6V` JF-0530B variant.
 - The spreadsheet purchase log currently points to a `12V` `0530` listing instead.
 - Treat the spreadsheet as hardware truth until the received part is measured and photographed.
-- Before wiring, verify actual coil voltage, stroke, body size, and current draw on the received unit.
+- This is archived inventory for the previous nationals candidate, not the active states release architecture.
 
 **Color sensor recorded in the purchase log:**
 `TCS3200 GY-31 Color Sensor Module` in `docs/project/BOM.xlsx`.
@@ -39,15 +39,15 @@ Important note:
 - Final firmware pin map and calibration flow must match the actual received sensor.
 
 **Distance sensor architecture note:**
-- The active chamber-sizing concept now uses two rear-wall ToF modules.
+- ToF or distance sensing is only a candidate for the undecided states size sensor.
 - `docs/datasheet/sensing/distance_sensor/` contains the reference CAD assets for that family.
-- `docs/project/BOM.xlsx` does not yet contain a corresponding row, so this markdown must not mark the ToF modules as ordered yet.
+- `docs/project/BOM.xlsx` does not yet contain a corresponding ToF purchase row, so this markdown must not mark ToF modules as ordered yet.
 - Update the spreadsheet first, then update the ordered-items section here in the same change.
 
 **Timing-stage purchases:**
-- The actionable buying items left today are the timing-stage parts, selector interface hardware, operator controls, low-friction liner, micro-switch kit, IO-expander insurance, and hardware-store fasteners.
-- Engineering refactor direction: prefer the simplest standard timing parts that preserve speed and accuracy. The baseline is now `20T/20T`, with an optional `16T` experiment pulley for later speed-up testing.
-- `MR85` remains the active support-bearing family for the current roller subsystem. No bearing reorder is required unless bench testing proves otherwise.
+- Timing-stage parts remain useful if the selected conveyor uses the GT2 path.
+- The states build should not buy or require NEMA11 selector interface hardware.
+- Recently ordered pulley and belt items should be added to `docs/project/BOM.xlsx` before this file treats them as ordered.
 
 ## Ordered Items From `docs/project/BOM.xlsx`
 
@@ -116,33 +116,19 @@ Order total from spreadsheet: `$174.50`
 
 ## Still Needed And Not Yet Ordered
 
-Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current refactor decisions as the buying gate. Treat stale mechanism text elsewhere in the repo as prior art, not fixed truth.
+Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current states-build decisions as the buying gate. Treat stale mechanism text elsewhere in the repo as archived prior art, not fixed truth.
 
 | Item | Classification | Why |
 |------|----------------|-----|
-| GT2 closed-loop timing belt, short | Needed now for next Amazon order | `100T`, `200mm`, `6mm` wide, `2mm` pitch. You confirmed you have no GT2 stock, and the current timing-stage geometry wants one install candidate plus one spare. |
-| GT2 closed-loop timing belt, long | Needed now for next Amazon order | `104T`, `208mm`, `6mm` wide, `2mm` pitch. This is the second install candidate plus one spare around the modeled center distance. |
-| GT2 drive pulleys | Needed now for next Amazon order | Prefer a standard `20T` / `20T` pair with `5mm` bore and `6mm` belt width. This keeps the timing stage simple, easy to source, and still comfortably inside the target conveyor speed range. |
-| GT2 experiment pulley | Optional add-on for the next Amazon order | One extra `16T`, `5mm` bore, `6mm` belt pulley gives a future `1.25x` speed-up path without reopening the whole timing stage. It is not required to start CAD or first-pass prototype validation. |
-| Supported drive shaft | Needed now for next Amazon order | `5mm` precision shaft stock. You confirmed you have no shaft stock on hand, and the supported roller architecture requires it. |
-| Shaft collars | Needed now for next Amazon order | `5mm` clamp shaft collars. You confirmed you have none on hand, and the supported shaft needs axial retention. |
-| Start-gate actuator | Already owned | Use the owned small hobby servo first. Keep the heavier servo as backup only if the queue load proves too high. |
-| Release-gate actuator | Already owned | The purchase log already contains `0530` solenoids, and the release architecture is now based on that family. |
-| Selector hub | Needed now for next Amazon order | Buy a rigid `5mm` flange-mount hub with M3 face mounting. This is the cleanest way to mount the selector chute to the NEMA11 shaft without relying on a printed bore. |
-| Selector home and chamber switch kit | Needed now for next Amazon order | Buy a small pack of micro-switches. The base architecture now requires one selector home switch and one stop-wall seat switch. Keep extras for release-reset truth instrumentation if prototype evidence demands it. |
-| Low-friction liner material | Needed now for next Amazon order | Buy adhesive-backed UHMW tape. The purchase log only shows PTFE thread seal tape, which is not the production wear surface. |
-| Belt support path | CAD, not purchased hardware | Freeze the first-pass conveyor bed as an integrated printed flat support path. Do not add separate metal bed stock unless real testing proves it is necessary. |
-| Belt splice material | Needed now from hardware store or next Amazon order | The transport belt is raw neoprene strip, not a pre-made loop. Buy rubber contact cement or another proven neoprene splice adhesive so the strip can become a scarf-spliced endless belt. |
-| Operator controls | Needed now for next Amazon order | One real momentary start button and one real power switch. Do not rely on tiny PCB tact switches for evaluator-facing controls. |
-| M3 assembly hardware | Needed now from hardware store or existing stock | The roller clamps, selector mounting, and general prototype work need common `M3` screws, nuts, and washers. Current purchase log only shows an `M2` kit. |
-| M5 idler axle hardware | Needed now from hardware store or existing stock | One `M5` bolt, washers, and a locknut remain the simplest idler axle solution. |
-| Selector motor bracket | Needed now for next Amazon order | The `ST-M3` NEMA11 bracket is a clean low-risk shortcut compared with fabricating a one-off metal bracket. |
-| IO expander board | Needed now for next Amazon order | Buy one as spare insurance. Keep it out of the base architecture until the final IO map proves it is necessary. |
-| Rubber stop pad or foot | Needed now from hardware store or existing stock | Use one as the chamber stop-wall damper. Extra pieces can double as anti-slip feet if they do not hurt footprint or leveling. |
-| Base plate stock | Needed now from hardware store, school stock, or scrap inventory | Confirm a `610mm x 610mm x 6mm` base plate material before frame packaging drifts past the footprint rule. |
-| Separate belt tensioner hardware | Not actually needed under current architecture | Current plan is to use the slotted `NEMA17` mount first. Reopen only if packaging later proves the slot can not cover the adjustment range. |
+| Downloaded conveyor CAD | Needed now, no purchase if free | The states plan depends on importing or adapting a proven NEMA17 mini conveyor before custom CAD expands. |
+| Size sensor final choice | Open decision | Break-beam sensors are recorded in the spreadsheet. ToF modules are not currently marked ordered in this markdown unless the spreadsheet is updated. |
+| Operator controls | Needed from existing stock or hardware store | Use a real evaluator-facing start button and power switch if available. Do not rely on tiny PCB tact switches for the final interface. |
+| Wood or printed frame stock | Needed from school stock, scrap, or hardware store | The active frame is not 2020 extrusion. Confirm available wood or printed structure before frame CAD drifts. |
+| M3 assembly hardware | Needed from hardware store or existing stock | Servo mount, sensor brackets, shroud, and bins need common screws, nuts, and washers. Current purchase log only shows an `M2` kit. |
+| Chute surface improvement | Optional after angle test | Only add tape or liner if real-brick chute angle testing shows sticking. |
+| Recent pulleys and GT2 belt | Pending spreadsheet update | User reports a most recent order for pulleys and GT2 belt. Add real rows to `docs/project/BOM.xlsx` before marking them ordered here. |
 
-No items currently fall into `Needed later but not urgent` for purchase planning. Anything structural that is still missing belongs in the list above, not in a vague later bucket.
+Do not add NEMA11 selector hubs, release-gate parts, or chamber switches for the states build unless the architecture changes again.
 
 ## Already Owned / Stock On Hand
 
@@ -155,10 +141,10 @@ No items currently fall into `Needed later but not urgent` for purchase planning
 | LEGO bricks | 24 total: 6 red 2x2, 6 blue 2x2, 4 red 2x3, 8 blue 2x3 |
 | LED indicator | Present |
 | 6x6 tactile switches | User-confirmed on hand, internal-use only, not evaluator-facing controls |
-| 0530 solenoids | Present from purchase log, active release actuators for the retracting-support design |
-| Small SG90-class hobby servo | User-confirmed on hand, active start-gate prototype actuator |
-| MG995 or MG996R-class servo | User-confirmed on hand, backup only if the small servo stalls under queue load |
-| 608ZZ bearings | Treat as unused stock for now. No active subsystem depends on them |
+| 0530 solenoids | Present from purchase log, archived inventory for the previous design |
+| Small SG90-class hobby servo | User-confirmed on hand, optional accessory only |
+| MG995 or MG996R-class servo | User-confirmed on hand, active servo chute selector actuator |
+| 608ZZ bearings | Available inventory if the chosen conveyor uses them |
 
 ## Spreadsheet Totals
 

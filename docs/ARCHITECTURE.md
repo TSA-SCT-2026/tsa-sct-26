@@ -1,283 +1,197 @@
-# SCT 2026: System Architecture
+# SCT 2026: States Architecture
 
 ## Mission
 
-Build a fully automated LEGO brick sorter for TSA System Control Technology nationals on May 1, 2026.
+Build a reliable LEGO brick sorter for TSA System Control Technology states on May 2, 2026.
 
 Success criteria:
 - Sort 24 bricks into 4 bins correctly
-- Make the evaluator flow obvious: load 24 bricks, press start, read clear status, remove sorted bins
-- Prioritize reliability and repeatability before chasing final cycle time
-- Reach sub-10-second total sorting only through measured, state-safe optimization
+- Let a first-time evaluator run the system from written instructions
+- Prioritize reliability and repeatability before speed
+- Use simple mechanisms that can be designed, built, tested, and documented before competition
 
-If a high-level term is unclear, read `docs/project/GLOSSARY.md` before guessing from context.
+The previous chamber and release-gate architecture is preserved under `_archive/previous-chamber-release-design-2026-04/` for later nationals work. It is prior art, not the active states build.
 
-## Numeric source of truth
+## Active Production Architecture
 
-All mechanism geometry and derived transport values used by documentation must trace back to `cad/DIMENSIONS.md`.
+The states build uses:
+- Manual one-at-a-time brick feed onto a conveyor
+- NEMA17-driven conveyor
+- Belt-mounted sensing station near the conveyor exit
+- Size sensing still undecided
+- TCS3200/GY-31 color sensor with a light-blocking shroud
+- MG995/MG996/MG996R-class heavy servo rotary chute selector
+- Four bins arranged under the chute sweep
+- Wood or 3D printed frame from available materials
+- Operator-facing labels, display states, and start control
 
-If another doc needs a number, either:
-- reference `cad/DIMENSIONS.md` directly, or
-- mark it as derived and identify the source dimensions
+The active build intentionally removes:
+- 24-brick compressed queue
+- Start gate
+- Isolation chamber
+- Solenoid release gate
+- Retracting support
+- NEMA11 selector
+- Dual-ToF chamber sizing as a frozen architecture
+- 2020 extrusion frame assumption
 
-## Active production architecture
+This trade keeps enough scoring strength to win states while reducing the chance that a complex mechanism fails before evaluation.
 
-This repo is centered on one active architecture:
-- Preloaded 24-brick compressed queue
-- Upstream start gate in the tall chute section to hold the queue off the transition before `START`
-- Long-side-across brick orientation
-- Chute stays parallel to the final chamber orientation in the first CAD pass. No orientation-swap transition
-- One-brick isolation chamber
-- Static size and color sensing in the chamber
-- 4-index selector chute below the chamber, active for now
-- Gravity release by a solenoid-driven retracting support
-- NEMA17 conveyor feed axis
-- Off-axis toothed timing-belt stage to a supported smooth drive roller
-- One integrated conveyor trough body carrying the belt bed, drive-end shaft support, idler axle line, and motor face
-- Event-gated restart only after physical reset truth is satisfied
-
-Rejected upstream singulation families such as cam, Geneva, star wheel, and dual-pin are documented in the notebook alternatives.
-
-## Core design principle
-
-Correctness is closed by geometry and binary state, not by optimistic timing guesses.
-
-- One brick occupies the chamber at a time because geometry prevents two
-- Sensing happens only while the chamber is static
-- Selector position is committed before release
-- Release is support removal, then gravity
-- Restart happens only after physical reset truth is satisfied
-
-Timing matters for speed, but timing does not replace chamber truth, selector truth, bin confirmation, or reset confirmation.
-
-## Brick orientation rule
-
-Bricks are long-side-across the conveyor:
-- 2x3 bricks present 23.7mm across the conveyor/channel and 15.8mm along travel
-- 2x2 bricks remain 15.8mm by 15.8mm
-
-Why:
-- The chamber footprint is keyed to the long side so only one brick can occupy the release zone at a time
-- Chamber, chute, and sensor geometry must be re-derived from this orientation before freeze
-
-## Terminology
-
-Use these terms consistently:
-- `start gate`: the upstream queue stop above the transition. It opens at run start and closes again after the run.
-- `selector`: the routing mechanism below the release gate
-- `selector chute`: the active 4-index gravity-routing mechanism with four deterministic target positions
-- `index position`: one of the four valid routed positions of the selector chute
-- `home reference`: the required selector micro-switch reference used to restore selector position truth
-- `seat confirmation`: the required stop-wall micro-switch confirmation that the brick is fully seated in the chamber
-- `release gate`: the chamber support-removal mechanism. Active concept: solenoid-driven retracting support.
-- `trapdoor platform`: historical term for the earlier release concept. Treat as stale unless a specific legacy note is being discussed
-- `chamber pitch`: effective steady-state distance from one seated brick to the next seated brick in the compressed queue
-- `cold start`: first-brick feed from the initial queue rest state
-- `steady state`: repeating cycle after the queue is already compressed against the chamber workflow
-- `safe restart condition`: the physical truth required before the next pitch advance begins
-
-Older repo text may say `disc`. Treat that as stale wording unless a specific circular geometry is being discussed historically.
-
-## End-to-end pipeline
+## Operating Flow
 
 ```text
-[preloaded chute: 24 bricks compressed behind start gate]
-    -> [start gate opens]
-    -> [narrow conveyor channel]
-    -> [one-brick isolation chamber]
-    -> [STATIC: dual ToF size sensing + color sensor]
-    -> [classification lock]
-    -> [selector chute indexes to target]
-    -> [release gate clears support]
-    -> [brick falls through aligned selector chute opening]
-    -> [bin entry confirmation]
-    -> [reset state confirmed]
-    -> [next brick advances by chamber pitch]
+[operator places one brick on conveyor]
+    -> [brick passes size sensor]
+    -> [brick passes shrouded color sensor]
+    -> [classification locks]
+    -> [servo chute points at target bin]
+    -> [conveyor carries brick off belt into chute]
+    -> [brick slides into labeled bin]
+    -> [system returns to READY for the next brick]
 ```
 
-## Throughput model
+If time remains after the manual-feed system is reliable, a simple feed chute can be added. It must not be allowed to delay the base sorter.
 
-Do not model this machine as one full conveyor traverse per brick.
+## Core Design Principle
 
-The active model uses chamber pitch:
-- Cold-start phase: first brick travels from initial queue rest state to chamber seat
-- Steady-state phase: each following brick advances only far enough to refill the chamber from the compressed queue
+Correct sorting beats mechanism impressiveness.
 
-Top-level timing terms:
-- `cold_start_feed_time`: time for the first brick to reach chamber seat
-- `chamber_pitch_mm`: effective distance from one seated brick to the next seated brick in steady state
-- `pitch_advance_time`: time to move the next brick from queue-ready position into the seated chamber state
-- `settle_and_sense_time`: belt-off sensing window after seating
-- `selector_ready_time`: time from classification lock to selector-ready confirmation
-- `drop_window_time`: release pulse plus fall window until bin confirmation is expected
-- `reset_confirm_time`: time from release to confirmed reset state
-- `safe_restart_condition`: the physical event combination required before pitch advance begins again
+The states machine should be judged as a complete, understandable, repeatable system. A simple conveyor and servo chute that works every time is stronger than a sophisticated queue and release mechanism that is not fully validated.
 
-### Cold-start model
+Control decisions should still be event-aware:
+- Do not move the chute after the brick has already committed to the belt exit
+- Do not classify color without the shroud installed
+- Do not claim a size sensor method is frozen until it is selected and tested
+- Do not optimize speed until a full 24-brick run is correct
 
-Cold-start is relevant for the first brick only and for recovery from large gaps.
+## Brick Set
 
-Cold-start sequence:
-1. Feed from queue rest state
-2. Chamber seat confirmation
-3. Static sensing
-4. Selector-ready confirmation
-5. Release and bin confirmation
-6. Reset confirmation
+The system sorts:
+- 6 red 2x2 bricks
+- 6 blue 2x2 bricks
+- 4 red 2x3 bricks
+- 8 blue 2x3 bricks
 
-### Steady-state model
+Bin labels:
+- 2x2 RED
+- 2x2 BLUE
+- 2x3 RED
+- 2x3 BLUE
 
-Steady-state is the performance model that matters for winning.
+Manual feed orientation target:
+- studs up
+- long side along the conveyor travel direction
 
-Steady-state sequence:
-1. Chamber is free and reset-confirmed
-2. Next brick advances by chamber pitch
-3. Chamber seat confirmation
-4. Static sensing
-5. Selector-ready confirmation
-6. Release and bin confirmation
-7. Reset confirmation
-8. Next pitch advance begins when the safe restart condition is satisfied
+The orientation cue should be printed or labeled near the feed area so the evaluator does not have to infer it.
 
-Safe overlap is allowed only when physical truth permits it. Examples:
-- Selector can start moving as soon as classification is locked
-- Feed can restart only after reset truth is confirmed
-- No release occurs until selector-ready is confirmed
+## Conveyor
 
-## Conveyor architecture
+The conveyor should start from a proven downloaded CAD assembly if possible, then be adapted to fit the sorter.
 
-The active conveyor path is:
+Baseline intent:
+- Usable belt length around 300mm to 400mm
+- Belt width around 40mm to 50mm
+- Belt surface height around 200mm to 300mm from base, adjusted to fit chute angle and bin removal
+- NEMA17 motor retained
+- Belt path and motor clearance verified inside the 610mm x 610mm footprint
 
-`NEMA17 stepper -> toothed timing-belt stage -> supported roller shaft -> smooth drive roller -> neoprene belt`
+The prior custom roller and timing-stage work is archived and may be used as fallback reference. It is not the default first CAD path if a proven conveyor assembly imports cleanly.
 
-Why this is the active production path:
-- Ratio flexibility without replacing the motor
-- Supported roller shaft instead of loading the motor shaft directly
-- Easier packaging inside the 610mm x 610mm footprint
-- Easier tuning of speed versus torque after real hardware arrives
-- Cleaner service and replacement path
+## Sensing Station
 
-The conveyor uses an off-axis timing-belt stage to a supported smooth drive roller.
-
-Current packaging direction:
-- Integrated trough body instead of separate bearing blocks and motor bracket
-- Drive-end MR85 support pockets built into the trough walls
-- Idler remains a fixed M5 axle with bearings inside the roller
-- Trough-based Fusion assembly must pass before the full trough print is treated as ready
-
-## Sensing summary
+The sensing station sits near the conveyor exit so the brick can be classified before it drops into the chute.
 
 Size:
-- Two rear-wall ToF sensors measure left and right chamber-side clearances while the brick is seated
-- Size classification is based on the static ToF gap pattern, not an in-flight beam break
-- The pair must still classify correctly if a 2x2 seats left or right of chamber center
+- Sensor family is undecided
+- Current candidates are break-beam timing or a distance sensor arrangement
+- Decision belongs in `docs/project/OPEN_DECISIONS.md` until real geometry and testing justify one path
 
 Color:
-- Purchased module in the current hardware log is the TCS3200 GY-31 family
-- Final interface, calibration, and thresholds must be based on received hardware
-- Color calibration is valid only with the installed shroud and final geometry
+- Use the TCS3200/GY-31 color sensor recorded in the BOM
+- Mount it in a shroud that blocks ambient light
+- Calibrate only with the installed shroud and final belt geometry
 
-Sampling constraints:
-- Belt off
-- Chamber seated
-- No release motion active
+Recommended order along the belt:
+- size sensing first
+- color sensing second
+- belt exit and chute handoff last
 
-## Routing summary
+## Servo Rotary Chute Selector
 
-The active routing mechanism is a 4-index selector chute below the chamber.
+The selector is the main custom mechanism for the states build.
 
-The selector chute is active, not permanently frozen.
+It uses the heavy MG995/MG996/MG996R-class servo from `docs/datasheet/motion/heavy_servo/` to rotate an angled chute toward one of four bins.
 
-Optimization target:
-- Weighted selector transition cost
-- Reset latency
-- Total steady-state routing cost
+Baseline geometry:
+- chute internal width around 30mm
+- chute internal height around 15mm
+- chute length around 100mm to 150mm
+- chute angle around 35 degrees from horizontal as the first test point
+- four servo positions spread across roughly 105 degrees total sweep
+- target position examples around 37, 72, 107, and 142 degrees
 
-Do not treat “home equals rarest bin” as a sufficient speed argument. The relevant metric is weighted angular travel across the real brick distribution and real motion profile.
+Before final printing:
+- Test a short chute with real bricks at 30, 35, 40, and 45 degrees
+- Verify the chute exit overlaps each bin guide at all four positions
+- Verify the servo mount keeps the output shaft aligned with the chute pivot
+- Keep wiring clear of the servo horn and chute sweep
 
-## Selector evidence gate
+If bricks do not slide reliably, increase angle or improve the chute surface before changing the whole architecture.
 
-The selector chute remains active unless evidence shows it cannot support a first-place system.
+## Frame And Bins
 
-Required gate study before production freeze:
-- Adjacent-move time
-- Worst-case move time
-- Weighted-average move time across the real 24-brick distribution
-- Re-home penalty
-- Selector-inclusive steady-state per-brick routing cost
-- Comparison against at least one downstream fixed-diverter alternative documented in the notebook
+Frame:
+- Use wood or 3D printed structure from available materials
+- Keep the build stiff enough that sensor and chute alignment do not drift
+- Keep bin access clear from the front
+- Keep cable routing clean and visible as engineered work
 
-Use official motion references plus bench data:
-- MOONS' NEMA11 curves: https://www.moonsindustries.com/series/nema-11-standard-hybrid-stepper-motors-b020102
-- Oriental Motor speed-torque guidance: https://www.orientalmotor.com/stepper-motors/technology/speed-torque-curves-for-stepper-motors.html
-- TMC2209 datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.08.pdf
+Bins:
+- Four open-top bins arranged under the chute arc
+- Internal target around 80mm x 80mm x 60mm
+- Label each bin with its category
+- Reserve clearance so bins can be removed without hitting the chute
 
-Required interpretation rule:
-- Representative NEMA11 data suggests the motor class is not inherently too slow for a 4-position diverter
-- Actual selector cost still depends on the real motor, voltage, microstep choice, selector inertia, friction, and motion profile
-- If the selector-inclusive model and bench data do not credibly support sub-10-second sorting with margin, reopen downstream routing before freezing production CAD
+Footprint:
+- Hard limit is 610mm x 610mm
+- Keep the boundary visible in CAD while placing the frame, conveyor, chute, and bins
 
-## Control philosophy
+## Operator UX
 
-The firmware contract must be built around physical truth events, not doc drift or guessed delays.
+The evaluator operates alone. The physical machine must explain itself.
 
-Required event families:
-- `ENTRY_DETECTED`
-- `CHAMBER_SEATED`
-- `SENSING_DONE`
-- `SELECTOR_READY`
-- `DROP_WINDOW_DONE`
-- `BIN_CONFIRMED`
-- `RESET_CONFIRMED`
-- optional `CHAMBER_CLEAR`
-- optional `PITCH_ADVANCE_DONE`
+Required:
+- Labeled start button
+- Display states: READY, SORTING, SORT COMPLETE, ERROR
+- Feed orientation cue
+- Bin labels
+- Clean wire routing
+- Written operating instructions
 
-The conveyor restart rule is:
-- do not feed the next brick until reset truth is satisfied
+The system should make the sequence obvious: place brick, press or confirm start if required, let the sorter route it, repeat until all 24 bricks are sorted.
 
-Reset-truth rule:
-- `RESET_CONFIRMED` must come from a physical support-return truth, not from a timer or brick counter alone
-- First CAD pass must reserve a release-support return flag and switch-mount option even if the first prototype delays installing it
+## Documentation And Evidence
 
-## Compliance coverage
+Judged documentation should show:
+- Why the team simplified from the archived architecture
+- How the downloaded conveyor geometry was selected or rejected
+- Why the final size sensor was chosen
+- Chute angle test results
+- Servo position and bin alignment evidence
+- Color calibration data with the shroud installed
+- Full 24-brick run logs
 
-| Requirement | Implementation |
-|-------------|----------------|
-| Two or more sensors | Dual ToF size sensors, color sensor, selector home switch, chamber seat switch, and bin confirm |
-| Manual start and stop | Labeled start control and power control |
-| Programmable controller | ESP32 |
-| Feedback loop | Chamber, selector, bin, and reset truth in the control loop |
-| Motorized conveyor | NEMA17 stepper conveyor with timing-belt stage |
-| Automated sorting mechanism | 4-index selector chute plus release gate |
+Run logs belong in `docs/runs/`.
+Notebook planning belongs in `docs/notebook/`.
+Open decisions belong in `docs/project/OPEN_DECISIONS.md`.
 
-## Current implementation priorities
+## Reopen Rules
 
-### Gate 1: chute transition truth
+Only reopen the archived chamber and release-gate architecture if the user explicitly chooses to target nationals work again.
 
-Goal: validate the highest-risk geometry first.
-
-Tasks:
-- Prototype chute transition first
-- Validate single-brick feed under full queue load
-- Validate transition into the narrow conveyor channel
-
-Exit criteria:
-- No jams in 50 feed attempts
-- No double-feed events in 50 feed attempts
-
-### Gate 2: conveyor packaging and interface lock
-
-Goal: lock the production conveyor path before larger assemblies drift.
-
-Tasks:
-- Package motor, timing-belt stage, supported roller shaft, idler, and tension adjustment
-- Complete the integrated-trough Fusion 360 assembly before the first full trough print
-- Verify bridge belt window clearance, pulley set-screw service access, and idler hardware keep-out
-- Confirm service clearance, belt guard clearance, and cable-routing paths
-- Confirm chamber and frame interfaces based on the packaged conveyor module
-
-Exit criteria:
-- Integrated trough assembly passes in Fusion with zero hard interference
-- Service-clearance checks for the belt window, pulley access, and idler hardware are documented
-- Ratio, shaft support, and tension-adjust ranges documented
-- Conveyor module fits the system footprint with margin
+For states, reopen only:
+- size sensor family
+- exact conveyor CAD source
+- exact chute angle and servo positions
+- frame construction details
+- whether a simple feed chute is worth adding after the manual-feed sorter works

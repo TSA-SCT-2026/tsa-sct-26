@@ -1,47 +1,44 @@
 # tsa-sct-26
 
-TSA System Control Technology 2026: automated LEGO brick sorter for nationals on May 1, 2026.
+TSA System Control Technology 2026: LEGO brick sorter for states on May 2, 2026.
 
-The active production architecture sorts 24 LEGO bricks by size and color into 4 bins using:
-- Preloaded 24-brick compressed queue
-- One-brick isolation chamber
-- Dual ToF size sensing and color sensing in the chamber
-- NEMA17 conveyor feed axis
-- Off-axis toothed timing-belt stage to a supported smooth drive roller
-- 4-index selector chute below the release mechanism, active for now
-- Event-gated control with physical truth checks before each release and restart
+The active states architecture sorts 24 LEGO bricks by size and color into 4 bins using:
+- Manual one-at-a-time feed onto a conveyor
+- NEMA17-driven conveyor
+- Conveyor-mounted size and color sensing station near the belt exit
+- Size sensor still undecided
+- TCS3200/GY-31 color sensor with shroud
+- MG995/MG996-class servo rotary chute selector
+- Four labeled bins under the chute sweep
+- Wood or 3D printed frame from available materials
 
-Goal: first place at nationals.
+Goal: first place at states.
 
-## Start here
+The previous chamber, release-gate, compressed-queue, NEMA11 selector design is archived under `_archive/previous-chamber-release-design-2026-04/` for later nationals work.
+
+## Start Here
 
 Read these in order:
 1. `docs/ARCHITECTURE.md`
 2. The subsystem doc for the area you are touching
-3. `docs/project/GLOSSARY.md` if any high-level architecture term is unclear
+3. `docs/project/OPEN_DECISIONS.md` for unresolved states-build choices
+4. `docs/project/GLOSSARY.md` if a term is unclear
 
-## Active system model
+## Active System Model
 
-Do not model the machine as one full belt traverse per brick.
+Do not model the states build as a chamber sorter.
 
-The active throughput model is:
-- A compressed queue is already staged at the chute exit
-- Only one brick may occupy the chamber
-- The next brick advances by chamber pitch, not by full conveyor length
-- Static sensing, selector readiness, drop, bin confirm, and platform-level reset form the control loop
-- Safe overlap is allowed only when physical state confirms it
+The active flow is:
+- Operator places one brick on the conveyor
+- Conveyor carries it through the sensing station
+- Size and color classification choose the target bin
+- Servo chute points at the target bin
+- Brick exits the belt, slides down the chute, and lands in the bin
+- System returns to READY for the next brick
 
-The likely production bottleneck is selector motion plus reset latency, not conveyor transport length.
+Optional feed automation comes only after this manual-feed machine sorts reliably.
 
-## Selector status
-
-The 4-index selector chute is the active routing design.
-
-It is not permanently locked. The repo now treats it as an evidence-gated choice:
-- Keep the selector chute unless measured or modeled routing cost shows it cannot support a sub-10-second winning design with margin
-- Evaluate selector cost using official NEMA11 motion references plus real bench data from the actual mechanism
-
-## Repo structure
+## Repo Structure
 
 ```text
 tsa-sct-26/
@@ -55,12 +52,12 @@ tsa-sct-26/
     project/
     notebook/
     runs/
+    datasheet/
 
   cad/
     MECHANICAL.md
     DIMENSIONS.md
     README.md
-    frame/rollers/
 
   firmware/
     EMBEDDED.md
@@ -70,20 +67,19 @@ tsa-sct-26/
   wiring/
     ELECTRICAL.md
 
-  simulation/
   reference/
 ```
 
-## Development notes
+## Development Notes
 
-- `simulation/` is a separate sandbox and should not drive mechanical truth by itself.
-- `reference/` is not part of the active implementation surface.
 - Numeric geometry and derived timing assumptions should trace back to `cad/DIMENSIONS.md`.
-- Judges score reliability, clarity, and documentation heavily. Operator-facing UX is not cosmetic.
+- `docs/project/BOM.xlsx` remains the purchase source of truth.
+- Judges score reliability, clarity, and documentation heavily.
+- Operator-facing UX is not cosmetic.
 
-## Competition constraints
+## Competition Constraints
 
 - Footprint must stay within 610mm x 610mm
 - Evaluator operates the system alone with written instructions
-- Primary competition flow is: load 24 bricks, press start, machine sorts
+- Primary states flow is manual one-at-a-time feed until a reliable base sorter exists
 - LiPo power is the only meaningful run condition

@@ -2,89 +2,79 @@
 
 ## Objective
 
-Demonstrate reliable sorting and mechanism integrity under evaluator-style operation.
+Demonstrate reliable sorting under evaluator-style one-at-a-time operation.
 
-## Test set
+## Test Set
 
 - 24-brick competition set: 6 red 2x2, 6 blue 2x2, 8 blue 2x3, 4 red 2x3
-- Bricks loaded per operating instructions
+- Bricks fed in the marked orientation
 
-## Test phases
+## Test Phases
 
-### Phase 1: Release mechanism validation
+### Phase 1: Conveyor And Handoff
 
-Run 50 loaded release cycles.
-
-Pass criteria:
-- No missed drops
-- No failed resets
-- No release-path stuck events
-
-### Phase 2: Queue cadence and chamber pitch
-
-Run 25 loaded seat and reset cycles with the compressed queue loaded.
+Run 25 one-brick trials through the conveyor and into the chute.
 
 Pass criteria:
-- No double-entry events
-- Chamber seats repeatably at the same stop wall position
-- Next feed does not begin before reset confirmation
-- Measured restart distance stays within the chamber pitch window
+- No missed chute entries
+- No belt stalls
+- No sensor bracket or shroud catches
 
-### Phase 3: Size sensing validation
+### Phase 2: Servo Routing
 
-Run 20 seated checks for each case:
-- empty chamber
-- `2x2` left-biased
-- `2x2` centered
-- `2x2` right-biased
-- `2x3`
+Run 25 forced-route trials per bin.
 
 Pass criteria:
-- Empty chamber keeps both ToF lanes clear
-- Every `2x2` trial occupies exactly one lane
-- Every `2x3` trial occupies both lanes
-- Repeated seat and reset cycles do not drift out of the calibrated threshold bands
+- Correct chute position for each target
+- Correct bin receives each brick
+- No servo hard-stop contact
+- No chute edge catch
 
-### Phase 4: Routing and confirmation
+### Phase 3: Size Sensing
 
-Run 25 drops per bin target using forced category/test mode.
+Run this phase after the size sensor family is chosen.
 
-Pass criteria:
-- Correct selector index and bin confirmation for each drop
-- No selector jam events
-- Selector-ready latency and worst-case move time stay within the modeled gate
-- Re-home penalty remains repeatable
-- Wrong-bin confirm events are never observed in normal routing
-
-### Phase 5: Reset and chamber clear
-
-Run 25 release and reload cycles while verifying chamber-clear and reset-confirmation events.
+Trial set:
+- 20 trials with 2x2 bricks
+- 20 trials with 2x3 bricks
+- Mixed 24-brick trial after thresholds are set
 
 Pass criteria:
-- Chamber clear is detected before the next brick enters
-- Reset confirmation arrives before feed restart
-- No stale chamber occupancy remains after reset
+- Every 2x2 trial classifies as 2x2
+- Every 2x3 trial classifies as 2x3
+- Raw values or timing windows are logged
+- No rule depends on perfect hand placement
 
-### Phase 6: Full-run reliability
+### Phase 4: Color Sensing
+
+Run 20 trials each for red and blue with the shroud installed.
+
+Pass criteria:
+- Every red trial classifies as red
+- Every blue trial classifies as blue
+- Calibration data records the shroud as installed
+- Threshold is documented
+
+### Phase 5: Full-Run Reliability
 
 Run 10 full 24-brick sessions on LiPo power.
 
 Pass criteria:
 - 24 processed per run
 - Correct bin totals each run
-- No unrecovered ERROR_HALT events
-- CSV log contains per-brick timestamps for entry, seated, sensing, selector ready, release, bin confirm, and reset complete
+- No unrecovered ERROR state
+- CSV log contains per-brick timestamps for feed, size sense, color sense, route command, route ready, and bin result if available
 - Run summary reports correctness truthfully, not just total throughput
 
-## Data logging
+## Data Logging
 
 Capture serial logs for every run as CSV and store in `docs/runs/`.
-Use one row per brick and include the full timestamp chain needed to replay the run.
+Use one row per brick and include enough timestamps to replay the run.
 
-## Failure handling
+## Failure Handling
 
 For each failed run:
 - Record failure code
-- Record brick number/state at failure
+- Record brick number and stage
 - Record corrective action
-- Repeat run after fix to confirm resolution
+- Repeat the relevant phase after the fix

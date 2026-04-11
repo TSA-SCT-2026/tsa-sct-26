@@ -1,18 +1,20 @@
 # Engineering Documentation
 
 Competition documentation goes here. Judges score this heavily. Build it from logged run data, not from memory.
-Current execution priority is CAD-first validation, so begin with mechanical decision matrices and release-gate test evidence.
+
+Current execution priority is CAD-first validation for the simplified states build: conveyor handoff, servo chute selector, sensing station, and operator-facing clarity.
 
 Notebook source of truth lives in `docs/notebook/` and run CSV data lives in `docs/runs/`.
 
-## Short terms
+## Short Terms
 
-- Selector chute: the 4-index routing mechanism that indexes to the target bin
-- Chamber pitch: the feed distance needed to hand off the next brick after the chamber clears
-- Selector-ready: the routing path is aligned and locked, so release is allowed
-- Reset confirmation: the release mechanism is back in a safe state, so the next feed is allowed
+- Servo rotary chute selector: the MG995/MG996-class servo mechanism that points the chute at one of four bins
+- Sensing station: the conveyor-mounted size and color sensing area
+- Handoff: the transition from belt exit into the chute
+- Route ready: the chute is at the calibrated target angle
+- Full-run log: a CSV record of a 24-brick run
 
-## Recommended notebook file set
+## Recommended Notebook File Set
 
 Keep the notebook authored in this directory with one file per section:
 
@@ -24,40 +26,56 @@ Keep the notebook authored in this directory with one file per section:
 - `performance_summary.md`
 - `iteration_log.md`
 
-## Decision matrices
+## Decision Matrices
 
-Each decision matrix documents: what options were considered, what was chosen, and why each alternative was rejected with a specific technical reason. This is the format judges look for. The rationale already exists in the architecture files. Pull it into structured tables here.
+Each decision matrix documents what options were considered, what was chosen, and why each alternative was rejected with a specific technical reason.
 
 Subsystems that need matrices:
-- Size sensor (IR break-beam vs ultrasonic vs ToF vs camera)
-- Color sensor (TCS3200 GY-31 vs alternative color modules vs camera vs discrete photodiodes)
-- Release actuation (servo-swept support vs direct cam vs coil pullback)
-- Selector mechanism (4-index selector chute vs linear diverter vs hybrid gate)
-- Conveyor drive topology (active off-axis timing-belt stage, supported-shaft layout, and rejected alternatives)
+- Architecture pivot: archived chamber release design vs simplified states conveyor and servo chute
+- Size sensor family
+- Color sensor and shroud approach
+- Conveyor CAD source
+- Frame material: wood vs 3D printed vs mixed
+- Servo chute selector geometry
+- Optional feed chute after manual one-at-a-time feed works
 
-## Rejected alternatives
+## Rejected Alternatives
 
-Keep `rejected_alternatives.md` as a short branch list. Use bullet sections for full designs first, then subdesigns inside each branch.
+Keep `rejected_alternatives.md` as a short branch list. Include:
+- Archived chamber and release-gate sorter
+- Automated compressed queue for states
+- NEMA11 selector for states
+- 2020 extrusion frame for states
+- Full custom conveyor before testing downloaded geometry
+- Two-stage size-then-color physical lane split
 
-Include at least these branches:
-- Continuous conveyor with singulator and fixed downstream diverters
-- Two-stage lane split with size first then color
-- Solenoid flap routing after release
-- Direct-drive conveyor with unsupported motor shaft
-- Rotary selector replacement concepts that were examined and rejected
+## Calibration Procedures
 
-Each branch should record the subdesigns that were considered under it, such as singulator style, gate style, shaft support style, or routing layout.
+Write these after hardware exists. The procedure must specify hardware configuration, what to measure, how to determine the threshold, and how to verify it.
 
-## Calibration procedures
+Color calibration done without the final shroud installed is not valid.
 
-Write these after hardware exists. The procedure must specify: what hardware configuration is required (shroud installed, demo bricks, belt running), what to measure, how to determine the threshold, and how to verify it. Calibration done without the final hardware configuration is not valid.
+## Performance Data
 
-## Performance data
+Run at least 10 full 24-brick runs during reliability testing. Log all of them to CSV via serial output in `docs/runs/`.
 
-Run at least 10 full 24-brick runs during reliability testing. Log all of them to CSV via serial output in `docs/runs/`. Summarize in a table: run number, time, per-bin totals, accuracy, any errors. This table is the core of the performance section.
+Summarize:
+- run number
+- total time
+- per-bin totals
+- accuracy
+- any errors
+- corrective action after each failure
 
-Make sure the selector gate study is represented in the notebook with modeled and measured routing latency, adjacent-move time, worst-case move time, homing penalty, and the decision rule that keeps the selector chute active unless the evidence says it cannot win.
+## Failure Mode Analysis
 
-## Failure mode analysis
+For each potential failure, document what it is, how likely it is, how it is detected, and what the system does.
 
-For each potential failure: what is it, how likely, how is it detected, what does the system do. Format as a table. Include both detected failures (jam, release-actuator failure, sensor miss) and undetected failures (misclassification that lands in a bin) with explanation of why the latter is acceptable.
+Include:
+- missed chute entry
+- brick stuck in chute
+- wrong servo angle
+- size misclassification
+- color misclassification
+- belt stall or belt walking
+- evaluator placement error

@@ -1,107 +1,103 @@
 # Calibration Procedures
 
-Calibration is valid only with final mechanical geometry installed, including the color shroud, release mechanism, selector chute, and timing-belt conveyor stage.
+Calibration is valid only with final mechanical geometry installed, including the color shroud, conveyor handoff, servo chute, bins, and the chosen size sensor.
 
 ## Preconditions
 
-- 3S LiPo power, charged in normal operating range
-- Chamber and release mechanism installed
-- Timing-belt stage aligned and tensioned
-- Selector chute mounted on its final indexer hardware and homing functional
+- LiPo power, charged in normal operating range
+- Conveyor mounted and tracking correctly
+- Servo chute mounted on the final pivot or horn adapter
+- Four bins and bin guides installed
 - Color shroud installed and light leaks closed
-- Display, start control, and bin labels installed
+- Display, start control, feed cue, and bin labels installed
 
-## 1. Conveyor pitch and queue cadence calibration
+## 1. Conveyor And Handoff Calibration
 
-Goal: confirm the steady-state feed advance that supports the compressed queue.
-
-Procedure:
-1. Load a full 24-brick queue.
-2. Run repeated seat and reset cycles while logging entry, seated, selector-ready, release, reset-confirmed, and next-entry times.
-3. Measure the distance the belt advances between one brick clearing the chamber and the next brick reaching the stop wall.
-4. Compare the measured advance to the chamber pitch and the safe restart condition.
-
-Acceptance:
-- No double-entry during 24-brick runs
-- Chamber seats repeatably at the same stop wall position
-- Restart distance stays within the measured chamber pitch window across repeated runs
-- No seated-state oscillation
-
-If failures occur:
-- Tune belt ratio or pulley size first
-- Tune approach speed second
-- Recheck stop wall contact and chamber alignment after each change
-
-## 2. Release mechanism calibration
-
-Goal: guarantee reliable support removal and safe reset.
+Goal: confirm the brick travels through sensing and enters the chute repeatably.
 
 Procedure:
-1. Run 50 release cycles with no brick.
-2. Confirm each cycle removes support and returns to safe state.
-3. Run 50 release cycles with real bricks in chamber.
-4. Record failures by type: no-drop, incomplete release, no-reset.
+1. Run the conveyor at low speed.
+2. Feed one brick at a time in the marked orientation.
+3. Record whether the brick stays centered enough for sensing.
+4. Record whether the brick enters the chute cleanly.
+5. Increase speed only after repeatable handoff is proven.
 
 Acceptance:
-- 0 failures in 50 consecutive loaded cycles
-- Return to safe state within 200ms target
+- No missed chute entries in 25 consecutive handoff trials
+- No bracket or shroud catches
+- Conveyor does not walk or stall during trials
 
-If failures occur:
-- Tune release geometry first
-- Tune return bias second
-- Re-run full loaded cycle test after each change
+## 2. Servo Chute Position Calibration
 
-## 3. Dual-ToF size threshold calibration
+Goal: map four category outputs to repeatable servo angles.
 
 Procedure:
-1. Install both ToF modules in the final chamber mounts.
-2. Seat real `2x2` and `2x3` bricks in the chamber with belt off.
-3. Record left, right, and wider-clearance readings for centered, left-offset, and right-offset seating cases.
-4. Set the size threshold bands so a laterally shifted `2x2` still stays distinguishable from a `2x3`.
+1. Command the servo to the first target angle.
+2. Drop or convey 10 bricks through the chute to the matching bin.
+3. Adjust angle until the chute exit is centered on the bin guide.
+4. Repeat for all four categories.
+5. Record final angle values.
 
 Acceptance:
-- `2x2` and `2x3` clearance patterns stay separated across centered and offset seating cases
-- Both sensors return stable readings at the seated stop-wall position
-- No classification rule depends on a brick being centered perfectly
+- Each bin receives 10 of 10 forced-route trials
+- Chute clears frame and wiring at each angle
+- Servo does not hit a hard stop
+- Final angle table is recorded
 
 Calibration evidence template:
 
-| Brick | Seating case | Left clearance (mm) | Right clearance (mm) | Wider clearance (mm) | Size result | Operator | Date |
-|------|---------------|---------------------|----------------------|----------------------|-------------|----------|------|
+| Category | Servo angle | Trials | Correct bin count | Notes | Operator | Date |
+|----------|-------------|--------|-------------------|-------|----------|------|
+| | | | | | | |
+
+## 3. Size Sensor Calibration
+
+Status: size sensor family is still open.
+
+Procedure after the sensor is chosen:
+1. Mount the final size sensor in the sensing station.
+2. Feed repeated 2x2 and 2x3 bricks at the chosen conveyor speed.
+3. Record raw sensor values or timing windows.
+4. Set the simplest threshold that separates 2x2 from 2x3 with margin.
+5. Re-test after any bracket or conveyor speed change.
+
+Acceptance:
+- 2x2 and 2x3 readings stay separated across repeated trials
+- No rule depends on perfect hand placement
+- Threshold choice is recorded with raw evidence
+
+Calibration evidence template:
+
+| Trial set | Sensor family | Brick | Raw value or timing | Size result | Operator | Date |
+|-----------|---------------|-------|---------------------|-------------|----------|------|
+| | | | | | | |
+
+## 4. Color Threshold Calibration
+
+Procedure:
+1. Install the color shroud.
+2. Feed repeated red and blue bricks through the final sensing station.
+3. Collect repeated sample windows.
+4. Compute the color feature used by firmware.
+5. Set threshold with safety margin between clusters.
+
+Acceptance:
+- Red and blue clusters are separated with visible margin
+- Classification stability holds across repeated trials
+- Shroud remains installed for all recorded calibration data
+
+Calibration evidence template:
+
+| Trial set | Shroud installed | Red feature | Blue feature | Separation | Threshold chosen | Operator | Date |
+|-----------|------------------|-------------|--------------|------------|------------------|----------|------|
 | | | | | | | | |
 
-## 4. Color threshold calibration
-
-Procedure:
-1. Place seated brick in chamber with belt off.
-2. Collect repeated sample windows for red and blue bricks.
-3. Compute normalized red ratio clusters.
-4. Set threshold with safety margin between clusters.
-
-Acceptance:
-- Minimum 0.15 separation between calibrated cluster centers
-- Classification stability across repeated trials
-
-Calibration evidence template:
-
-| Trial set | Lighting condition | Shroud installed (yes or no) | Red mean ratio | Blue mean ratio | Separation | Threshold chosen | Operator | Date |
-|-----------|--------------------|-------------------------------|----------------|-----------------|------------|------------------|----------|------|
-| | | | | | | | | |
-
-## 5. Selector and reset calibration
-
-Procedure:
-1. Home the selector chute and verify the selector home micro-switch repeatability.
-2. Index to each bin position and measure adjacent move time and worst-case move time.
-3. Confirm the selector-ready event occurs before release is allowed.
-4. Confirm the reset event occurs before the next feed is allowed.
-
-Acceptance:
-- Selector moves cleanly to all four positions
-- Re-home penalty is repeatable and within the modeled allowance
-- Release does not start before selector-ready
-- Next feed does not start before reset confirmation
-
-## 6. Full-system verification
+## 5. Full-System Verification
 
 Run at least 10 full 24-brick runs and log CSV data for notebook use.
+
+Acceptance:
+- Correct final bin counts
+- No unrecovered ERROR state
+- Logged failures are investigated and re-tested
+- Run summary reports correctness truthfully, not just throughput

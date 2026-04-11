@@ -5,16 +5,13 @@
 //
 // Commands:
 //   sim start
-//   sim entry
-//   sim seated
+//   sim brick
 //   sim sensing <cat>
 //   sim bin <1-4>
-//   sim platform
 //   sim reset
 //
-//   test release
 //   test home
-//   test index <1-4>
+//   test route <1-4>
 //   test fullrun
 //   test thermal [n]
 //

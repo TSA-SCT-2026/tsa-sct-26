@@ -1,8 +1,12 @@
 # GT2 20T 5mm Bore Timing Pulley
 
-## Ordered part
+## Status
 
-WINSINN GT2 20 Teeth 5mm Bore for 6mm Belt (from BOM, Amazon order pending delivery).
+Active only if the selected states conveyor uses a GT2 timing stage.
+
+User reports a recent pulley and GT2 belt order, but this markdown should not mark those parts ordered until matching rows exist in `docs/project/BOM.xlsx`.
+
+Reference part: 20T GT2 pulley, 5mm bore, for 6mm belt.
 
 ## Reference files in this directory
 
@@ -45,7 +49,7 @@ Verify exact hub width, flange OD, and belt section width against the received p
 
 ## Usage in this project
 
-Both motor shaft and driven shaft use 20T GT2 purchased pulleys.
+If the GT2 timing path is used, both motor shaft and driven shaft can use 20T GT2 pulleys.
 
 - Motor shaft: NEMA17 D-shaft, 5mm. Set screw bears against the D-flat.
 - Driven shaft: 5mm round hardened shaft. Set screw bears on round shaft (acceptable for light torque).
@@ -58,8 +62,8 @@ With two 20T pulleys and 2mm pitch GT2 belt:
 - 100T belt (200mm): center distance = 80mm
 - 104T belt (208mm): center distance = 84mm
 
-The integrated trough motor slots provide 8mm of adjustment in the belt direction around the 80mm nominal center distance.
+The previous integrated trough motor slots provided 8mm of adjustment in the belt direction around the 80mm nominal center distance. Treat that as fallback reference.
 
 Before freezing pulley placement in CAD:
-- check that the belt path clears the trough bridge window
+- check that the belt path clears the selected conveyor frame
 - check that the drive-pulley set screw is reachable before belt installation

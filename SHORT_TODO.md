@@ -1,36 +1,31 @@
 # Short TODO
 
-Updated April 9, 2026 after the integrated trough timing-stage update.
-Current priority: complete the Fusion 360 assembly of the integrated trough timing stage so conveyor interfaces stop drifting. First physical print priority still belongs to the chute transition prototype.
+Updated April 11, 2026 after the states simplification pivot.
 
-## This session's next tasks
+Current priority: execute the simplified states CAD plan: manual one-at-a-time feed, conveyor sensing station, MG995/MG996-class servo rotary chute selector, and four labeled bins.
 
-1. Finish the integrated-trough Fusion 360 assembly
-- Use `cad/frame/rollers/docs/FUSION360_ASSEMBLY.md` as the active check list
-- Verify shaft parallelism, pulley belt plane, bridge belt window clearance, set-screw access, and idler hardware keep-out
-- Lock any required interface notes before printing the full trough
+## Next Tasks
 
-2. Keep the chute transition as the first physical validation print
-- Print the chute transition prototype before any full conveyor-body print
-- Test real-brick feed under full queue load
-- Record jam and double-feed results in run logs
+1. CAD weekend setup
+- Download or import a proven NEMA17 mini conveyor assembly if possible
+- Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`
+- Keep the 610mm x 610mm boundary visible in Fusion
+- Use wood or 3D printed frame construction, not 2020 extrusion
 
-3. Print and validate the conveyor coupon set
-- Print `trough_end_cap_coupon_v1.stl` first
-- Print shaft-fit, bearing-fit, and crown coupons from the roller subsystem
-- Use measured fit and tracking results before changing any roller or trough parameters
+2. Build the custom states geometry
+- Model servo mount, chute body, pivot boss or horn adapter, and bin guides
+- Model color sensor shroud
+- Leave size sensor bracket geometry provisional until the sensor family is chosen
+- Model four labeled bins under the chute arc
 
-4. Review the current timing-stage outputs
-- `cad/frame/rollers/scripts/build_rollers.sh` now exports the trough and trough coupon along with the roller parts
-- Check the generated timing-stage STLs before sending anything to the printer
-- Keep output naming stable unless there is a versioned geometry change
+3. Validate the risky physical assumptions
+- Test a short chute section with real bricks at 30, 35, 40, and 45 degrees
+- Verify conveyor-to-chute handoff with real bricks before large prints
+- Verify servo position overlap with each bin guide in CAD
+- Confirm the full assembly stays under 610mm x 610mm
 
-5. Keep architecture drift under control
-- Use `docs/project/CAD_ORCHESTRATION.md` as the broader session plan
-- Keep `OPEN_DECISIONS.md` limited to true runtime-tuning questions
-- Do not reopen frozen architecture during CAD unless new physical evidence forces it
-
-6. Prepare deferred validation work
-- Keep color-sensor calibration deferred until the real sensor is mounted with the shroud installed
-- Keep the selector evidence gate deferred until real selector timing data exists
-- Bring both topics up automatically when work touches sensing, routing, or throughput claims
+4. Prepare scoring evidence
+- Capture CAD screenshots for the inventor's log
+- Record size sensor decision rationale once chosen
+- Calibrate color sensing only with the shroud installed
+- Log full 24-brick runs to CSV in `docs/runs/`

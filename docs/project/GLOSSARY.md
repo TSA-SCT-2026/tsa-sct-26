@@ -2,43 +2,52 @@
 
 Short definitions for the main project terms. If a term in the architecture is unclear, start here.
 
-## System flow
+## System Flow
 
-- `compressed queue`: all 24 bricks are preloaded and packed closely enough that the next brick is already near the chamber workflow
-- `start gate`: the upstream queue stop that holds the full stack off the transition until the run begins
-- `cold start`: the first feed cycle from the initial queued rest state
-- `steady state`: the repeating cycle after the queue is already staged against the chamber workflow
-- `chamber pitch`: the effective advance distance from one seated brick to the next seated brick in the compressed queue
-- `safe restart condition`: the physical truth required before the next brick is allowed to advance
+- `manual one-at-a-time feed`: the active states feed mode where the operator places one brick on the conveyor at a time
+- `feed orientation cue`: the physical label or guide that tells the operator how to place each brick
+- `sensing station`: the conveyor-mounted sensor area before the belt exit
+- `classification lock`: the moment firmware has decided size, color, and target bin for the current brick
+- `handoff`: the transition from belt exit into the servo chute
+- `ready state`: the state where the system can accept the next brick
 
-## Core mechanisms
+## Core Mechanisms
 
-- `isolation chamber`: the one-brick sensing and release area
-- `release gate`: the chamber support-removal mechanism; exact actuation style is still under refactor
-- `trapdoor platform`: historical term for an earlier release concept. Do not use it as fixed truth
-- `class 3 lever`: historical term for an earlier release concept. Do not use it as fixed truth
-- `selector`: the routing mechanism below the release gate
-- `selector chute`: the active 4-index routing mechanism that sends bricks to one of four bins
-- `index position`: one of the four valid routed positions of the selector chute
-- `home reference`: the known selector position used to restore position truth and detect drift
+- `conveyor`: the belt system that moves a single brick through sensing and into the chute
+- `servo rotary chute selector`: the MG995/MG996-class servo-driven chute that points at one of four bins
+- `chute position`: one of the four calibrated servo angles for a target bin
+- `bin guide`: a fixed guide at a bin entry that catches the chute output
+- `color shroud`: the light-blocking structure around the color sensor
+- `size sensor`: the sensor or sensor pair used to separate 2x2 from 2x3, still undecided
 
-## Conveyor terms
+## Conveyor Terms
 
-- `off-axis conveyor`: a conveyor where the motor does not directly carry the drive roller on its shaft
-- `timing-belt stage`: the toothed belt and pulley stage between the motor and supported conveyor shaft
-- `supported roller shaft`: the shaft carried by bearings or frame supports that holds the smooth drive roller
-- `drive roller`: the powered smooth roller that moves the conveyor belt
-- `idler roller`: the non-driven roller that supports tracking and tension
+- `belt exit`: the downstream end of the conveyor where the brick leaves the belt
+- `belt tracking`: how consistently the belt stays centered on the rollers
+- `handoff gap`: the physical gap between the conveyor exit and chute entry
+- `usable belt length`: the straight conveyor distance available for feed, sensing, and handoff
 
-## Control terms
+## Control Terms
 
-- `static sensing`: size and color sensing while the brick is stopped in the chamber
-- `selector ready`: confirmation that the selector reached its target indexed position and release is safe
-- `drop window`: the bounded release-and-fall interval before bin confirmation is expected
-- `reset confirmation`: the physical truth that the release mechanism is back in a safe state and the next brick may feed
-- `event-gated control`: control logic that advances only when the required physical event is confirmed
+- `route command`: firmware command that sends the servo to the target chute angle
+- `route ready`: confirmation or timed settle point after the servo reaches the target angle
+- `ERROR`: visible state when the machine cannot safely continue without operator help
+- `SORT COMPLETE`: visible state after all 24 bricks are processed
 
-## Evidence and validation
+## Evidence And Validation
 
-- `selector evidence gate`: the rule that keeps the selector chute active unless measured or modeled results show it cannot support a winning design
 - `notebook evidence`: data, decision matrices, test logs, and calibration records that support the engineering notebook
+- `chute angle test`: real-brick test comparing chute slide behavior at candidate angles
+- `full-run log`: CSV record of a complete 24-brick sorting run
+
+## Archived Terms
+
+These terms belong to the previous architecture unless the user explicitly reopens nationals work:
+- `compressed queue`
+- `start gate`
+- `isolation chamber`
+- `release gate`
+- `retracting support`
+- `chamber pitch`
+- `NEMA11 selector`
+- `dual-ToF chamber sizing`

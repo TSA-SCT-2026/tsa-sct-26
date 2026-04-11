@@ -40,13 +40,13 @@ void pushEventSensingDone(const SenseResult& result) {
     gEventQueue.push(e);
 }
 
-void pushEventSelectorReady(uint8_t binIdx, bool ok, uint16_t steps) {
+void pushEventRouteReady(uint8_t binIdx, bool ok, uint16_t servoAngle) {
     Event e;
-    e.type = EventType::SELECTOR_READY;
+    e.type = EventType::ROUTE_READY;
     e.timestamp_ms = millis();
     e.binIdx = binIdx;
     e.ok = ok;
-    e.steps = steps;
+    e.servoAngle = servoAngle;
     gEventQueue.push(e);
 }
 

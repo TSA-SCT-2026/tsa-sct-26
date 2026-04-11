@@ -2,71 +2,73 @@
 
 ## Mechanical
 
-- Chute transition validated with real bricks
-- Timing-belt stage mounted, aligned, tensioned, and guarded
-- Supported drive roller spins freely with no belt walk
-- Conveyor pitch advance reaches the chamber without overshoot or slip
-- Release mechanism at rest in a safe state
-- Release path returns cleanly without binding
-- Return elements or reset elements attached and seated correctly
-- Selector chute indexes without edge contact
+- Conveyor mounted, aligned, and tensioned
+- Belt tracks without walking into guides
+- Conveyor-to-chute handoff gap checked
+- Servo chute sweeps to all four positions
+- Servo horn and pivot screws tight
+- Chute clears frame and wiring
+- Bins installed and removable
+- Bin labels installed
+- Feed orientation cue installed
+- Footprint under 610mm x 610mm
 
 ## Electrical
 
 - LiPo connected with inline fuse installed
-- Release actuator protection present and polarity correct if coil-based
 - Stepper VM bulk capacitor installed
+- Servo power polarity verified
+- Servo power rail can handle load
+- Fan connected if used for driver cooling
 - All grounds common and secure
 - No loose wiring near moving parts
 
-## Sensors and control
+## Sensors And Control
 
-- Home switch responds
-- Stop switch responds
-- Chamber clear condition is detectable
-- Dual ToF sensors report expected idle and seated ranges
-- TCS3200 color sensor output responds in the expected test mode
-- Selector-ready event appears before release
-- Next-feed restart waits for physical reset confirmation
+- Size sensor family chosen or test mode marked clearly
+- Size sensor reports expected values in test mode
+- TCS3200 color sensor responds in the expected test mode
+- Color shroud installed
+- Servo target angles loaded
 - Display state transitions visible
+- Start control responds
 
-## Functional quick checks
+## Functional Quick Checks
 
 - Self-test passes
-- Queue-fed start with 24 bricks loads and begins from READY
-- Manual release test: one clean drop and safe reset
-- Reset-to-next-seat cycle repeats without double-entry
-- Index test to all 4 bins succeeds
-- Bin confirm sensors trigger as expected
+- Conveyor moves in the correct direction
+- Forced route to all 4 bins succeeds
+- One red and one blue sample classify correctly in shrouded test
+- One 2x2 and one 2x3 sample classify correctly after size sensor is chosen
+- Full 24-brick run instructions are present
 
-## CAD gate signoff
+## CAD Gate Signoff
 
 Use this table for phase-gate acceptance evidence.
 
 | Gate | Pass criteria summary | Date | Operator | Result (PASS or FAIL) | Evidence path |
 |------|------------------------|------|----------|------------------------|---------------|
-| Gate 1: release mechanism | 50 loaded drop and reset cycles, zero failures | | | | |
-| Gate 2: chamber and sensing fit | Sensor mounts fit, no obstructed motion, no shroud light leak | | | | |
-| Gate 3: selector alignment | Clean drop path for all 4 selector positions | | | | |
-| Gate 4: conveyor packaging and pitch | Timing-belt stage aligned, tensioned, and repeatable | | | | |
-| Gate 5: chute transition | No jams and no double-feed events in trial set | | | | |
-| Gate 6: packaging and footprint | Under 610mm x 610mm with labels and control placement verified | | | | |
+| Gate 1: chute angle | Real bricks slide at chosen angle | | | | |
+| Gate 2: conveyor handoff | No missed chute entries in 25 trials | | | | |
+| Gate 3: servo alignment | Clean route to all 4 bins | | | | |
+| Gate 4: sensing station | No bracket catches, color shroud works | | | | |
+| Gate 5: packaging | Under 610mm x 610mm with labels verified | | | | |
 
-## Single-point failure watchlist
-
-Track high-risk points and readiness before full integration.
+## Single-Point Failure Watchlist
 
 | Item | Current risk | Mitigation in place | Spare or fallback ready | Verified date |
 |------|--------------|---------------------|--------------------------|---------------|
-| Chute transition piece | High | Geometry validated with real bricks | | |
-| Release interface and reset path | Medium | Geometry and reset path complete | | |
-| Release actuator driver path | Medium | Protection and drive checks complete | | |
-| Selector chute indexer interface | Medium | Mount hardware locked and anti-slip verified | | |
-| Conveyor timing-belt stage | Medium | Pulley ratio, tension, and guarded packaging verified | | |
-| Stop-wall sensing path | Medium | Switch response and seating repeatability verified | | |
+| Conveyor-to-chute handoff | High | Small handoff prototype | | |
+| Chute slide angle | High | Angle coupon test | | |
+| Servo pivot slop | Medium | Horn adapter check | | |
+| Size sensor choice | Medium | Open decision tracked | | |
+| Color shroud | Medium | Shroud-installed calibration | | |
+| Frame stiffness | Medium | Wood or printed braces | | |
 
-## Final readiness
+## Final Readiness
 
 - Start control labeled
 - Bin labels installed
+- Feed cue installed
 - Operator instructions present and readable
+- Full 24-brick run logs captured

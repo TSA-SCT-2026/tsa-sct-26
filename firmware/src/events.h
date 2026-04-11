@@ -9,15 +9,11 @@
 enum class EventType : uint8_t {
     NONE = 0,
     START_BUTTON,
-    ENTRY_DETECTED,
-    CHAMBER_SEATED,
+    BRICK_DETECTED,
     SENSING_DONE,
-    SELECTOR_READY,
-    DROP_WINDOW_DONE,
+    ROUTE_READY,
+    HANDOFF_DONE,
     BIN_CONFIRMED,
-    PLATFORM_LEVEL,
-    CHAMBER_CLEAR,
-    PITCH_ADVANCE_DONE,
     RESET,
     ENCODER_PULSE,
 };
@@ -28,7 +24,7 @@ struct Event {
     SenseResult senseResult  = SenseResult{};
     uint8_t     binIdx       = 0;
     bool        ok           = true;
-    uint16_t    steps        = 0;
+    uint16_t    servoAngle   = 0;
 };
 
 class EventQueue {
@@ -50,5 +46,5 @@ extern EventQueue gEventQueue;
 
 void pushEvent(EventType type);
 void pushEventSensingDone(const SenseResult& result);
-void pushEventSelectorReady(uint8_t binIdx, bool ok, uint16_t steps);
+void pushEventRouteReady(uint8_t binIdx, bool ok, uint16_t servoAngle);
 void pushEventBinConfirmed(uint8_t binIdx);
