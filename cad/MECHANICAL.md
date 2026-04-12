@@ -57,7 +57,7 @@ Order along travel:
 2. Color sensing with shroud
 3. Belt exit into servo chute
 
-Size sensing is open. Keep CAD brackets adjustable until the sensor family is chosen. Candidate paths include break-beam timing and distance sensing.
+Size sensing is frozen as break-beam timing with two pairs through the sensing shroud side walls. Keep hole positions easy to adjust after real-brick belt tests, but do not reopen ToF or distance sensing unless the user explicitly changes the size sensor decision.
 
 Color sensing uses the TCS3200/GY-31 module. The shroud is required. Open-air color calibration is not valid for this build.
 
@@ -78,7 +78,7 @@ Chute body:
 - Rectangular channel
 - Internal width around 30mm
 - Internal height around 15mm
-- Arm length under 100mm from pivot to exit - shorter arm means less flex and less exit position error
+- Keep the pivot-to-exit radius as short as the bin layout allows. Shorter means less flex and less exit position error, but wide funnels may require a larger radius or staggered bins.
 - Top open or partly open at the entry
 - UHMW tape applied to interior channel surface before first use - not optional, not deferred
 - Pivot boss or adapter tied to the servo horn
@@ -99,9 +99,9 @@ Chute angle:
 Bin alignment:
 - Use four construction rays from the pivot
 - Start with about 35 degrees between positions
-- Each bin has a wide funnel entry built into the top of the bin print
+- Each bin has a wide funnel entry built into the bin print at the verified catch height
 - Funnel walls angle inward over 15 to 20mm, narrowing from a wide catch opening to the bin interior
-- Target funnel catch width: 50mm or wider so the servo needs to be within about 15 degrees, not precise
+- Target funnel catch width: 50mm or wider if the sweep radius can support it. Check adjacent funnel overlap before locking the radius.
 - Verify chute exit falls inside each funnel at all four positions
 - Use a revolute joint or equivalent Fusion position check before printing
 
@@ -113,7 +113,7 @@ Each bin should:
 - Hold its expected brick count with margin
 - Have a clear label on the front
 - Be removable without bumping the chute
-- Have a printed funnel entry at the top - wide angled walls that narrow into the bin body over 15 to 20mm
+- Have a printed funnel entry at the verified catch height. Top-entry is preferred, but a side-entry catch is acceptable if it is intentional and tested.
 
 The funnel entry is not optional. It is what allows the servo to land a brick reliably without needing exact positioning. Design the funnel as part of the bin body, not a separate part.
 
@@ -137,7 +137,7 @@ The machine should look like a finished competition device, not a temporary benc
 4. Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`.
 5. Model servo mount, chute body, pivot interface, and first-pass bin rays.
 6. Model four bins and bin entry guides.
-7. Model color shroud and provisional size sensor mounting space.
+7. Model the color shroud with two break-beam pairs through the side walls.
 8. Check footprint, bin access, cable keepouts, and chute sweep.
 9. Export only the print parts needed for first validation.
 

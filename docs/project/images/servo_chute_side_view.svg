@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">Servo chute side view handoff</title>
+  <desc id="desc">Side view showing the conveyor belt feeding a brick over an exit lip into a sloped rotating chute, then into a bin funnel.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2933"/>
+    </marker>
+    <style>
+      .label { font: 18px Arial, sans-serif; fill: #111827; }
+      .small { font: 15px Arial, sans-serif; fill: #374151; }
+      .belt { fill: #30363d; }
+      .frame { fill: #d9e2ec; stroke: #52616b; stroke-width: 3; }
+      .chute { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 4; }
+      .uhmw { stroke: #0f766e; stroke-width: 5; stroke-linecap: round; }
+      .brick { fill: #ef4444; stroke: #991b1b; stroke-width: 3; }
+      .servo { fill: #fef3c7; stroke: #92400e; stroke-width: 3; }
+      .funnel { fill: #dcfce7; stroke: #166534; stroke-width: 4; }
+      .arrow { stroke: #1f2933; stroke-width: 3; marker-end: url(#arrow); fill: none; }
+      .datum { stroke: #6b7280; stroke-width: 2; stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="520" fill="#ffffff"/>
+  <text x="40" y="42" class="label">Side view: belt exit into rotating chute, then bin funnel</text>
+  <text x="40" y="68" class="small">Concept only. Final Z stack must be checked in CAD and with real bricks.</text>
+
+  <line x1="40" y1="455" x2="920" y2="455" class="datum"/>
+  <text x="42" y="482" class="small">machine base datum</text>
+
+  <rect x="70" y="165" width="430" height="24" rx="4" class="belt"/>
+  <rect x="70" y="190" width="430" height="20" class="frame"/>
+  <text x="95" y="145" class="label">conveyor belt</text>
+  <path d="M 480 162 L 532 160 L 516 188 L 480 188 z" fill="#9ca3af" stroke="#4b5563" stroke-width="3"/>
+  <text x="515" y="140" class="small">exit lip</text>
+
+  <rect x="215" y="120" width="54" height="32" rx="5" class="brick"/>
+  <circle cx="232" cy="116" r="5" fill="#fca5a5" stroke="#991b1b" stroke-width="2"/>
+  <circle cx="252" cy="116" r="5" fill="#fca5a5" stroke="#991b1b" stroke-width="2"/>
+  <line x1="300" y1="126" x2="455" y2="126" class="arrow"/>
+  <text x="322" y="108" class="small">brick travel</text>
+
+  <g transform="rotate(33 555 210)">
+    <rect x="540" y="200" width="270" height="54" rx="8" class="chute"/>
+    <line x1="560" y1="243" x2="790" y2="243" class="uhmw"/>
+    <text x="585" y="234" class="small">UHMW-lined chute channel</text>
+  </g>
+  <circle cx="555" cy="210" r="18" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="4"/>
+  <text x="520" y="270" class="small">chute entry, high end</text>
+  <text x="725" y="390" class="small">chute exit, low end</text>
+
+  <rect x="520" y="332" width="92" height="72" rx="8" class="servo"/>
+  <line x1="566" y1="332" x2="566" y2="232" stroke="#92400e" stroke-width="5"/>
+  <circle cx="566" cy="232" r="10" fill="#92400e"/>
+  <text x="506" y="426" class="small">servo in rigid pocket</text>
+  <text x="602" y="312" class="small">vertical shaft and horn</text>
+
+  <path d="M 780 338 L 900 300 L 900 455 L 760 455 L 760 376 z" class="funnel"/>
+  <path d="M 790 356 L 875 330 L 875 433 L 785 433 z" fill="#f0fdf4" stroke="#16a34a" stroke-width="3"/>
+  <text x="760" y="286" class="label">bin funnel catch</text>
+  <text x="810" y="475" class="small">bin</text>
+
+  <line x1="540" y1="190" x2="575" y2="205" class="arrow"/>
+  <line x1="700" y1="300" x2="803" y2="342" class="arrow"/>
+  <text x="545" y="178" class="small">handoff zone</text>
+  <text x="655" y="340" class="small">gravity slide</text>
+</svg>

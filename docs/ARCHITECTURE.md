@@ -18,7 +18,7 @@ The states build uses:
 - Manual one-at-a-time brick feed onto a conveyor
 - NEMA17-driven conveyor
 - Belt-mounted sensing station near the conveyor exit
-- Size sensing still undecided
+- Break-beam timing size sensing with two pairs in the sensing shroud
 - TCS3200/GY-31 color sensor with a light-blocking shroud
 - MG995/MG996/MG996R-class heavy servo rotary chute selector
 - Four bins arranged under the chute sweep
@@ -61,7 +61,7 @@ The states machine should be judged as a complete, understandable, repeatable sy
 Control decisions should still be event-aware:
 - Do not move the chute after the brick has already committed to the belt exit
 - Do not classify color without the shroud installed
-- Do not claim a size sensor method is frozen until it is selected and tested
+- Validate break-beam timing with real bricks before tuning speed
 - Do not optimize speed until a full 24-brick run is correct
 
 ## Brick Set
@@ -151,6 +151,7 @@ Reliability approach - three layers that together remove the need for a perfect 
 
 Before final printing:
 - Test a short UHMW-lined chute with real bricks to confirm slide at chosen angle
+- Verify chute entry height and chute exit height separately. Do not reuse the exit height as the entry height.
 - Verify each servo position drops the brick into the funnel, not the bin itself
 - Verify the servo mount keeps the output shaft aligned with the chute pivot
 - Keep wiring clear of the servo horn and chute sweep
@@ -168,7 +169,7 @@ Bins:
 - Internal target around 80mm x 80mm x 60mm
 - Label each bin with its category
 - Reserve clearance so bins can be removed without hitting the chute
-- Each bin has a printed funnel entry - wide angled walls above the bin body that catch bricks even with several degrees of chute position error. The funnel is part of the bin print, not a separate part.
+- Each bin has a printed funnel entry at the verified catch height. Wide angled walls catch bricks even with several degrees of chute position error. The funnel is part of the bin print, not a separate part.
 
 Footprint:
 - Hard limit is 610mm x 610mm
@@ -208,7 +209,6 @@ Open decisions belong in `docs/project/OPEN_DECISIONS.md`.
 Only reopen the archived chamber and release-gate architecture if the user explicitly chooses to target nationals work again.
 
 For states, reopen only:
-- size sensor family
 - exact conveyor CAD source
 - exact chute angle and servo positions
 - frame construction details

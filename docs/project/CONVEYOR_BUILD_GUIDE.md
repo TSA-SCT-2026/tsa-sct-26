@@ -1,27 +1,13 @@
 # Conveyor Build Guide
 
-## Before You Start: Time Budget Warning
+## Before You Start: Build Scope
 
 This guide covers only the conveyor subassembly. Full CAD also includes the servo rotary chute selector,
-sensing station, bins, and frame. Those take another 5 to 8 hours, and the servo chute is the mechanism
-that earns the most scoring points.
+sensing station, bins, and frame. Treat those as separate subassemblies, not as reasons to stall the
+conveyor core.
 
 Note: downloaded conveyor assemblies found online use aluminum extrusion frames or require custom
 endless belts from manufacturers. Neither is available in the build window. Build this guide from scratch.
-
-Rough time budget for this guide:
-- Fusion setup and parameters: 20 to 30 minutes
-- Side plate: 30 to 45 minutes
-- Two bearing holders: 30 minutes
-- Two rollers: 30 to 45 minutes
-- Motor mount: 20 minutes
-- Belt deck and crossmember: 20 minutes
-- Legs: 15 minutes
-- Exit lip: 15 minutes
-- Break beam brackets: 20 minutes
-- Assembly: 45 to 60 minutes
-
-Total: about 4 to 5 hours for a first-time Fusion user working carefully.
 
 ## Goal
 
@@ -29,50 +15,71 @@ Build the conveyor in the same simple style as the reference video: two flat woo
 bearing holders bolted to the outside faces, shafts through the bearings, printed rollers between the
 plates, a NEMA17 on an adjustable side bracket, and a flat deck under the top belt run.
 
-This guide is written for a fast Fusion session. Model the parts well enough to make drilling templates
-and print files. Do not model every screw, belt tooth, shaft collar, or final belt splice.
+This guide is written to get usable conveyor CAD and build files without wasting time on fake
+precision. Model the parts well enough to make drilling templates and print files. Do not model every
+screw, belt tooth, shaft collar, or final belt splice.
+
+Coordinates are starting anchors, not proof that the real assembly works. Use exact coordinates for
+axis direction, hole patterns, clearances, and rough placement. Then check the actual imported parts,
+slots, belt path, brick clearance, and hardware before drilling or printing anything that depends on
+fit. If a coordinate and the real assembly conflict, trust the real assembly and update the dimension.
+
+## Do This First
+
+Ignore the detailed reference numbers until a step asks for them. Build the CAD in this order:
+
+1. Side plates with shaft holes
+2. Bearing holders
+3. Rollers
+4. Core conveyor assembly: side plates, bearings, shafts, and rollers
+5. Motor mount, fitted after the core conveyor exists
+6. Belt deck and crossmembers
+7. Extras after the conveyor core fits: side rails, sensing shroud, and exit lip
+
+Do not start by perfecting the motor, shroud, exit lip, or frame. The conveyor core proves whether the
+rest of the CAD has somewhere real to attach.
+
+## Coordinate Rules
+
+Only coordinates you must place directly:
+- Drive shaft center: X=380, Z=50
+- Idler shaft center: X=30, Z=50
+- Bearing holder mounting holes: 10mm above and 10mm below each shaft center
+
+Everything else is fit-later or adjustable:
+- Motor mount: start near the suggested position, then fit to the real pulley and belt path
+- Exit lip: first version is a handoff test coupon and will probably move
+- Sensing shroud: use the listed dimensions, then verify belt and brick clearance
+- Crossmembers and legs: place where they support the frame and do not block moving parts
+
+Do not try to be a CNC machine. Use coordinates to stop CAD from drifting, not to replace dry-fit
+checks.
+
+## Do Not Overthink
+
+- Motor mount: do not pre-drill final side-plate holes from CAD alone. Fit it in assembly.
+- Exit lip: the first version is allowed to be wrong. It exists to make handoff testing fast.
+- Sensing shroud: approximate placement is fine for v1 if the belt clears and the brick does not rub.
+- Crossmembers: place them where they stiffen the side plates and stay out of the belt path.
+- Fusion parameters: skip them if they slow you down. Type the numbers directly.
 
 ## Coordinate Convention
 
-Use this convention for the whole Fusion file:
+Use this convention for the conveyor subassembly:
 
 - X axis: belt travel, feed end at X=0 and chute end at X=410
 - Y axis: across the conveyor, left to right
-- Z axis: vertical, plate bottom at Z=0
+- Z axis: vertical, side plate bottom at local Z=0
 - Side plate size: 410mm long in X, 80mm tall in Z, 8mm thick in Y
 - Side plate inner gap: 45mm
 - Drive roller center: X=380, Z=50
 - Idler roller center: X=30, Z=50
 
+This keeps the pulley frame simple while modeling. In the full machine assembly, raise the whole
+conveyor subassembly by `leg_h` so the local belt surface at Z=60 becomes about 240mm above the base.
+The legs are vertical supports between the base and the raised conveyor, not parts that run across Y.
+
 The drive end is the chute end. The motor and GT2 pulleys go outside the right side plate at the drive end.
-
-## Critical Numbers
-
-- Side plates: 410mm x 80mm x 8mm, two pieces
-- Side plate inner gap: 45mm
-- Side plate outside width: 61mm total, from two 8mm plates plus 45mm gap
-- Drive roller total width: 36mm, from 31mm roller body plus 5mm set screw hub
-- Idler roller total width: 31mm
-- Belt contact width: 25mm
-- Flange width: 3mm each side
-- Roller diameter at belt surface: 20mm
-- Roller diameter at flange: 28mm
-- Roller bore: 5mm
-- Drive shaft hole in side plate: 5.5mm round
-- Idler shaft slot in side plate: 5.5mm wide x 20mm long
-- MR85ZZ bearing: 8mm OD, 5mm ID, 2.5mm wide
-- Bearing pocket: 8.15mm diameter x 2.6mm deep
-- Bearing holder: 32mm x 32mm x 10mm
-- Bearing holder mount holes: two M3 holes at Z=+10mm and Z=-10mm from bearing center
-- M3 clearance hole: 3.3mm
-- M3 tap pilot in PLA: 2.5mm
-- NEMA17 bolt pattern: four M3 holes on a 31mm x 31mm square
-- NEMA17 center clearance: 22mm
-- 20T to 60T GT2 center distance with 200mm belt: about 58.6mm
-- Roller center distance: 350mm
-- Leg height: 180mm
-- Belt surface height: about 240mm
-- Footprint limit: 610mm x 610mm
 
 ## Fusion Setup
 
@@ -80,32 +87,8 @@ The drive end is the chute end. The motor and GT2 pulleys go outside the right s
 2. Create a new design.
 3. Save as `conveyor_assembly`.
 4. Rename the top component to `conveyor_assembly`.
-5. Open Modify, Change Parameters.
-6. Add these user parameters:
-
-- `plate_length`: 410mm
-- `plate_height`: 80mm
-- `plate_thick`: 8mm
-- `side_gap`: 45mm
-- `roller_body_w`: 31mm
-- `drive_hub_w`: 5mm
-- `roller_dia`: 20mm
-- `flange_dia`: 28mm
-- `shaft_dia`: 5mm
-- `shaft_clearance`: 5.5mm
-- `bearing_pocket_d`: 8.15mm
-- `bearing_pocket_depth`: 2.6mm
-- `holder_size`: 32mm
-- `holder_thick`: 10mm
-- `m3_clearance`: 3.3mm
-- `m3_tap`: 2.5mm
-- `roller_center_dist`: 350mm
-- `shaft_z`: 50mm
-- `idler_x`: 30mm
-- `drive_x`: 380mm
-- `leg_h`: 180mm
-
-Use typed numbers if parameters slow you down. The finished shape matters more than parameter purity.
+5. Skip user parameters unless you already like using them.
+6. Keep the reference dimensions section open only when a step asks for a number.
 
 ## Component 1: Side Plate
 
@@ -114,9 +97,9 @@ Make one side plate first. Later you will copy it to create the second side plat
 1. Right-click `conveyor_assembly`, New Component.
 2. Name it `side_plate_left`.
 3. Create Sketch on the XZ plane.
-4. Draw a rectangle from the origin to X=`plate_length`, Z=`plate_height`.
+4. Draw a 410mm x 80mm rectangle from the origin.
 5. Finish Sketch.
-6. Extrude the rectangle by `plate_thick` in Y.
+6. Extrude the rectangle by 8mm in Y.
 
 For this single part, the extrusion direction does not matter. In the assembly, the wood thickness must
 point outward from the 45mm inner gap.
@@ -125,25 +108,26 @@ Add shaft holes:
 
 1. Click the large XZ face of the side plate.
 2. Create Sketch.
-3. Add a 5.5mm circle at X=`drive_x`, Z=`shaft_z`. This is the drive shaft hole.
-4. Add the idler shaft slot. In Sketch, choose Slot, then Center to Center Slot.
-   - First click: X=`idler_x` minus 10mm, Z=`shaft_z`
-   - Second click: X=`idler_x` plus 10mm, Z=`shaft_z`
-   - Set the slot width (the distance across) to 5.5mm.
-   - This gives a 20mm long, 5.5mm wide slot centered on the idler shaft position.
-5. Finish Sketch.
-6. Extrude Cut both shapes through the plate.
+3. Place a construction point for the drive shaft at X=380, Z=50.
+4. Add a 5.5mm circle on that point.
+5. Place a construction point for the idler shaft at X=30, Z=50.
+6. Add a horizontal center-to-center slot through the idler point:
+   - slot length: 20mm
+   - slot width: 5.5mm
+   - slot center: X=30, Z=50
+7. Finish Sketch.
+8. Extrude Cut both shapes through the plate.
 
 Add bearing holder mounting holes:
 
 1. Click the same XZ face again.
 2. Create Sketch.
-3. At the drive shaft center, add two 3.3mm circles:
-   - X=`drive_x`, Z=40
-   - X=`drive_x`, Z=60
-4. At the idler shaft center, add two horizontal mounting slots using Center to Center Slot:
-   - Slot centered at X=`idler_x`, Z=40, length 18mm, width 3.3mm
-   - Slot centered at X=`idler_x`, Z=60, length 18mm, width 3.3mm
+3. At the drive shaft construction point, add two 3.3mm holes:
+   - one 10mm above the shaft center
+   - one 10mm below the shaft center
+4. At the idler shaft construction point, add two horizontal mounting slots:
+   - one 10mm above the shaft center, 18mm long, 3.3mm wide
+   - one 10mm below the shaft center, 18mm long, 3.3mm wide
 5. Finish Sketch.
 6. Extrude Cut through the plate.
 
@@ -161,28 +145,34 @@ This holder bolts to the drive end. It does not slide.
 2. Name it `bearing_holder_fixed`.
 3. Create Sketch on the XZ plane.
 4. Draw a 32mm x 32mm rectangle centered on the origin. The bearing center is the origin.
-5. Add two 3.3mm mounting holes at:
-   - X=0, Z=10
-   - X=0, Z=-10
+5. Add two 3.3mm mounting holes:
+   - one 10mm above the bearing center
+   - one 10mm below the bearing center
 6. Finish Sketch.
 7. Extrude the square body to 10mm in Y. Do not include the mounting hole profiles in the extrusion.
 8. Cut the two M3 holes through all.
 
 Add the bearing pocket:
 
-1. Click the front face of the holder.
-2. Create Sketch.
-3. Draw an 8.15mm circle centered on the origin.
-4. Finish Sketch.
-5. Extrude Cut 2.6mm deep.
+1. Choose the face that will touch the side plate. The bearing pocket faces the side plate so the
+   bearing sits close to the plate and is captured when the holder is bolted down.
+2. Click that side-plate face of the holder.
+3. Create Sketch.
+4. Draw an 8.15mm circle centered on the origin.
+5. Finish Sketch.
+6. Extrude Cut 2.6mm deep.
 
 Add shaft clearance:
 
-1. Click the back face of the holder.
+1. Click the opposite outside face of the holder.
 2. Create Sketch.
 3. Draw a 5.5mm circle centered on the origin.
 4. Finish Sketch.
 5. Extrude Cut through all.
+
+Use the same orientation rule for both sides of the conveyor: bearing pocket toward the wood side
+plate, flat outside face visible. Press the bearings into the holders before bolting the holders to
+the side plates.
 
 Print one test coupon with only this pocket before printing all holders. If the bearing is too loose,
 reduce pocket diameter by 0.05mm. If it is too tight, increase by 0.05mm.
@@ -198,8 +188,8 @@ Fastest path:
 3. Rename the copy `bearing_holder_slotted`.
 4. Edit the mounting hole sketch.
 5. Replace the two round M3 holes with horizontal slots using Center to Center Slot:
-   - Slot centered at X=0, Z=10, length 18mm, width 3.3mm
-   - Slot centered at X=0, Z=-10, length 18mm, width 3.3mm
+   - one slot 10mm above the bearing center, 18mm long, 3.3mm wide
+   - one slot 10mm below the bearing center, 18mm long, 3.3mm wide
 6. Cut the slots through all.
 7. Keep the same bearing pocket and 5.5mm shaft clearance hole.
 
@@ -211,23 +201,24 @@ The idler roller is the simple roller. Start with it because it has no set screw
 
 1. New Component.
 2. Name it `roller_idler`.
-3. Create Sketch on the XZ plane.
-4. Draw this side profile above the X axis.
+3. Create Sketch on the YZ plane.
+4. Draw this side profile above the Y axis.
 
-Note on coordinates: in this revolve sketch, Z values are radii from the X axis. When Fusion revolves
-the profile 360 degrees around the X axis, each Z value becomes a diameter twice that size. Z=10 gives
+Note on coordinates: in this revolve sketch, Y values are roller width and Z values are radii from
+the Y axis. When Fusion revolves the profile 360 degrees around the Y axis, each Z value becomes a
+diameter twice that size. Z=10 gives
 a 20mm diameter. Z=14 gives a 28mm diameter. Z=0 is on the axis and stays as the centerline.
 
-   - line from X=0, Z=0 to X=0, Z=14
-   - line from X=0, Z=14 to X=3, Z=10
-   - line from X=3, Z=10 to X=28, Z=10
-   - line from X=28, Z=10 to X=31, Z=14
-   - line from X=31, Z=14 to X=31, Z=0
-   - line from X=31, Z=0 back to X=0, Z=0
+   - line from Y=0, Z=0 to Y=0, Z=14
+   - line from Y=0, Z=14 to Y=3, Z=10
+   - line from Y=3, Z=10 to Y=28, Z=10
+   - line from Y=28, Z=10 to Y=31, Z=14
+   - line from Y=31, Z=14 to Y=31, Z=0
+   - line from Y=31, Z=0 back to Y=0, Z=0
 
 5. Finish Sketch.
-6. Revolve the closed profile 360 degrees around the X axis.
-   In the Revolve dialog, set the Axis to the X axis. The profile must be a closed loop. If Fusion does
+6. Revolve the closed profile 360 degrees around the Y axis.
+   In the Revolve dialog, set the Axis to the Y axis. The profile must be a closed loop. If Fusion does
    not accept it, check that all line endpoints snap to each other without gaps.
 7. Click one end face.
 8. Create Sketch.
@@ -244,7 +235,7 @@ The drive roller is the idler roller plus a 5mm hub on the motor side.
 1. Copy `roller_idler`.
 2. Paste New.
 3. Rename the copy `roller_drive`.
-4. Create a sketch on the motor-side end face.
+4. Create a sketch on the +Y end face. This is the motor side in the assembly.
 5. Draw a 20mm circle centered on the shaft axis.
 6. Finish Sketch.
 7. Extrude the circle outward 5mm as Join. This creates the set screw hub.
@@ -267,7 +258,7 @@ The motor mount is a flat adjustable plate outside the right side plate.
 1. New Component.
 2. Name it `motor_mount`.
 3. Create Sketch on the XZ plane.
-4. Draw a 90mm x 70mm rectangle.
+4. Draw a 100mm x 70mm rectangle centered on the motor shaft center.
 5. Finish Sketch.
 6. Extrude 6mm.
 
@@ -275,23 +266,29 @@ Add NEMA17 holes:
 
 1. Click the large face.
 2. Create Sketch.
-3. Pick a motor shaft center near the middle of the bracket.
+3. Put the motor shaft center at the origin of this bracket sketch.
 4. Draw a 22mm center clearance circle.
 5. Draw four 3.3mm holes around it at:
    - X=+15.5, Z=+15.5 from motor center
    - X=+15.5, Z=-15.5 from motor center
    - X=-15.5, Z=+15.5 from motor center
    - X=-15.5, Z=-15.5 from motor center
-6. Draw two 3.3mm x 20mm horizontal slots using Center to Center Slot for mounting the bracket to the
-   side plate. Put one near the top of the bracket and one near the bottom.
+6. Draw two 3.3mm x 24mm horizontal slots using Center to Center Slot for mounting the bracket to the
+   side plate:
+   - slot centered at X=0, Z=+25 from motor center
+   - slot centered at X=0, Z=-25 from motor center
 7. Finish Sketch.
 8. Extrude Cut all holes and slots through all.
 
-The motor shaft center should start about 58.6mm from the drive shaft center when placed in the
-assembly. This is not a fixed offset in a single direction; it is the center-to-center distance for
-the 200mm GT2 belt with 20T and 60T pulleys. The bracket adjustment slots let you shift the motor
-on the bench until the belt runs at the right tension. In Fusion, place the motor shaft close enough
-to check clearance, then let real tensioning handle the final position.
+For the 20T to 60T, 200mm GT2 path, start the motor shaft center near:
+- X=`drive_x` minus `gt2_center_dist` = 321.4mm
+- Z=`shaft_z` = 50mm
+
+This makes the timing belt run mostly horizontal and keeps the motor body within the side plate height.
+The bracket slots adjust along X, which is the belt tension direction for this first-pass layout. Do
+not treat X=321.4 as a drill coordinate. Place the motor, check the real pulley and belt path, then
+mark or drill the side-plate motor-mount holes from the fitted bracket position. If the actual driven
+pulley or belt length differs, recompute only the center distance and keep moving.
 
 ## Component 7: Belt Deck
 
@@ -346,35 +343,34 @@ posts. Model them as blocks so the assembly shows the correct height.
 
 1. New Component.
 2. Name it `leg`.
-3. Create Sketch on the XZ plane.
+3. Create Sketch on the XY plane.
 4. Draw a 20mm x 20mm square.
 5. Finish Sketch.
-6. Extrude 180mm in Y.
+6. Extrude `leg_h` in Z.
 
-You will place four copies of this leg in the assembly: one near each corner of the conveyor frame.
-The legs sit on the ground plane (Z=0) and support the bottom of the side plates.
+You will place four copies of this leg in the full machine assembly: one near each corner of the
+conveyor frame. Put the leg bottoms on the machine base plane and the leg tops against the raised
+side plate bottoms.
 
 If you plan to cut the legs from wood, the 20mm x 20mm cross section is a good starting point. Adjust
 to match whatever wood stock is available.
 
 ## Component 10: Exit Lip
 
-The exit lip is a curved ramp at the drive end that converts the brick's horizontal momentum into
-downward motion. It replaces the flat stop wall concept. A flat wall risks the brick tumbling or
-bouncing back. The curved lip guides the brick over the edge and down into the chute entry below.
+The exit lip is a first handoff test coupon at the drive end. It should guide the brick off the belt
+and into the chute entry below, but do not treat its first CAD geometry as final. Conveyor-to-chute
+handoff is one of the highest-risk parts of the machine and must be tested with real bricks.
 
 Geometry:
 - Spans between the inner faces of the side plates (45mm wide)
-- Lip height: 5-6mm above belt surface level (enough to engage the brick body without launching it)
-- Curve: a quarter-arc with about 25mm radius, transitioning from horizontal (belt level) to angled
-  downward toward the chute entry
+- Lip height: first test position has the top 5 to 6mm above belt surface level
+- Ramp face starts near belt surface and rises toward the downstream edge
 - Wall thickness: 4mm
-- The bottom of the lip piece sits at belt surface height (Z=60) and the curved face is on the
-  downstream side (X=410 face)
 
 The lip is a wedge-shaped block that sits at the drive end of the belt. The face pointing toward the
-incoming brick (the -X face) is angled or curved so it deflects the brick upward and over the edge
-rather than stopping it dead. Think of a small speed bump at the end of the belt.
+incoming brick is angled or curved so the brick rides over the lip instead of hitting a flat stop wall.
+Gravity and the chute entry below handle the downward part of the motion after the brick clears the
+belt exit.
 
 Model it as a standalone part at Z=0, then position in assembly:
 
@@ -384,20 +380,21 @@ Model it as a standalone part at Z=0, then position in assembly:
 4. Draw this cross-section profile (side view of the lip):
    - Bottom-left corner: X=0, Z=0
    - Bottom-right corner: X=15, Z=0
-   - Top-right corner: X=15, Z=6 (6mm tall, the flat top of the lip)
-   - Top-left corner: X=4, Z=6 (the top steps back 4mm to create the ramp face)
-   - Angled line from (X=4, Z=6) back to (X=0, Z=0) - this is the ramp face
-   - The angled face is what the brick hits. It deflects the brick upward over the lip.
+   - Top-right corner: X=15, Z=6
+   - Top-left corner: X=4, Z=6
+   - Angled line from (X=4, Z=6) back to (X=0, Z=0). This is the ramp face.
+   - The angled face points toward X=0, toward the incoming brick.
 5. Finish Sketch.
 6. Extrude 45mm in Y (spanning the inner gap between the side plates).
 7. Optional: select the top upstream edge (where the angled face meets the flat top) and apply a
    3mm fillet to soften the corner. This is the "curved" version. Skip the fillet if it causes
    trouble in Fusion.
 
-In assembly, position the bottom face at Z=54 so the flat top of the lip sits at Z=60, flush with
-the belt surface. The ramp face should point toward X=0 (toward the incoming brick).
+In assembly, position the bottom face at Z=60 for the first test so the flat top sits at Z=66. The
+ramp face should point toward X=0. Put the lip near X=395 to X=410, clear of the drive roller.
 
 Mount holes: two 3.3mm holes through the bottom face for M3 bolts into a crossmember below.
+If you have time, make those holes short slots in X so the lip can move a few mm during testing.
 
 The chute entry funnel for the servo rotary chute selector sits directly below this lip. Position
 the chute entry when modeling the chute selector subassembly.
@@ -416,13 +413,27 @@ The shroud sits on top of the belt between X=135 and X=200. The brick enters fro
 opening, passes through, and exits toward the drive end. The side rail guide ends at X=120, so
 the brick is already centered before it enters.
 
+Add the side rail guide before finalizing the shroud:
+
+1. New Component.
+2. Name it `feed_side_rails`.
+3. Create Sketch on the XY plane at the belt surface reference.
+4. Draw two low rails from X=0 to X=120.
+5. Make each rail 4mm thick in Y.
+6. Use an entry inner gap around 38mm at X=0.
+7. Taper to a 30mm inner gap at X=120, centered on Y=22.5.
+8. Finish Sketch.
+9. Extrude both rails 6mm in Z.
+10. Leave the last 15mm before the shroud open so a slightly off-center brick can self-correct through
+   the shroud entry chamfer instead of being pinched.
+
 Outer dimensions:
 - Length: 65mm in X (X=135 to X=200 in assembly)
-- Width: 34mm in Y (4mm walls on each side of the 26mm inner width)
+- Width: 38mm in Y (4mm walls on each side of the 30mm inner width)
 - Height: 36mm in Z above belt surface (4mm roof above the 32mm inner height)
 
 Inner dimensions:
-- Width: 26mm in Y (matches side rail exit gap, brick fits with a few mm clearance)
+- Width: 30mm in Y (clears the 25mm neoprene belt with about 2.5mm per side)
 - Height: 32mm in Z from belt surface (clears 13.1mm brick with studs, leaves ~19mm to sensor face)
 - Front and back faces are open (brick passes through)
 - Bottom is open (belt passes through)
@@ -438,20 +449,20 @@ Model it:
 1. New Component.
 2. Name it `sensing_shroud`.
 3. Create Sketch on the YZ plane.
-4. Draw the outer cross-section as a rectangle: 34mm wide in Y, 36mm tall in Z.
-   Position it centered on Y=22.5 (the belt centerline): from Y=5.5 to Y=39.5, Z=0 to Z=36.
+4. Draw the outer cross-section as a rectangle: 38mm wide in Y, 36mm tall in Z.
+   Position it centered on Y=22.5 (the belt centerline): from Y=3.5 to Y=41.5, Z=0 to Z=36.
 5. Finish Sketch.
 6. Extrude 65mm in X.
 7. Create a second sketch on the same YZ face.
-8. Draw the inner cutout: 26mm wide in Y, 32mm tall in Z.
-   From Y=9.5 to Y=35.5, Z=0 to Z=32. (Bottom is open - do not draw the bottom line.)
+8. Draw the inner cutout: 30mm wide in Y, 32mm tall in Z.
+   From Y=7.5 to Y=37.5, Z=0 to Z=32. (Bottom is open - do not draw the bottom line.)
    Draw three sides only: left, top, right. Leave the bottom open.
 9. Finish Sketch.
 10. Extrude Cut 65mm in X through the body. This hollows out the tunnel.
 
 Add break beam holes in the side walls:
 
-11. Click the left side wall outer face (the Y=5.5 face).
+11. Click the left side wall outer face (the Y=3.5 face).
 12. Create Sketch.
 13. Add two 3.3mm circles:
     - X=15, Z=3 from the bottom of the shroud body (this puts the beam at 3mm above belt surface)
@@ -460,7 +471,7 @@ Add break beam holes in the side walls:
     X=55 is 55mm in. In assembly coordinates that will be about X=150 and X=190.)
 14. Finish Sketch.
 15. Extrude Cut through the left wall (4mm).
-16. Repeat on the right side wall outer face (Y=39.5) with the same two hole positions.
+16. Repeat on the right side wall outer face (Y=41.5) with the same two hole positions.
     These holes must be exactly opposite the left wall holes so the beams cross straight.
 
 Add color sensor pocket in the roof:
@@ -491,27 +502,30 @@ Keep assembly simple. You only need enough CAD to confirm the parts fit.
 2. Right-click `side_plate_left` in the browser, Copy, then right-click the assembly and Paste New to
    create `side_plate_right`. (Paste New creates an independent copy, not a linked one.)
 3. Move `side_plate_right` so its inner face is at Y=45mm and the plate material points outward.
-4. Place fixed bearing holders at X=380, Z=50 on the outside faces of both side plates.
-5. Place slotted bearing holders at X=30, Z=50 on the outside faces of both side plates.
+4. Place fixed bearing holders at X=380, Z=50 on the outside faces of both side plates, with bearing
+   pockets facing the side plates.
+5. Place slotted bearing holders at X=30, Z=50 on the outside faces of both side plates, with bearing
+   pockets facing the side plates.
 6. Place the idler roller centered between the plates at X=30, Z=50.
 7. Place the belt-contact section of the drive roller centered between the plates at X=380, Z=50,
-   with the hub on the motor side.
+   with the hub on the +Y motor side.
 8. Place the belt deck centered between the rollers and between the side plates, top surface at Z=58.
 9. Place two crossmember spacers: one near X=50, one near X=360. Orient them so the 45mm length
    runs in Y between the inner faces of the side plates.
-10. Place four leg copies near the corners, sitting at Z=0 under the side plates.
-11. Import the NEMA17 STEP from `docs/datasheet/motion/nema17/cad/stepper_17hs4401s.step`.
-12. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
-13. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
-14. Place the motor mount outside the right side plate near X=380.
-15. Place the motor so the shaft center is approximately 58.6mm from the drive shaft center.
-    Move it by eye until the pulleys look roughly aligned and the motor clears the side plate.
-    The bracket adjustment slots handle final tensioning on the bench.
-16. Check that the 20T and 60T pulley midplanes line up in Y.
-17. Place the exit lip with its bottom face at Z=54, centered in Y, ramp face pointing toward X=0.
-    The flat top sits at Z=60, flush with belt surface. Position it near X=395 to X=410.
-18. Place the sensing shroud with its bottom face at Z=60 and its front face at X=135.
-    Confirm the shroud body sits between the side plates without touching them.
+10. Move the whole conveyor subassembly up by `leg_h` when placing it into the full machine frame.
+11. Place four leg copies near the corners, running vertically from the base to the side plate bottoms.
+12. Import the NEMA17 STEP from `docs/datasheet/motion/nema17/cad/stepper_17hs4401s.step`.
+13. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
+14. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
+15. Place the motor mount outside the right side plate near the drive end.
+16. For the 20T to 60T, 200mm GT2 path, start the motor shaft center near X=321.4, Z=50.
+    Use that as a layout anchor only. Final motor holes come from the fitted bracket position.
+17. Check that the 20T and 60T pulley midplanes line up in Y.
+18. Place the feed side rails from X=0 to X=120, centered around Y=22.5.
+19. Place the exit lip with its bottom face at Z=60, centered in Y, ramp face pointing toward X=0.
+    The flat top sits at Z=66 for the first handoff test. Position it near X=395 to X=410.
+20. Place the sensing shroud with its bottom face at Z=60 and its front face at X=135.
+    Confirm the shroud body clears the belt and sits between the side plates without touching them.
 
 Do not fight Fusion joints for hours. Move bodies into place, measure, and use simple align tools if
 joints slow you down.
@@ -526,14 +540,18 @@ Run these checks before sending prints:
 - Drive roller hub does not touch the side plate
 - Rollers are centered in the 45mm inner gap
 - Belt deck top surface is at Z=58, does not touch either roller
+- Bearing pockets face the side plates and bearings are captured after holders are bolted down
 - Motor and timing belt path clear the side plate and frame legs
+- Motor bracket is fitted to the actual GT2 pulley and belt path before drilling
 - Motor stays inside the 610mm x 610mm footprint
 - Set screw can be reached with the belt installed or by rotating the roller to an access position
 - Sensing shroud bottom face is at Z=60, front face at X=135, does not touch either side plate
+- Sensing shroud inner width is 30mm and clears the 25mm belt during belt tracking tests
 - Shroud break beam holes are opposite each other across the left and right walls
 - Shroud color sensor pocket is in the roof, sensor face near inner roof surface at Z=92
 - Shroud exit at X=200 leaves clear belt run to the drive end
-- Exit lip ramp face points toward X=0, flat top at Z=60 flush with belt surface
+- Feed side rails end before the shroud and do not pinch the brick at the shroud entry
+- Exit lip ramp face points toward X=0, first-test flat top at Z=66
 - Exit lip does not overlap the drive roller (drive roller center is at X=380, lip starts at X=395)
 - Space below the exit lip and drive end is clear for the chute entry funnel
 - Belt exit is close enough to feed the future servo rotary chute selector
@@ -564,6 +582,69 @@ Run these checks before sending prints:
     tensioning.
 21. Tension the belt by sliding the idler holders.
 22. Run the conveyor alone before adding sensors or the chute.
+23. Add feed side rails and confirm a brick enters the shroud zone without rubbing.
+24. Add the sensing shroud and confirm belt clearance before calibration.
+
+## Reference Dimensions
+
+Use this only when a step asks for a number. Do not read this section top to bottom before building.
+
+Conveyor:
+- Side plates: 410mm x 80mm x 8mm, two pieces
+- Side plate inner gap: 45mm
+- Side plate outside width: 61mm total, from two 8mm plates plus 45mm gap
+- Roller center distance: 350mm
+- Belt surface height: about 240mm in the full machine
+- Footprint limit: 610mm x 610mm
+
+Rollers:
+- Drive roller total width: 36mm, from 31mm roller body plus 5mm set screw hub
+- Idler roller total width: 31mm
+- Belt contact width: 25mm
+- Flange width: 3mm each side
+- Roller diameter at belt surface: 20mm
+- Roller diameter at flange: 28mm
+- Roller bore: 5mm
+
+Bearings and holes:
+- Drive shaft hole in side plate: 5.5mm round
+- Idler shaft slot in side plate: 5.5mm wide x 20mm long
+- MR85ZZ bearing: 8mm OD, 5mm ID, 2.5mm wide
+- Bearing pocket: 8.15mm diameter x 2.6mm deep
+- Bearing holder: 32mm x 32mm x 10mm
+- Bearing holder mount holes: 10mm above and 10mm below the shaft center
+- M3 clearance hole: 3.3mm
+- M3 tap pilot in PLA: 2.5mm
+
+Motor and belt:
+- NEMA17 bolt pattern: four M3 holes on a 31mm x 31mm square
+- NEMA17 center clearance: 22mm
+- 20T to 60T GT2 center distance with 200mm belt: about 58.6mm after the actual pulley and belt are confirmed
+- 20T to 20T GT2 center distance with 200mm belt: about 80mm fallback if the driven pulley changes
+
+Optional Fusion parameters:
+- `plate_length`: 410mm
+- `plate_height`: 80mm
+- `plate_thick`: 8mm
+- `side_gap`: 45mm
+- `roller_body_w`: 31mm
+- `drive_hub_w`: 5mm
+- `roller_dia`: 20mm
+- `flange_dia`: 28mm
+- `shaft_dia`: 5mm
+- `shaft_clearance`: 5.5mm
+- `bearing_pocket_d`: 8.15mm
+- `bearing_pocket_depth`: 2.6mm
+- `holder_size`: 32mm
+- `holder_thick`: 10mm
+- `m3_clearance`: 3.3mm
+- `m3_tap`: 2.5mm
+- `roller_center_dist`: 350mm
+- `shaft_z`: 50mm
+- `idler_x`: 30mm
+- `drive_x`: 380mm
+- `leg_h`: 180mm
+- `gt2_center_dist`: 58.6mm
 
 ## First Test
 

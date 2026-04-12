@@ -32,7 +32,7 @@ Each decision matrix documents what options were considered, what was chosen, an
 
 Subsystems that need matrices:
 - Architecture pivot: archived chamber release design vs simplified states conveyor and servo chute
-- Size sensor family
+- Break-beam size sensing rationale and rejected alternatives
 - Color sensor and shroud approach
 - Conveyor CAD source
 - Frame material: wood vs 3D printed vs mixed

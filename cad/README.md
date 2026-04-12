@@ -33,8 +33,8 @@ Existing directories may still contain prior work from the archived design until
 3. Wood or printed frame layout
 4. Servo mount and rotary chute body
 5. Four bin positions and bin entry guides
-6. Color sensor shroud
-7. Provisional size sensor mounting space
+6. Sensing shroud with TCS3200 color mount and two break-beam pairs
+7. Break-beam wire routing and clearance
 8. Labels, display, start control, and cable routing keepouts
 
 ## First Print Order

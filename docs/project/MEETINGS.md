@@ -57,6 +57,6 @@
 
 - States build simplified to manual one-at-a-time conveyor feed, sensing station, and MG995/MG996-class servo rotary chute selector.
 - Previous chamber and release-gate architecture moved to archive context for later nationals work.
-- Size sensor remains undecided and must be resolved with test evidence before final bracket geometry.
+- Size sensor is now frozen as two-pair break-beam timing in the sensing shroud, with real-brick timing evidence still required before final shroud printing.
 - Frame material is wood or 3D printed structure from available stock, not 2020 extrusion.
 - BOM purchase truth still traces to `docs/project/BOM.xlsx`; do not convert recommendations into ordered status without spreadsheet rows.

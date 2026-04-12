@@ -1,6 +1,6 @@
 # IR Break-Beam Sensor
 
-Active status: active candidate for the undecided states size sensor.
+Active status: frozen states size sensor path using two break-beam pairs in the sensing shroud.
 
 ## Traceability
 
@@ -9,9 +9,9 @@ Active status: active candidate for the undecided states size sensor.
 | Purchased name | 4 Pairs Infrared Circuit Breaker Sensor 3mm LED Lamp Distance Sensor Counting Module DC 3-5V |
 | BOM trace | AliExpress Mar 25, order ID `8210696713845240` |
 | Received status | Yes |
-| States-build use | Candidate size sensing at the conveyor sensing station |
+| States-build use | Two-pair break-beam timing at the conveyor sensing station |
 | Trust level | AliExpress listing plus received-part verification possible now |
-| Next action | Test timing or beam geometry with real bricks before choosing this as the final size sensor |
+| Next action | Test timing and beam geometry with real bricks before final shroud printing |
 
 ## CAD Status
 

@@ -32,7 +32,7 @@ Pass criteria:
 
 ### Phase 3: Size Sensing
 
-Run this phase after the size sensor family is chosen.
+Run this phase with the two break-beam pairs installed in the sensing shroud.
 
 Trial set:
 - 20 trials with 2x2 bricks

@@ -39,5 +39,5 @@ Keep it short and honest. Expand a branch only when there is a real decision his
 ## Subdesign Notes
 
 - Feed automation can be revisited only after the manual-feed sorter works.
-- Size sensor choice remains open and should be decided by the simplest reliable test evidence.
+- Size sensor choice is frozen as two-pair break-beam timing. Keep rejected alternatives documented with the test evidence and rationale.
 - Servo chute angle should be chosen from real-brick testing, not from CAD alone.

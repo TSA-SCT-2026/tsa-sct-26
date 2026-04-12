@@ -69,7 +69,7 @@ Use this as a fast action board. Purchase truth still lives in `docs/project/BOM
 | NEMA17 Stepper Motor `17HS4401S` | Active conveyor actuator | BOM-backed, received | CAD and dimensions present | Use 5mm shaft observation for mating parts, not the 4.5mm flat dimension |
 | MG995/MG996-class heavy servo | Active servo rotary chute selector | User-confirmed on hand | SolidWorks assembly with horns plus separate STEP path | Keep both CAD sources. Use STEP for Fusion layout and SolidWorks files for horn and assembly context |
 | TCS3200/GY-31 color sensor | Active color sensor | BOM-backed, received | Datasheets and CAD present | Calibrate only with the final shroud and belt geometry installed |
-| Break-beam sensor | Size-sensor candidate | BOM-backed, received | CAD reference present | Keep as active candidate until size sensing is selected |
+| Break-beam sensor | Active size sensor | BOM-backed, received | CAD reference present | Two-pair timing layout in the sensing shroud |
 | Distance sensor, `VL53L0X` family | Size-sensor candidate | Not present in `docs/project/BOM.xlsx` | CAD reference only | Do not mark ordered. Define conveyor bracket and calibration plan before selection |
 | `GT2` belts | Conveyor timing candidate | Pending spreadsheet update | CAD reference present | Use only if the selected conveyor uses the GT2 timing path |
 | `GT2` pulleys | Conveyor timing candidate | Pending spreadsheet update | CAD reference present | Verify received hub width, flange OD, and set screw access before freezing CAD |

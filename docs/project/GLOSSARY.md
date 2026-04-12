@@ -18,7 +18,7 @@ Short definitions for the main project terms. If a term in the architecture is u
 - `chute position`: one of the four calibrated servo angles for a target bin
 - `bin guide`: a fixed guide at a bin entry that catches the chute output
 - `color shroud`: the light-blocking structure around the color sensor
-- `size sensor`: the sensor or sensor pair used to separate 2x2 from 2x3, still undecided
+- `size sensor`: the two break-beam pairs used to separate 2x2 from 2x3 by blocked-duration timing
 
 ## Conveyor Terms
 

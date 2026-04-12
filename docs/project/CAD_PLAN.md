@@ -1,13 +1,16 @@
 # TSA LEGO Sorter CAD Execution Plan
 
 Deadline: May 2, 2026
-CAD window: April 11 to April 12, 2026, with spillover days if needed
+CAD target: finish the complete working states CAD as quickly as practical, with no fixed session count
 Tool: Fusion 360
 Approach: steal proven conveyor geometry, design the custom servo chute selector, assemble on a simple wood or printed frame
 
 ## Strategy
 
-Do not CAD a conveyor belt from scratch first. Start from a proven NEMA17 mini conveyor assembly if the STEP import is usable, then resize or simplify arund it.
+Do not CAD a conveyor belt from scratch first. Start from a proven NEMA17 mini conveyor assembly if the STEP import is usable, then resize or simplify around it.
+
+Coordinates in this plan are layout anchors, not final truth. Use them to move quickly, then let
+interference checks, slotted mounts, real hardware, and real-brick tests decide final placement.
 
 The custom CAD work is:
 1. Wood or 3D printed elevated frame
@@ -31,7 +34,7 @@ Download or prepare these before modeling:
 | GT2 belt reference | Already in `docs/datasheet/motion/timing_belt/` | STEP | Use only if the chosen conveyor needs the GT2 timing path. |
 | TCS3200/GY-31 color sensor | Already in `docs/datasheet/sensing/color_sensor/` | STEP or STL | Active color sensor. Do not switch to TCS34725 unless BOM truth changes. |
 | MG995/MG996-class servo | `docs/datasheet/motion/heavy_servo/` plus a downloaded STEP if needed | STEP preferred | Folder currently has specs and images. Download a usable MG996R STEP or model a dimensioned block from the datasheet. |
-| Size sensor candidate | `docs/datasheet/sensing/break_beam/` or `docs/datasheet/sensing/distance_sensor/` | STEP or simple block | Size sensing is undecided. Leave this bracket adjustable until the decision is made. |
+| Break-beam size sensors | `docs/datasheet/sensing/break_beam/` | STEP or simple block | Frozen states size path: two pairs in the sensing shroud. |
 | 608ZZ bearings | `docs/datasheet/fasteners/bearing/` and BOM inventory | STEP if needed | Use only if the chosen conveyor uses 608 bearings. |
 
 Do not create new ordered-item claims in the BOM from this checklist. `docs/project/BOM.xlsx` remains purchase truth.
@@ -129,8 +132,8 @@ Layout:
 ```
 
 Sensing shroud:
-- Single printed tunnel, 65mm long, 34mm wide, 36mm tall above belt surface
-- Inner tunnel 26mm wide, 32mm tall; front and back open for brick passage; bottom open for belt
+- Single printed tunnel, 65mm long, 38mm wide, 36mm tall above belt surface
+- Inner tunnel 30mm wide, 32mm tall; front and back open for brick passage; bottom open for belt
 - Break beam holes at Z=63 through left and right walls at X=150 and X=190
 - Color sensor pocket in roof, sensor face flush with inner ceiling (~19mm above brick studs)
 - 3mm chamfer on inner edges of front opening to guide brick entry
@@ -167,7 +170,7 @@ Geometry:
         belt exit
            |
            v
-      chute entry and pivot
+      chute catch and pivot
        /    |    \
     bin 1 bin 2 bin 3 bin 4
 ```
@@ -191,7 +194,7 @@ Servo mount:
 Servo positions:
 - Start with four construction rays around 35 degrees apart
 - First CAD angle table: 37, 72, 107, and 142 degrees
-- Adjust after bin guides are placed
+- Adjust after bin guides are placed and checked for funnel overlap
 - Verify each position with a revolute joint or equivalent Fusion motion check
 
 Critical test:
@@ -234,7 +237,7 @@ What it is: a small guide that helps the evaluator place one brick consistently.
 Keep it simple:
 - Feed is one at a time
 - Add a printed or labeled orientation cue
-- Add low side rails only if brick wandering hurts sensing repeatability
+- Add low side rails from X=0 to X=120 to guide the brick into the sensing shroud
 - Do not add a hopper until the base sorter works
 
 Label:
@@ -243,9 +246,9 @@ Label:
 
 Target time: 30 minutes.
 
-## Weekend Schedule
+## Execution Sequence
 
-### Friday Night
+### Setup
 
 - Create or open the Fusion 360 project
 - Download conveyor STEP options
@@ -254,7 +257,7 @@ Target time: 30 minutes.
 - Create top-level assembly
 - Sketch 610mm x 610mm boundary
 
-### Saturday Morning
+### Frame And Conveyor
 
 Goal: frame and conveyor in place.
 
@@ -265,17 +268,17 @@ Goal: frame and conveyor in place.
 - Verify bin and chute space
 - Screenshot for inventor's log
 
-### Saturday Afternoon
+### Sensing And Servo Mount
 
 Goal: sensing station and servo mount started.
 
-- Reserve size sensor area without freezing the choice
+- Model two break-beam pairs in the sensing shroud
 - Model TCS3200 color shroud
 - Verify brick clearance through shroud
 - Place servo below belt exit
 - Model servo mount plate or cradle
 
-### Saturday Evening
+### Chute Selector
 
 Goal: chute selector geometry complete enough to test.
 
@@ -285,7 +288,7 @@ Goal: chute selector geometry complete enough to test.
 - Rotate chute to each position and check alignment
 - Model first-pass bin entry guides
 
-### Sunday Morning
+### Bins And Feed
 
 Goal: bins, feed guide, and full assembly.
 
@@ -296,7 +299,7 @@ Goal: bins, feed guide, and full assembly.
 - Check bin removal clearance
 - Check chute sweep clearance
 
-### Sunday Afternoon
+### Cleanup And Exports
 
 Goal: cleanup and export first validation parts.
 
@@ -304,7 +307,7 @@ Goal: cleanup and export first validation parts.
 - Run Fusion interference check
 - Export first validation STLs
 - Capture isometric, top, side, and chute alignment screenshots
-- Update `docs/project/OPEN_DECISIONS.md` if size sensing or frame decisions change
+- Update `docs/project/OPEN_DECISIONS.md` if frame or tuning decisions change
 
 ## First Validation Prints
 
@@ -324,7 +327,7 @@ Do not print a large frame until chute angle, handoff, and servo alignment are p
 |----------|----------------|
 | Feed mode | Manual one-at-a-time for states |
 | Servo | MG995/MG996/MG996R-class heavy servo in `docs/datasheet/motion/heavy_servo/` |
-| Size sensor | Open decision |
+| Size sensor | Break-beam timing with two pairs in the sensing shroud |
 | Frame material | Wood, 3D printed, or hybrid from available stock |
 | Color sensor | TCS3200/GY-31 from BOM |
 | Conveyor source | Downloaded NEMA17 conveyor preferred |
@@ -355,9 +358,9 @@ Footprint risk:
 - Keep the 610mm x 610mm boundary visible
 - Check after every major component placement
 
-Size sensor uncertainty:
-- Keep brackets adjustable
-- Run a simple proof test before final shroud and bracket exports
+Break-beam size timing:
+- Keep pair A and pair B holes easy to adjust after real-brick belt tests
+- Run a simple proof test before final shroud export
 
 ## What To Preserve For Later Nationals
 

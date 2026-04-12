@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Servo chute connection detail</title>
+  <desc id="desc">Connection detail showing the chute trough attached to a printed pivot boss, servo horn, vertical output shaft, servo body, and rigid frame pocket.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2933"/>
+    </marker>
+    <style>
+      .label { font: 18px Arial, sans-serif; fill: #111827; }
+      .small { font: 15px Arial, sans-serif; fill: #374151; }
+      .chute { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 4; }
+      .boss { fill: #bfdbfe; stroke: #1d4ed8; stroke-width: 4; }
+      .horn { fill: #fde68a; stroke: #92400e; stroke-width: 4; }
+      .servo { fill: #fef3c7; stroke: #92400e; stroke-width: 4; }
+      .frame { fill: #e5e7eb; stroke: #4b5563; stroke-width: 4; }
+      .fastener { fill: #6b7280; stroke: #111827; stroke-width: 2; }
+      .arrow { stroke: #1f2933; stroke-width: 3; marker-end: url(#arrow); fill: none; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="560" fill="#ffffff"/>
+  <text x="40" y="42" class="label">Connection detail: chute, horn, servo, and rigid mount</text>
+  <text x="40" y="68" class="small">Use the real servo horn and fastener pattern before locking the adapter.</text>
+
+  <rect x="185" y="110" width="450" height="82" rx="10" class="chute"/>
+  <rect x="210" y="132" width="395" height="38" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="3"/>
+  <line x1="220" y1="168" x2="595" y2="168" stroke="#0f766e" stroke-width="6" stroke-linecap="round"/>
+  <text x="305" y="150" class="small">30mm internal trough for brick</text>
+  <text x="290" y="215" class="small">UHMW lining on sliding surface</text>
+
+  <rect x="600" y="95" width="86" height="112" rx="10" class="boss"/>
+  <circle cx="643" cy="151" r="24" fill="#dbeafe" stroke="#1d4ed8" stroke-width="4"/>
+  <circle cx="643" cy="151" r="8" fill="#1d4ed8"/>
+  <text x="705" y="145" class="label">printed pivot boss</text>
+  <text x="705" y="170" class="small">bolted or keyed to horn</text>
+
+  <rect x="560" y="245" width="166" height="38" rx="18" class="horn"/>
+  <circle cx="643" cy="264" r="12" fill="#92400e"/>
+  <circle cx="590" cy="264" r="7" class="fastener"/>
+  <circle cx="696" cy="264" r="7" class="fastener"/>
+  <text x="745" y="270" class="label">servo horn</text>
+
+  <line x1="643" y1="207" x2="643" y2="245" stroke="#92400e" stroke-width="8"/>
+  <line x1="643" y1="283" x2="643" y2="335" stroke="#92400e" stroke-width="8"/>
+  <text x="705" y="322" class="small">vertical output shaft</text>
+
+  <rect x="575" y="335" width="136" height="130" rx="12" class="servo"/>
+  <text x="602" y="405" class="small">servo body</text>
+  <text x="575" y="493" class="small">MG996R-class servo</text>
+
+  <rect x="510" y="455" width="265" height="52" rx="8" class="frame"/>
+  <circle cx="555" cy="481" r="8" class="fastener"/>
+  <circle cx="730" cy="481" r="8" class="fastener"/>
+  <text x="455" y="535" class="label">rigid frame or base pocket shared with conveyor reference</text>
+
+  <line x1="705" y1="110" x2="670" y2="140" class="arrow"/>
+  <line x1="785" y1="270" x2="720" y2="266" class="arrow"/>
+  <line x1="775" y1="320" x2="650" y2="316" class="arrow"/>
+  <line x1="440" y1="215" x2="440" y2="172" class="arrow"/>
+</svg>

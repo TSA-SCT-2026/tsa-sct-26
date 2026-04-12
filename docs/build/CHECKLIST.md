@@ -25,7 +25,7 @@
 
 ## Sensors And Control
 
-- Size sensor family chosen or test mode marked clearly
+- Break-beam size sensor pair A and pair B installed
 - Size sensor reports expected values in test mode
 - TCS3200 color sensor responds in the expected test mode
 - Color shroud installed
@@ -61,7 +61,7 @@ Use this table for phase-gate acceptance evidence.
 | Conveyor-to-chute handoff | High | Small handoff prototype | | |
 | Chute slide angle | High | Angle coupon test | | |
 | Servo pivot slop | Medium | Horn adapter check | | |
-| Size sensor choice | Medium | Open decision tracked | | |
+| Break-beam size timing | Medium | Two-pair shroud layout | | |
 | Color shroud | Medium | Shroud-installed calibration | | |
 | Frame stiffness | Medium | Wood or printed braces | | |
 

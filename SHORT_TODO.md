@@ -15,7 +15,7 @@ Current priority: execute the simplified states CAD plan: manual one-at-a-time f
 2. Build the custom states geometry
 - Model servo mount, chute body, pivot boss or horn adapter, and bin guides
 - Model color sensor shroud
-- Leave size sensor bracket geometry provisional until the sensor family is chosen
+- Model the two break-beam pairs in the sensing shroud
 - Model four labeled bins under the chute arc
 
 3. Validate the risky physical assumptions
@@ -26,6 +26,6 @@ Current priority: execute the simplified states CAD plan: manual one-at-a-time f
 
 4. Prepare scoring evidence
 - Capture CAD screenshots for the inventor's log
-- Record size sensor decision rationale once chosen
+- Record break-beam size sensing rationale and test evidence
 - Calibrate color sensing only with the shroud installed
 - Log full 24-brick runs to CSV in `docs/runs/`

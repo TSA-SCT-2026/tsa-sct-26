@@ -9,7 +9,7 @@ Integrity rule:
 
 Current architecture:
 - States build uses a `NEMA 17` conveyor, conveyor-mounted sensing station, and MG995/MG996-class servo rotary chute selector
-- Size sensing is undecided and must not be recorded as a purchased active subsystem until the selected sensor traces to the spreadsheet or existing inventory
+- Size sensing uses BOM-backed IR break-beam sensors in a two-pair timing layout inside the sensing shroud
 - Color sensing uses the BOM-backed `TCS3200 GY-31` module with shroud-installed calibration
 
 Current receipt status:
@@ -39,7 +39,7 @@ Important note:
 - Final firmware pin map and calibration flow must match the actual received sensor.
 
 **Distance sensor architecture note:**
-- ToF or distance sensing is only a candidate for the undecided states size sensor.
+- ToF or distance sensing is not active for the states size sensor unless the user explicitly reopens that decision.
 - `docs/datasheet/sensing/distance_sensor/` contains the reference CAD assets for that family.
 - `docs/project/BOM.xlsx` does not yet contain a corresponding ToF purchase row, so this markdown must not mark ToF modules as ordered yet.
 - Update the spreadsheet first, then update the ordered-items section here in the same change.
@@ -122,7 +122,7 @@ Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current stat
 |------|----------------|-----|
 | 4-Pack 2020 Aluminum Extrusion 400mm | Being ordered | Belt deck. One piece cut to 315mm sits under the top belt run as the support surface. Remaining three pieces are spare stock. |
 | Downloaded conveyor CAD | Needed now, no purchase if free | The states plan depends on importing or adapting a proven NEMA17 mini conveyor before custom CAD expands. |
-| Size sensor final choice | Open decision | Break-beam sensors are recorded in the spreadsheet. ToF modules are not currently marked ordered in this markdown unless the spreadsheet is updated. |
+| Break-beam size sensing | Covered by ordered inventory | Break-beam sensors are recorded in the spreadsheet. ToF modules are not active and must not be marked ordered unless the spreadsheet is updated. |
 | Operator controls | Needed from existing stock or hardware store | Use a real evaluator-facing start button and power switch if available. Do not rely on tiny PCB tact switches for the final interface. |
 | Wood or printed frame stock | Needed from school stock, scrap, or hardware store | The active frame is not 2020 extrusion. Confirm available wood or printed structure before frame CAD drifts. |
 | M3 assembly hardware | Needed from hardware store or existing stock | Servo mount, sensor brackets, shroud, and bins need common screws, nuts, and washers. Current purchase log only shows an `M2` kit. |
