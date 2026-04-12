@@ -99,22 +99,38 @@ The prior custom roller and timing-stage work is archived and may be used as fal
 
 ## Sensing Station
 
-The sensing station sits near the conveyor exit so the brick can be classified before it drops into the chute.
+All sensing is integrated into one printed shroud tunnel near the feed end of the belt.
+
+Layout along belt travel:
+
+```text
+[feed end X=0]
+  -> side rail guide (X=0 to X=120, centers brick on belt)
+  -> sensing shroud (X=135 to X=200, single printed tunnel)
+       break beam pair A at X=150  (size timing, leading edge detection)
+       break beam pair B at X=190  (size timing, trailing edge / belt speed cross-check)
+       TCS3200 in shroud roof       (color sensing under controlled lighting)
+  -> open belt run (X=200 to X=395)
+  -> exit lip (X=395 to X=410, redirects brick downward into chute entry)
+```
 
 Size:
-- Sensor family is undecided
-- Current candidates are break-beam timing or a distance sensor arrangement
-- Decision belongs in `docs/project/OPEN_DECISIONS.md` until real geometry and testing justify one path
+- Two break beam pairs through the side walls of the sensing shroud
+- Firmware measures blocked duration at known belt speed to distinguish 15.8mm (2x2) from 23.7mm (2x3)
+- Two pairs provide redundancy and a speed cross-check without assuming step rate accuracy
+- Decision locked: break-beam timing with two pairs
 
 Color:
-- Use the TCS3200/GY-31 color sensor recorded in the BOM
-- Mount it in a shroud that blocks ambient light
-- Calibrate only with the installed shroud and final belt geometry
+- TCS3200/GY-31 module in the roof of the sensing shroud, looking straight down
+- Shroud walls block ambient light on all four sides; the only valid calibration is with the shroud installed
+- Brick is centered by the side rail guide before it enters the shroud
+- Sensor face is approximately 19mm from the top of the brick studs
 
-Recommended order along the belt:
-- size sensing first
-- color sensing second
-- belt exit and chute handoff last
+Exit lip:
+- Curved ramp wedge at the drive end, 5 to 6mm above belt surface
+- Converts horizontal momentum to downward motion, guides brick into the chute entry below
+- No exit sensor in the base design; firmware uses belt transit time as the handoff timer
+- Add an exit sensor only if transit timing proves unreliable during testing
 
 ## Servo Rotary Chute Selector
 

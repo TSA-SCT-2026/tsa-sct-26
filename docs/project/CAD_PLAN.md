@@ -7,7 +7,7 @@ Approach: steal proven conveyor geometry, design the custom servo chute selector
 
 ## Strategy
 
-Do not CAD a conveyor belt from scratch first. Start from a proven NEMA17 mini conveyor assembly if the STEP import is usable, then resize or simplify around it.
+Do not CAD a conveyor belt from scratch first. Start from a proven NEMA17 mini conveyor assembly if the STEP import is usable, then resize or simplify arund it.
 
 The custom CAD work is:
 1. Wood or 3D printed elevated frame
@@ -113,28 +113,55 @@ Target time: 1.5 to 2 hours with a downloaded base, 3 to 4 hours from scratch.
 
 ## Subassembly 3: Sensing Station
 
-What it is: sensors mounted near the belt exit so the brick is classified before it enters the chute.
+What it is: a single printed tunnel shroud near the feed end that integrates break beam size sensing
+and overhead color sensing in one controlled-lighting enclosure.
 
-Layout along the belt:
-1. Size sensor area first
-2. TCS3200 color sensor and shroud second
-3. Belt exit and chute handoff last
+Layout:
+
+```text
+[feed end X=0]
+  -> side rail guide (X=0 to X=120, centers brick)
+  -> sensing shroud (X=135 to X=200)
+       break beam pair A at X=150
+       break beam pair B at X=190
+       TCS3200 in shroud roof
+  -> open belt run
+  -> exit lip (X=395 to X=410)
+```
+
+Sensing shroud:
+- Single printed tunnel, 65mm long, 34mm wide, 36mm tall above belt surface
+- Inner tunnel 26mm wide, 32mm tall; front and back open for brick passage; bottom open for belt
+- Break beam holes at Z=63 through left and right walls at X=150 and X=190
+- Color sensor pocket in roof, sensor face flush with inner ceiling (~19mm above brick studs)
+- 3mm chamfer on inner edges of front opening to guide brick entry
+- This is the only location that needs controlled lighting; everywhere else is open belt
 
 Size sensing:
-- Decision is still open
-- Break-beam timing is the simplest candidate if it separates 2x2 from 2x3 cleanly
-- Distance or ToF sensing remains a candidate, but do not freeze bracket geometry yet
-- Use slotted or adjustable mounts until the decision is made
+- Firmware measures blocked duration at known belt speed
+- 15.8mm (2x2) vs 23.7mm (2x3) brick length
+- Two pairs give redundancy and a speed cross-check
 
-Color shroud:
-- Use the TCS3200/GY-31 module
-- Rectangular shroud, open enough for the brick to pass without catching
-- Inner width should clear the chosen belt and guides
-- Inner height should clear the brick including studs
-- Block side light
-- Keep calibration valid by making the sensor mount repeatable
+Color sensing:
+- TCS3200/GY-31 in shroud roof
+- Only valid calibration is with this shroud installed in final assembly position
 
-Target time: 1 to 1.5 hours.
+Side rail guide:
+- Separate component, tapers from 38mm to 26mm over 120mm starting at X=0
+- Centers brick before shroud entry
+
+Exit lip:
+- Wedge ramp at X=395-410, 5-6mm above belt surface, ramp face toward incoming brick
+- Redirects brick downward into chute entry below
+- No exit sensor in base design; firmware uses transit time
+
+CAD work:
+- Side rail guide: 20 minutes
+- Sensing shroud: 40 to 50 minutes (most complex single piece on the conveyor)
+- Exit lip: 15 minutes
+- Total: about 1.5 hours after base conveyor is positioned
+
+Target time: 1.5 hours.
 
 ## Subassembly 4: Servo Rotary Chute Selector
 

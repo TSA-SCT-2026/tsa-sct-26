@@ -66,19 +66,36 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 
 ## Sensing Station
 
-Status for this section: `OPEN_DECISION` for size sensor, `DECIDED_FOR_STATES` for color sensor
+Status for this section: `DECIDED_FOR_STATES` for size and color sensors
 
 | Feature | Dimension or guidance |
 |---------|-----------------------|
-| Sensing location | Near belt exit, before chute handoff |
-| Size sensor family | Open: break-beam timing, ToF or distance sensor, or another simple option |
-| Size sensor spacing | Leave adjustable mounting room until selected |
-| Color sensor | TCS3200/GY-31 module |
-| Color shroud inner width | Belt width plus clearance |
-| Color shroud inner length | About 30mm first pass |
-| Color shroud height | About 20mm first pass |
-| Brick clearance under shroud | More than 13.5mm including studs if studs-up feed is used |
-| Sensor order | Size first, color second, belt exit last |
+| Size sensor family | Break-beam timing, two pairs inside sensing shroud |
+| Break beam pair A location | X=150 in assembly (15mm into shroud front) |
+| Break beam pair B location | X=190 in assembly (55mm into shroud front) |
+| Break beam height | Z=63, 3mm above belt surface |
+| Break beam hole diameter | 3.3mm through shroud side walls |
+| Size timing logic | Blocked duration at known belt speed; 15.8mm vs 23.7mm brick length |
+| Color sensor | TCS3200/GY-31 module in sensing shroud roof |
+| Color sensor face distance to brick | About 19mm from sensor face to top of brick studs |
+| Sensing shroud location | X=135 to X=200 in assembly |
+| Sensing shroud outer width | 34mm in Y |
+| Sensing shroud outer height | 36mm above belt surface |
+| Sensing shroud inner width | 26mm in Y |
+| Sensing shroud inner height | 32mm above belt surface |
+| Sensing shroud length | 65mm in X |
+| Sensing shroud wall thickness | 4mm |
+| Sensing shroud entry chamfer | 3mm on inner edges of front opening |
+| Color sensor pocket depth | 8 to 10mm into roof, sensor face flush with inner ceiling |
+| Side rail guide entry gap | 38mm at X=0 |
+| Side rail guide exit gap | 26mm at X=120 |
+| Side rail height above belt | 6mm |
+| Side rail thickness | 4mm |
+| Exit lip location | X=395 to X=410 in assembly |
+| Exit lip height above belt | 5 to 6mm, flat top flush with belt surface at Z=60 |
+| Exit lip ramp angle | About 45 degrees from vertical; optional 3mm fillet to soften |
+| Exit lip span | 45mm in Y, fills inner gap |
+| Exit sensor | Not in base design; use transit time timer. Add only if testing requires it. |
 
 Color calibration is valid only with the shroud installed in final geometry.
 
