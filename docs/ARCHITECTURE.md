@@ -105,7 +105,6 @@ Layout along belt travel:
 
 ```text
 [feed end X=0]
-  -> side rail guide (X=0 to X=120, centers brick on belt)
   -> sensing shroud (X=135 to X=200, single printed tunnel)
        break beam pair A at X=150  (size timing, leading edge detection)
        break beam pair B at X=190  (size timing, trailing edge / belt speed cross-check)
@@ -123,7 +122,6 @@ Size:
 Color:
 - TCS3200/GY-31 module in the roof of the sensing shroud, looking straight down
 - Shroud walls block ambient light on all four sides; the only valid calibration is with the shroud installed
-- Brick is centered by the side rail guide before it enters the shroud
 - Sensor face is approximately 19mm from the top of the brick studs
 
 Exit lip:
@@ -141,18 +139,21 @@ It uses the heavy MG995/MG996/MG996R-class servo from `docs/datasheet/motion/hea
 Baseline geometry:
 - chute internal width around 30mm
 - chute internal height around 15mm
-- chute length around 100mm to 150mm
-- chute angle around 35 degrees from horizontal as the first test point
+- chute arm as short as physically possible - shorter arm means less flex and less position error
+- chute angle around 35 to 40 degrees from horizontal; exact value matters less with UHMW lining
 - four servo positions spread across roughly 105 degrees total sweep
 - target position examples around 37, 72, 107, and 142 degrees
 
+Reliability approach - three layers that together remove the need for a perfect angle or precise positioning:
+1. UHMW tape lining on the chute interior - reduces friction to the point where bricks slide at 30 degrees reliably. Apply from the first build, not as a fix after testing.
+2. Wide bin entry funnels - each bin mouth is significantly wider than the brick with angled walls that guide the brick in. Servo only needs to be accurate to within about 15 degrees, not a narrow slot.
+3. Short arm - keep the chute arm under 100mm if possible. Every extra mm of arm amplifies pivot flex and servo position error at the exit.
+
 Before final printing:
-- Test a short chute with real bricks at 30, 35, 40, and 45 degrees
-- Verify the chute exit overlaps each bin guide at all four positions
+- Test a short UHMW-lined chute with real bricks to confirm slide at chosen angle
+- Verify each servo position drops the brick into the funnel, not the bin itself
 - Verify the servo mount keeps the output shaft aligned with the chute pivot
 - Keep wiring clear of the servo horn and chute sweep
-
-If bricks do not slide reliably, increase angle or improve the chute surface before changing the whole architecture.
 
 ## Frame And Bins
 
@@ -167,6 +168,7 @@ Bins:
 - Internal target around 80mm x 80mm x 60mm
 - Label each bin with its category
 - Reserve clearance so bins can be removed without hitting the chute
+- Each bin has a printed funnel entry - wide angled walls above the bin body that catch bricks even with several degrees of chute position error. The funnel is part of the bin print, not a separate part.
 
 Footprint:
 - Hard limit is 610mm x 610mm

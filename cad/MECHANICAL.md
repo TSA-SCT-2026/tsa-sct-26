@@ -78,8 +78,9 @@ Chute body:
 - Rectangular channel
 - Internal width around 30mm
 - Internal height around 15mm
+- Arm length under 100mm from pivot to exit - shorter arm means less flex and less exit position error
 - Top open or partly open at the entry
-- Smooth interior surface
+- UHMW tape applied to interior channel surface before first use - not optional, not deferred
 - Pivot boss or adapter tied to the servo horn
 
 Servo mount:
@@ -90,15 +91,18 @@ Servo mount:
 - Wires leave away from the horn and chute sweep
 
 Chute angle:
-- Start CAD at 35 degrees from horizontal
-- Print a short test chute and test 30, 35, 40, and 45 degrees with real bricks
-- Increase angle if bricks hesitate or stick
-- Avoid surface treatments until angle and geometry have been tested first
+- Start CAD at 40 degrees from horizontal
+- With UHMW lining, bricks slide at 30 degrees or less. 40 degrees is conservative and reliable.
+- Print a short UHMW-lined test segment before committing to the full chute geometry
+- The angle is not the sensitivity point. Arm flex and bin funnel width are the sensitivity points.
 
 Bin alignment:
 - Use four construction rays from the pivot
 - Start with about 35 degrees between positions
-- Verify chute exit overlaps each fixed bin guide
+- Each bin has a wide funnel entry built into the top of the bin print
+- Funnel walls angle inward over 15 to 20mm, narrowing from a wide catch opening to the bin interior
+- Target funnel catch width: 50mm or wider so the servo needs to be within about 15 degrees, not precise
+- Verify chute exit falls inside each funnel at all four positions
 - Use a revolute joint or equivalent Fusion position check before printing
 
 ## Bins
@@ -109,9 +113,9 @@ Each bin should:
 - Hold its expected brick count with margin
 - Have a clear label on the front
 - Be removable without bumping the chute
-- Accept the brick even if the chute exit has small alignment error
+- Have a printed funnel entry at the top - wide angled walls that narrow into the bin body over 15 to 20mm
 
-Add static entry guides if testing shows the chute exit needs a wider capture area.
+The funnel entry is not optional. It is what allows the servo to land a brick reliably without needing exact positioning. Design the funnel as part of the bin body, not a separate part.
 
 ## Operator-Facing Packaging
 
@@ -150,9 +154,10 @@ Run these before committing to large prints:
 ## Highest Fabrication Risks
 
 1. Conveyor-to-chute handoff
-2. Chute slide angle and surface friction
-3. Servo horn or pivot slop
-4. Size sensor geometry after the sensor choice is made
-5. Frame stiffness around the servo and sensing station
+2. Servo horn or pivot slop under load
+3. Size sensor geometry after the sensor choice is made
+4. Frame stiffness around the servo and sensing station
+
+Note: chute slide friction and servo positioning accuracy are mitigated by design (UHMW lining and wide bin funnels). They remain items to verify but are no longer the top risks.
 
 Solve these with small prototypes and real-brick tests before making larger frame parts.

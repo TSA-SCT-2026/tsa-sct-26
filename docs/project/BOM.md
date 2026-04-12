@@ -120,12 +120,13 @@ Current gap audit: use `SHORT_TODO.md`, `docs/ARCHITECTURE.md`, and current stat
 
 | Item | Classification | Why |
 |------|----------------|-----|
+| 4-Pack 2020 Aluminum Extrusion 400mm | Being ordered | Belt deck. One piece cut to 315mm sits under the top belt run as the support surface. Remaining three pieces are spare stock. |
 | Downloaded conveyor CAD | Needed now, no purchase if free | The states plan depends on importing or adapting a proven NEMA17 mini conveyor before custom CAD expands. |
 | Size sensor final choice | Open decision | Break-beam sensors are recorded in the spreadsheet. ToF modules are not currently marked ordered in this markdown unless the spreadsheet is updated. |
 | Operator controls | Needed from existing stock or hardware store | Use a real evaluator-facing start button and power switch if available. Do not rely on tiny PCB tact switches for the final interface. |
 | Wood or printed frame stock | Needed from school stock, scrap, or hardware store | The active frame is not 2020 extrusion. Confirm available wood or printed structure before frame CAD drifts. |
 | M3 assembly hardware | Needed from hardware store or existing stock | Servo mount, sensor brackets, shroud, and bins need common screws, nuts, and washers. Current purchase log only shows an `M2` kit. |
-| Chute surface improvement | Optional after angle test | Only add tape or liner if real-brick chute angle testing shows sticking. |
+| UHMW tape | Needed - add to cart | Line the chute channel interior. UHMW drops friction enough that slide angle becomes non-critical. Apply before the first real-brick chute test, not after. PTFE thread seal tape from AliExpress order is not a substitute - it is too thin and tears under repeated use. |
 | Recent pulleys and GT2 belt | Pending spreadsheet update | User reports a most recent order for pulleys and GT2 belt. Add real rows to `docs/project/BOM.xlsx` before marking them ordered here. |
 
 Do not add NEMA11 selector hubs, release-gate parts, or chamber switches for the states build unless the architecture changes again.
