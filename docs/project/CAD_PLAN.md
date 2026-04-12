@@ -120,7 +120,6 @@ Layout:
 
 ```text
 [feed end X=0]
-  -> side rail guide (X=0 to X=120, centers brick)
   -> sensing shroud (X=135 to X=200)
        break beam pair A at X=150
        break beam pair B at X=190
@@ -146,22 +145,17 @@ Color sensing:
 - TCS3200/GY-31 in shroud roof
 - Only valid calibration is with this shroud installed in final assembly position
 
-Side rail guide:
-- Separate component, tapers from 38mm to 26mm over 120mm starting at X=0
-- Centers brick before shroud entry
-
 Exit lip:
 - Wedge ramp at X=395-410, 5-6mm above belt surface, ramp face toward incoming brick
 - Redirects brick downward into chute entry below
 - No exit sensor in base design; firmware uses transit time
 
 CAD work:
-- Side rail guide: 20 minutes
 - Sensing shroud: 40 to 50 minutes (most complex single piece on the conveyor)
 - Exit lip: 15 minutes
-- Total: about 1.5 hours after base conveyor is positioned
+- Total: about 1 hour after base conveyor is positioned
 
-Target time: 1.5 hours.
+Target time: 1 hour.
 
 ## Subassembly 4: Servo Rotary Chute Selector
 

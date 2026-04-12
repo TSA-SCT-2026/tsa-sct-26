@@ -13,6 +13,7 @@ Status rule:
 | Topic | Status | Current options | Current guidance |
 |------|--------|-----------------|------------------|
 | Size sensor family | OPEN | Break-beam timing, ToF or distance sensor, another simple sensor layout | Choose the simplest method that separates 2x2 from 2x3 during one-at-a-time conveyor feed. Do not freeze bracket geometry until tested |
+| Side rail feed guide | OPEN | Skip entirely, add after first-brick test if centering is a real problem | Deferred from the v1 CAD session. The sensing shroud entry chamfer handles minor misalignment. Only add if real-brick testing shows consistent off-center arrival at the shroud. |
 | Conveyor CAD source | OPEN | Downloaded NEMA17 conveyor assembly, adapted existing roller design, simple scratch-built conveyor | Try downloaded geometry first. Use current custom roller work only if import or adaptation fails |
 | Final chute angle | OPEN | 30, 35, 40, or 45 degrees | Print a short chute section and test real bricks before final selector CAD |
 | Servo position table | OPEN | Four positions around 35 degrees apart, adjusted to real bin guides | Start near 37, 72, 107, and 142 degrees. Lock only after CAD and physical bin alignment |

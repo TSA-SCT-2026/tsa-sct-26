@@ -17,12 +17,11 @@ Rough time budget for this guide:
 - Motor mount: 20 minutes
 - Belt deck and crossmember: 20 minutes
 - Legs: 15 minutes
-- Side rail guide: 20 minutes
 - Exit lip: 15 minutes
 - Break beam brackets: 20 minutes
 - Assembly: 45 to 60 minutes
 
-Total: about 5 to 6 hours for a first-time Fusion user working carefully.
+Total: about 4 to 5 hours for a first-time Fusion user working carefully.
 
 ## Goal
 
@@ -296,27 +295,34 @@ to check clearance, then let real tensioning handle the final position.
 
 ## Component 7: Belt Deck
 
-Use hardboard if you can. It is faster than printing.
+Use one piece of 2020 aluminum extrusion cut to 315mm. It is stiffer and flatter than hardboard,
+and the T-slot channels on the side faces can hold sensor brackets or crossmember bolts without
+drilling.
+
+Note: the top face of the extrusion has a T-slot channel running along its length. The 3mm neoprene
+belt will bridge it in most cases. If the belt sags into the channel during testing, cover the top
+face with a strip of tape before running bricks.
 
 For Fusion reference:
 
 1. New Component.
 2. Name it `belt_deck`.
 3. Create Sketch on the XY plane.
-4. Draw a rectangle 315mm long in X and 22mm wide in Y.
+4. Draw a rectangle 315mm long in X and 20mm wide in Y.
 5. Finish Sketch.
-6. Extrude 4mm in Z.
+6. Extrude 20mm in Z.
 
 Assembly position:
 
 - X position: between the rollers, not touching either roller
 - Y position: centered between side plates
-- Z position: set the top surface of the deck at Z=58. The roller centers are at Z=50, rollers have a
-  10mm radius, so the belt surface sits at Z=60. The deck top at Z=58 puts it 2mm below the belt
-  surface, letting the belt ride on the rollers without dragging hard on the deck.
+- Z position: set the top surface at Z=58. The extrusion is 20mm tall, so the bottom face sits at
+  Z=38. The roller centers are at Z=50, rollers have a 10mm radius, so the belt surface sits at Z=60.
+  The deck top at Z=58 puts it 2mm below the belt surface, letting the belt ride on the rollers
+  without dragging on the deck.
 
-Do not overdesign deck tabs. A ledge, a small printed support, or a dab of removable tape is enough
-for the first conveyor test.
+Hold it in place with a printed bracket capturing one end or a bolt through a T-nut into a
+crossmember below. No deck tabs needed.
 
 ## Component 8: Crossmember Spacer
 
@@ -351,51 +357,7 @@ The legs sit on the ground plane (Z=0) and support the bottom of the side plates
 If you plan to cut the legs from wood, the 20mm x 20mm cross section is a good starting point. Adjust
 to match whatever wood stock is available.
 
-## Component 10: Side Rails (Feed Guide)
-
-Side rails center the brick on the belt before it reaches the break beams. Without them, a brick placed
-slightly off-center can drift and fall off the side or arrive at the sensor at an inconsistent position.
-
-The rails start wide at the feed end and narrow to just wider than the largest brick, so any brick
-placed anywhere in the entry zone ends up centered by the time it reaches the sensors.
-
-Key dimensions:
-- Entry gap (at X=0): 38mm between rail inner faces (fills most of the 45mm inner gap)
-- Exit gap (at X=120): 26mm between rail inner faces (just wider than the 23.7mm 2x3 brick)
-- Transition length: 120mm of tapered wall from entry to exit
-- Rail height: 6mm above belt surface (engages the brick body, clear of studs)
-- Rail thickness: 4mm
-
-The rails stop at X=120 and leave the rest of the belt clear.
-
-Model this as a standalone part at Z=0, then position it in assembly at belt surface height.
-
-1. New Component.
-2. Name it `side_rail_guide`.
-3. Create Sketch on the XY plane.
-4. Draw the left rail as a trapezoid (top-down view):
-   - Left edge: X=0 to X=120, Y=0 (outer face, flush with left plate inner face)
-   - Bottom edge at X=0: Y=0 to Y=3.5 (4mm thickness at entry end)
-   - Bottom edge at X=120: Y=0 to Y=9.5 (4mm thickness at exit end, inner face shifted inward)
-   - Connect (X=0, Y=3.5) to (X=120, Y=9.5) to close the trapezoid inner face
-5. Finish Sketch.
-6. Extrude 6mm in Z.
-7. Repeat for the right rail as a mirrored trapezoid:
-   - Left edge at X=0: Y=41.5 to Y=45 (flush with right plate inner face at Y=45)
-   - Inner face at X=0: Y=41.5 (giving 38mm gap from Y=3.5 to Y=41.5)
-   - Inner face at X=120: Y=35.5 (giving 26mm gap from Y=9.5 to Y=35.5)
-   - Or use Sketch Mirror about the centerline Y=22.5 to copy the left rail shape.
-8. Both rails are in the same component. Extrude the right rail 6mm in Z with Join.
-
-In assembly, position the bottom face of this component at Z=60 (belt surface level).
-
-Add two 3.3mm mounting holes through each end for M3 bolts into the side plates if needed.
-Friction-fit or hot-glue is fine for the first test.
-
-Check in assembly that the narrow exit end at X=120 leaves room for the break beam emitter and
-receiver on opposite side plate faces without the rail body blocking the beam path.
-
-## Component 11: Exit Lip
+## Component 10: Exit Lip
 
 The exit lip is a curved ramp at the drive end that converts the brick's horizontal momentum into
 downward motion. It replaces the flat stop wall concept. A flat wall risks the brick tumbling or
@@ -440,7 +402,7 @@ Mount holes: two 3.3mm holes through the bottom face for M3 bolts into a crossme
 The chute entry funnel for the servo rotary chute selector sits directly below this lip. Position
 the chute entry when modeling the chute selector subassembly.
 
-## Component 12: Sensing Shroud
+## Component 11: Sensing Shroud
 
 The sensing shroud is a single printed tunnel that covers the sensing zone on the belt. It handles
 three things in one part: it blocks ambient light for the color sensor, holds both break beam pairs
@@ -546,10 +508,9 @@ Keep assembly simple. You only need enough CAD to confirm the parts fit.
     Move it by eye until the pulleys look roughly aligned and the motor clears the side plate.
     The bracket adjustment slots handle final tensioning on the bench.
 16. Check that the 20T and 60T pulley midplanes line up in Y.
-17. Place the side rail guide with its bottom face at Z=60, centered in Y, starting at X=0.
-18. Place the exit lip with its bottom face at Z=54, centered in Y, ramp face pointing toward X=0.
+17. Place the exit lip with its bottom face at Z=54, centered in Y, ramp face pointing toward X=0.
     The flat top sits at Z=60, flush with belt surface. Position it near X=395 to X=410.
-19. Place the sensing shroud with its bottom face at Z=60 and its front face at X=135.
+18. Place the sensing shroud with its bottom face at Z=60 and its front face at X=135.
     Confirm the shroud body sits between the side plates without touching them.
 
 Do not fight Fusion joints for hours. Move bodies into place, measure, and use simple align tools if
@@ -568,7 +529,6 @@ Run these checks before sending prints:
 - Motor and timing belt path clear the side plate and frame legs
 - Motor stays inside the 610mm x 610mm footprint
 - Set screw can be reached with the belt installed or by rotating the roller to an access position
-- Side rail guide bottom face is at Z=60, narrows from 38mm to 26mm, stops before X=130
 - Sensing shroud bottom face is at Z=60, front face at X=135, does not touch either side plate
 - Shroud break beam holes are opposite each other across the left and right walls
 - Shroud color sensor pocket is in the roof, sensor face near inner roof surface at Z=92
@@ -596,7 +556,7 @@ Run these checks before sending prints:
 14. Install the drive shaft, 60T pulley, drive roller, and set screw.
 15. Install the NEMA17, motor mount, 20T pulley, and GT2 belt.
 16. Align pulley midplanes by eye and measurement.
-17. Cut or print the belt deck and install it just under the top belt run.
+17. Cut the 2020 extrusion to 315mm for the belt deck and install it just under the top belt run.
 18. Wrap the neoprene strip with the idler near the middle of its slot travel.
 19. Mark and cut the neoprene belt.
 20. Splice with contact cement as a butt joint. Reinforce by gluing a 30mm strip of the same
