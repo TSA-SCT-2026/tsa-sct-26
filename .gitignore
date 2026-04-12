@@ -45,5 +45,8 @@ CLAUDE.md
 AGENTS.md
 .claude/
 
+# Downloaded conveyor reference prototypes (binary, not authored)
+cad/frame/prototype*/
+
 # Archived / superseded CAD parts (kept for rollback, not for build)
 **/_archive/
