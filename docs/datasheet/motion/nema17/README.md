@@ -34,7 +34,7 @@ The 4.5mm drawing value appears to be the flat-related dimension, not the full s
 
 STEP file: `cad/stepper_17hs4401s.step`
 Use this file as the referenced conveyor motor geometry in Fusion 360.
-The old trough-based assembly can be used as fallback prior art, but the active states plan first tries a proven downloaded conveyor assembly.
+The active states plan uses a tutorial-style conveyor with modified measurements and a 5mm shaft path. Downloaded conveyor assemblies are visual references only unless the user reopens that path.
 
 ## Reference Files
 

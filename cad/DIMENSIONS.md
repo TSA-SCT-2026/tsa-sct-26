@@ -35,12 +35,12 @@ Status for this section: `LOCKED_TRUTH`
 
 ## Frame
 
-Status for this section: `DECIDED_FOR_STATES` for material family, `PROVISIONAL_ESTIMATE` for exact dimensions
+Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISIONAL_ESTIMATE` for exact dimensions
 
 | Feature | Dimension or guidance |
 |---------|-----------------------|
-| Material | Wood or 3D printed structure from available stock |
-| 2020 extrusion | Not active for states |
+| Material | Wood frame from available stock, with 3D printed brackets where useful |
+| 2020 extrusion | Not active for frame or conveyor support |
 | Belt surface height | 200mm to 300mm target |
 | Minimum height check | Bin height plus chute vertical drop plus 20mm clearance |
 | Base plate | Fit within 610mm x 610mm |
@@ -52,16 +52,23 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 
 | Feature | Dimension or guidance |
 |---------|-----------------------|
-| CAD source | Downloaded NEMA17 mini conveyor preferred, custom roller work is fallback |
+| CAD source | Tutorial-style conveyor from `docs/project/CONVEYOR_BUILD_GUIDE.md`, modified for team measurements |
 | Motor | NEMA17 17HS4401S reference |
-| Usable belt length | 300mm to 400mm target |
-| Belt width | 40mm to 50mm target |
+| Shaft and bearing path | 5mm shaft with matching 5mm-ID bearings |
+| Usable top-run length | 300mm to 400mm target |
+| Belt width | 25mm active neoprene strip |
 | Minimum clear brick width | 23.7mm brick plus side clearance |
+| Wood block support | Wood block under top belt run, not 2020 extrusion |
+| Wood block length | About 315mm, adjusted to clear both rollers |
+| Wood block width | About 20mm to 45mm, measured from Home Depot stock and kept inside side plate gap |
+| Wood block thickness | About 10mm to 12mm with the current 20mm roller diameter, or revised after lower-return clearance check |
+| Wood block top height | Conveyor-local Z=58, about 2mm below belt surface |
+| Side plate material | Thin wood, hardboard, or plywood, measured after local purchase |
 | Belt speed phase 1 | Start slow enough for reliable sensing, then tune |
 | Belt exit | Direct handoff into servo chute entry |
-| Tension method | Use downloaded assembly tensioner if available, otherwise simple slotted idler or motor mount |
-| Timing belt and pulley | Keep as active if the imported conveyor uses or benefits from the existing GT2 parts |
-| 25mm neoprene strip | Available material, use only if it fits the chosen conveyor path |
+| Tension method | Simple slotted idler or motor mount |
+| Timing belt and pulley | Keep as active if the tutorial-style conveyor uses or benefits from the existing GT2 parts |
+| 25mm neoprene strip | Active first belt material |
 | 15mm neoprene strip | Spare stock unless testing shows a use |
 
 ## Sensing Station

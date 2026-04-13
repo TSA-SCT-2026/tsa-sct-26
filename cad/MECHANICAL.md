@@ -4,7 +4,7 @@ All dimensions are in `cad/DIMENSIONS.md`. This document covers design rationale
 
 ## Strategy
 
-The active mechanical plan is to steal proven conveyor geometry, modify only what matters, and spend custom CAD time on the servo chute, sensor mounts, bins, and frame.
+The active mechanical plan is to follow the simple conveyor tutorial where practical, modify only what matters, and spend custom CAD time on the servo chute, sensor mounts, bins, and frame.
 
 The previous chamber, release-gate, and NEMA11 selector design is archived for later nationals work. It should not drive current states CAD unless the user explicitly reopens that path.
 
@@ -22,22 +22,34 @@ Why:
 
 ## Conveyor
 
-Use a downloaded NEMA17 mini conveyor assembly if it imports cleanly into Fusion 360.
+Use the tutorial-style conveyor as the active states path, with the team's modified measurements and
+5mm shaft and bearing path. The tutorial is a structural guide, not a hardware spec.
 
-Modify as needed:
-- Widen belt path to roughly 40mm to 50mm
-- Adjust usable length to roughly 300mm to 400mm
+Build around:
+- One wood block support replacing the earlier 2020 extrusion support
+- Two thin wood side plates
+- Printed bearing holders bolted to the outside faces
+- Shafts and printed rollers between the plates
+- NEMA17 motor on an adjustable side bracket
+- 5mm shaft and matching 5mm-ID bearing path
+- 25mm neoprene belt sized from the real dry-fit
+
+Adjust as needed:
+- Set belt path around the current 25mm neoprene strip
+- Set usable top-run length to roughly 300mm to 400mm
 - Keep motor and tensioner serviceable
-- Mount to the wood or printed frame without exceeding 610mm x 610mm
+- Mount to the wood frame without exceeding 610mm x 610mm
 - Keep the belt exit aligned with the chute entry
 
-If the downloaded model fails, use the existing custom roller work as fallback prior art. Do not spend the first CAD window re-inventing a conveyor if a proven assembly works.
+Downloaded conveyor models may be used as visual reference only. Do not spend the first CAD window cleaning imported geometry when the tutorial-style conveyor can be modeled and built directly.
 
 The existing NEMA17, fan, timing belt, timing pulley, bearings, and neoprene stock remain useful where they fit the chosen conveyor path.
 
 ## Frame
 
-The active frame is wood or 3D printed, based on what is actually on hand.
+The active frame is wood, with printed brackets where they save time or improve fit. Wood stock will
+be picked up locally, so exact board and block thicknesses stay provisional until purchase and
+measurement.
 
 The frame needs to:
 - Lift the belt high enough for the chute and bins
@@ -46,7 +58,8 @@ The frame needs to:
 - Leave the bins removable
 - Leave wiring visible enough to look deliberate and clean
 
-Do not design around 2020 extrusion unless the user confirms a material change.
+Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
+block is wood, not 2020 extrusion.
 
 ## Sensing Station
 
@@ -132,8 +145,8 @@ The machine should look like a finished competition device, not a temporary benc
 ## CAD Build Order
 
 1. Create or import top-level assembly and 610mm x 610mm boundary.
-2. Import downloaded conveyor and NEMA17 reference.
-3. Place conveyor on a provisional wood or printed frame.
+2. Model the tutorial-style conveyor and import the NEMA17 reference.
+3. Place conveyor on a provisional wood frame.
 4. Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`.
 5. Model servo mount, chute body, pivot interface, and first-pass bin rays.
 6. Model four bins and bin entry guides.

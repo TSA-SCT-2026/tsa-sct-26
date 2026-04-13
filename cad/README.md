@@ -8,7 +8,7 @@ Active production architecture:
 - Conveyor-mounted sensing station
 - MG995/MG996-class servo rotary chute selector
 - Four labeled bins
-- Wood or 3D printed frame
+- Wood frame with printed brackets where useful
 
 The previous chamber, release-gate, and NEMA11 selector CAD work is archived for later nationals work. Use it only as fallback reference.
 
@@ -29,8 +29,8 @@ Existing directories may still contain prior work from the archived design until
 ## CAD Priority
 
 1. Top-level assembly with 610mm x 610mm boundary
-2. Downloaded or adapted NEMA17 conveyor
-3. Wood or printed frame layout
+2. Tutorial-style NEMA17 conveyor with modified measurements
+3. Wood frame layout with printed brackets where useful
 4. Servo mount and rotary chute body
 5. Four bin positions and bin entry guides
 6. Sensing shroud with TCS3200 color mount and two break-beam pairs

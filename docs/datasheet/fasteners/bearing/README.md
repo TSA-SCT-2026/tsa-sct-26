@@ -47,6 +47,6 @@ These values come from the bearing fit coupon. Verify with your printer before p
 
 | Location | Quantity | Notes |
 |----------|----------|-------|
-| States conveyor | TBD | Use only if the selected conveyor path needs MR85ZZ bearings |
+| States conveyor | Active current path | Use with the 5mm shaft tutorial-style conveyor unless hardware changes |
 
-The 608ZZ bearings in the BOM are also candidate conveyor inventory only if the selected conveyor uses them.
+The 608ZZ bearings in the BOM are spare conveyor inventory only if the user changes to a larger shaft and bearing path.

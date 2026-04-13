@@ -46,7 +46,7 @@ Keep `rejected_alternatives.md` as a short branch list. Include:
 - Automated compressed queue for states
 - NEMA11 selector for states
 - 2020 extrusion frame for states
-- Full custom conveyor before testing downloaded geometry
+- Downloaded NEMA17 conveyor as the first states path
 - Two-stage size-then-color physical lane split
 
 ## Calibration Procedures

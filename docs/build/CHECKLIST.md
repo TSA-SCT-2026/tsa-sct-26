@@ -63,7 +63,7 @@ Use this table for phase-gate acceptance evidence.
 | Servo pivot slop | Medium | Horn adapter check | | |
 | Break-beam size timing | Medium | Two-pair shroud layout | | |
 | Color shroud | Medium | Shroud-installed calibration | | |
-| Frame stiffness | Medium | Wood or printed braces | | |
+| Frame stiffness | Medium | Wood frame with printed braces where useful | | |
 
 ## Final Readiness
 

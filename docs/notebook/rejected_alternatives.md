@@ -24,10 +24,10 @@ Keep it short and honest. Expand a branch only when there is a real decision his
   - Reason it is not selected: the MG995/MG996-class servo chute is simpler to wire, mount, and tune for four positions
 
 - 2020 extrusion frame
-  - Reason it is not selected: available materials are wood and 3D printing, so the active frame must match what can be built now
+  - Reason it is not selected: the wood frame and wood block support are faster to cut, drill, inspect, and repair during the states sprint
 
-- Full custom conveyor before import attempt
-  - Reason it is not selected: downloaded NEMA17 conveyor geometry can save the CAD weekend if it imports cleanly
+- Downloaded NEMA17 conveyor as the first states path
+  - Reason it is not selected: import cleanup and unknown manufacturer geometry add friction for a beginner CAD build, while the tutorial-style conveyor with modified measurements is easier to model, drill, inspect, and repair
 
 - Two-stage lane split
   - First split branch: size then color

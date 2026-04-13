@@ -73,8 +73,8 @@ Use this as a fast action board. Purchase truth still lives in `docs/project/BOM
 | Distance sensor, `VL53L0X` family | Size-sensor candidate | Not present in `docs/project/BOM.xlsx` | CAD reference only | Do not mark ordered. Define conveyor bracket and calibration plan before selection |
 | `GT2` belts | Conveyor timing candidate | Pending spreadsheet update | CAD reference present | Use only if the selected conveyor uses the GT2 timing path |
 | `GT2` pulleys | Conveyor timing candidate | Pending spreadsheet update | CAD reference present | Verify received hub width, flange OD, and set screw access before freezing CAD |
-| `MR85ZZ` bearings | Conveyor candidate | BOM-backed, received | CAD reference present | Use only if the selected conveyor path needs them |
-| `608ZZ` bearings | Conveyor candidate | BOM-backed, received | Datasheet folder not yet built | Use only if the selected conveyor path needs them |
+| `MR85ZZ` bearings | Active conveyor bearing path | BOM-backed, received | CAD reference present | Use with the current 5mm shaft tutorial-style conveyor unless hardware changes |
+| `608ZZ` bearings | Spare conveyor inventory | BOM-backed, received | Datasheet folder not yet built | Use only if the user changes to a larger shaft and bearing path |
 | `40mm` fan | Optional electronics cooling | BOM-backed, received | CAD reference present | Use if driver or electronics temperature requires it |
 | Waveshare `2inch Mini LCD Screen` | Operator display candidate | BOM-backed, Amazon Mar 25 | Datasheet folder not yet built | Add a module reference before final wiring or display mount CAD |
 | ISDT `608AC` charger | Battery support equipment | BOM-backed, Amazon Mar 25 | Datasheet folder not yet built | Low CAD priority. Keep safety and operating reference when available |

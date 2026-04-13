@@ -7,10 +7,11 @@ Current priority: execute the simplified states CAD plan: manual one-at-a-time f
 ## Next Tasks
 
 1. CAD weekend setup
-- Download or import a proven NEMA17 mini conveyor assembly if possible
+- Open the visual conveyor tutorial and `docs/project/CONVEYOR_BUILD_GUIDE.md`
+- Model the tutorial-style conveyor with modified measurements and wood block support
 - Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`
 - Keep the 610mm x 610mm boundary visible in Fusion
-- Use wood or 3D printed frame construction, not 2020 extrusion
+- Use wood frame construction, with printed brackets where useful, not 2020 extrusion
 
 2. Build the custom states geometry
 - Model servo mount, chute body, pivot boss or horn adapter, and bin guides

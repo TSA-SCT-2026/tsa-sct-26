@@ -57,9 +57,9 @@ Goal:
 
 Steps:
 1. Import or model the NEMA17 conveyor.
-2. Set belt width to about 40mm to 50mm.
-3. Set usable belt length to about 300mm to 400mm.
-4. Place the conveyor on a wood or printed frame.
+2. Set belt width around the current 25mm neoprene strip.
+3. Set usable top-run length to about 300mm to 400mm.
+4. Place the conveyor on a wood frame with printed brackets where useful.
 5. Keep the 610mm x 610mm boundary visible.
 6. Leave space under the belt exit for chute sweep and bins.
 

@@ -11,9 +11,21 @@ endless belts from manufacturers. Neither is available in the build window. Buil
 
 ## Goal
 
-Build the conveyor in the same simple style as the reference video: two flat wood side plates, printed
-bearing holders bolted to the outside faces, shafts through the bearings, printed rollers between the
-plates, a NEMA17 on an adjustable side bracket, and a flat deck under the top belt run.
+Build the conveyor in the same simple style as the reference video: a wood block support that
+parts can screw into, thin wood side plates, printed bearing holders, shafts through the bearings,
+printed rollers between the plates, and a NEMA17 on an adjustable side bracket.
+
+Reference tutorial structure to preserve:
+- NEMA17 motor, printed rollers, printed bearing holders, printed motor bracket, shaft spacers, and pulleys
+- Wood or hardboard support piece connected into the frame, not an aluminum extrusion frame
+- Adjustable bearing holders for belt tension
+- Movable motor bracket for timing belt tension
+- Overall visual build order and simple screw-together construction
+
+Do not copy the tutorial dimensions or hardware as law. This build is intentionally modified for the
+team's materials and sorter geometry: 5mm shafts and matching 5mm-ID bearings, the current 25mm
+neoprene belt width, the current top-run length target, the NEMA17 motor, and the clearance needed
+for LEGO bricks.
 
 This guide is written to get usable conveyor CAD and build files without wasting time on fake
 precision. Model the parts well enough to make drilling templates and print files. Do not model every
@@ -33,7 +45,7 @@ Ignore the detailed reference numbers until a step asks for them. Build the CAD 
 3. Rollers
 4. Core conveyor assembly: side plates, bearings, shafts, and rollers
 5. Motor mount, fitted after the core conveyor exists
-6. Belt deck and crossmembers
+6. Wood block support and crossmembers
 7. Extras after the conveyor core fits: side rails, sensing shroud, and exit lip
 
 Do not start by perfecting the motor, shroud, exit lip, or frame. The conveyor core proves whether the
@@ -60,7 +72,8 @@ checks.
 - Motor mount: do not pre-drill final side-plate holes from CAD alone. Fit it in assembly.
 - Exit lip: the first version is allowed to be wrong. It exists to make handoff testing fast.
 - Sensing shroud: approximate placement is fine for v1 if the belt clears and the brick does not rub.
-- Crossmembers: place them where they stiffen the side plates and stay out of the belt path.
+- Crossmembers: place them where they stiffen the side plates and stay out of the belt path. If the
+  wood block support holds the spacing well, fewer printed crossmembers may be needed.
 - Fusion parameters: skip them if they slow you down. Type the numbers directly.
 
 ## Coordinate Convention
@@ -70,10 +83,14 @@ Use this convention for the conveyor subassembly:
 - X axis: belt travel, feed end at X=0 and chute end at X=410
 - Y axis: across the conveyor, left to right
 - Z axis: vertical, side plate bottom at local Z=0
-- Side plate size: 410mm long in X, 80mm tall in Z, 8mm thick in Y
+- Side plate size: 410mm long in X, 80mm tall in Z, 8mm thick in Y as a CAD placeholder
 - Side plate inner gap: 45mm
 - Drive roller center: X=380, Z=50
 - Idler roller center: X=30, Z=50
+
+If the Home Depot side-plate stock is not 8mm thick, change the side plate thickness after measuring
+the real material. Do not change shaft centers, bearing-holder hole spacing, or the 45mm inner gap
+just because the outer plate thickness changes.
 
 This keeps the pulley frame simple while modeling. In the full machine assembly, raise the whole
 conveyor subassembly by `leg_h` so the local belt surface at Z=60 becomes about 240mm above the base.
@@ -290,40 +307,51 @@ not treat X=321.4 as a drill coordinate. Place the motor, check the real pulley 
 mark or drill the side-plate motor-mount holes from the fitted bracket position. If the actual driven
 pulley or belt length differs, recompute only the center distance and keep moving.
 
-## Component 7: Belt Deck
+## Component 7: Wood Block Support
 
-Use one piece of 2020 aluminum extrusion cut to 315mm. It is stiffer and flatter than hardboard,
-and the T-slot channels on the side faces can hold sensor brackets or crossmember bolts without
-drilling.
+Use one straight wood block cut to about 315mm. This replaces the earlier 2020 aluminum
+extrusion support idea and keeps the conveyor closer to the reference tutorial. The block is both the
+top-belt support surface and a simple structural spine that thin side plates and small brackets can
+screw into.
 
-Note: the top face of the extrusion has a T-slot channel running along its length. The 3mm neoprene
-belt will bridge it in most cases. If the belt sags into the channel during testing, cover the top
-face with a strip of tape before running bricks.
+Choose the straightest available wood stock. Sand the top face smooth and cover it with smooth packing
+tape, UHMW tape, or another low-friction strip if the neoprene belt drags during testing. Do not use a
+warped block just because it matches the CAD number. Since wood stock will be picked up locally, do
+not lock the thickness until the actual board or block is in hand.
+
+Important clearance rule: with the current 20mm roller diameter, the lower belt return runs near
+Z=40. If the wood support top is at Z=58, the support must be thin enough that its bottom stays above
+the lower return path. Use about 10mm to 12mm support thickness for this roller size. If the wood in
+hand is closer to 19mm thick, either rip or plane it thinner, notch it for the lower return path, or
+revise the roller diameter and shaft height before cutting parts.
 
 For Fusion reference:
 
 1. New Component.
-2. Name it `belt_deck`.
+2. Name it `wood_block_support`.
 3. Create Sketch on the XY plane.
-4. Draw a rectangle 315mm long in X and 20mm wide in Y.
+4. Draw a rectangle 315mm long in X and about 20mm to 45mm wide in Y. Keep it narrow enough that it
+   does not hit the rollers, belt return path, side plates, or bearing hardware.
 5. Finish Sketch.
-6. Extrude 20mm in Z.
+6. Extrude to the measured wood block thickness in Z. If no stock is measured yet, use 10mm as the
+   placeholder.
 
 Assembly position:
 
 - X position: between the rollers, not touching either roller
 - Y position: centered between side plates
-- Z position: set the top surface at Z=58. The extrusion is 20mm tall, so the bottom face sits at
-  Z=38. The roller centers are at Z=50, rollers have a 10mm radius, so the belt surface sits at Z=60.
-  The deck top at Z=58 puts it 2mm below the belt surface, letting the belt ride on the rollers
-  without dragging on the deck.
+- Z position: set the top surface at Z=58. The roller centers are at Z=50, rollers have a 10mm
+  radius, so the belt surface sits at Z=60. The support top at Z=58 puts it 2mm below the belt
+  surface, letting the belt ride on the rollers without dragging on the support. The bottom face
+  depends on the actual wood thickness and must clear the lower belt return path.
 
-Hold it in place with a printed bracket capturing one end or a bolt through a T-nut into a
-crossmember below. No deck tabs needed.
+Use the wood block to help tie the side plates together. Fasten through the thin side plates into
+the block, or use small printed angle brackets if that is easier to drill. Keep fastener heads below
+the belt path. No deck tabs needed for v1.
 
 ## Component 8: Crossmember Spacer
 
-The crossmembers hold the two side plates at the 45mm inner gap.
+The crossmembers and wood block hold the two side plates at the 45mm inner gap.
 
 Simple printed spacer:
 
@@ -333,8 +361,9 @@ Simple printed spacer:
 4. Extrude 20mm.
 5. Add a 3.3mm hole through each end if you want it bolted.
 
-Use two spacers at minimum: one near the feed end and one near the drive end. Add a third in the
-middle if the side plates flex.
+Use two spacers as a starting point: one near the feed end and one near the drive end. If the
+wood block is wide and screwed in well, it may provide most of the spacing stiffness. Add a third
+spacer in the middle only if the side plates flex.
 
 ## Component 9: Legs
 
@@ -509,7 +538,8 @@ Keep assembly simple. You only need enough CAD to confirm the parts fit.
 6. Place the idler roller centered between the plates at X=30, Z=50.
 7. Place the belt-contact section of the drive roller centered between the plates at X=380, Z=50,
    with the hub on the +Y motor side.
-8. Place the belt deck centered between the rollers and between the side plates, top surface at Z=58.
+8. Place the wood block support centered between the rollers and between the side plates, top
+   surface at Z=58.
 9. Place two crossmember spacers: one near X=50, one near X=360. Orient them so the 45mm length
    runs in Y between the inner faces of the side plates.
 10. Move the whole conveyor subassembly up by `leg_h` when placing it into the full machine frame.
@@ -539,7 +569,8 @@ Run these checks before sending prints:
 - Drive roller hub is on the motor side
 - Drive roller hub does not touch the side plate
 - Rollers are centered in the 45mm inner gap
-- Belt deck top surface is at Z=58, does not touch either roller
+- Wood block support top surface is at Z=58, does not touch either roller
+- Wood block support bottom face and any screws clear the lower belt return path near Z=40
 - Bearing pockets face the side plates and bearings are captured after holders are bolted down
 - Motor and timing belt path clear the side plate and frame legs
 - Motor bracket is fitted to the actual GT2 pulley and belt path before drilling
@@ -574,7 +605,8 @@ Run these checks before sending prints:
 14. Install the drive shaft, 60T pulley, drive roller, and set screw.
 15. Install the NEMA17, motor mount, 20T pulley, and GT2 belt.
 16. Align pulley midplanes by eye and measurement.
-17. Cut the 2020 extrusion to 315mm for the belt deck and install it just under the top belt run.
+17. Cut the wood block support to about 315mm, smooth the top face, and install it just under the top
+    belt run.
 18. Wrap the neoprene strip with the idler near the middle of its slot travel.
 19. Mark and cut the neoprene belt.
 20. Splice with contact cement as a butt joint. Reinforce by gluing a 30mm strip of the same
@@ -653,7 +685,7 @@ The conveyor passes first test when:
 - belt runs without walking off the flanges
 - drive roller does not slip on the shaft
 - GT2 belt does not skip
-- neoprene belt has no visible sag over the deck
+- neoprene belt has no visible sag over the wood block support
 - one LEGO brick rides through without catching
 - idler tension can still be adjusted after assembly
 

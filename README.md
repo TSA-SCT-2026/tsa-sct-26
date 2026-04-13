@@ -6,11 +6,11 @@ The active states architecture sorts 24 LEGO bricks by size and color into 4 bin
 - Manual one-at-a-time feed onto a conveyor
 - NEMA17-driven conveyor
 - Conveyor-mounted size and color sensing station near the belt exit
-- Size sensor still undecided
+- Break-beam timing size sensor with two pairs in the sensing shroud
 - TCS3200/GY-31 color sensor with shroud
 - MG995/MG996-class servo rotary chute selector
 - Four labeled bins under the chute sweep
-- Wood or 3D printed frame from available materials
+- Wood frame from available materials, with printed brackets where useful
 
 Goal: first place at states.
 

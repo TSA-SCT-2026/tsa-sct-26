@@ -22,7 +22,7 @@ The states build uses:
 - TCS3200/GY-31 color sensor with a light-blocking shroud
 - MG995/MG996/MG996R-class heavy servo rotary chute selector
 - Four bins arranged under the chute sweep
-- Wood or 3D printed frame from available materials
+- Wood frame with 3D printed brackets where useful
 - Operator-facing labels, display states, and start control
 
 The active build intentionally removes:
@@ -86,16 +86,17 @@ The orientation cue should be printed or labeled near the feed area so the evalu
 
 ## Conveyor
 
-The conveyor should start from a proven downloaded CAD assembly if possible, then be adapted to fit the sorter.
+The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a NEMA17 motor on an adjustable side bracket.
 
 Baseline intent:
-- Usable belt length around 300mm to 400mm
-- Belt width around 40mm to 50mm
+- Usable top-run length around 300mm to 400mm
+- Belt width around the current 25mm neoprene strip
 - Belt surface height around 200mm to 300mm from base, adjusted to fit chute angle and bin removal
 - NEMA17 motor retained
+- Wood block support replacing the previous 2020 aluminum extrusion support idea
 - Belt path and motor clearance verified inside the 610mm x 610mm footprint
 
-The prior custom roller and timing-stage work is archived and may be used as fallback reference. It is not the default first CAD path if a proven conveyor assembly imports cleanly.
+The downloaded conveyor STEP path is no longer the default for states. It may still be used as visual or dimensional reference, but the active build path prioritizes the tutorial-style conveyor with modified measurements because it is easier to build, inspect, and debug in the remaining sprint.
 
 ## Sensing Station
 
@@ -159,7 +160,7 @@ Before final printing:
 ## Frame And Bins
 
 Frame:
-- Use wood or 3D printed structure from available materials
+- Use wood frame structure with 3D printed brackets where useful
 - Keep the build stiff enough that sensor and chute alignment do not drift
 - Keep bin access clear from the front
 - Keep cable routing clean and visible as engineered work
@@ -193,7 +194,7 @@ The system should make the sequence obvious: place brick, press or confirm start
 
 Judged documentation should show:
 - Why the team simplified from the archived architecture
-- How the downloaded conveyor geometry was selected or rejected
+- Why the tutorial-style conveyor path with modified measurements replaced downloaded conveyor geometry as the first states path
 - Why the final size sensor was chosen
 - Chute angle test results
 - Servo position and bin alignment evidence
