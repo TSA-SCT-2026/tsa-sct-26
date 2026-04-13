@@ -268,6 +268,11 @@ Add set screw hole:
 If this step gets annoying in Fusion, use the simpler real-world fallback: print the hub solid, drill
 the set screw hole by hand after printing, then tap it.
 
+For the first states build, the hand-drilled set screw hole is acceptable as the default if the radial
+Fusion cut slows you down. Keep the hub large enough, drill a 2.5mm pilot toward the shaft bore, tap
+for M3, file a small flat on the shaft, and confirm the screw can be reached after the roller and belt
+are installed.
+
 ## Component 6: Motor Mount
 
 The motor mount is a flat adjustable plate outside the right side plate.
@@ -309,7 +314,8 @@ pulley or belt length differs, recompute only the center distance and keep movin
 
 ## Component 7: Wood Block Support
 
-Use one straight wood block cut to about 315mm. This replaces the earlier 2020 aluminum
+Use one straight wood block cut from the real conveyor dry-fit, usually about 295mm to 300mm with the
+current roller geometry. This replaces the earlier 2020 aluminum
 extrusion support idea and keeps the conveyor closer to the reference tutorial. The block is both the
 top-belt support surface and a simple structural spine that thin side plates and small brackets can
 screw into.
@@ -319,31 +325,39 @@ tape, UHMW tape, or another low-friction strip if the neoprene belt drags during
 warped block just because it matches the CAD number. Since wood stock will be picked up locally, do
 not lock the thickness until the actual board or block is in hand.
 
-Important clearance rule: with the current 20mm roller diameter, the lower belt return runs near
-Z=40. If the wood support top is at Z=58, the support must be thin enough that its bottom stays above
-the lower return path. Use about 10mm to 12mm support thickness for this roller size. If the wood in
-hand is closer to 19mm thick, either rip or plane it thinner, notch it for the lower return path, or
-revise the roller diameter and shaft height before cutting parts.
+Important clearance rules:
+- End clearance: do not let the wood support run close to either roller flange, belt wrap, or pulley
+  hardware. Use the actual roller flange envelope as the keep-out reference. With the current shaft
+  centers at X=30 and X=380 and a 28mm flange diameter, a centered 295mm to 300mm block leaves about
+  11mm to 13.5mm clearance to each flange envelope before belt and wood tolerance. The old 315mm
+  starting length left only about 3.5mm per end, which is too little for a hand-built conveyor.
+- Lower return clearance: with the current 20mm roller diameter, the lower belt return runs near
+  Z=40. If the wood support top is at Z=58, the support must be thin enough that its bottom stays
+  above the lower return path. Use about 10mm to 12mm support thickness for this roller size. If the
+  wood in hand is closer to 19mm thick, either rip or plane it thinner, notch it for the lower return
+  path, or revise the roller diameter and shaft height before cutting parts.
 
 For Fusion reference:
 
 1. New Component.
 2. Name it `wood_block_support`.
 3. Create Sketch on the XY plane.
-4. Draw a rectangle 315mm long in X and about 20mm to 45mm wide in Y. Keep it narrow enough that it
-   does not hit the rollers, belt return path, side plates, or bearing hardware.
+4. Draw a rectangle about 295mm to 300mm long in X and about 20mm to 45mm wide in Y. Keep it narrow
+   enough that it does not hit the rollers, belt return path, side plates, or bearing hardware.
 5. Finish Sketch.
 6. Extrude to the measured wood block thickness in Z. If no stock is measured yet, use 10mm as the
    placeholder.
 
 Assembly position:
 
-- X position: between the rollers, not touching either roller
-- Y position: centered between side plates
-- Z position: set the top surface at Z=58. The roller centers are at Z=50, rollers have a 10mm
-  radius, so the belt surface sits at Z=60. The support top at Z=58 puts it 2mm below the belt
-  surface, letting the belt ride on the rollers without dragging on the support. The bottom face
-  depends on the actual wood thickness and must clear the lower belt return path.
+- X position: centered between the roller axes, then shortened or shifted so both ends clear the
+  roller flange and belt-wrap keep-out zones by at least about 10mm.
+- Y position: centered between side plates.
+- Z position: align the top surface to a support plane about 2mm below the upper belt surface. In the
+  current local conveyor datum, the roller centers are at Z=50, rollers have a 10mm radius, and the
+  belt surface sits around Z=60, so the support top starts around Z=58. Treat that as an alignment
+  relationship, not as a final global machine coordinate. The bottom face depends on the actual wood
+  thickness and must clear the lower belt return path.
 
 Use the wood block to help tie the side plates together. Fasten through the thin side plates into
 the block, or use small printed angle brackets if that is easier to drill. Keep fastener heads below
@@ -443,7 +457,17 @@ rigid wood frame member. The brick enters from the feed-end opening, passes thro
 toward the drive end. The side rail guide ends at X=120, so the brick is already centered before
 it enters.
 
-Add the side rail guide before finalizing the shroud:
+Do not glue the shroud in place for the first states build. Make it a removable screw-mounted part
+with side tabs or small flanges. Use two or four screws into the wood conveyor bed, a crossmember, or
+a rigid frame member. Short slots are better than round holes if they are easy, because they allow a
+few millimeters of centering adjustment after the belt tracks under real tension.
+
+Keep the side rail guide separate from the shroud until brick centering is proven. Temporary rails
+made with screws, tape, clamps, or simple printed strips are acceptable during first conveyor tests.
+After the rail gap is verified with real bricks, the rail design can be reprinted cleanly or merged
+with another printed part if that saves assembly time.
+
+Add the side rail guide as a separate first-build part:
 
 1. New Component.
 2. Name it `feed_side_rails`.
@@ -524,42 +548,68 @@ Add entry chamfer:
 In assembly, position the shroud with its bottom face at Z=60 (belt surface level) and its front
 face at X=135.
 
+Before exporting the shroud STL, add the removable mounting tabs or flanges:
+
+1. Add one tab on each side wall near the bottom of the shroud, outside the brick path.
+2. Put one 3.3mm clearance hole in each tab for M3 screws, or size the holes for the screws actually
+   used in the wood.
+3. If it is easy in Fusion, make the holes short slots across Y so the shroud can be centered over
+   the belt after assembly.
+4. Confirm screw heads, nuts, or washers cannot touch the belt or brick.
+5. Confirm the shroud can be unscrewed without removing the conveyor belt or drive roller.
+
 ## Assembly Steps In Fusion
 
-Keep assembly simple. You only need enough CAD to confirm the parts fit.
+Keep assembly simple, but use assembly relationships where they save confusion. Coordinates are only
+layout anchors. The real checks are face alignment, axis alignment, center planes, belt keep-out
+envelopes, and interference checks.
 
-1. Place `side_plate_left` so its inner face is at Y=0 and the plate material points outward.
+1. Ground or fix `side_plate_left` so its inner face is the reference face for the conveyor gap.
 2. Right-click `side_plate_left` in the browser, Copy, then right-click the assembly and Paste New to
    create `side_plate_right`. (Paste New creates an independent copy, not a linked one.)
-3. Move `side_plate_right` so its inner face is at Y=45mm and the plate material points outward.
-4. Place fixed bearing holders at X=380, Z=50 on the outside faces of both side plates, with bearing
-   pockets facing the side plates.
-5. Place slotted bearing holders at X=30, Z=50 on the outside faces of both side plates, with bearing
-   pockets facing the side plates.
-6. Place the idler roller centered between the plates at X=30, Z=50.
-7. Place the belt-contact section of the drive roller centered between the plates at X=380, Z=50,
-   with the hub on the +Y motor side.
-8. Place the wood block support centered between the rollers and between the side plates, top
-   surface at Z=58.
-9. Place two crossmember spacers: one near X=50, one near X=360. Orient them so the 45mm length
-   runs in Y between the inner faces of the side plates.
-10. Move the whole conveyor subassembly up by `leg_h` when placing it into the full machine frame.
-11. Place four leg copies near the corners, running vertically from the base to the side plate bottoms.
-12. Import the NEMA17 STEP from `docs/datasheet/motion/nema17/cad/stepper_17hs4401s.step`.
-13. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
-14. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
-15. Place the motor mount outside the right side plate near the drive end.
-16. For the 20T to 60T, 200mm GT2 path, start the motor shaft center near X=321.4, Z=50.
+3. Align the two inner side-plate faces with a 45mm offset and point both plate thicknesses outward.
+   Use an as-built joint, rigid joint, or Align plus measurement, whichever is fastest in Fusion.
+4. Place the fixed bearing holders on the outside faces of both side plates. Align each bearing pocket
+   axis concentrically with the drive shaft hole axis and mate the pocket face against the plate face.
+5. Place the slotted bearing holders on the outside faces of both side plates. Align each bearing
+   pocket axis with the idler shaft slot centerline and keep the pocket face against the plate face.
+6. Place the idler roller by aligning its shaft axis with the idler bearing axes, then center the
+   roller body between the two inner side-plate faces.
+7. Place the drive roller by aligning its shaft axis with the drive bearing axes, then center the
+   belt-contact section between the side plates. Keep the hub on the +Y motor side.
+8. Add transparent keep-out cylinders for the roller flange envelopes, or use the roller flanges
+   themselves as the keep-out reference.
+9. Place the wood block support between the rollers. Center it between the roller axes and side
+   plates, align its top face about 2mm below the upper belt surface plane, and confirm both ends
+   clear the roller flange and belt-wrap keep-out zones by at least about 10mm.
+10. Place two crossmember spacers: one near X=50, one near X=360. Orient them so the 45mm length
+    runs in Y between the inner faces of the side plates.
+11. Move the whole conveyor subassembly up by `leg_h` when placing it into the full machine frame.
+12. Place four leg copies near the corners, running vertically from the base to the side plate bottoms.
+13. Import the NEMA17 STEP from `docs/datasheet/motion/nema17/cad/stepper_17hs4401s.step`.
+14. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
+15. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
+16. Place the motor mount outside the right side plate near the drive end.
+17. For the 20T to 60T, 200mm GT2 path, start the motor shaft center near X=321.4, Z=50.
     Use that as a layout anchor only. Final motor holes come from the fitted bracket position.
-17. Check that the 20T and 60T pulley midplanes line up in Y.
-18. Place the feed side rails from X=0 to X=120, centered around Y=22.5.
-19. Place the exit lip with its bottom face at Z=60, centered in Y, ramp face pointing toward X=0.
+18. Align the 20T and 60T pulley midplanes in Y and confirm the motor mount still slides in the
+    timing belt tension direction.
+19. Add a simple belt envelope and check top run and lower return clearance.
+20. Add placeholder feed side rails from X=0 to X=120, centered around Y=22.5. Keep them separate
+    from the shroud.
+21. Add a placeholder shroud volume from X=135 to X=200, with the 30mm inner width and 32mm inner
+    height reserved. Do not model the detailed sensor pocket or break-beam holes until this clears
+    the assembled conveyor.
+22. Place the exit lip with its bottom face at Z=60, centered in Y, ramp face pointing toward X=0.
     The flat top sits at Z=66 for the first handoff test. Position it near X=395 to X=410.
-20. Place the sensing shroud with its bottom face at Z=60 and its front face at X=135.
-    Confirm the shroud body clears the belt and sits between the side plates without touching them.
+23. After the conveyor core and placeholder shroud clear, replace the placeholder with the removable
+    sensing shroud. Put its bottom face at Z=60 and its front face at X=135. Confirm the shroud body
+    clears the belt and sits between the side plates without touching them.
+24. Add screw tabs or flanges for removable shroud mounting only where the Fusion assembly shows a
+    real landing surface.
 
-Do not fight Fusion joints for hours. Move bodies into place, measure, and use simple align tools if
-joints slow you down.
+If a formal joint slows the session down, use Align plus measurement for that relationship and keep
+going. The goal is an assembly that exposes clearance mistakes before wood is cut or prints are sent.
 
 ## Fusion Checks Before Printing
 
@@ -569,8 +619,11 @@ Run these checks before sending prints:
 - Idler holder and idler shaft can slide without the shaft hitting the side plate
 - Drive roller hub is on the motor side
 - Drive roller hub does not touch the side plate
+- Drive roller set screw location is reachable, even if the hole will be hand-drilled after printing
+- Drive shaft has room for a small filed flat where the set screw lands
 - Rollers are centered in the 45mm inner gap
-- Wood block support top surface is at Z=58, does not touch either roller
+- Wood block support top surface is about 2mm below the upper belt surface and does not touch either
+  roller flange, belt wrap, pulley, or fastener
 - Wood block support bottom face and any screws clear the lower belt return path near Z=40
 - Bearing pockets face the side plates and bearings are captured after holders are bolted down
 - Motor and timing belt path clear the side plate and frame legs
@@ -578,11 +631,14 @@ Run these checks before sending prints:
 - Motor stays inside the 610mm x 610mm footprint
 - Set screw can be reached with the belt installed or by rotating the roller to an access position
 - Sensing shroud bottom face is at Z=60, front face at X=135, does not touch either side plate
+- Sensing shroud is removable with screws and can be adjusted or reprinted without rebuilding the
+  conveyor core
 - Sensing shroud inner width is 30mm and clears the 25mm belt during belt tracking tests
 - Shroud break beam holes are opposite each other across the left and right walls
 - Shroud color sensor pocket is in the roof, sensor face near inner roof surface at Z=92
 - Shroud exit at X=200 leaves clear belt run to the drive end
-- Feed side rails end before the shroud and do not pinch the brick at the shroud entry
+- Feed side rails are separate for the first build, end before the shroud, and do not pinch the brick
+  at the shroud entry
 - Exit lip ramp face points toward X=0, first-test flat top at Z=66
 - Exit lip does not overlap the drive roller (drive roller center is at X=380, lip starts at X=395)
 - Space below the exit lip and drive end is clear for the chute entry funnel
@@ -606,17 +662,24 @@ Run these checks before sending prints:
 14. Install the drive shaft, 60T pulley, drive roller, and set screw.
 15. Install the NEMA17, motor mount, 20T pulley, and GT2 belt.
 16. Align pulley midplanes by eye and measurement.
-17. Cut the wood block support to about 315mm, smooth the top face, and install it just under the top
-    belt run.
+17. Cut the wood block support to about 295mm to 300mm, smooth the top face, and install it just under
+    the top belt run. Dry-fit before drilling final holes and trim the block shorter if either end is
+    close to a roller flange, belt wrap, pulley, or fastener.
 18. Wrap the neoprene strip with the idler near the middle of its slot travel.
 19. Mark and cut the neoprene belt.
 20. Splice with contact cement as a butt joint. Reinforce by gluing a 30mm strip of the same
     neoprene on the inside surface overlapping the joint by 15mm each side. Let cure fully before
     tensioning.
 21. Tension the belt by sliding the idler holders.
-22. Run the conveyor alone before adding sensors or the chute.
-23. Add feed side rails and confirm a brick enters the shroud zone without rubbing.
-24. Add the sensing shroud and confirm belt clearance before calibration.
+22. Keep the conveyor belt and GT2 belt only tight enough to avoid slipping. Do not over-tension the
+    small bearings and printed holders.
+23. Run the conveyor alone before adding sensors or the chute.
+24. Watch the belt splice over both rollers. If the splice bumps, thumps, or pulls the belt sideways,
+    fix that before adding the sensing shroud.
+25. Feed real bricks over the bare conveyor and confirm they ride straight enough for sensing.
+26. Add separate temporary or printed feed side rails and confirm a brick enters the shroud zone
+    without rubbing.
+27. Add the removable sensing shroud and confirm belt clearance before calibration.
 
 ## Reference Dimensions
 

@@ -41,16 +41,42 @@ Pipeline summary:
 
 Follow this order.
 
-1. Conveyor import and frame layout
-2. Servo chute angle and pivot prototype
-3. Servo mount and bin arc alignment
-4. Sensing station and color shroud
-5. Bins, labels, and operator UX
-6. Wiring and power checks
-7. Calibration
-8. Full 24-brick reliability runs
+1. Conveyor core Fusion assembly
+2. Conveyor import and frame layout
+3. Servo chute angle and pivot prototype
+4. Servo mount and bin arc alignment
+5. Sensing station and color shroud
+6. Bins, labels, and operator UX
+7. Wiring and power checks
+8. Calibration
+9. Full 24-brick reliability runs
 
-## Stage 1: Conveyor And Frame Layout
+## Stage 1: Conveyor Core Fusion Assembly
+
+Goal:
+- Prove the conveyor core has a real belt path before detailed shroud CAD
+
+Steps:
+1. Assemble the side plates, fixed bearing holders, slotted bearing holders, shafts, rollers, wood
+   block support, motor mount, NEMA17, pulley placeholders, and simple belt envelope in Fusion.
+2. Confirm the 45mm inner side-plate gap and 25mm belt path.
+3. Confirm the wood block support clears the lower belt return.
+4. Confirm each wood block end clears the roller flange and belt-wrap envelope by about 10mm or more.
+5. Confirm the drive roller hub is on the motor side.
+6. Confirm the drive roller set screw can be reached, even if the hole will be drilled by hand.
+7. Confirm the motor mount can slide to tension the timing belt.
+8. Add only a placeholder sensing shroud volume from X=135 to X=200.
+9. Keep side rails as separate placeholder strips.
+
+Pass criteria:
+- Conveyor core fits without obvious interference
+- Belt path clears rollers, wood support, side plates, and likely screw heads
+- Wood block length is set from clearance, not from a fixed coordinate placement
+- Motor and timing belt tension adjustment remain serviceable
+- Sensing shroud placeholder clears the belt and side plates
+- Removable shroud screw tabs or flanges have a plausible landing surface
+
+## Stage 2: Conveyor And Frame Layout
 
 Goal:
 - Establish a working belt path inside the footprint
@@ -68,7 +94,7 @@ Pass criteria:
 - Motor and belt tension adjustment remain serviceable
 - Belt exit can hand off to the chute without a large gap
 
-## Stage 2: Servo Chute Prototype
+## Stage 3: Servo Chute Prototype
 
 Goal:
 - Prove bricks slide reliably before designing the full selector
@@ -84,7 +110,7 @@ Pass criteria:
 - No studs, corners, or edges catch in the channel
 - Chosen angle is recorded
 
-## Stage 3: Servo Mount And Bin Arc
+## Stage 4: Servo Mount And Bin Arc
 
 Goal:
 - Align the rotating chute with all four bin entries
@@ -102,25 +128,29 @@ Pass criteria:
 - Servo horn and screws remain accessible
 - Chute clears frame and wires across the full sweep
 
-## Stage 4: Sensing Station
+## Stage 5: Sensing Station
 
 Goal:
 - Mount the upstream sensing station without blocking the brick path
 
 Steps:
-1. Mount the sensing shroud near the conveyor start on the wood conveyor bed or a rigid wood frame member.
-2. Install break-beam pair A and pair B through the shroud side walls.
-3. Mount the TCS3200/GY-31 color sensor in the shroud.
-4. Verify brick clearance through the shroud.
-5. Route sensor wiring away from motor and servo wiring where practical.
+1. Replace the placeholder shroud with a removable screw-mounted shroud near the conveyor start on
+   the wood conveyor bed or a rigid wood frame member.
+2. Keep the first-build side rails separate from the shroud until real-brick centering is proven.
+3. Install break-beam pair A and pair B through the shroud side walls.
+4. Mount the TCS3200/GY-31 color sensor in the shroud.
+5. Verify brick clearance through the shroud.
+6. Verify the shroud can be removed without disassembling the conveyor core.
+7. Route sensor wiring away from motor and servo wiring where practical.
 
 Pass criteria:
 - Size sensor has a clean measurement path
 - Color shroud has no obvious light leaks
 - Bricks do not catch on sensor brackets
 - Color calibration can be repeated without moving the sensor
+- Shroud can be unscrewed for adjustment, cleaning, or reprint
 
-## Stage 5: Bins, Labels, And Operator UX
+## Stage 6: Bins, Labels, And Operator UX
 
 Install and verify:
 1. Bin labels:
@@ -142,7 +172,7 @@ Install and verify:
 Goal:
 - A first-time evaluator can operate the system without assistance
 
-## Stage 6: Wiring And Power Integration
+## Stage 7: Wiring And Power Integration
 
 Follow `wiring/ELECTRICAL.md`.
 
@@ -161,7 +191,7 @@ Pre-power checks:
 4. Conveyor motor direction verified at low speed
 5. Sensor readings visible in serial output
 
-## Stage 7: Calibration
+## Stage 8: Calibration
 
 Follow `docs/build/CALIBRATION.md`.
 
@@ -175,7 +205,7 @@ Order:
 Data rule:
 - Keep run data in CSV logs for notebook use
 
-## Stage 8: Full-Run Acceptance
+## Stage 9: Full-Run Acceptance
 
 Before calling the system ready:
 1. Run at least 10 complete 24-brick sets.

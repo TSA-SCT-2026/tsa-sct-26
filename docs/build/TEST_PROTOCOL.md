@@ -11,6 +11,19 @@ Demonstrate reliable sorting under evaluator-style one-at-a-time operation.
 
 ## Test Phases
 
+### Phase 0: Conveyor Core Fusion Check
+
+Run this phase before detailed sensing shroud CAD.
+
+Pass criteria:
+- Conveyor core is assembled in Fusion with side plates, holders, shafts, rollers, wood block support, motor mount, motor, pulley path, and simple belt envelope
+- Wood block support is set from belt surface and roller flange clearance, not from fixed coordinate placement
+- Placeholder shroud volume clears the belt and side plates
+- Side rails are still separate from the shroud
+- Removable shroud mounting tabs or flanges have a plausible screw location
+- Drive roller set screw access remains reachable
+- Motor bracket and idler holder adjustment remain serviceable
+
 ### Phase 1: Conveyor And Handoff
 
 Run 25 one-brick trials through the conveyor and into the chute.
@@ -18,6 +31,7 @@ Run 25 one-brick trials through the conveyor and into the chute.
 Pass criteria:
 - No missed chute entries
 - No belt stalls
+- No belt walking, splice bump, or roller slip that affects brick travel
 - No sensor bracket or shroud catches
 
 ### Phase 2: Servo Routing

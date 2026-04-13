@@ -257,6 +257,31 @@ Target time: 30 minutes.
 - Create top-level assembly
 - Sketch 610mm x 610mm boundary
 
+### Current Conveyor Assembly Checkpoint
+
+Use this checkpoint if the conveyor parts are modeled but the sensing shroud is not.
+
+Goal: assemble the conveyor core in Fusion before committing to detailed shroud CAD.
+
+- Place the two side plates, bearing holders, shafts, rollers, wood block support, motor mount, motor, and pulley path using assembly relationships where practical
+- Add a simple belt envelope instead of detailed belt geometry
+- Confirm roller centers, side plate gap, motor clearance, lower belt return clearance, wood block end clearance, and set screw access
+- Treat the wood block top as about 2mm below the upper belt surface, not as a global Z coordinate
+- Start the wood block around 295mm to 300mm long with current rollers, then adjust from flange and belt-wrap clearance
+- Add only a placeholder shroud box from X=135 to X=200 with the 30mm inner width and 32mm inner height reserved
+- Keep feed side rails as separate placeholder strips, not part of the shroud
+- Add shroud mounting surfaces or tabs only after the conveyor core assembly shows where screws can actually land
+- Do not model the final color sensor pocket or break-beam holes until the shroud location is confirmed over the assembled conveyor
+
+Pass criteria:
+
+- Belt path is believable and clears the wood support, rollers, screw heads, and side plates
+- Wood block ends clear the roller flange envelopes and belt wrap by about 10mm or more
+- Drive roller hub and set screw access remain on the motor side
+- Motor bracket can still slide to tension the timing belt
+- Shroud placeholder clears the belt and does not touch the side plates
+- There is a plausible screw-on mounting path for a removable shroud
+
 ### Frame And Conveyor
 
 Goal: frame and conveyor in place.
@@ -272,8 +297,10 @@ Goal: frame and conveyor in place.
 
 Goal: sensing station and servo mount started.
 
+- Model the removable screw-mounted sensing shroud after the conveyor core assembly passes its placeholder check
 - Model two break-beam pairs in the sensing shroud
-- Model TCS3200 color shroud
+- Model TCS3200 color shroud pocket
+- Keep first-build feed rails separate until brick centering is proven
 - Verify brick clearance through shroud
 - Place servo below belt exit
 - Model servo mount plate or cradle

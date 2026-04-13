@@ -8,7 +8,8 @@ Calibration is valid only with final mechanical geometry installed, including th
 - Conveyor mounted and tracking correctly
 - Servo chute mounted on the final pivot or horn adapter
 - Four bins and bin guides installed
-- Color shroud installed and light leaks closed
+- Color shroud installed, screwed down repeatably, and light leaks closed
+- Feed side rails locked in their tested position without pinching bricks at the shroud entry
 - Display, start control, feed cue, and bin labels installed
 
 ## 1. Conveyor And Handoff Calibration
@@ -20,12 +21,15 @@ Procedure:
 2. Feed one brick at a time in the marked orientation.
 3. Record whether the brick stays centered enough for sensing.
 4. Record whether the brick enters the chute cleanly.
-5. Increase speed only after repeatable handoff is proven.
+5. Watch the belt splice over both rollers and record any bump or side pull.
+6. Increase speed only after repeatable handoff is proven.
 
 Acceptance:
 - No missed chute entries in 25 consecutive handoff trials
 - No bracket or shroud catches
 - Conveyor does not walk or stall during trials
+- Conveyor belt and GT2 belt are tight enough not to slip but not over-tensioned
+- Belt splice does not disturb brick travel through the sensing station
 
 ## 2. Servo Chute Position Calibration
 
@@ -75,16 +79,19 @@ Calibration evidence template:
 ## 4. Color Threshold Calibration
 
 Procedure:
-1. Install the color shroud.
+1. Install the color shroud in the screw-mounted final position.
 2. Feed repeated red and blue bricks through the final sensing station.
 3. Collect repeated sample windows.
 4. Compute the color feature used by firmware.
 5. Set threshold with safety margin between clusters.
+6. Remove and reinstall the shroud once, then repeat a small red and blue sample check to confirm the
+   mount returns to the same position.
 
 Acceptance:
 - Red and blue clusters are separated with visible margin
 - Classification stability holds across repeated trials
 - Shroud remains installed for all recorded calibration data
+- Shroud reinstall does not change the classification result during the small repeat check
 
 Calibration evidence template:
 

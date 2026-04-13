@@ -1,9 +1,25 @@
 # Pre-Run Checklist
 
+## Fusion Assembly Before Shroud CAD
+
+- Conveyor core assembled in Fusion with side plates, holders, shafts, rollers, wood block support, motor mount, NEMA17, and pulley path
+- Simple belt envelope clears rollers, side plates, wood support, likely screw heads, and lower return path
+- Wood block ends clear roller flange and belt-wrap envelopes by about 10mm or more
+- Drive roller hub is on the motor side
+- Drive roller set screw access is visible or reachable after hand-drilling
+- Motor mount has adjustment travel for timing belt tension
+- Sensing shroud is still a placeholder volume, not detailed final CAD
+- Side rails are separate placeholder strips
+- Removable shroud screw tabs or flanges have a plausible landing surface
+
 ## Mechanical
 
 - Conveyor mounted, aligned, and tensioned
+- Matched side-plate drilling plan verified before cutting or drilling both plates
 - Belt tracks without walking into guides
+- Conveyor belt and GT2 belt are not over-tensioned
+- Belt splice runs over both rollers without bumping or pulling the belt sideways
+- Drive roller set screw is tight against a small filed shaft flat
 - Conveyor-to-chute handoff gap checked
 - Servo chute sweeps to all four positions
 - Servo horn and pivot screws tight
@@ -29,6 +45,8 @@
 - Size sensor reports expected values in test mode
 - TCS3200 color sensor responds in the expected test mode
 - Color shroud installed
+- Color shroud removable with screws for adjustment, cleaning, or reprint
+- First-build feed side rails verified separately from the shroud
 - Servo target angles loaded
 - Display state transitions visible
 - Start control responds
@@ -51,7 +69,7 @@ Use this table for phase-gate acceptance evidence.
 | Gate 1: chute angle | Real bricks slide at chosen angle | | | | |
 | Gate 2: conveyor handoff | No missed chute entries in 25 trials | | | | |
 | Gate 3: servo alignment | Clean route to all 4 bins | | | | |
-| Gate 4: sensing station | No bracket catches, color shroud works | | | | |
+| Gate 4: sensing station | No bracket catches, removable color shroud works | | | | |
 | Gate 5: packaging | Under 610mm x 610mm with labels verified | | | | |
 
 ## Single-Point Failure Watchlist
@@ -59,10 +77,13 @@ Use this table for phase-gate acceptance evidence.
 | Item | Current risk | Mitigation in place | Spare or fallback ready | Verified date |
 |------|--------------|---------------------|--------------------------|---------------|
 | Conveyor-to-chute handoff | High | Small handoff prototype | | |
+| Conveyor belt tracking | High | Matched side-plate drilling and gentle tension | | |
+| Belt splice bump | Medium | Inspect over both rollers before adding shroud | | |
+| Drive roller slip | Medium | M3 set screw and filed shaft flat | | |
 | Chute slide angle | High | Angle coupon test | | |
 | Servo pivot slop | Medium | Horn adapter check | | |
 | Break-beam size timing | Medium | Two-pair shroud layout | | |
-| Color shroud | Medium | Shroud-installed calibration | | |
+| Color shroud | Medium | Removable screw-mounted shroud and shroud-installed calibration | | |
 | Frame stiffness | Medium | Wood frame with printed braces where useful | | |
 
 ## Final Readiness

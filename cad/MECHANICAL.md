@@ -41,6 +41,15 @@ Adjust as needed:
 - Mount to the wood frame without exceeding 610mm x 610mm
 - Keep the belt exit aligned with the chute entry
 
+Assembly method:
+- Use Fusion coordinates as layout anchors for shaft centers and hole patterns, not as proof of
+  assembly fit
+- Prefer face alignment, shaft-axis alignment, center-plane alignment, and simple belt keep-out
+  envelopes when assembling conveyor parts in Fusion
+- Set the wood block support from the upper belt surface and roller flange clearance. With the
+  current roller layout, start around 295mm to 300mm long and require about 10mm or more clearance to
+  each roller flange envelope before cutting or drilling the real block
+
 Downloaded conveyor models may be used as visual reference only. Do not spend the first CAD window cleaning imported geometry when the tutorial-style conveyor can be modeled and built directly.
 
 The existing NEMA17, fan, timing belt, timing pulley, bearings, and neoprene stock remain useful where they fit the chosen conveyor path.

@@ -63,10 +63,10 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Belt width | 25mm active neoprene strip |
 | Minimum clear brick width | 15.8mm as-fed brick width plus side clearance; 30mm guide and shroud gaps are for belt clearance, belt tracking, and yaw tolerance |
 | Wood block support | Wood block under top belt run, not 2020 extrusion |
-| Wood block length | About 315mm, adjusted to clear both rollers |
+| Wood block length | About 295mm to 300mm with current rollers, adjusted from dry-fit to clear both roller flange envelopes by about 10mm or more |
 | Wood block width | About 20mm to 45mm, measured from Home Depot stock and kept inside side plate gap |
 | Wood block thickness | About 10mm to 12mm with the current 20mm roller diameter, or revised after lower-return clearance check |
-| Wood block top height | Conveyor-local Z=58, about 2mm below belt surface |
+| Wood block top height | About 2mm below upper belt surface. Conveyor-local Z=58 is only the current layout anchor |
 | Side plate material | Thin wood, hardboard, or plywood, measured after local purchase |
 | Belt speed phase 1 | Start slow enough for reliable sensing, then tune |
 | Belt exit | Direct handoff into servo chute entry |
@@ -90,7 +90,7 @@ Status for this section: `DECIDED_FOR_STATES` for size and color sensors
 | Color sensor | TCS3200/GY-31 module in sensing shroud roof |
 | Color sensor face distance to brick | About 19mm from sensor face to top of brick studs |
 | Sensing shroud location | X=135 to X=200 in assembly |
-| Sensing shroud mount | Mounted to the wood conveyor bed or rigid wood frame member near the feed side, not to the belt or chute |
+| Sensing shroud mount | Removable screw-mounted tabs or flanges to the wood conveyor bed or rigid wood frame member near the feed side, not to the belt or chute |
 | Sensing shroud outer width | 38mm in Y |
 | Sensing shroud outer height | 36mm above belt surface |
 | Sensing shroud inner width | 30mm in Y |
@@ -103,13 +103,14 @@ Status for this section: `DECIDED_FOR_STATES` for size and color sensors
 | Side rail guide exit gap | 30mm at X=120 |
 | Side rail height above belt | 6mm |
 | Side rail thickness | 4mm |
+| Side rail first build | Separate screw-on, taped, or clamped rails until brick centering is proven. Do not merge into the shroud until the rail gap is verified with real bricks |
 | Exit lip location | X=395 to X=410 in assembly |
 | Exit lip height above belt | First test top at Z=65 to Z=66, 5 to 6mm above belt surface |
 | Exit lip ramp angle | About 45 degrees from vertical; optional 3mm fillet to soften |
 | Exit lip span | 45mm in Y, fills inner gap |
 | Exit sensor | Not in base design; use transit time timer. Add only if testing requires it. |
 
-Color calibration is valid only with the shroud installed in final geometry.
+Color calibration is valid only with the shroud installed in the final screw-mounted position.
 
 ## Servo Rotary Chute Selector Geometry
 

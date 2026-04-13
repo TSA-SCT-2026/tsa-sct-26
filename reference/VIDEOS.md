@@ -12,7 +12,7 @@ Use this file for mechanism and packaging inspiration. Follow `docs/ARCHITECTURE
 ### 2. Stepper conveyor drive
 
 - [How to Make 2-Way Conveyor Belt System Using Stepper Motor & Arduino](https://www.youtube.com/watch?v=qoejrZhn5XI) by Easy HomeMade Projects
-  Use it as a reference for `stepper motor -> timing belt -> belt roller` packaging and motor placement.
+  Use it as a reference for `stepper motor -> timing belt -> belt roller` packaging and motor placement. See `reference/EASY_HOMEMADE_PROJECTS_CONVEYOR_MECHANICS.md` for the modified states-build mechanics notes.
 
 ### 3. Conveyor dimensions
 
