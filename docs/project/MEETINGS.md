@@ -60,3 +60,15 @@
 - Size sensor is now frozen as two-pair break-beam timing in the sensing shroud, with real-brick timing evidence still required before final shroud printing.
 - Frame material is wood or 3D printed structure from available stock, not 2020 extrusion.
 - BOM purchase truth still traces to `docs/project/BOM.xlsx`; do not convert recommendations into ordered status without spreadsheet rows.
+
+## Meeting 4: 4/12/26 (40 minutes)
+
+- Locked CAD and build schedule:
+  - Full Fusion 360 assembly due Friday 4/17/26 so physical build can start over the weekend.
+  - One member owns servo chute selector CAD, one member owns conveyor and frame CAD. Chute member assists frame member when done.
+  - Agreed to accept rough initial geometry and build early. Physical assembly experience will inform CAD faster than trying to resolve everything in software first.
+- Design constraints:
+  - Brick inertia at belt exit requires a curved exit lip, 5 to 6mm above belt surface, to redirect horizontal momentum into the chute entry. First validation print candidate.
+  - Sensing shroud needs a printed screw-in mount. Exact position resolved during conveyor and frame CAD.
+- Locked frame material as wood. Aluminum extrusion adds complexity with no performance advantage. Time saved goes to notebook, test data, and tuning.
+- Consulting an experienced engineering teacher this week for CAD positioning and assembly validation on the conveyor and pulley system.
