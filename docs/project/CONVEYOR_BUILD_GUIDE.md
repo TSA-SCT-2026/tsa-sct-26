@@ -438,9 +438,10 @@ brick.
 Placing everything in one enclosed part gives the color sensor a controlled, repeatable lighting
 environment. Calibration done with this shroud installed is valid. Calibration without it is not.
 
-The shroud sits on top of the belt between X=135 and X=200. The brick enters from the feed-end
-opening, passes through, and exits toward the drive end. The side rail guide ends at X=120, so
-the brick is already centered before it enters.
+The shroud sits over the belt between X=135 and X=200 and mounts to the wood conveyor bed or a
+rigid wood frame member. The brick enters from the feed-end opening, passes through, and exits
+toward the drive end. The side rail guide ends at X=120, so the brick is already centered before
+it enters.
 
 Add the side rail guide before finalizing the shroud:
 
@@ -462,7 +463,7 @@ Outer dimensions:
 - Height: 36mm in Z above belt surface (4mm roof above the 32mm inner height)
 
 Inner dimensions:
-- Width: 30mm in Y (clears the 25mm neoprene belt with about 2.5mm per side)
+- Width: 30mm in Y (clears the 25mm neoprene belt with about 2.5mm per side; the as-fed 2x3 brick is 15.8mm wide in Y)
 - Height: 32mm in Z from belt surface (clears 13.1mm brick with studs, leaves ~19mm to sensor face)
 - Front and back faces are open (brick passes through)
 - Bottom is open (belt passes through)

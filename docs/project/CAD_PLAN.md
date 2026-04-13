@@ -64,7 +64,7 @@ The frame lifts Zones 1 through 3 high enough that Zone 4 fits underneath with c
 - Chute angle: test 30, 35, 40, and 45 degrees with real bricks
 - First CAD chute angle: 35 degrees from horizontal
 - Chute sweep: about 105 degrees total for four bins
-- First servo positions: about 37, 72, 107, and 142 degrees
+- First servo positions in bin label order: about 37, 72, 107, and 142 degrees
 - Bin internal dimensions: about 80mm x 80mm x 60mm
 
 Keep these numbers in `cad/DIMENSIONS.md` when they change.
@@ -115,7 +115,8 @@ Target time: 3 to 4 hours for the tutorial-style conveyor with modified measurem
 ## Subassembly 3: Sensing Station
 
 What it is: a single printed tunnel shroud near the feed end that integrates break beam size sensing
-and overhead color sensing in one controlled-lighting enclosure.
+and overhead color sensing in one controlled-lighting enclosure. Mount it to the wood conveyor bed
+or a rigid wood frame member, not to the belt or servo chute.
 
 Layout:
 
@@ -132,6 +133,7 @@ Layout:
 Sensing shroud:
 - Single printed tunnel, 65mm long, 38mm wide, 36mm tall above belt surface
 - Inner tunnel 30mm wide, 32mm tall; front and back open for brick passage; bottom open for belt
+- The 30mm width is for the 25mm belt, belt tracking, and brick yaw tolerance. The as-fed 2x3 brick is 15.8mm wide in Y and 23.7mm long in X.
 - Break beam holes at Z=63 through left and right walls at X=150 and X=190
 - Color sensor pocket in roof, sensor face flush with inner ceiling (~19mm above brick studs)
 - 3mm chamfer on inner edges of front opening to guide brick entry
@@ -191,7 +193,7 @@ Servo mount:
 
 Servo positions:
 - Start with four construction rays around 35 degrees apart
-- First CAD angle table: 37, 72, 107, and 142 degrees
+- First CAD angle table in bin label order: 37 degrees for 2x2 RED, 72 degrees for 2x2 BLUE, 107 degrees for 2x3 RED, and 142 degrees for 2x3 BLUE
 - Adjust after bin guides are placed and checked for funnel overlap
 - Verify each position with a revolute joint or equivalent Fusion motion check
 

@@ -105,11 +105,11 @@ Pass criteria:
 ## Stage 4: Sensing Station
 
 Goal:
-- Mount sensors without blocking the brick path
+- Mount the upstream sensing station without blocking the brick path
 
 Steps:
-1. Reserve adjustable space for the size sensor.
-2. Install the chosen size sensor only after the decision is documented.
+1. Mount the sensing shroud near the conveyor start on the wood conveyor bed or a rigid wood frame member.
+2. Install break-beam pair A and pair B through the shroud side walls.
 3. Mount the TCS3200/GY-31 color sensor in the shroud.
 4. Verify brick clearance through the shroud.
 5. Route sensor wiring away from motor and servo wiring where practical.
@@ -168,7 +168,7 @@ Follow `docs/build/CALIBRATION.md`.
 Order:
 1. Conveyor speed and handoff calibration
 2. Servo chute position calibration
-3. Size sensor calibration after the sensor choice is made
+3. Break-beam size timing calibration
 4. Color threshold calibration with shroud installed
 5. Full-system validation runs
 

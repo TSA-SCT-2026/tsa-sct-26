@@ -6,7 +6,7 @@ Short definitions for the main project terms. If a term in the architecture is u
 
 - `manual one-at-a-time feed`: the active states feed mode where the operator places one brick on the conveyor at a time
 - `feed orientation cue`: the physical label or guide that tells the operator how to place each brick
-- `sensing station`: the conveyor-mounted sensor area before the belt exit
+- `sensing station`: the sensor shroud area mounted to the wood conveyor bed or rigid frame near the conveyor start
 - `classification lock`: the moment firmware has decided size, color, and target bin for the current brick
 - `handoff`: the transition from belt exit into the servo chute
 - `ready state`: the state where the system can accept the next brick

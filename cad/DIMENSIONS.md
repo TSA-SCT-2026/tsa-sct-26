@@ -20,6 +20,10 @@ Status for this section: `LOCKED_TRUTH`
 
 Manual feed orientation target: studs up, long side along conveyor travel.
 
+As-fed 2x3 brick envelope:
+- X travel length: 23.7mm
+- Y cross-belt width: 15.8mm
+
 Reason: this is easiest for an evaluator to place repeatably and gives the sensing station a predictable in-flight profile. If physical testing shows a different orientation is more reliable, update this file and the feed label together.
 
 ## Footprint
@@ -57,7 +61,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Shaft and bearing path | 5mm shaft with matching 5mm-ID bearings |
 | Usable top-run length | 300mm to 400mm target |
 | Belt width | 25mm active neoprene strip |
-| Minimum clear brick width | 23.7mm brick plus side clearance |
+| Minimum clear brick width | 15.8mm as-fed brick width plus side clearance; 30mm guide and shroud gaps are for belt clearance, belt tracking, and yaw tolerance |
 | Wood block support | Wood block under top belt run, not 2020 extrusion |
 | Wood block length | About 315mm, adjusted to clear both rollers |
 | Wood block width | About 20mm to 45mm, measured from Home Depot stock and kept inside side plate gap |
@@ -86,6 +90,7 @@ Status for this section: `DECIDED_FOR_STATES` for size and color sensors
 | Color sensor | TCS3200/GY-31 module in sensing shroud roof |
 | Color sensor face distance to brick | About 19mm from sensor face to top of brick studs |
 | Sensing shroud location | X=135 to X=200 in assembly |
+| Sensing shroud mount | Mounted to the wood conveyor bed or rigid wood frame member near the feed side, not to the belt or chute |
 | Sensing shroud outer width | 38mm in Y |
 | Sensing shroud outer height | 36mm above belt surface |
 | Sensing shroud inner width | 30mm in Y |
@@ -129,7 +134,7 @@ Coordinate warning: the conveyor CAD currently uses a local belt-surface datum a
 |---------|-----------|-------|
 | Sweep radius, pivot to exit in plan view | 65mm to 75mm only if funnels are narrowed or staggered | At 35-degree spacing, 50mm mouths need about 83mm radius and 60mm mouths need about 100mm radius to avoid overlap |
 | Arm design | Rigid servo horn adapter or 3D-printed extension from pivot boss | Servo horn bolts to arm; minimize flex |
-| Chute internal width | 30mm | Accommodates 23.7mm brick with 3mm side clearance |
+| Chute internal width | 30mm | Clears the 15.8mm as-fed width and gives tolerance for yaw or partial rotation during handoff |
 | Chute internal height | 15mm | Accommodates 11.4mm brick body plus 1.7mm studs with 1.9mm clearance |
 | Chute wall thickness | 3mm | Structural, accounts for print tolerances |
 | Chute length, entry to exit | 100mm to 150mm | Smooth ramp, no sharp edges or steps |
@@ -165,7 +170,7 @@ Coordinate warning: the conveyor CAD currently uses a local belt-surface datum a
 | Feature | Dimension | Notes |
 |---------|-----------|-------|
 | Total servo sweep | 105 degrees | Covers all four bin positions with tolerance |
-| Servo positions | Start at 37, 72, 107, 142 degrees | Starting table only; lock after bin layout and real servo testing |
+| Servo positions | Start at 37, 72, 107, 142 degrees | Starting table in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE. Lock after bin layout and real servo testing |
 | Position spacing | Start at 35 degrees | Increase spacing, increase radius, narrow funnels, or stagger bins if catch zones overlap |
 | Servo positioning accuracy required | Design for several degrees of tolerance | Do not assume plus or minus 2 degrees until measured on the real frame |
 | Bin arrangement | Under chute arc, likely staggered if radius stays short | Four bins positioned to catch each servo position without funnel overlap |
@@ -215,7 +220,7 @@ Status for this section: `DECIDED_FOR_STATES`
 | Base feed mode | One brick at a time |
 | Optional later feature | Simple feed chute only after the base sorter works |
 | Orientation label | Studs up, long side along travel |
-| Guide width | Belt width or narrower guide that still clears 23.7mm brick length as oriented |
+| Guide width | Belt width or narrower guide that still clears the 15.8mm as-fed brick width, with tolerance for yaw before the shroud |
 | Anti-wander guide | Low side rails from X=0 to X=120, tapering toward the shroud |
 
 ## Operator-Facing Packaging

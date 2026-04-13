@@ -15,7 +15,7 @@ Status rule:
 | Final chute angle | OPEN | 35 to 40 degrees | Start CAD at 40 degrees. With UHMW lining the angle is not the sensitive variable - verify with a short lined test segment but do not spend time iterating angle before lining the chute. |
 | Selector Z stack | OPEN | Keep Z=90mm pivot, raise pivot, reduce chute slope, side-entry funnel | Model chute entry, chute exit, and bin funnel catch height together before large prints. Do not reuse chute exit height as chute entry height. |
 | Selector sweep radius and funnel layout | OPEN | Increase radius, narrow funnels, stagger bins, increase servo spacing | At 35-degree spacing, 65mm to 75mm radius does not fit 60mm mouths without overlap. Check the arc before locking bin positions. |
-| Servo position table | OPEN | Four positions around 35 degrees apart, adjusted to real bin guides | Start near 37, 72, 107, and 142 degrees. Lock only after CAD and physical bin alignment |
+| Servo position table | OPEN | Four positions around 35 degrees apart, adjusted to real bin guides | Start near 37, 72, 107, and 142 degrees in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE. Lock only after CAD and physical bin alignment |
 | Optional feed chute | OPEN | Stay manual one-at-a-time, add simple feed guide, add simple chute | Manual feed is the base states build. Add a feed chute only after the sorter works reliably |
 
 ## Decided For States

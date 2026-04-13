@@ -26,9 +26,9 @@ Status date: April 11, 2026
 
 ## Sensor Wiring Notes
 
-- Size sensor family is undecided
-- Break-beam sensors are candidate size hardware
-- Distance or ToF sensing is candidate size hardware only until selected
+- Size sensor family is two-pair break-beam timing in the sensing shroud
+- Wire break-beam pair A and pair B as the active size hardware
+- Distance or ToF sensing is archived for states unless the size sensor decision is explicitly reopened
 - Color sensor wiring must be kept away from motor and servo leads where possible
 - Keep the color shroud installed for all calibration and validation runs
 

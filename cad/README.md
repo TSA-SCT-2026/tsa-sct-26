@@ -5,7 +5,7 @@ CAD for the simplified states sorter.
 Active production architecture:
 - Manual one-at-a-time feed
 - NEMA17 conveyor
-- Conveyor-mounted sensing station
+- Wood-frame-mounted sensing station near the conveyor start
 - MG995/MG996-class servo rotary chute selector
 - Four labeled bins
 - Wood frame with printed brackets where useful

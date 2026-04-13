@@ -63,7 +63,7 @@ block is wood, not 2020 extrusion.
 
 ## Sensing Station
 
-The sensing station mounts near the conveyor exit.
+The sensing station mounts near the start of the conveyor on the wood conveyor bed or a rigid wood frame member. It is upstream of the belt exit so classification can finish before the brick reaches the servo chute handoff.
 
 Order along travel:
 1. Size sensing
@@ -168,7 +168,7 @@ Run these before committing to large prints:
 
 1. Conveyor-to-chute handoff
 2. Servo horn or pivot slop under load
-3. Size sensor geometry after the sensor choice is made
+3. Break-beam size sensor geometry after shroud fit and timing calibration
 4. Frame stiffness around the servo and sensing station
 
 Note: chute slide friction and servo positioning accuracy are mitigated by design (UHMW lining and wide bin funnels). They remain items to verify but are no longer the top risks.

@@ -39,7 +39,7 @@
 - Conveyor moves in the correct direction
 - Forced route to all 4 bins succeeds
 - One red and one blue sample classify correctly in shrouded test
-- One 2x2 and one 2x3 sample classify correctly after size sensor is chosen
+- One 2x2 and one 2x3 sample classify correctly with break-beam timing
 - Full 24-brick run instructions are present
 
 ## CAD Gate Signoff

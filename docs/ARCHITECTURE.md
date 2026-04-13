@@ -17,7 +17,7 @@ The previous chamber and release-gate architecture is preserved under `_archive/
 The states build uses:
 - Manual one-at-a-time brick feed onto a conveyor
 - NEMA17-driven conveyor
-- Belt-mounted sensing station near the conveyor exit
+- Wood-frame-mounted sensing station near the conveyor start
 - Break-beam timing size sensing with two pairs in the sensing shroud
 - TCS3200/GY-31 color sensor with a light-blocking shroud
 - MG995/MG996/MG996R-class heavy servo rotary chute selector
@@ -78,9 +78,19 @@ Bin labels:
 - 2x3 RED
 - 2x3 BLUE
 
+Bin order:
+1. 2x2 RED
+2. 2x2 BLUE
+3. 2x3 RED
+4. 2x3 BLUE
+
 Manual feed orientation target:
 - studs up
 - long side along the conveyor travel direction
+
+As-fed 2x3 brick envelope:
+- X travel length: 23.7mm
+- Y cross-belt width: 15.8mm
 
 The orientation cue should be printed or labeled near the feed area so the evaluator does not have to infer it.
 
@@ -100,7 +110,7 @@ The downloaded conveyor STEP path is no longer the default for states. It may st
 
 ## Sensing Station
 
-All sensing is integrated into one printed shroud tunnel near the feed end of the belt.
+All sensing is integrated into one printed shroud tunnel near the feed end of the belt, mounted to the wood conveyor bed or a rigid wood frame member. It is upstream of the belt exit so the firmware has time to classify the brick and move the servo chute before handoff.
 
 Layout along belt travel:
 
@@ -143,7 +153,7 @@ Baseline geometry:
 - chute arm as short as physically possible - shorter arm means less flex and less position error
 - chute angle around 35 to 40 degrees from horizontal; exact value matters less with UHMW lining
 - four servo positions spread across roughly 105 degrees total sweep
-- target position examples around 37, 72, 107, and 142 degrees
+- target position examples around 37, 72, 107, and 142 degrees in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE
 
 Reliability approach - three layers that together remove the need for a perfect angle or precise positioning:
 1. UHMW tape lining on the chute interior - reduces friction to the point where bricks slide at 30 degrees reliably. Apply from the first build, not as a fix after testing.
@@ -200,6 +210,10 @@ Judged documentation should show:
 - Servo position and bin alignment evidence
 - Color calibration data with the shroud installed
 - Full 24-brick run logs
+
+Lower-priority firmware TODO after CAD and mechanical bringup:
+- Replace sensing stubs with calibrated two-pair break-beam timing and shrouded TCS3200 classification.
+- Align category-to-bin mapping with the bin order in this document.
 
 Run logs belong in `docs/runs/`.
 Notebook planning belongs in `docs/notebook/`.

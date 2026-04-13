@@ -52,12 +52,12 @@ Calibration evidence template:
 
 ## 3. Size Sensor Calibration
 
-Status: size sensor family is still open.
+Status: size sensor family is decided as two-pair break-beam timing in the sensing shroud.
 
-Procedure after the sensor is chosen:
-1. Mount the final size sensor in the sensing station.
+Procedure:
+1. Mount both break-beam pairs in the sensing shroud.
 2. Feed repeated 2x2 and 2x3 bricks at the chosen conveyor speed.
-3. Record raw sensor values or timing windows.
+3. Record blocked-duration timing windows from pair A and pair B.
 4. Set the simplest threshold that separates 2x2 from 2x3 with margin.
 5. Re-test after any bracket or conveyor speed change.
 

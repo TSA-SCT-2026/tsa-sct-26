@@ -8,7 +8,7 @@ Integrity rule:
 - Do not turn inferred or recommended parts into ordered purchases.
 
 Current architecture:
-- States build uses a `NEMA 17` conveyor, conveyor-mounted sensing station, and MG995/MG996-class servo rotary chute selector
+- States build uses a `NEMA 17` conveyor, wood-frame-mounted sensing station near the conveyor start, and MG995/MG996-class servo rotary chute selector
 - Size sensing uses BOM-backed IR break-beam sensors in a two-pair timing layout inside the sensing shroud
 - Color sensing uses the BOM-backed `TCS3200 GY-31` module with shroud-installed calibration
 

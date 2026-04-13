@@ -77,11 +77,11 @@ Use these as the first CAD inputs:
 
 - Servo family: MG995/MG996/MG996R-class heavy servo
 - Working pivot: Z=90mm from machine base
-- Chute internal width: 30mm
+- Chute internal width: 30mm for 15.8mm as-fed brick width plus yaw and handoff tolerance
 - Chute internal height: 15mm
 - Chute wall thickness: 3mm minimum
 - Chute slope: start at 40 degrees from horizontal, then test 30, 35, 40, and 45 degrees with UHMW
-- Servo positions: start at 37, 72, 107, and 142 degrees
+- Servo positions in bin label order: start at 37 degrees for 2x2 RED, 72 degrees for 2x2 BLUE, 107 degrees for 2x3 RED, and 142 degrees for 2x3 BLUE
 - Bin internal size: 80mm x 80mm x 60mm
 - Bin base: Z=0mm
 - UHMW lining: required on chute and funnel sliding surfaces before any meaningful run
@@ -102,7 +102,7 @@ Keep these as parameters, not hard-coded geometry:
 Start now with a standalone selector sandbox:
 
 1. Put a construction pivot at the origin, Z=90mm.
-2. Add four construction rays at 37, 72, 107, and 142 degrees.
+2. Add four construction rays at 37, 72, 107, and 142 degrees in bin label order.
 3. Add a sweep radius parameter.
 4. Place temporary funnel catch rectangles at each ray.
 5. Check overlap at 65mm, 75mm, 83mm, and 100mm radius.
@@ -214,7 +214,7 @@ Complete this before declaring the selector ready for system integration:
 - [ ] Single funnel test-printed and aligned to one servo angle
 - [ ] Brick exits chute and lands inside the funnel catch window
 - [ ] All four funnels modeled with no unplanned overlap
-- [ ] Servo positions tested at 37, 72, 107, and 142 degrees, then adjusted if needed
+- [ ] Servo positions tested in bin label order at 37, 72, 107, and 142 degrees, then adjusted if needed
 - [ ] Bins fit inside the 610mm x 610mm footprint
 - [ ] Bins can be removed without disturbing the chute
 - [ ] Servo wiring clears horn, chute sweep, and brick path
