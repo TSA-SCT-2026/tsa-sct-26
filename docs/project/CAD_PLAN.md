@@ -268,7 +268,7 @@ Goal: assemble the conveyor core in Fusion before committing to detailed shroud 
 - Confirm roller centers, side plate gap, motor clearance, lower belt return clearance, wood block end clearance, and set screw access
 - Treat the wood block top as about 2mm below the upper belt surface, not as a global Z coordinate
 - Start the wood block around 295mm to 300mm long with current rollers, then adjust from flange and belt-wrap clearance
-- Add only a placeholder shroud box from X=135 to X=200 with the 30mm inner width and 32mm inner height reserved
+- Add only a placeholder shroud box over the belt. Use the X=135 to X=200 reference span from `cad/DIMENSIONS.md`, with the 30mm inner width and 32mm inner height reserved
 - Keep feed side rails as separate placeholder strips, not part of the shroud
 - Add shroud mounting surfaces or tabs only after the conveyor core assembly shows where screws can actually land
 - Do not model the final color sensor pocket or break-beam holes until the shroud location is confirmed over the assembled conveyor

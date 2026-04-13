@@ -315,10 +315,9 @@ pulley or belt length differs, recompute only the center distance and keep movin
 ## Component 7: Wood Block Support
 
 Use one straight wood block cut from the real conveyor dry-fit, usually about 295mm to 300mm with the
-current roller geometry. This replaces the earlier 2020 aluminum
-extrusion support idea and keeps the conveyor closer to the reference tutorial. The block is both the
-top-belt support surface and a simple structural spine that thin side plates and small brackets can
-screw into.
+current roller geometry. This replaces the earlier 2020 aluminum extrusion support idea and keeps the
+conveyor closer to the reference tutorial. The block is both the top-belt support surface and a simple
+structural spine that thin side plates and small brackets can screw into.
 
 Choose the straightest available wood stock. Sand the top face smooth and cover it with smooth packing
 tape, UHMW tape, or another low-friction strip if the neoprene belt drags during testing. Do not use a
@@ -337,7 +336,7 @@ Important clearance rules:
   wood in hand is closer to 19mm thick, either rip or plane it thinner, notch it for the lower return
   path, or revise the roller diameter and shaft height before cutting parts.
 
-For Fusion reference:
+For Fusion part modeling:
 
 1. New Component.
 2. Name it `wood_block_support`.
@@ -348,16 +347,24 @@ For Fusion reference:
 6. Extrude to the measured wood block thickness in Z. If no stock is measured yet, use 10mm as the
    placeholder.
 
-Assembly position:
+Assembly placement:
 
-- X position: centered between the roller axes, then shortened or shifted so both ends clear the
-  roller flange and belt-wrap keep-out zones by at least about 10mm.
-- Y position: centered between side plates.
-- Z position: align the top surface to a support plane about 2mm below the upper belt surface. In the
-  current local conveyor datum, the roller centers are at Z=50, rollers have a 10mm radius, and the
-  belt surface sits around Z=60, so the support top starts around Z=58. Treat that as an alignment
-  relationship, not as a final global machine coordinate. The bottom face depends on the actual wood
-  thickness and must clear the lower belt return path.
+Do not place the wood block by typing a global coordinate. Place it from the parts already in the
+assembly:
+
+1. Look from the side of the conveyor so both rollers are visible as circles.
+2. Center the wood block between the idler roller axis and the drive roller axis.
+3. Center the wood block between the two inner side-plate faces.
+4. Treat the top of the roller belt-contact surface as the upper belt surface.
+5. Align the wood block top face just below that upper belt surface, about 2mm lower.
+6. Check both wood block ends against the roller flanges and belt-wrap area. Shorten or shift the
+   block until each end has about 10mm or more of visible clearance.
+7. Check the bottom of the block against the lower belt return. Thin, notch, or move the block if the
+   lower belt would rub it.
+
+Reference math only: in the starter conveyor sketch, the roller center is at Z=50 and the roller
+radius is 10mm, so the upper belt surface is around Z=60 and the wood block top starts around Z=58.
+That value is a reminder of the 2mm offset, not an assembly coordinate to type into Fusion.
 
 Use the wood block to help tie the side plates together. Fasten through the thin side plates into
 the block, or use small printed angle brackets if that is easier to drill. Keep fastener heads below
@@ -433,8 +440,10 @@ Model it as a standalone part at Z=0, then position in assembly:
    3mm fillet to soften the corner. This is the "curved" version. Skip the fillet if it causes
    trouble in Fusion.
 
-In assembly, position the bottom face at Z=60 for the first test so the flat top sits at Z=66. The
-ramp face should point toward X=0. Put the lip near X=395 to X=410, clear of the drive roller.
+In assembly, place the lip near the drive end with the ramp face pointing toward the incoming brick.
+Align the lip bottom to the belt surface for the first test so the flat top sits about 5mm to 6mm
+above the belt. The reference design puts the lip near X=395 to X=410. Keep it clear of the drive
+roller and belt-wrap area.
 
 Mount holes: two 3.3mm holes through the bottom face for M3 bolts into a crossmember below.
 If you have time, make those holes short slots in X so the lip can move a few mm during testing.
@@ -545,8 +554,8 @@ Add entry chamfer:
     at X=135 in assembly).
 23. Apply a 3mm chamfer.
 
-In assembly, position the shroud with its bottom face at Z=60 (belt surface level) and its front
-face at X=135.
+In assembly, align the shroud bottom opening with the belt surface and place the front opening after
+the feed rails. The reference design puts the front face at X=135.
 
 Before exporting the shroud STL, add the removable mounting tabs or flanges:
 
@@ -563,6 +572,14 @@ Before exporting the shroud STL, add the removable mounting tabs or flanges:
 Keep assembly simple, but use assembly relationships where they save confusion. Coordinates are only
 layout anchors. The real checks are face alignment, axis alignment, center planes, belt keep-out
 envelopes, and interference checks.
+
+Assembly translation:
+- If the guide says center between side plates, use the two inner side-plate faces as the references.
+- If the guide says align to a shaft, bearing, or roller, select the cylindrical axis in Fusion.
+- If the guide says belt surface, use the top of the roller belt-contact surface or a simple belt
+  envelope as the reference.
+- If the guide gives X, Y, or Z values, treat them as the original design math. Use them to check a
+  measurement, not as the main way to place a component.
 
 1. Ground or fix `side_plate_left` so its inner face is the reference face for the conveyor gap.
 2. Right-click `side_plate_left` in the browser, Copy, then right-click the assembly and Paste New to
@@ -590,21 +607,28 @@ envelopes, and interference checks.
 14. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
 15. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
 16. Place the motor mount outside the right side plate near the drive end.
-17. For the 20T to 60T, 200mm GT2 path, start the motor shaft center near X=321.4, Z=50.
-    Use that as a layout anchor only. Final motor holes come from the fitted bracket position.
+17. Place the motor shaft so the GT2 belt path is roughly straight and the motor mount can slide for
+    belt tension. For the 20T to 60T, 200mm GT2 path, the reference math puts the motor shaft center
+    near X=321.4 and the same height as the drive shaft. Use that only as a layout anchor. Final motor
+    holes come from the fitted bracket position.
 18. Align the 20T and 60T pulley midplanes in Y and confirm the motor mount still slides in the
     timing belt tension direction.
 19. Add a simple belt envelope and check top run and lower return clearance.
-20. Add placeholder feed side rails from X=0 to X=120, centered around Y=22.5. Keep them separate
-    from the shroud.
-21. Add a placeholder shroud volume from X=135 to X=200, with the 30mm inner width and 32mm inner
-    height reserved. Do not model the detailed sensor pocket or break-beam holes until this clears
-    the assembled conveyor.
-22. Place the exit lip with its bottom face at Z=60, centered in Y, ramp face pointing toward X=0.
-    The flat top sits at Z=66 for the first handoff test. Position it near X=395 to X=410.
+20. Add placeholder feed side rails near the feed end, centered around the belt path. The reference
+    design runs them from X=0 to X=120 and centers them around Y=22.5. Keep them separate from the
+    shroud.
+21. Add a placeholder shroud volume downstream of the feed rails, centered over the belt path. The
+    reference design places it from X=135 to X=200, with the 30mm inner width and 32mm inner height
+    reserved. Do not model the detailed sensor pocket or break-beam holes until this clears the
+    assembled conveyor.
+22. Place the exit lip near the drive end, centered between the side plates, with its ramp face toward
+    the incoming brick. The lip bottom should start at the belt surface and the flat top should sit
+    about 5mm to 6mm above the belt surface for the first handoff test. The reference design places it
+    near X=395 to X=410.
 23. After the conveyor core and placeholder shroud clear, replace the placeholder with the removable
-    sensing shroud. Put its bottom face at Z=60 and its front face at X=135. Confirm the shroud body
-    clears the belt and sits between the side plates without touching them.
+    sensing shroud. Align its bottom opening with the belt surface and its front face with the
+    placeholder shroud location. Confirm the shroud body clears the belt and sits between the side
+    plates without touching them.
 24. Add screw tabs or flanges for removable shroud mounting only where the Fusion assembly shows a
     real landing surface.
 
@@ -624,23 +648,25 @@ Run these checks before sending prints:
 - Rollers are centered in the 45mm inner gap
 - Wood block support top surface is about 2mm below the upper belt surface and does not touch either
   roller flange, belt wrap, pulley, or fastener
-- Wood block support bottom face and any screws clear the lower belt return path near Z=40
+- Wood block support bottom face and any screws clear the lower belt return path
 - Bearing pockets face the side plates and bearings are captured after holders are bolted down
 - Motor and timing belt path clear the side plate and frame legs
 - Motor bracket is fitted to the actual GT2 pulley and belt path before drilling
 - Motor stays inside the 610mm x 610mm footprint
 - Set screw can be reached with the belt installed or by rotating the roller to an access position
-- Sensing shroud bottom face is at Z=60, front face at X=135, does not touch either side plate
+- Sensing shroud bottom opening aligns with the belt surface and the shroud body does not touch either
+  side plate
 - Sensing shroud is removable with screws and can be adjusted or reprinted without rebuilding the
   conveyor core
 - Sensing shroud inner width is 30mm and clears the 25mm belt during belt tracking tests
 - Shroud break beam holes are opposite each other across the left and right walls
 - Shroud color sensor pocket is in the roof, sensor face near inner roof surface at Z=92
-- Shroud exit at X=200 leaves clear belt run to the drive end
+- Shroud exit leaves clear belt run to the drive end
 - Feed side rails are separate for the first build, end before the shroud, and do not pinch the brick
   at the shroud entry
-- Exit lip ramp face points toward X=0, first-test flat top at Z=66
-- Exit lip does not overlap the drive roller (drive roller center is at X=380, lip starts at X=395)
+- Exit lip ramp face points toward the incoming brick and the first-test flat top sits about 5mm to
+  6mm above the belt surface
+- Exit lip does not overlap the drive roller or belt-wrap area
 - Space below the exit lip and drive end is clear for the chute entry funnel
 - Belt exit is close enough to feed the future servo rotary chute selector
 
