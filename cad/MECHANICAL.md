@@ -42,8 +42,9 @@ Adjust as needed:
 - Keep the belt exit aligned with the chute entry
 
 Assembly method:
-- Use Fusion coordinates as layout anchors for shaft centers and hole patterns, not as proof of
-  assembly fit
+- Use Fusion sketch anchors for shaft centers and hole patterns, not typed Move coordinates or proof
+  of assembly fit. Assembly-level anchors should live in a visible skeleton sketch so parts can be
+  placed relative to points, axes, and planes.
 - Prefer face alignment, shaft-axis alignment, center-plane alignment, and simple belt keep-out
   envelopes when assembling conveyor parts in Fusion
 - Set the wood block support from the upper belt surface and roller flange clearance. With the
@@ -53,7 +54,7 @@ Assembly method:
   path, belt wrap, set screw access, exit lip, or future chute entry. Do not widen the frame just to
   fit a drive-end spacer. Omit the drive-end spacer if the wood block and feed-end spacer hold the
   gap well enough.
-- Use a low-frame NEMA17 starting point around conveyor-local X=331mm and Z=18mm to 20mm for the
+- Use a low-frame NEMA17 construction point around conveyor-local X=331mm and Z=18mm to 20mm for the
   20T to 60T, 200mm GT2 path. Check the actual imported motor body against the lower belt return
   before cutting the right conveyor side plate or any local motor doubler.
 - Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
@@ -85,9 +86,11 @@ The frame needs to:
 - Leave the bins removable
 - Leave wiring visible enough to look deliberate and clean
 
-Start with the conveyor side-plate bottoms about 8mm above the base plate, which puts the local belt
-surface around 68mm from the base. Adjust that only after checking the belt exit, exit lip, chute
-entry, chute exit, and bin catch height together.
+Start with the conveyor side-plate bottoms supported about 8mm above the base plate, which puts the
+local belt surface around 68mm from the base. That 8mm is a provisional cleat or standoff height, not
+an unsupported gap. It gives the low motor body base clearance and puts the first exit-lip height near
+the provisional chute entry. Adjust it after checking the belt exit, exit lip, chute entry, chute
+exit, and bin catch height together.
 
 Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
 block is wood, not 2020 extrusion.

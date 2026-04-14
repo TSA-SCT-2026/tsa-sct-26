@@ -32,12 +32,13 @@ This guide is written to get usable conveyor CAD and build files without wasting
 precision. Model the parts well enough to make drilling templates and print files. Do not model every
 screw, belt tooth, shaft collar, or final belt splice.
 
-Coordinates are starting anchors, not proof that the real assembly works. Use exact coordinates for
-axis direction, hole patterns, clearances, and rough placement inside a part sketch. In assembly, use
-relationships first: mate faces, align shaft axes, center parts between inner side-plate faces, and
-check belt keep-out envelopes. Then check the actual imported parts, slots, belt path, brick
-clearance, and hardware before drilling or printing anything that depends on fit. If a coordinate and
-the real assembly conflict, trust the real assembly and update the dimension.
+Numeric values are sketch anchors and derived checks, not proof that the real assembly works. Use
+exact values for axis direction, hole patterns, clearances, and rough placement inside part sketches
+or assembly skeleton sketches. In assembly, create visible construction points, axes, or planes for
+the few important anchors, then place parts relative to that construction geometry: mate faces, align
+shaft axes, center parts between inner side-plate faces, and check belt keep-out envelopes. Do not
+use typed Move coordinates as the source of truth. If a sketch anchor and the real assembly conflict,
+trust the real assembly and update the dimension.
 
 ## Do This First
 
@@ -55,9 +56,9 @@ Ignore the detailed reference numbers until a step asks for them. Build the CAD 
 Do not start by perfecting the motor, shroud, exit lip, or frame. The conveyor core proves whether the
 rest of the CAD has somewhere real to attach.
 
-## Coordinate Rules
+## Sketch Anchor Rules
 
-Only coordinates you must place directly:
+Only sketch anchors you should define directly:
 - Drive shaft center: X=380, Z=50
 - Idler shaft center: X=30, Z=50
 - Bearing holder mounting holes: 10mm above and 10mm below each shaft center
@@ -68,8 +69,11 @@ Everything else is fit-later or adjustable:
 - Sensing shroud: use the listed dimensions, then verify belt and brick clearance
 - Crossmembers and frame panels: place where they support the frame and do not block moving parts
 
-Do not try to be a CNC machine. Use coordinates to stop CAD from drifting, not to replace dry-fit
-checks.
+Do not try to be a CNC machine. Use sketch anchors to stop CAD from drifting, not to replace dry-fit
+checks. For assembly-level placement, make a simple skeleton sketch with the conveyor datum, shaft
+axes, belt-surface plane, base plane, and provisional motor-shaft point. Turn that sketch on while
+placing components, then constrain parts to it with joints, alignments, offsets, and measured
+clearance checks.
 
 ## Do Not Overthink
 
@@ -119,10 +123,20 @@ just because the outer plate thickness changes.
 
 This keeps the pulley frame simple while modeling. The active frame path is now a low base plate with
 short cleats, standoffs, or small brackets that locate the existing conveyor side plates, not a tall
-four-leg conveyor and not duplicate full-length side panels by default. Start with the conveyor
-side-plate bottoms about 8mm above the base so the local belt surface at Z=60 becomes about 68mm
-above the base. Adjust that height only after checking the belt exit, exit lip, chute entry, and bin
-catch height together.
+four-leg conveyor and not duplicate full-length side panels by default.
+
+The 8mm base offset is a provisional shim height, not an unsupported floating gap. It comes from two
+first-pass checks:
+- Handoff check: local belt surface is about Z=60, so an 8mm base offset puts the belt surface near
+  68mm from the base. With a 5mm to 6mm exit lip, the first handoff target is around 73mm to 74mm,
+  close to the provisional chute entry height.
+- Motor clearance check: with the motor shaft near local Z=18mm to 20mm, a NEMA17 body can dip a few
+  millimeters below the conveyor side-plate bottom. The 8mm support height gives the motor body some
+  base clearance before a real interference check.
+
+If either check changes, change the offset. A 6mm, 10mm, or direct-to-base conveyor is acceptable if
+the motor clears the base and the belt exit still feeds the chute. Whatever offset is used, support it
+with cleats, standoffs, or shims under the conveyor side plates.
 
 The drive end is the chute end. The NEMA17 body sits inside the machine frame near the drive end, the
 shaft points outward through the right conveyor side plate or a local motor doubler, and the 20T and
@@ -346,12 +360,14 @@ Add NEMA17 holes:
 7. Finish Sketch.
 8. Extrude Cut all holes and slots through all.
 
-For the 20T to 60T, 200mm GT2 path, start the motor shaft center near:
+For the 20T to 60T, 200mm GT2 path, create a provisional motor-shaft construction point in the
+conveyor side-view skeleton sketch near:
 - X=331mm
 - Z=18mm to 20mm
 
 This makes the timing belt run diagonally upward from the motor pulley to the drive pulley. Do not
-treat X=331 or Z=18 to 20 as drill coordinates. Place the motor, check the real pulley and belt path,
+treat X=331 or Z=18 to 20 as drill coordinates or typed assembly Move values. Place the motor by
+aligning the imported motor shaft axis to the skeleton point, check the real pulley and belt path,
 then mark or drill the motor holes from the fitted motor position. If the actual driven pulley or
 belt length differs, recompute only the center distance and keep moving.
 
@@ -460,7 +476,8 @@ Add only the support needed to hold the conveyor low and square:
 2. Name it `conveyor_mount_cleats`.
 3. Sketch short cleats, standoffs, or angle brackets that touch the lower outside edges of the
    conveyor side plates. Start with four small supports, one near each conveyor corner.
-4. Set the conveyor side-plate bottoms about 8mm above the base as the first CAD placement.
+4. In the assembly skeleton sketch, define the base top plane and a provisional conveyor-side-plate
+   bottom plane about 8mm above it. Place the cleats or standoffs between those planes.
 5. Add screw access from the outside where possible so the conveyor can be removed or shimmed.
 6. Add a local right-side motor doubler only if the NEMA17 mount needs more thickness or stiffness
    than the conveyor side plate provides.
@@ -672,9 +689,9 @@ Assembly translation:
     hub, pulley path, belt-wrap area, set screw access, exit lip, and future chute entry. Do not let a
     spacer stick outside the side plates or force the frame wider. Orient any spacer so its length
     runs between the inner faces of the side plates, with slip clearance if needed.
-11. Add the base plate and short conveyor mounting cleats or standoffs. Put the conveyor side-plate
-    bottoms about 8mm above the base as a first placement. The local belt surface at Z=60 will then
-    be about 68mm above the base.
+11. Add the base plate and short conveyor mounting cleats or standoffs. In the assembly skeleton
+    sketch, put the conveyor side-plate bottom plane about 8mm above the base as a first placement.
+    The local belt surface at Z=60 will then be about 68mm above the base.
 12. Add a local right-side motor doubler or printed adjustment plate only if the conveyor side plate
     needs more stiffness around the low NEMA17 mount. Do not use tall 180mm legs or full-length
     duplicate side panels unless testing proves they solve a real problem.
@@ -683,9 +700,9 @@ Assembly translation:
 15. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
 16. Place the NEMA17 body inside the machine frame near the drive end with the shaft pointing outward
     through the right conveyor side plate or local motor doubler.
-17. Start the motor shaft center near local X=331, Z=18 to 20. This gives a diagonal 200mm GT2 path
-    to the drive shaft. Use that only as a layout anchor. Final motor holes come from the fitted motor
-    position.
+17. Add a provisional motor-shaft construction point near local X=331, Z=18 to 20. This gives a
+    diagonal 200mm GT2 path to the drive shaft. Use that only as a layout anchor. Final motor holes
+    come from the fitted motor position.
 18. Align the 20T and 60T pulley midplanes in Y and confirm the motor can slide a few millimeters in
     the belt-tension direction.
 19. Add a simple belt envelope and check top run and lower return clearance.

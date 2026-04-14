@@ -9,10 +9,11 @@ Approach: build a tutorial-style conveyor with modified measurements, design the
 
 Do not spend the CAD window adapting an unknown downloaded conveyor first. Build the conveyor in the same simple structural style as the visual tutorial, but keep the team's modified belt width, belt length, 5mm shaft and bearing path, and sorter clearances. The main material change from the earlier guide is replacing the 2020 extrusion support with a wood block.
 
-Coordinates in this plan are layout anchors, not final truth. Use them to move quickly in part
-sketches, then use assembly relationships for fit: face alignment, shaft-axis alignment, center-plane
-alignment, belt keep-out envelopes, interference checks, slotted mounts, real hardware, and real-brick
-tests decide final placement.
+Numeric values in this plan are sketch anchors, offsets, and derived checks, not final truth. Use
+them to move quickly in part sketches or a visible assembly skeleton sketch, then use assembly
+relationships for fit: face alignment, shaft-axis alignment, center-plane alignment, belt keep-out
+envelopes, interference checks, slotted mounts, real hardware, and real-brick tests decide final
+placement. Do not use typed Move coordinates as the source of truth in Fusion.
 
 The custom CAD work is:
 1. Low wood base plate, short conveyor mounting cleats or standoffs, and wood block conveyor support
@@ -278,8 +279,8 @@ Goal: assemble the conveyor core in Fusion before committing to detailed shroud 
 - Confirm roller centers, side plate gap, motor clearance, lower belt return clearance, wood block end clearance, and set screw access
 - Treat the wood block top as about 2mm below the upper belt surface, not as a global Z coordinate
 - Start the wood block around 295mm to 300mm long with current rollers, then adjust from flange and belt-wrap clearance
-- Add the low base plate and short conveyor mounting cleats before final motor placement. Start with the conveyor side-plate bottoms about 8mm above the base, making the belt surface about 68mm from the base
-- Place the NEMA17 body low inside the machine envelope with its shaft outward through the right conveyor side plate or local motor doubler. Start near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path, then adjust from actual pulley fit
+- Add the low base plate and short conveyor mounting cleats before final motor placement. In an assembly skeleton sketch, start with the conveyor side-plate bottom plane about 8mm above the base top plane, making the belt surface about 68mm from the base. This is a supported shim height, not a floating gap
+- Place the NEMA17 body low inside the machine envelope with its shaft outward through the right conveyor side plate or local motor doubler. Define a provisional motor-shaft construction point near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path, then adjust from actual pulley fit
 - Confirm the motor body clears the lower belt return and the motor wire can exit rearward or downward cleanly
 - Fit crossmembers only where they clear the pulley path, belt wrap, set screw access, exit lip, and future chute entry. Do not widen the frame for a crossmember. Use one feed-end spacer first, then add a drive-end spacer only if it fits cleanly.
 - Add only a placeholder shroud box over the belt. Use the X=135 to X=200 reference span from `cad/DIMENSIONS.md`, with the 30mm inner width and 32mm inner height reserved

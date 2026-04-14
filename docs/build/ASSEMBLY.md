@@ -59,7 +59,7 @@ Goal:
 Steps:
 1. Assemble the side plates, fixed bearing holders, slotted bearing holders, shafts, rollers, wood
    block support, low side-plate motor mount or local doubler, NEMA17, pulley placeholders, and simple belt envelope in Fusion using
-   assembly relationships instead of typed global coordinates wherever possible.
+   assembly relationships and a visible skeleton sketch instead of typed global coordinates.
 2. Confirm the 45mm inner side-plate gap and 25mm belt path.
 3. Confirm the wood block support clears the lower belt return.
 4. Confirm each wood block end clears the roller flange and belt-wrap envelope by about 10mm or more.
@@ -69,11 +69,12 @@ Steps:
 8. Fit crossmembers only where they clear the hub, pulley path, belt wrap, set screw access, exit
    lip, and future chute entry. Start with a feed-end spacer. Add a drive-end spacer only if it fits
    inside the side plates without widening the frame.
-9. Add the low base plate and short conveyor mounting cleats or standoffs. Start with the conveyor
-   side-plate bottoms about 8mm above the base so the belt surface is about 68mm from the base.
+9. Add the low base plate and short conveyor mounting cleats or standoffs. In the skeleton sketch,
+   start with the conveyor side-plate bottom plane about 8mm above the base top plane so the belt
+   surface is about 68mm from the base. This is a supported shim height, not a floating gap.
 10. Place the NEMA17 body low inside the machine envelope with its shaft outward through the right
-    conveyor side plate or local motor doubler. Start near conveyor-local X=331mm and Z=18mm to
-    20mm, then adjust from real pulley and belt fit.
+    conveyor side plate or local motor doubler. Start from a motor-shaft construction point near
+    conveyor-local X=331mm and Z=18mm to 20mm, then adjust from real pulley and belt fit.
 11. Confirm the motor clears the lower belt return and the wire exits rearward or downward cleanly.
 12. Add only a placeholder sensing shroud volume near the feed side, using the reference shroud span
    as a check rather than a typed placement command.

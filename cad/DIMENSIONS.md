@@ -45,7 +45,7 @@ Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISI
 |---------|-----------------------|
 | Material | Wood frame from available stock, with 3D printed brackets where useful |
 | 2020 extrusion | Not active for frame or conveyor support |
-| Belt surface height | Derived from belt-to-chute handoff. Low-frame starting point is about 68mm from base, then adjust after chute entry and bin catch height are checked together |
+| Belt surface height | Derived from belt-to-chute handoff. Low-frame starting point is about 68mm from base, created by supporting the conveyor side plates about 8mm above the base, then adjusted after chute entry and bin catch height are checked together |
 | Minimum height check | Belt exit plus exit lip must feed the chute entry; chute exit must land in the bin funnel catch window |
 | Base plate | Start around 590mm x 590mm, adjust within the 610mm x 610mm limit after bin and chute layout |
 | Frame style | Low base plate with short cleats, standoffs, or brackets supporting the existing conveyor side plates. Do not use full-length duplicate side panels or tall 180mm conveyor legs unless testing proves they solve a real problem |
@@ -75,7 +75,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Tension method | Simple slotted idler or motor mount |
 | Timing belt and pulley | Keep as active if the tutorial-style conveyor uses or benefits from the existing GT2 parts |
 | NEMA17 package | Body low inside machine envelope near drive end, shaft outward through right conveyor side plate or local motor doubler, GT2 pulleys accessible outside |
-| NEMA17 low-frame start | Motor shaft near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path. Adjust from actual pulley and belt fit |
+| NEMA17 low-frame start | Motor shaft construction point near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path. Adjust from actual pulley and belt fit |
 | Motor clearance check | Imported motor body must clear the lower belt return near local Z=40 and must leave a rearward or downward wire exit path |
 | 25mm neoprene strip | Active first belt material |
 | 15mm neoprene strip | Spare stock unless testing shows a use |
@@ -121,7 +121,7 @@ Color calibration is valid only with the shroud installed in the final screw-mou
 
 Status for this section: `DECIDED_FOR_STATES` for actuator family and selector concept; `PROVISIONAL_ESTIMATE` for pivot height, chute radius, funnel geometry, and belt handoff until frame CAD and real-brick tests confirm the stack.
 
-Coordinate warning: the conveyor CAD currently uses a local belt-surface datum around Z=60mm in some files, while the low-frame assembly may place that surface around 68mm from the machine base. Do not mix those datums. Convert conveyor-local Z values into the final machine-base coordinate system before locking the selector position.
+Coordinate warning: the conveyor CAD currently uses a local belt-surface datum around Z=60mm in some files, while the low-frame assembly may place that surface around 68mm from the machine base. Do not mix those datums. Use construction points, axes, and planes in a visible assembly skeleton sketch, then convert conveyor-local Z values into the final machine-base coordinate system before locking the selector position.
 
 ### Servo Mount and Pivot
 
