@@ -21,7 +21,7 @@ Keep the notebook authored in this directory with one file per section:
 - `decision_matrices.md`
 - `rejected_alternatives.md`
 - `calibration_records.md`
-- `equations_and_models.md`
+- `EQUATIONS.md`
 - `failure_mode_analysis.md`
 - `performance_summary.md`
 - `iteration_log.md`
