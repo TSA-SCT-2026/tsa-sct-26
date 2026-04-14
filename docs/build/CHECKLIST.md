@@ -2,12 +2,12 @@
 
 ## Fusion Assembly Before Shroud CAD
 
-- Conveyor core assembled in Fusion with side plates, holders, shafts, rollers, wood block support, low side-panel motor mount, NEMA17, and pulley path
+- Conveyor core assembled in Fusion with side plates, holders, shafts, rollers, wood block support, low side-plate motor mount or local doubler, NEMA17, and pulley path
 - Simple belt envelope clears rollers, side plates, wood support, likely screw heads, and lower return path
 - Wood block ends clear roller flange and belt-wrap envelopes by about 10mm or more
 - Crossmembers, if used, fit inside the side plates and do not block drive hardware, set screw access, exit lip, or chute entry
-- Low base plate and side-panel frame are modeled instead of tall 180mm conveyor legs
-- NEMA17 body sits inside the machine frame near the drive end, shaft points outward through the right side panel, and GT2 pulleys are accessible outside
+- Low base plate and short conveyor mounting cleats or standoffs are modeled instead of duplicate full-length side panels or tall 180mm conveyor legs
+- NEMA17 body sits low inside the machine envelope near the drive end, shaft points outward through the right conveyor side plate or local motor doubler, and GT2 pulleys are accessible outside
 - Motor body clears the lower belt return and motor wiring exits rearward or downward cleanly
 - Drive roller hub is on the motor side
 - Drive roller set screw access is visible or reachable after hand-drilling

@@ -96,7 +96,7 @@ The orientation cue should be printed or labeled near the feed area so the evalu
 
 ## Conveyor
 
-The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a low NEMA17 drive packaged inside the wood frame with the shaft pointing outward through the right side panel.
+The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a low NEMA17 drive with the shaft pointing outward through the right conveyor side plate or a local motor doubler. The base should support the existing conveyor side plates with short cleats, standoffs, or brackets rather than adding full-length duplicate side panels by default.
 
 Baseline intent:
 - Usable top-run length around 300mm to 400mm
@@ -104,7 +104,7 @@ Baseline intent:
 - Belt surface height derived from the belt-to-chute handoff. Current low-frame CAD starts around 68mm from the base, then adjusts after chute entry and bin catch height are checked together
 - NEMA17 motor retained
 - Wood block support replacing the previous 2020 aluminum extrusion support idea
-- Belt path and motor clearance verified inside the 610mm x 610mm footprint
+- Belt path and motor clearance verified inside the 610mm x 610mm footprint without adding structure that does not improve stiffness, service access, or alignment
 
 The downloaded conveyor STEP path is no longer the default for states. It may still be used as visual or dimensional reference, but the active build path prioritizes the tutorial-style conveyor with modified measurements because it is easier to build, inspect, and debug in the remaining sprint.
 

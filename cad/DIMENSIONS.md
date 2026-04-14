@@ -48,7 +48,7 @@ Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISI
 | Belt surface height | Derived from belt-to-chute handoff. Low-frame starting point is about 68mm from base, then adjust after chute entry and bin catch height are checked together |
 | Minimum height check | Belt exit plus exit lip must feed the chute entry; chute exit must land in the bin funnel catch window |
 | Base plate | Start around 590mm x 590mm, adjust within the 610mm x 610mm limit after bin and chute layout |
-| Frame style | Low base plate with wood side panels or risers, not tall 180mm conveyor legs unless a later chute and bin layout proves the conveyor must be high |
+| Frame style | Low base plate with short cleats, standoffs, or brackets supporting the existing conveyor side plates. Do not use full-length duplicate side panels or tall 180mm conveyor legs unless testing proves they solve a real problem |
 | Stiffness target | No visible sensor or chute drift during servo motion |
 
 ## Conveyor
@@ -74,7 +74,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Belt exit | Direct handoff into servo chute entry |
 | Tension method | Simple slotted idler or motor mount |
 | Timing belt and pulley | Keep as active if the tutorial-style conveyor uses or benefits from the existing GT2 parts |
-| NEMA17 package | Body inside machine frame near drive end, shaft outward through right side panel, GT2 pulleys accessible outside |
+| NEMA17 package | Body low inside machine envelope near drive end, shaft outward through right conveyor side plate or local motor doubler, GT2 pulleys accessible outside |
 | NEMA17 low-frame start | Motor shaft near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path. Adjust from actual pulley and belt fit |
 | Motor clearance check | Imported motor body must clear the lower belt return near local Z=40 and must leave a rearward or downward wire exit path |
 | 25mm neoprene strip | Active first belt material |

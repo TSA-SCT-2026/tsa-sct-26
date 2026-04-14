@@ -56,8 +56,9 @@ Use the same general shape, but change the hardware path for the states sorter:
 - Use matching 5mm-ID bearings, currently the MR85ZZ path, unless real hardware forces a change.
 - Use printed rollers sized around the 25mm belt, with simple flanges.
 - Use a wood block support under the top belt run instead of 2020 extrusion.
-- Keep the NEMA17 motor, but package its body inside the machine frame with the shaft pointing
-  outward through the right side panel unless real CAD fit proves an external bracket is simpler.
+- Keep the NEMA17 motor, but package its body low inside the machine envelope with the shaft pointing
+  outward through the right conveyor side plate or a local motor doubler unless real CAD fit proves an
+  external bracket is simpler.
 - Use GT2 timing pulleys and belt only where they make the drive easier to build and tension.
 - Keep the belt surface and final frame height tied to the chute and bin handoff, not the tutorial's frame height.
 

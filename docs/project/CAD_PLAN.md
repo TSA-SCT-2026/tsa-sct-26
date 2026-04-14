@@ -15,7 +15,7 @@ alignment, belt keep-out envelopes, interference checks, slotted mounts, real ha
 tests decide final placement.
 
 The custom CAD work is:
-1. Low wood base plate, wood side-panel frame, and wood block conveyor support
+1. Low wood base plate, short conveyor mounting cleats or standoffs, and wood block conveyor support
 2. MG995/MG996-class servo rotary chute selector
 3. Sensor mounting brackets and TCS3200 color sensor shroud
 4. Four bins and bin entry guides
@@ -75,23 +75,27 @@ Keep these numbers in `cad/DIMENSIONS.md` when they change.
 
 ## Subassembly 1: Frame
 
-What it is: a low base plate and wood side-panel frame that holds the conveyor, motor, servo chute,
-and bins in one stiff machine reference.
+What it is: a low base plate that holds the conveyor, motor, servo chute, and bins in one stiff
+machine reference without adding duplicate full-length side panels unless the dry-fit proves they
+solve a real stiffness problem.
 
 Active material options:
 - Wood frame or base plate with printed brackets
-- Wood side panels or risers for the low conveyor and NEMA17 mount
+- Short wood cleats, standoffs, or angle brackets that fasten the existing conveyor side plates to the base
+- Local right-side motor doubler or printed adjustment plate only if the conveyor side plate needs more thickness around the NEMA17 mount
 - Wood block support under the top belt run
 - 3D printed brackets and rails only where they save time or improve fit
 - Hybrid wood base plus printed servo and sensor mounts
 
 Do not design around 2020 extrusion unless the material situation changes.
+Do not add full-length duplicate side panels just because the conveyor is low. If the added panel is
+the same thin stock as the conveyor side plate and does not improve stiffness, skip it.
 
 CAD steps:
 1. New component: `Frame`
 2. Sketch a 610mm x 610mm construction boundary on the ground plane
-3. Place a simple base plate and low side-panel supports
-4. Place conveyor support rails or side panels
+3. Place a simple base plate
+4. Add only the short cleats, standoffs, or brackets needed to locate the conveyor side plates
 5. Add a stiff servo mount area near the belt exit
 6. Keep the front open enough for bin removal
 7. Add wire routing paths that stay clear of the belt, chute, and servo horn
@@ -108,7 +112,7 @@ Preferred path:
 3. Model two printed rollers around the current 5mm shaft and matching bearing choice
 4. Add the low NEMA17 mount after the core roller assembly and low frame exist
 5. Set the wood block top face about 2mm below belt surface and keep the bottom clear of the lower belt return
-6. Use the 200mm GT2 timing belt with the motor body inside the frame, shaft outward through the right side panel, and pulleys accessible outside
+6. Use the 200mm GT2 timing belt with the motor body low inside the machine envelope, shaft outward through the right conveyor side plate or local motor doubler, and pulleys accessible outside
 7. Keep the design simple enough to cut, drill, print, and test quickly
 
 What not to model:
@@ -274,8 +278,8 @@ Goal: assemble the conveyor core in Fusion before committing to detailed shroud 
 - Confirm roller centers, side plate gap, motor clearance, lower belt return clearance, wood block end clearance, and set screw access
 - Treat the wood block top as about 2mm below the upper belt surface, not as a global Z coordinate
 - Start the wood block around 295mm to 300mm long with current rollers, then adjust from flange and belt-wrap clearance
-- Add the low base plate and side panels before final motor placement. Start with the conveyor side-plate bottoms about 8mm above the base, making the belt surface about 68mm from the base
-- Place the NEMA17 body inside the frame with its shaft outward through the right side panel. Start near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path, then adjust from actual pulley fit
+- Add the low base plate and short conveyor mounting cleats before final motor placement. Start with the conveyor side-plate bottoms about 8mm above the base, making the belt surface about 68mm from the base
+- Place the NEMA17 body low inside the machine envelope with its shaft outward through the right conveyor side plate or local motor doubler. Start near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path, then adjust from actual pulley fit
 - Confirm the motor body clears the lower belt return and the motor wire can exit rearward or downward cleanly
 - Fit crossmembers only where they clear the pulley path, belt wrap, set screw access, exit lip, and future chute entry. Do not widen the frame for a crossmember. Use one feed-end spacer first, then add a drive-end spacer only if it fits cleanly.
 - Add only a placeholder shroud box over the belt. Use the X=135 to X=200 reference span from `cad/DIMENSIONS.md`, with the 30mm inner width and 32mm inner height reserved
@@ -291,7 +295,7 @@ Pass criteria:
 - Any crossmember used fits inside the side plates without forcing the frame wider or blocking drive hardware
 - Drive roller hub and set screw access remain on the motor side
 - Motor can still slide a few millimeters to tension the timing belt
-- GT2 pulleys remain accessible outside the right side panel
+- GT2 pulleys remain accessible outside the right conveyor side plate
 - Belt exit, exit lip, chute entry, chute exit, and bin catch height have a plausible shared Z stack
 - Shroud placeholder clears the belt and does not touch the side plates
 - There is a plausible screw-on mounting path for a removable shroud

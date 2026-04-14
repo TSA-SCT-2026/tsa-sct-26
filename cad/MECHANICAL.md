@@ -30,14 +30,14 @@ Build around:
 - Two thin wood side plates
 - Printed bearing holders bolted to the outside faces
 - Shafts and printed rollers between the plates
-- NEMA17 motor packaged low inside the machine frame with its shaft pointing outward through the right side panel
+- NEMA17 motor packaged low with its shaft pointing outward through the right conveyor side plate or a local motor doubler
 - 5mm shaft and matching 5mm-ID bearing path
 - 25mm neoprene belt sized from the real dry-fit
 
 Adjust as needed:
 - Set belt path around the current 25mm neoprene strip
 - Set usable top-run length to roughly 300mm to 400mm
-- Keep motor and tensioner serviceable with the GT2 pulleys visible outside the right side panel
+- Keep motor and tensioner serviceable with the GT2 pulleys visible outside the right conveyor side plate
 - Mount to the wood frame without exceeding 610mm x 610mm
 - Keep the belt exit aligned with the chute entry
 
@@ -55,7 +55,7 @@ Assembly method:
   gap well enough.
 - Use a low-frame NEMA17 starting point around conveyor-local X=331mm and Z=18mm to 20mm for the
   20T to 60T, 200mm GT2 path. Check the actual imported motor body against the lower belt return
-  before cutting the right side panel.
+  before cutting the right conveyor side plate or any local motor doubler.
 - Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
   when the exact hole location depends on wood stock, pulley alignment, or adjustable brackets.
 
@@ -69,9 +69,14 @@ The active frame is wood, with printed brackets where they save time or improve 
 be picked up locally, so exact board and block thicknesses stay provisional until purchase and
 measurement.
 
-The active frame path is a low base plate with wood side panels or risers. Tall 180mm conveyor legs
-are not the default states path. Use the low frame unless a later chute and bin layout proves the
-conveyor must be high.
+The active frame path is a low base plate with the existing conveyor side plates fastened to short
+cleats, standoffs, or small brackets. Do not add full-length duplicate side panels by default. If the
+extra panel is the same thin stock as the conveyor side plate, it adds cutting, drilling, and
+alignment work without much stiffness. Add only localized reinforcement where it earns its keep:
+around the NEMA17 mount, around the servo mount, or at a proven flex point.
+
+Tall 180mm conveyor legs are not the default states path. Use the low frame unless a later chute and
+bin layout proves the conveyor must be high.
 
 The frame needs to:
 - Place the belt at a height that feeds the chute entry cleanly
