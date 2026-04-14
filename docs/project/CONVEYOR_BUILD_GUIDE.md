@@ -13,13 +13,14 @@ endless belts from manufacturers. Neither is available in the build window. Buil
 
 Build the conveyor in the same simple style as the reference video: a wood block support that
 parts can screw into, thin wood side plates, printed bearing holders, shafts through the bearings,
-printed rollers between the plates, and a NEMA17 on an adjustable side bracket.
+printed rollers between the plates, and a low NEMA17 drive packaged inside the machine frame with the
+shaft pointing outward through the right side panel.
 
 Reference tutorial structure to preserve:
-- NEMA17 motor, printed rollers, printed bearing holders, printed motor bracket, shaft spacers, and pulleys
+- NEMA17 motor, printed rollers, printed bearing holders, motor adjustment slots, shaft spacers, and pulleys
 - Wood or hardboard support piece connected into the frame, not an aluminum extrusion frame
 - Adjustable bearing holders for belt tension
-- Movable motor bracket for timing belt tension
+- Movable motor mount for timing belt tension
 - Overall visual build order and simple screw-together construction
 
 Do not copy the tutorial dimensions or hardware as law. This build is intentionally modified for the
@@ -32,9 +33,11 @@ precision. Model the parts well enough to make drilling templates and print file
 screw, belt tooth, shaft collar, or final belt splice.
 
 Coordinates are starting anchors, not proof that the real assembly works. Use exact coordinates for
-axis direction, hole patterns, clearances, and rough placement. Then check the actual imported parts,
-slots, belt path, brick clearance, and hardware before drilling or printing anything that depends on
-fit. If a coordinate and the real assembly conflict, trust the real assembly and update the dimension.
+axis direction, hole patterns, clearances, and rough placement inside a part sketch. In assembly, use
+relationships first: mate faces, align shaft axes, center parts between inner side-plate faces, and
+check belt keep-out envelopes. Then check the actual imported parts, slots, belt path, brick
+clearance, and hardware before drilling or printing anything that depends on fit. If a coordinate and
+the real assembly conflict, trust the real assembly and update the dimension.
 
 ## Do This First
 
@@ -44,9 +47,10 @@ Ignore the detailed reference numbers until a step asks for them. Build the CAD 
 2. Bearing holders
 3. Rollers
 4. Core conveyor assembly: side plates, bearings, shafts, and rollers
-5. Motor mount, fitted after the core conveyor exists
-6. Wood block support and crossmembers
-7. Extras after the conveyor core fits: side rails, sensing shroud, and exit lip
+5. Wood block support and crossmembers
+6. Low base plate and wood side-panel frame
+7. NEMA17 placement, fitted after the core conveyor and low frame exist
+8. Extras after the conveyor core fits: side rails, sensing shroud, and exit lip
 
 Do not start by perfecting the motor, shroud, exit lip, or frame. The conveyor core proves whether the
 rest of the CAD has somewhere real to attach.
@@ -59,22 +63,43 @@ Only coordinates you must place directly:
 - Bearing holder mounting holes: 10mm above and 10mm below each shaft center
 
 Everything else is fit-later or adjustable:
-- Motor mount: start near the suggested position, then fit to the real pulley and belt path
+- Motor mount: start near the suggested low-frame position, then fit to the real pulley and belt path
 - Exit lip: first version is a handoff test coupon and will probably move
 - Sensing shroud: use the listed dimensions, then verify belt and brick clearance
-- Crossmembers and legs: place where they support the frame and do not block moving parts
+- Crossmembers and frame panels: place where they support the frame and do not block moving parts
 
 Do not try to be a CNC machine. Use coordinates to stop CAD from drifting, not to replace dry-fit
 checks.
 
 ## Do Not Overthink
 
-- Motor mount: do not pre-drill final side-plate holes from CAD alone. Fit it in assembly.
+- Motor mount: do not pre-drill final side-panel holes from CAD alone. Fit it in assembly.
 - Exit lip: the first version is allowed to be wrong. It exists to make handoff testing fast.
 - Sensing shroud: approximate placement is fine for v1 if the belt clears and the brick does not rub.
 - Crossmembers: place them where they stiffen the side plates and stay out of the belt path. If the
   wood block support holds the spacing well, fewer printed crossmembers may be needed.
 - Fusion parameters: skip them if they slow you down. Type the numbers directly.
+
+## Hole Strategy
+
+Model holes in Fusion when the hole pattern is part of a printed part or drilling template:
+- side-plate shaft holes and bearing-holder mounting holes
+- bearing-holder holes, pockets, and slots
+- NEMA17 motor holes and slots in the right wood side panel or printed adjustment plate
+- shroud tabs or flanges, preferably as short adjustment slots where useful
+- break-beam and color sensor mounting geometry in the sensing shroud
+
+Mark or drill holes from the fitted real assembly when the exact position depends on wood stock,
+pulley alignment, or clearance:
+- final motor-mount holes through the side panel
+- wood block support screws
+- crossmember screws if a crossmember is fitted after pulley clearance is known
+- temporary side rail screws
+- exit lip screws unless the lip lands on a known printed bracket
+
+For printed threaded features, use pilot holes in Fusion only if they help. Tapping in the real part
+is normal. For the drive roller set screw, the first-build default is to print the hub solid, drill a
+2.5mm pilot toward the shaft bore, tap M3 by hand, and file a small flat on the shaft.
 
 ## Coordinate Convention
 
@@ -92,11 +117,14 @@ If the Home Depot side-plate stock is not 8mm thick, change the side plate thick
 the real material. Do not change shaft centers, bearing-holder hole spacing, or the 45mm inner gap
 just because the outer plate thickness changes.
 
-This keeps the pulley frame simple while modeling. In the full machine assembly, raise the whole
-conveyor subassembly by `leg_h` so the local belt surface at Z=60 becomes about 240mm above the base.
-The legs are vertical supports between the base and the raised conveyor, not parts that run across Y.
+This keeps the pulley frame simple while modeling. The active frame path is now a low base plate with
+wood side panels or risers, not a tall four-leg conveyor. Start with the conveyor side-plate bottoms
+about 8mm above the base so the local belt surface at Z=60 becomes about 68mm above the base. Adjust
+that height only after checking the belt exit, exit lip, chute entry, and bin catch height together.
 
-The drive end is the chute end. The motor and GT2 pulleys go outside the right side plate at the drive end.
+The drive end is the chute end. The NEMA17 body sits inside the machine frame near the drive end, the
+shaft points outward through the right side panel, and the 20T and 60T GT2 pulleys remain visible on
+the outside for service and belt tensioning.
 
 ## Fusion Setup
 
@@ -273,16 +301,30 @@ Fusion cut slows you down. Keep the hub large enough, drill a 2.5mm pilot toward
 for M3, file a small flat on the shaft, and confirm the screw can be reached after the roller and belt
 are installed.
 
-## Component 6: Motor Mount
+## Component 6: Low NEMA17 Mount
 
-The motor mount is a flat adjustable plate outside the right side plate.
+The active NEMA17 layout puts the motor body inside the machine frame, below the top belt run, with
+the shaft pointing outward through the right side panel. This keeps the motor inside the 610mm x
+610mm footprint and avoids a tall external motor tower.
+
+Use wood for the structural side panel. A printed motor plate is optional: use it as a drilling
+template or thin adjustment plate if it saves time, but do not depend on a large printed tower for
+the main motor support.
+
+Important clearance rule:
+- With the starter roller layout, the lower belt return runs near local Z=40. Start the motor shaft
+  near local X=331, Z=18 to 20. That keeps the NEMA17 body low enough to fit under the lower belt
+  return, but it is close. Check the imported motor body against the lower belt envelope before
+  cutting the side panel.
 
 1. New Component.
-2. Name it `motor_mount`.
+2. Name it `motor_mount_template` or `motor_adjustment_plate`.
 3. Create Sketch on the XZ plane.
-4. Draw a 100mm x 70mm rectangle centered on the motor shaft center.
+4. Draw a 70mm x 70mm rectangle centered on the motor shaft center. Increase the size only if the
+   real side panel needs more screw landing area.
 5. Finish Sketch.
-6. Extrude 6mm.
+6. Extrude 3mm to 6mm if this will become a printed adjustment plate. If it is only a drilling
+   template, thickness is not important.
 
 Add NEMA17 holes:
 
@@ -295,22 +337,26 @@ Add NEMA17 holes:
    - X=+15.5, Z=-15.5 from motor center
    - X=-15.5, Z=+15.5 from motor center
    - X=-15.5, Z=-15.5 from motor center
-6. Draw two 3.3mm x 24mm horizontal slots using Center to Center Slot for mounting the bracket to the
-   side plate:
-   - slot centered at X=0, Z=+25 from motor center
-   - slot centered at X=0, Z=-25 from motor center
+6. Make the four NEMA17 mount holes into short adjustment slots if possible. Slot them along the
+   diagonal direction between the motor pulley and drive pulley so the motor can slide a few
+   millimeters to tension the GT2 belt.
 7. Finish Sketch.
 8. Extrude Cut all holes and slots through all.
 
 For the 20T to 60T, 200mm GT2 path, start the motor shaft center near:
-- X=`drive_x` minus `gt2_center_dist` = 321.4mm
-- Z=`shaft_z` = 50mm
+- X=331mm
+- Z=18mm to 20mm
 
-This makes the timing belt run mostly horizontal and keeps the motor body within the side plate height.
-The bracket slots adjust along X, which is the belt tension direction for this first-pass layout. Do
-not treat X=321.4 as a drill coordinate. Place the motor, check the real pulley and belt path, then
-mark or drill the side-plate motor-mount holes from the fitted bracket position. If the actual driven
+This makes the timing belt run diagonally upward from the motor pulley to the drive pulley. Do not
+treat X=331 or Z=18 to 20 as drill coordinates. Place the motor, check the real pulley and belt path,
+then mark or drill the side-panel motor holes from the fitted motor position. If the actual driven
 pulley or belt length differs, recompute only the center distance and keep moving.
+
+Cable routing:
+- Rotate the motor so the connector and wires point rearward or downward, away from the belt and
+  pulley path.
+- Add a notch or rounded pass-through in the wood side panel if the connector needs clearance.
+- Add a printed clip or strain relief later if it improves presentation.
 
 ## Component 7: Wood Block Support
 
@@ -378,32 +424,46 @@ Simple printed spacer:
 
 1. New Component.
 2. Name it `crossmember_spacer`.
-3. Sketch a 45mm x 20mm rectangle.
+3. Sketch a 44.5mm to 45mm x 20mm rectangle.
 4. Extrude 20mm.
 5. Add a 3.3mm hole through each end if you want it bolted.
 
-Use two spacers as a starting point: one near the feed end and one near the drive end. If the
-wood block is wide and screwed in well, it may provide most of the spacing stiffness. Add a third
-spacer in the middle only if the side plates flex.
+Use crossmembers only where they fit cleanly. A feed-end spacer is usually useful. A drive-end spacer
+is optional because the drive side also has the roller hub, driven pulley, motor pulley, timing belt,
+exit lip, and future chute handoff. Do not widen the conveyor frame just to fit a spacer. Move it,
+lower it, shorten it in X, replace it with a small bracket, or omit it if it interferes with the
+pulley path, belt-wrap area, set screw access, exit lip, or chute entry.
 
-## Component 9: Legs
+The spacer does not need a zero-clearance fit. A 45mm spacer in a 45mm inner gap is a CAD-perfect
+fit, but real wood and printed plastic may bind. Printing around 44.5mm, or printing 45mm and sanding
+until it slips in without spreading the side plates, is acceptable. If the wood block is wide and
+screwed in well, it may provide most of the spacing stiffness. Add another spacer only if the side
+plates flex.
 
-The legs lift the conveyor to the target belt height of about 240mm. They are simple printed or wood
-posts. Model them as blocks so the assembly shows the correct height.
+## Component 9: Low Base Plate And Side Panels
 
 1. New Component.
-2. Name it `leg`.
+2. Name it `base_plate`.
 3. Create Sketch on the XY plane.
-4. Draw a 20mm x 20mm square.
+4. Draw a rectangle inside the 610mm x 610mm competition footprint. Start around 590mm x 590mm unless
+   the bin layout needs the full space.
 5. Finish Sketch.
-6. Extrude `leg_h` in Z.
+6. Extrude to the measured wood thickness after the Home Depot stock is chosen. Use 6mm to 12mm as a
+   placeholder if stock is not measured yet.
 
-You will place four copies of this leg in the full machine assembly: one near each corner of the
-conveyor frame. Put the leg bottoms on the machine base plane and the leg tops against the raised
-side plate bottoms.
+Add two wood side panels or risers:
 
-If you plan to cut the legs from wood, the 20mm x 20mm cross section is a good starting point. Adjust
-to match whatever wood stock is available.
+1. New Component.
+2. Name it `frame_side_panel_right`.
+3. Sketch a side panel large enough to support the conveyor side plate and the low NEMA17 mount.
+   Start with about 410mm length in X and about 85mm to 100mm height in Z.
+4. Add a second matching support on the left side or use a simpler left-side riser if it clears the
+   bins and chute.
+5. Put the panel bottoms on the base plate and set the conveyor side-plate bottoms about 8mm above
+   the base as the first CAD placement.
+
+Use the side panels or risers as real structure. Do not use tall 180mm posts unless a later chute and
+bin layout proves the conveyor must be high.
 
 ## Component 10: Exit Lip
 
@@ -445,8 +505,10 @@ Align the lip bottom to the belt surface for the first test so the flat top sits
 above the belt. The reference design puts the lip near X=395 to X=410. Keep it clear of the drive
 roller and belt-wrap area.
 
-Mount holes: two 3.3mm holes through the bottom face for M3 bolts into a crossmember below.
-If you have time, make those holes short slots in X so the lip can move a few mm during testing.
+Mount holes: if the lip lands on a fitted crossmember or printed bracket, add two 3.3mm holes through
+the bottom face for M3 bolts. If it lands on wood or the drive-end spacer is omitted, mark the holes
+from the fitted lip position after the pulley and belt-wrap clearance is known. If you have time,
+make those holes short slots in X so the lip can move a few mm during testing.
 
 The chute entry funnel for the servo rotary chute selector sits directly below this lip. Position
 the chute entry when modeling the chute selector subassembly.
@@ -599,20 +661,26 @@ Assembly translation:
 9. Place the wood block support between the rollers. Center it between the roller axes and side
    plates, align its top face about 2mm below the upper belt surface plane, and confirm both ends
    clear the roller flange and belt-wrap keep-out zones by at least about 10mm.
-10. Place two crossmember spacers: one near X=50, one near X=360. Orient them so the 45mm length
-    runs in Y between the inner faces of the side plates.
-11. Move the whole conveyor subassembly up by `leg_h` when placing it into the full machine frame.
-12. Place four leg copies near the corners, running vertically from the base to the side plate bottoms.
+10. Fit crossmember spacers only after the roller, pulley, belt, wood block, and exit-lip keep-outs
+    are visible. Start with one feed-end spacer, then add a drive-end spacer only if it clears the
+    hub, pulley path, belt-wrap area, set screw access, exit lip, and future chute entry. Do not let a
+    spacer stick outside the side plates or force the frame wider. Orient any spacer so its length
+    runs between the inner faces of the side plates, with slip clearance if needed.
+11. Add the base plate and two wood side panels or risers. Put the conveyor side-plate bottoms about
+    8mm above the base as a first placement. The local belt surface at Z=60 will then be about 68mm
+    above the base.
+12. Place the right side panel so it can carry the low NEMA17 mount. Do not use tall 180mm legs unless
+    a later chute and bin layout proves the conveyor must be high.
 13. Import the NEMA17 STEP from `docs/datasheet/motion/nema17/cad/stepper_17hs4401s.step`.
 14. Import the 20T pulley STEP from `docs/datasheet/motion/timing_pulley/cad/gt2_20t_5mm.step`.
 15. Make a simple 60T pulley placeholder as a 40mm diameter, 11mm wide cylinder.
-16. Place the motor mount outside the right side plate near the drive end.
-17. Place the motor shaft so the GT2 belt path is roughly straight and the motor mount can slide for
-    belt tension. For the 20T to 60T, 200mm GT2 path, the reference math puts the motor shaft center
-    near X=321.4 and the same height as the drive shaft. Use that only as a layout anchor. Final motor
-    holes come from the fitted bracket position.
-18. Align the 20T and 60T pulley midplanes in Y and confirm the motor mount still slides in the
-    timing belt tension direction.
+16. Place the NEMA17 body inside the machine frame near the drive end with the shaft pointing outward
+    through the right side panel.
+17. Start the motor shaft center near local X=331, Z=18 to 20. This gives a diagonal 200mm GT2 path
+    to the drive shaft. Use that only as a layout anchor. Final motor holes come from the fitted motor
+    position.
+18. Align the 20T and 60T pulley midplanes in Y and confirm the motor can slide a few millimeters in
+    the belt-tension direction.
 19. Add a simple belt envelope and check top run and lower return clearance.
 20. Add placeholder feed side rails near the feed end, centered around the belt path. The reference
     design runs them from X=0 to X=120 and centers them around Y=22.5. Keep them separate from the
@@ -649,9 +717,13 @@ Run these checks before sending prints:
 - Wood block support top surface is about 2mm below the upper belt surface and does not touch either
   roller flange, belt wrap, pulley, or fastener
 - Wood block support bottom face and any screws clear the lower belt return path
+- Crossmembers do not force the frame wider, protrude outside the side plates, block pulley hardware,
+  or limit set screw and exit-lip access
 - Bearing pockets face the side plates and bearings are captured after holders are bolted down
-- Motor and timing belt path clear the side plate and frame legs
-- Motor bracket is fitted to the actual GT2 pulley and belt path before drilling
+- Motor body clears the lower belt return path when placed near local X=331, Z=18 to 20
+- Motor shaft points outward through the right side panel and the GT2 pulleys stay accessible outside
+- Motor mount is fitted to the actual GT2 pulley and belt path before drilling
+- Motor wire exits rearward or downward through a clean notch or routed path
 - Motor stays inside the 610mm x 610mm footprint
 - Set screw can be reached with the belt installed or by rotating the roller to an access position
 - Sensing shroud bottom opening aligns with the belt surface and the shroud body does not touch either
@@ -668,7 +740,8 @@ Run these checks before sending prints:
   6mm above the belt surface
 - Exit lip does not overlap the drive roller or belt-wrap area
 - Space below the exit lip and drive end is clear for the chute entry funnel
-- Belt exit is close enough to feed the future servo rotary chute selector
+- Belt exit, exit lip, chute entry, chute exit, and bin catch height are checked together before
+  cutting final frame panels
 
 ## Build Order At The Bench
 
@@ -682,11 +755,13 @@ Run these checks before sending prints:
 8. Clamp the first plate to the second blank and drill through both.
 9. Make the idler shaft and idler bolt slots in both plates.
 10. Dry-fit the idler roller, shaft, bearings, and holders.
-11. Print the drive roller and motor mount.
-12. Dry-fit the full conveyor with side plates, holders, rollers, crossmembers, and legs.
+11. Print the drive roller. Print the motor adjustment plate only if it helps; otherwise mark motor
+    holes from the fitted side-panel layout.
+12. Dry-fit the full conveyor with side plates, holders, rollers, the wood block, any fitted
+    crossmembers, base plate, and side panels.
 13. Measure shaft lengths from the real dry-fit. Cut the shafts with a Dremel cutoff wheel.
 14. Install the drive shaft, 60T pulley, drive roller, and set screw.
-15. Install the NEMA17, motor mount, 20T pulley, and GT2 belt.
+15. Install the NEMA17 in the low side-panel mount, then install the 20T pulley and GT2 belt.
 16. Align pulley midplanes by eye and measurement.
 17. Cut the wood block support to about 295mm to 300mm, smooth the top face, and install it just under
     the top belt run. Dry-fit before drilling final holes and trim the block shorter if either end is
@@ -716,7 +791,8 @@ Conveyor:
 - Side plate inner gap: 45mm
 - Side plate outside width: 61mm total, from two 8mm plates plus 45mm gap
 - Roller center distance: 350mm
-- Belt surface height: about 240mm in the full machine
+- Active low-frame belt surface height: about 68mm from base as the first CAD placement, then adjust
+  from chute entry and bin catch geometry
 - Footprint limit: 610mm x 610mm
 
 Rollers:
@@ -743,6 +819,9 @@ Motor and belt:
 - NEMA17 center clearance: 22mm
 - 20T to 60T GT2 center distance with 200mm belt: about 58.6mm after the actual pulley and belt are confirmed
 - 20T to 20T GT2 center distance with 200mm belt: about 80mm fallback if the driven pulley changes
+- Low-frame 20T to 60T starting motor center: local X=331mm, Z=18mm to 20mm
+- Motor orientation: body inside frame, shaft outward through right side panel
+- Base plate: start around 590mm x 590mm, adjust only after chute and bin layout
 
 Optional Fusion parameters:
 - `plate_length`: 410mm
@@ -765,7 +844,11 @@ Optional Fusion parameters:
 - `shaft_z`: 50mm
 - `idler_x`: 30mm
 - `drive_x`: 380mm
-- `leg_h`: 180mm
+- `base_plate_w`: 590mm
+- `base_plate_d`: 590mm
+- `side_panel_h`: 85mm to 100mm
+- `motor_x_low`: 331mm
+- `motor_z_low`: 18mm to 20mm
 - `gt2_center_dist`: 58.6mm
 
 ## First Test

@@ -96,12 +96,12 @@ The orientation cue should be printed or labeled near the feed area so the evalu
 
 ## Conveyor
 
-The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a NEMA17 motor on an adjustable side bracket.
+The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a low NEMA17 drive packaged inside the wood frame with the shaft pointing outward through the right side panel.
 
 Baseline intent:
 - Usable top-run length around 300mm to 400mm
 - Belt width around the current 25mm neoprene strip
-- Belt surface height around 200mm to 300mm from base, adjusted to fit chute angle and bin removal
+- Belt surface height derived from the belt-to-chute handoff. Current low-frame CAD starts around 68mm from the base, then adjusts after chute entry and bin catch height are checked together
 - NEMA17 motor retained
 - Wood block support replacing the previous 2020 aluminum extrusion support idea
 - Belt path and motor clearance verified inside the 610mm x 610mm footprint

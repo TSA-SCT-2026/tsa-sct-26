@@ -30,6 +30,7 @@ Status rule:
 | Size sensor family | DECIDED | Break-beam timing with two pairs in the sensing shroud |
 | Side rail feed guide | DECIDED | Low side rails from X=0 to X=120, tapering to a 30mm shroud entry gap |
 | Frame material family | DECIDED | Wood frame from available stock, with printed brackets where useful |
+| Frame style | DECIDED | Low base plate with wood side panels or risers; tall conveyor legs are not the default states path |
 | Conveyor support material | DECIDED | Wood block under the top belt run, replacing the 2020 extrusion support idea |
 | Footprint | DECIDED | Stay within 610mm x 610mm |
 

@@ -13,7 +13,7 @@ The tutorial is valuable because the conveyor is simple to build, inspect, and r
 - Adjustable bearing holders for conveyor belt tension
 - Printed rollers on through shafts
 - Printed shaft spacers to keep the rollers centered
-- NEMA17 stepper motor on an adjustable side bracket
+- NEMA17 stepper motor with an adjustable timing-belt mount
 - Timing pulley drive outside one side plate
 - Screw-together assembly that can be dry-fit before final drilling
 - Belt cut from sheet material and joined after wrapping around the rollers
@@ -30,7 +30,7 @@ The tutorial build uses:
 - Two printed rollers
 - Four printed bearing holders
 - Four printed shaft spacers
-- Printed NEMA17 motor bracket
+- Printed NEMA17 motor mount or adjustment plate
 - Timing pulleys and timing belt
 - Wood, hardboard, or laminated sheet structure
 - Conveyor belt made from sheet material with a taped joint
@@ -56,7 +56,8 @@ Use the same general shape, but change the hardware path for the states sorter:
 - Use matching 5mm-ID bearings, currently the MR85ZZ path, unless real hardware forces a change.
 - Use printed rollers sized around the 25mm belt, with simple flanges.
 - Use a wood block support under the top belt run instead of 2020 extrusion.
-- Keep the NEMA17 motor.
+- Keep the NEMA17 motor, but package its body inside the machine frame with the shaft pointing
+  outward through the right side panel unless real CAD fit proves an external bracket is simpler.
 - Use GT2 timing pulleys and belt only where they make the drive easier to build and tension.
 - Keep the belt surface and final frame height tied to the chute and bin handoff, not the tutorial's frame height.
 
@@ -79,7 +80,7 @@ Skip or simplify these in first-pass CAD:
 - GT2 tooth profiles
 - Exact screw threads
 - Exact tape or belt splice geometry
-- Final motor bracket drill position before real pulley fit
+- Final motor mount drill position before real pulley fit
 - Set screw hole if it slows Fusion work
 
 For the drive roller hub, it is acceptable to print a solid hub, drill the radial set screw hole by hand after printing, tap it for M3, and file a small flat on the shaft. Mark the hub in CAD if useful, but the drilled hole is enough for the first build.
@@ -107,7 +108,7 @@ Prefer features that can be adjusted at the bench:
 
 - Slotted idler bearing holders
 - Slotted motor mount
-- Clamp and mark motor bracket holes from the real pulley path
+- Clamp and mark motor mount holes from the real pulley path
 - Use washers on slots
 - Leave access to the drive roller set screw
 - Keep the top belt support smooth and low friction

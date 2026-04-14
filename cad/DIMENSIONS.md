@@ -45,9 +45,10 @@ Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISI
 |---------|-----------------------|
 | Material | Wood frame from available stock, with 3D printed brackets where useful |
 | 2020 extrusion | Not active for frame or conveyor support |
-| Belt surface height | 200mm to 300mm target |
-| Minimum height check | Bin height plus chute vertical drop plus 20mm clearance |
-| Base plate | Fit within 610mm x 610mm |
+| Belt surface height | Derived from belt-to-chute handoff. Low-frame starting point is about 68mm from base, then adjust after chute entry and bin catch height are checked together |
+| Minimum height check | Belt exit plus exit lip must feed the chute entry; chute exit must land in the bin funnel catch window |
+| Base plate | Start around 590mm x 590mm, adjust within the 610mm x 610mm limit after bin and chute layout |
+| Frame style | Low base plate with wood side panels or risers, not tall 180mm conveyor legs unless a later chute and bin layout proves the conveyor must be high |
 | Stiffness target | No visible sensor or chute drift during servo motion |
 
 ## Conveyor
@@ -67,11 +68,15 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Wood block width | About 20mm to 45mm, measured from Home Depot stock and kept inside side plate gap |
 | Wood block thickness | About 10mm to 12mm with the current 20mm roller diameter, or revised after lower-return clearance check |
 | Wood block top height | About 2mm below upper belt surface. Conveyor-local Z=58 is only the current layout anchor |
+| Crossmember spacers | Optional 44.5mm to 45mm inside-gap spacers. Fit only where they clear drive hardware, belt wrap, set screw access, exit lip, and chute entry. Do not widen the frame to fit a spacer |
 | Side plate material | Thin wood, hardboard, or plywood, measured after local purchase |
 | Belt speed phase 1 | Start slow enough for reliable sensing, then tune |
 | Belt exit | Direct handoff into servo chute entry |
 | Tension method | Simple slotted idler or motor mount |
 | Timing belt and pulley | Keep as active if the tutorial-style conveyor uses or benefits from the existing GT2 parts |
+| NEMA17 package | Body inside machine frame near drive end, shaft outward through right side panel, GT2 pulleys accessible outside |
+| NEMA17 low-frame start | Motor shaft near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path. Adjust from actual pulley and belt fit |
+| Motor clearance check | Imported motor body must clear the lower belt return near local Z=40 and must leave a rearward or downward wire exit path |
 | 25mm neoprene strip | Active first belt material |
 | 15mm neoprene strip | Spare stock unless testing shows a use |
 
@@ -116,7 +121,7 @@ Color calibration is valid only with the shroud installed in the final screw-mou
 
 Status for this section: `DECIDED_FOR_STATES` for actuator family and selector concept; `PROVISIONAL_ESTIMATE` for pivot height, chute radius, funnel geometry, and belt handoff until frame CAD and real-brick tests confirm the stack.
 
-Coordinate warning: the conveyor CAD currently uses a local belt-surface datum around Z=60mm in some files, while the final machine frame may lift the belt to a global height around 200mm to 300mm. Do not mix those datums. Convert conveyor-local Z values into the final machine-base coordinate system before locking the selector position.
+Coordinate warning: the conveyor CAD currently uses a local belt-surface datum around Z=60mm in some files, while the low-frame assembly may place that surface around 68mm from the machine base. Do not mix those datums. Convert conveyor-local Z values into the final machine-base coordinate system before locking the selector position.
 
 ### Servo Mount and Pivot
 
@@ -182,7 +187,7 @@ Verification in Fusion: use a revolute joint at the working Z=90mm pivot, then c
 
 | Feature | Dimension | Notes |
 |---------|-----------|-------|
-| Belt surface height | Derived from final frame CAD | Current conveyor docs include local Z values around 60mm; global height is not locked here |
+| Belt surface height | Derived from final frame CAD | Current low-frame start is about 68mm from base, but global height is not locked until handoff is tested |
 | Chute entry height | Derived from the belt exit and exit lip | Entry height must be near the incoming brick path, not copied from chute exit height |
 | Conveyor-to-chute connection | Gravity handoff or close-guided handoff | Choose after final belt height and exit-lip test |
 | Exit lip position | 5 to 6mm above belt surface | Separate belt-mounted feature, not servo-mounted |

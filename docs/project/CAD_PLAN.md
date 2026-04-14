@@ -9,11 +9,13 @@ Approach: build a tutorial-style conveyor with modified measurements, design the
 
 Do not spend the CAD window adapting an unknown downloaded conveyor first. Build the conveyor in the same simple structural style as the visual tutorial, but keep the team's modified belt width, belt length, 5mm shaft and bearing path, and sorter clearances. The main material change from the earlier guide is replacing the 2020 extrusion support with a wood block.
 
-Coordinates in this plan are layout anchors, not final truth. Use them to move quickly, then let
-interference checks, slotted mounts, real hardware, and real-brick tests decide final placement.
+Coordinates in this plan are layout anchors, not final truth. Use them to move quickly in part
+sketches, then use assembly relationships for fit: face alignment, shaft-axis alignment, center-plane
+alignment, belt keep-out envelopes, interference checks, slotted mounts, real hardware, and real-brick
+tests decide final placement.
 
 The custom CAD work is:
-1. Wood elevated frame and wood block conveyor support
+1. Low wood base plate, wood side-panel frame, and wood block conveyor support
 2. MG995/MG996-class servo rotary chute selector
 3. Sensor mounting brackets and TCS3200 color sensor shroud
 4. Four bins and bin entry guides
@@ -52,14 +54,16 @@ Zone 3: servo rotary chute selector at belt exit
 Zone 4: four bins arranged below chute sweep
 ```
 
-The frame lifts Zones 1 through 3 high enough that Zone 4 fits underneath with clearance for bin removal.
+The frame places Zones 1 through 3 at the height that makes the conveyor-to-chute handoff work. The
+current states path is a low frame with the chute and bins arranged around the belt exit, not a tall
+raised conveyor unless a later chute and bin layout proves that height is needed.
 
 ## Critical Dimensions To Lock Early
 
 - Footprint: 610mm x 610mm maximum
 - Belt usable top-run length: about 300mm to 400mm
 - Belt width: current 25mm neoprene strip
-- Belt surface height from base: about 200mm to 300mm
+- Belt surface height from base: start around 68mm for the low-frame CAD path, then adjust from chute entry and bin catch geometry
 - Chute length: about 100mm to 150mm
 - Chute angle: test 30, 35, 40, and 45 degrees with real bricks
 - First CAD chute angle: 35 degrees from horizontal
@@ -71,10 +75,12 @@ Keep these numbers in `cad/DIMENSIONS.md` when they change.
 
 ## Subassembly 1: Frame
 
-What it is: an elevated table or bridge that holds the conveyor and chute above the bins.
+What it is: a low base plate and wood side-panel frame that holds the conveyor, motor, servo chute,
+and bins in one stiff machine reference.
 
 Active material options:
 - Wood frame or base plate with printed brackets
+- Wood side panels or risers for the low conveyor and NEMA17 mount
 - Wood block support under the top belt run
 - 3D printed brackets and rails only where they save time or improve fit
 - Hybrid wood base plus printed servo and sensor mounts
@@ -84,7 +90,7 @@ Do not design around 2020 extrusion unless the material situation changes.
 CAD steps:
 1. New component: `Frame`
 2. Sketch a 610mm x 610mm construction boundary on the ground plane
-3. Place a simple base plate or four leg locations
+3. Place a simple base plate and low side-panel supports
 4. Place conveyor support rails or side panels
 5. Add a stiff servo mount area near the belt exit
 6. Keep the front open enough for bin removal
@@ -100,9 +106,9 @@ Preferred path:
 1. Model the wood block support and two thin wood side plates with drive and idler shaft holes
 2. Add fixed and slotted printed bearing holders
 3. Model two printed rollers around the current 5mm shaft and matching bearing choice
-4. Add the NEMA17 motor mount after the core roller assembly exists
+4. Add the low NEMA17 mount after the core roller assembly and low frame exist
 5. Set the wood block top face about 2mm below belt surface and keep the bottom clear of the lower belt return
-6. Use GT2 timing pulley and belt only if that makes the conveyor easier to build
+6. Use the 200mm GT2 timing belt with the motor body inside the frame, shaft outward through the right side panel, and pulleys accessible outside
 7. Keep the design simple enough to cut, drill, print, and test quickly
 
 What not to model:
@@ -268,17 +274,25 @@ Goal: assemble the conveyor core in Fusion before committing to detailed shroud 
 - Confirm roller centers, side plate gap, motor clearance, lower belt return clearance, wood block end clearance, and set screw access
 - Treat the wood block top as about 2mm below the upper belt surface, not as a global Z coordinate
 - Start the wood block around 295mm to 300mm long with current rollers, then adjust from flange and belt-wrap clearance
+- Add the low base plate and side panels before final motor placement. Start with the conveyor side-plate bottoms about 8mm above the base, making the belt surface about 68mm from the base
+- Place the NEMA17 body inside the frame with its shaft outward through the right side panel. Start near conveyor-local X=331mm and Z=18mm to 20mm for the 20T to 60T, 200mm GT2 path, then adjust from actual pulley fit
+- Confirm the motor body clears the lower belt return and the motor wire can exit rearward or downward cleanly
+- Fit crossmembers only where they clear the pulley path, belt wrap, set screw access, exit lip, and future chute entry. Do not widen the frame for a crossmember. Use one feed-end spacer first, then add a drive-end spacer only if it fits cleanly.
 - Add only a placeholder shroud box over the belt. Use the X=135 to X=200 reference span from `cad/DIMENSIONS.md`, with the 30mm inner width and 32mm inner height reserved
 - Keep feed side rails as separate placeholder strips, not part of the shroud
 - Add shroud mounting surfaces or tabs only after the conveyor core assembly shows where screws can actually land
 - Do not model the final color sensor pocket or break-beam holes until the shroud location is confirmed over the assembled conveyor
+- Model holes when they belong to printed parts or drilling templates. Mark and drill holes from the fitted real assembly when placement depends on wood stock, pulley alignment, or adjustable brackets.
 
 Pass criteria:
 
 - Belt path is believable and clears the wood support, rollers, screw heads, and side plates
 - Wood block ends clear the roller flange envelopes and belt wrap by about 10mm or more
+- Any crossmember used fits inside the side plates without forcing the frame wider or blocking drive hardware
 - Drive roller hub and set screw access remain on the motor side
-- Motor bracket can still slide to tension the timing belt
+- Motor can still slide a few millimeters to tension the timing belt
+- GT2 pulleys remain accessible outside the right side panel
+- Belt exit, exit lip, chute entry, chute exit, and bin catch height have a plausible shared Z stack
 - Shroud placeholder clears the belt and does not touch the side plates
 - There is a plausible screw-on mounting path for a removable shroud
 

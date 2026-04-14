@@ -58,21 +58,37 @@ Goal:
 
 Steps:
 1. Assemble the side plates, fixed bearing holders, slotted bearing holders, shafts, rollers, wood
-   block support, motor mount, NEMA17, pulley placeholders, and simple belt envelope in Fusion.
+   block support, low side-panel motor mount, NEMA17, pulley placeholders, and simple belt envelope in Fusion using
+   assembly relationships instead of typed global coordinates wherever possible.
 2. Confirm the 45mm inner side-plate gap and 25mm belt path.
 3. Confirm the wood block support clears the lower belt return.
 4. Confirm each wood block end clears the roller flange and belt-wrap envelope by about 10mm or more.
 5. Confirm the drive roller hub is on the motor side.
 6. Confirm the drive roller set screw can be reached, even if the hole will be drilled by hand.
-7. Confirm the motor mount can slide to tension the timing belt.
-8. Add only a placeholder sensing shroud volume from X=135 to X=200.
-9. Keep side rails as separate placeholder strips.
+7. Confirm the low NEMA17 mount can slide a few millimeters to tension the timing belt.
+8. Fit crossmembers only where they clear the hub, pulley path, belt wrap, set screw access, exit
+   lip, and future chute entry. Start with a feed-end spacer. Add a drive-end spacer only if it fits
+   inside the side plates without widening the frame.
+9. Add the low base plate and side-panel frame. Start with the conveyor side-plate bottoms about 8mm
+   above the base so the belt surface is about 68mm from the base.
+10. Place the NEMA17 body inside the frame with its shaft outward through the right side panel. Start
+    near conveyor-local X=331mm and Z=18mm to 20mm, then adjust from real pulley and belt fit.
+11. Confirm the motor clears the lower belt return and the wire exits rearward or downward cleanly.
+12. Add only a placeholder sensing shroud volume near the feed side, using the reference shroud span
+   as a check rather than a typed placement command.
+13. Keep side rails as separate placeholder strips.
+14. Model holes in Fusion for printed parts and drilling templates. For final motor mount, wood
+    block, crossmember, temporary rail, and first exit-lip holes, mark from the fitted real assembly
+    unless a printed bracket gives a known hole pattern.
 
 Pass criteria:
 - Conveyor core fits without obvious interference
 - Belt path clears rollers, wood support, side plates, and likely screw heads
 - Wood block length is set from clearance, not from a fixed coordinate placement
+- Crossmembers do not force the frame wider or block drive hardware
 - Motor and timing belt tension adjustment remain serviceable
+- Motor body stays inside the machine frame, shaft points outward, and GT2 pulleys remain accessible
+- Belt exit, exit lip, chute entry, chute exit, and bin catch height have a plausible shared Z stack
 - Sensing shroud placeholder clears the belt and side plates
 - Removable shroud screw tabs or flanges have a plausible landing surface
 

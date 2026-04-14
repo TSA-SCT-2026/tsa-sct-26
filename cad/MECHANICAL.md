@@ -30,14 +30,14 @@ Build around:
 - Two thin wood side plates
 - Printed bearing holders bolted to the outside faces
 - Shafts and printed rollers between the plates
-- NEMA17 motor on an adjustable side bracket
+- NEMA17 motor packaged low inside the machine frame with its shaft pointing outward through the right side panel
 - 5mm shaft and matching 5mm-ID bearing path
 - 25mm neoprene belt sized from the real dry-fit
 
 Adjust as needed:
 - Set belt path around the current 25mm neoprene strip
 - Set usable top-run length to roughly 300mm to 400mm
-- Keep motor and tensioner serviceable
+- Keep motor and tensioner serviceable with the GT2 pulleys visible outside the right side panel
 - Mount to the wood frame without exceeding 610mm x 610mm
 - Keep the belt exit aligned with the chute entry
 
@@ -49,6 +49,15 @@ Assembly method:
 - Set the wood block support from the upper belt surface and roller flange clearance. With the
   current roller layout, start around 295mm to 300mm long and require about 10mm or more clearance to
   each roller flange envelope before cutting or drilling the real block
+- Fit crossmembers only where they stiffen the side plates without blocking the drive hub, pulley
+  path, belt wrap, set screw access, exit lip, or future chute entry. Do not widen the frame just to
+  fit a drive-end spacer. Omit the drive-end spacer if the wood block and feed-end spacer hold the
+  gap well enough.
+- Use a low-frame NEMA17 starting point around conveyor-local X=331mm and Z=18mm to 20mm for the
+  20T to 60T, 200mm GT2 path. Check the actual imported motor body against the lower belt return
+  before cutting the right side panel.
+- Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
+  when the exact hole location depends on wood stock, pulley alignment, or adjustable brackets.
 
 Downloaded conveyor models may be used as visual reference only. Do not spend the first CAD window cleaning imported geometry when the tutorial-style conveyor can be modeled and built directly.
 
@@ -60,12 +69,20 @@ The active frame is wood, with printed brackets where they save time or improve 
 be picked up locally, so exact board and block thicknesses stay provisional until purchase and
 measurement.
 
+The active frame path is a low base plate with wood side panels or risers. Tall 180mm conveyor legs
+are not the default states path. Use the low frame unless a later chute and bin layout proves the
+conveyor must be high.
+
 The frame needs to:
-- Lift the belt high enough for the chute and bins
+- Place the belt at a height that feeds the chute entry cleanly
 - Keep the servo pivot stable
 - Keep sensing brackets from moving during operation
 - Leave the bins removable
 - Leave wiring visible enough to look deliberate and clean
+
+Start with the conveyor side-plate bottoms about 8mm above the base plate, which puts the local belt
+surface around 68mm from the base. Adjust that only after checking the belt exit, exit lip, chute
+entry, chute exit, and bin catch height together.
 
 Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
 block is wood, not 2020 extrusion.
@@ -108,7 +125,7 @@ Chute body:
 Servo mount:
 - Servo output shaft points upward
 - Servo body sits in a pocket or cradle
-- Mount plate ties into the frame
+- Mount plate ties into the base plate or a stiff frame member, not the thin conveyor side plate
 - Chute pivot axis stays vertical and aligned with the horn
 - Wires leave away from the horn and chute sweep
 

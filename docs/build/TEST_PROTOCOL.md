@@ -16,13 +16,19 @@ Demonstrate reliable sorting under evaluator-style one-at-a-time operation.
 Run this phase before detailed sensing shroud CAD.
 
 Pass criteria:
-- Conveyor core is assembled in Fusion with side plates, holders, shafts, rollers, wood block support, motor mount, motor, pulley path, and simple belt envelope
-- Wood block support is set from belt surface and roller flange clearance, not from fixed coordinate placement
+- Conveyor core is assembled in Fusion with side plates, holders, shafts, rollers, wood block support, low side-panel motor mount, motor, pulley path, and simple belt envelope
+- Conveyor placement is checked with assembly relationships, belt envelopes, and interference checks, not fixed global coordinate placement
+- Wood block support is set from belt surface and roller flange clearance
+- Any crossmember used fits inside the side plates without forcing the frame wider or blocking drive hardware
+- Low base plate and side-panel frame are modeled instead of tall 180mm conveyor legs
+- NEMA17 body sits inside the frame, shaft points outward through the right side panel, and GT2 pulleys remain accessible outside
+- Motor body clears the lower belt return and motor wiring has a clean rearward or downward exit path
+- Belt exit, exit lip, chute entry, chute exit, and bin catch height are checked as one stack
 - Placeholder shroud volume clears the belt and side plates
 - Side rails are still separate from the shroud
 - Removable shroud mounting tabs or flanges have a plausible screw location
 - Drive roller set screw access remains reachable
-- Motor bracket and idler holder adjustment remain serviceable
+- Low motor mount and idler holder adjustment remain serviceable
 
 ### Phase 1: Conveyor And Handoff
 

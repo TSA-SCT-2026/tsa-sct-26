@@ -22,7 +22,7 @@ The servo output shaft points vertically up. The chute arm rotates in the horizo
 
 Do not set the chute entry to Z=49-54mm. That was mixing the chute exit with the chute entry.
 
-The chute entry follows the conveyor exit and exit lip. The current conveyor CAD uses local belt coordinates around Z=60mm, with the exit lip about 5mm to 6mm above the belt. If the final frame lifts the conveyor to a global height around 200mm to 300mm, convert those local coordinates into machine-base coordinates.
+The chute entry follows the conveyor exit and exit lip. The current conveyor CAD uses local belt coordinates around Z=60mm, with the exit lip about 5mm to 6mm above the belt. The low-frame path currently starts with that belt surface around Z=68mm from the machine base. If the final frame changes that height, convert those local coordinates into machine-base coordinates before locking the selector.
 
 The chute exit follows the chute slope and bin funnel catch window. It must land inside the funnel, not below or above it.
 
