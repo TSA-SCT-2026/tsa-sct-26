@@ -16,19 +16,24 @@ Demonstrate reliable sorting under evaluator-style one-at-a-time operation.
 Run this phase before detailed sensing shroud CAD.
 
 Pass criteria:
-- Conveyor core is assembled in Fusion with side plates, holders, shafts, rollers, wood block support, low side-plate motor mount or local doubler, motor, pulley path, and simple belt envelope
+- Conveyor core is assembled in Fusion with side plates, holders, shafts, rollers, wood block support, grounded outside motor board, motor, pulley path, and simple belt envelope
 - Conveyor placement is checked with assembly relationships, belt envelopes, and interference checks, not fixed global coordinate placement
 - Wood block support is set from belt surface and roller flange clearance
 - Any crossmember used fits inside the side plates without forcing the frame wider or blocking drive hardware
 - Low base plate and short conveyor mounting cleats or standoffs are modeled instead of duplicate full-length side panels or tall 180mm conveyor legs
-- NEMA17 body sits low inside the machine envelope, shaft points outward through the right conveyor side plate or local motor doubler, and GT2 pulleys remain accessible outside
-- Motor body clears the lower belt return and motor wiring has a clean rearward or downward exit path
+- Outside motor board is grounded through a 2-stage L bracket with gussets on motor side and frame side
+- NEMA17 body sits outside the motor board, shaft points inward toward the conveyor, and GT2 pulleys remain accessible in the rear/right service bay
+- Matching 20T pulleys are coplanar in Y
+- GT2 belt envelope clears motor board, side plate, bearing holders, brace hardware, bolt heads, and pulley set screws
+- Motor board does not visibly flex when timing belt tension is applied by hand
+- Motor wiring exits into the rear/right service bay without crossing belt, chute, bin, or operator-facing paths
 - Belt exit, exit lip, chute entry, chute exit, and bin catch height are checked as one stack
 - Placeholder shroud volume clears the belt and side plates
 - Side rails are still separate from the shroud
 - Removable shroud mounting tabs or flanges have a plausible screw location
 - Drive roller set screw access remains reachable
-- Low motor mount and idler holder adjustment remain serviceable
+- Motor board slots and idler holder adjustment remain serviceable
+- Rear/right service bay space is reserved for later electronics placement without locking ESP32 or driver location yet
 
 ### Phase 1: Conveyor And Handoff
 

@@ -58,28 +58,37 @@ Goal:
 
 Steps:
 1. Assemble the side plates, fixed bearing holders, slotted bearing holders, shafts, rollers, wood
-   block support, low side-plate motor mount or local doubler, NEMA17, pulley placeholders, and simple belt envelope in Fusion using
+   block support, outside motor board, NEMA17, pulley placeholders, and simple belt envelope in Fusion using
    assembly relationships and a visible skeleton sketch instead of typed global coordinates.
-2. Confirm the 45mm inner side-plate gap and 25mm belt path.
+2. Confirm the 50mm inner side-plate gap and 25mm belt path.
 3. Confirm the wood block support clears the lower belt return.
 4. Confirm each wood block end clears the roller flange and belt-wrap envelope by about 10mm or more.
 5. Confirm the drive roller hub is on the motor side.
 6. Confirm the drive roller set screw can be reached, even if the hole will be drilled by hand.
-7. Confirm the low NEMA17 mount can slide a few millimeters to tension the timing belt.
+7. Confirm the outside motor board slots let the NEMA17 slide a few millimeters to tension the timing belt.
 8. Fit crossmembers only where they clear the hub, pulley path, belt wrap, set screw access, exit
    lip, and future chute entry. Start with a feed-end spacer. Add a drive-end spacer only if it fits
    inside the side plates without widening the frame.
 9. Add the low base plate and short conveyor mounting cleats or standoffs. In the skeleton sketch,
-   start with the conveyor side-plate bottom plane about 8mm above the base top plane so the belt
-   surface is about 68mm from the base. This is a supported shim height, not a floating gap.
-10. Place the NEMA17 body low inside the machine envelope with its shaft outward through the right
-    conveyor side plate or local motor doubler. Start from a motor-shaft construction point near
-    conveyor-local X=331mm and Z=18mm to 20mm, then adjust from real pulley and belt fit.
-11. Confirm the motor clears the lower belt return and the wire exits rearward or downward cleanly.
-12. Add only a placeholder sensing shroud volume near the feed side, using the reference shroud span
+   start with the conveyor side-plate bottom plane about 12mm above the base top plane so the belt
+   surface is about 72mm from the base. This is a supported shim height, not a floating gap.
+10. Create the 20T-to-20T motor point from the side-view skeleton sketch: drive shaft at X=340,
+    Z=50, 80mm construction circle, Z=14 construction line, and lower-left intersection near
+    X=268.6, Z=14. With the conveyor side-plate bottom 12mm above the base, this projects to
+    base-relative X=268.6, Z=26 in the motor board sketch.
+11. Add the grounded outside motor board on a vertical plane parallel to the right conveyor side
+    plate, attached through the 2-stage L bracket printed mount with gussets on both the motor and
+    frame sides. Project the motor point into the board sketch, add the 22mm center hole, four NEMA17
+    slots, and four board through-bolt holes.
+12. Confirm the motor board is attached through the 2-stage L bracket. Each stage has feet with M3 screw holes landing on the board and on the base frame. Confirm no flex when the motor is hand-loaded.
+13. Place the NEMA17 outside the board with the shaft pointing inward. Set motor pulley face flush with the shaft tip. Set driven pulley against the inner bearing holder face with a 2mm spacer. Align both 20T pulley midplanes in Y before tightening set screws.
+14. Confirm the GT2 belt envelope clears the motor board, side plate, bearing holders, brace
+    hardware, bolt heads, and pulley set screws. Confirm the motor wire exits into the rear/right
+    service bay without crossing moving paths.
+15. Add only a placeholder sensing shroud volume near the feed side, using the reference shroud span
    as a check rather than a typed placement command.
-13. Keep side rails as separate placeholder strips.
-14. Model holes in Fusion for printed parts and drilling templates. For final motor mount, wood
+16. Keep side rails as separate placeholder strips.
+17. Model holes in Fusion for printed parts and drilling templates. For final motor board, wood
     block, crossmember, temporary rail, and first exit-lip holes, mark from the fitted real assembly
     unless a printed bracket gives a known hole pattern.
 
@@ -89,7 +98,9 @@ Pass criteria:
 - Wood block length is set from clearance, not from a fixed coordinate placement
 - Crossmembers do not force the frame wider or block drive hardware
 - Motor and timing belt tension adjustment remain serviceable
-- Motor body stays low inside the machine envelope, shaft points outward, and GT2 pulleys remain accessible
+- Outside motor board is grounded, braced, and does not float
+- Motor shaft points inward and GT2 pulleys remain accessible in the rear/right service bay
+- Matching 20T pulleys are coplanar in Y and set screws remain reachable
 - Belt exit, exit lip, chute entry, chute exit, and bin catch height have a plausible shared Z stack
 - Sensing shroud placeholder clears the belt and side plates
 - Removable shroud screw tabs or flanges have a plausible landing surface
@@ -201,6 +212,8 @@ Checklist:
 4. Fan installed if driver cooling needs it
 5. Safe wire routing away from moving parts
 6. Strain relief at moving interfaces
+7. Rear/right motor bay reserved as a possible later ESP32, stepper driver, and power routing area
+   after conveyor and chute geometry are stable
 
 Pre-power checks:
 1. No short between rails

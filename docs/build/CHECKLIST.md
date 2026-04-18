@@ -2,16 +2,19 @@
 
 ## Fusion Assembly Before Shroud CAD
 
-- Conveyor core assembled in Fusion with side plates, holders, shafts, rollers, wood block support, low side-plate motor mount or local doubler, NEMA17, and pulley path
+- Conveyor core assembled in Fusion with side plates, holders, shafts, rollers, wood block support, grounded outside motor board, NEMA17, and pulley path
 - Simple belt envelope clears rollers, side plates, wood support, likely screw heads, and lower return path
 - Wood block ends clear roller flange and belt-wrap envelopes by about 10mm or more
 - Crossmembers, if used, fit inside the side plates and do not block drive hardware, set screw access, exit lip, or chute entry
 - Low base plate and short conveyor mounting cleats or standoffs are modeled instead of duplicate full-length side panels or tall 180mm conveyor legs
-- NEMA17 body sits low inside the machine envelope near the drive end, shaft points outward through the right conveyor side plate or local motor doubler, and GT2 pulleys are accessible outside
-- Motor body clears the lower belt return and motor wiring exits rearward or downward cleanly
+- Outside motor board is grounded through a 2-stage L bracket with gussets on motor side and frame side, feet with M3 screw holes on each stage
+- NEMA17 body sits outside the motor board, shaft points inward toward the conveyor, and GT2 pulleys are accessible in the rear/right service bay
+- Matching 20T pulleys are coplanar in Y
+- GT2 belt envelope clears motor board, side plate, bearing holders, brace hardware, bolt heads, and pulley set screws
+- Motor wiring exits into the rear/right service bay without crossing belt, chute, bin, or operator-facing paths
 - Drive roller hub is on the motor side
 - Drive roller set screw access is visible or reachable after hand-drilling
-- Low motor mount has adjustment travel for timing belt tension
+- Motor board slots have adjustment travel for timing belt tension
 - Belt exit, exit lip, chute entry, chute exit, and bin catch height are checked together before final frame cuts
 - Sensing shroud is still a placeholder volume, not detailed final CAD
 - Side rails are separate placeholder strips
@@ -43,6 +46,7 @@
 - Fan connected if used for driver cooling
 - All grounds common and secure
 - No loose wiring near moving parts
+- Rear/right motor bay reserved for later ESP32, driver, power distribution, and strain relief evaluation after conveyor and chute CAD are stable
 
 ## Sensors And Control
 
