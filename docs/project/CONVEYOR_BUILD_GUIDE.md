@@ -1,5 +1,18 @@
 # Conveyor Build Guide
 
+## Build Status (as of 2026-04-18)
+
+Steps 1-7 of "Do This First" are provisionally complete in Fusion. Remaining conveyor CAD:
+- Screw holes between side plate and center board
+- Final pulley center distance and Y coplanarity check (gated on confirmed conveyor height from teammate)
+- Exit lip geometry (shape is designed, position in frame is gated on height)
+- Sensing shroud and side rails (separate subassembly, not height-dependent, next to model)
+
+Modifications made during the build sprint that deviate from the original guide steps:
+- Motor mount: replaced "grounded and braced with standoffs" with a 2-stage L bracket with gussets on motor and frame sides, M3 feet on each stage
+- Center belt support: extended to contact both inner side-plate faces so screws can be driven from outside through the side plates into the support ends
+- Motor pulley Y: set flush with motor shaft tip. Driven pulley Y: seated against inner bearing holder face with a 2mm printed spacer
+
 ## Before You Start: Build Scope
 
 This guide covers only the conveyor subassembly. Full CAD also includes the servo rotary chute selector,
@@ -21,7 +34,7 @@ Reference tutorial structure to preserve:
 - Wood or hardboard support piece connected into the frame, not an aluminum extrusion frame
 - Adjustable bearing holders for belt tension
 - Movable motor board slots for timing belt tension
-- Grounded motor structure bolted to the base and braced back toward the conveyor
+- Grounded motor structure through a 2-stage L bracket with gussets on motor and frame sides
 - Overall visual build order and simple screw-together construction
 
 Do not copy the tutorial dimensions or hardware as law. This build is intentionally modified for the

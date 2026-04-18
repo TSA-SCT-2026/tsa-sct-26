@@ -74,7 +74,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Upper belt surface | Conveyor-local Z=60mm, about 72mm above base with the 12mm starting support height |
 | Lower return nominal line | Conveyor-local Z=40mm |
 | Belt width | 25mm active neoprene strip |
-| Minimum clear brick width | 15.8mm as-fed brick width plus side clearance; 30mm guide and shroud gaps are for belt clearance, belt tracking, and yaw tolerance |
+| Minimum clear brick width | 15.8mm as-fed brick width plus yaw and lateral margin. The 30mm shroud inner width gives about 7mm per side. The belt runs through the open shroud bottom, not through the horizontal channel, so the 25mm belt width does not add to the Y clearance requirement. |
 | Wood block support | Wood block under top belt run, not 2020 extrusion |
 | Wood block length | About 255mm to 260mm with current rollers, adjusted from dry-fit to clear both roller flange envelopes by about 10mm or more |
 | Wood block width | About 20mm to 50mm, measured from Home Depot stock and kept inside side plate gap |

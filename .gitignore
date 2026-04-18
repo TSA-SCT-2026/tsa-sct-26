@@ -50,3 +50,4 @@ cad/frame/prototype*/
 
 # Archived / superseded CAD parts (kept for rollback, not for build)
 **/_archive/
+*.log

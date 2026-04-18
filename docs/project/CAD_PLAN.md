@@ -23,7 +23,7 @@ What it is: a single printed tunnel shroud near the feed end that integrates bre
 Design intent for another agent: if given the final conveyor measurements and the conveyor CAD, an agent should be able to design this. The required constraints are:
 
 - Single printed tunnel. Front and back open for brick passage. Bottom open for belt. No internal ledges.
-- Must clear the 25mm belt, belt tracking tolerance, and the 15.8mm as-fed brick width in Y, plus yaw margin. Nominal inner width target is 30mm.
+- Inner width must clear the 15.8mm as-fed brick width plus yaw and lateral positioning margin. Nominal inner width target is 30mm, giving about 7mm per side. The belt runs through the open bottom, not through the horizontal channel, so the 25mm belt width does not compete with the brick width in the Y direction.
 - Inner height must clear brick body (11.4mm) plus studs (1.7mm) with margin. Nominal inner height target is 32mm above belt surface.
 - Two break-beam pairs through the side walls. Pair A is 15mm from the shroud front face. Pair B is 55mm from the shroud front face. Hole diameter 3.3mm. Height: 3mm above belt surface.
 - TCS3200/GY-31 color sensor pocket in the shroud roof. Sensor face flush with inner ceiling, approximately 19mm above brick stud tops.
@@ -126,7 +126,7 @@ Conveyor height uncertainty:
 - Do not finalize or print motor mount feet, motor board drill template, or exit lip until teammate confirms chute entry height requirement.
 
 Sensing shroud geometry:
-- Shroud inner width must clear the belt and brick in Y. Verify in CAD before printing. A brick width of 15.8mm plus belt width of 25mm in a 30mm inner channel is tight. Track tolerance and belt tracking margin explicitly.
+- Shroud inner width (30mm) needs to clear the 15.8mm brick plus yaw margin. The belt runs through the open bottom, not the side walls, so belt width is not additive here. 30mm gives about 7mm per side on the brick, which is adequate.
 - Break-beam holes must be at the right Z height to cross the brick body, not the stud tops or belt surface.
 
 Pulley alignment:
