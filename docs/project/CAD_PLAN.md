@@ -12,9 +12,15 @@ These are blocking the physical wood assembly or the first print set.
 
 1. **Screw holes between side plate and center board.** The center support now contacts both inner side-plate faces. Add through-holes in the side plates and matching hole geometry in the board ends. Size to match M3 or wood screw stock.
 
-2. **Final pulley alignment and belt center distance.** Motor pulley is at the motor shaft tip. Driven pulley is against the inner bearing holder face with a 2mm spacer. Final center distance and Y coplanarity check are gated on confirmed conveyor height from the teammate's servo chute. Do not tighten set screws or export the motor board drilling template until height is confirmed.
+2. **Motor board drill guide.** After the motor board sketch is finalized, derive a 4mm printed
+   drill guide from the same sketch geometry. Add a registration lip along the bottom board edge.
+   The guide marks the 22mm center clearance, eight slot end-point holes for the four NEMA17 slots
+   (drill 3.5mm at each end, then file to join), and four corner through-bolt holes. Blocked on
+   conveyor height - do not model until the board sketch Z values are locked.
 
-3. **Exit lip.** Wedge ramp at the drive end, 5-6mm above belt surface, redirects brick downward into chute entry. Defer detailed geometry until conveyor height is confirmed, since the lip's Z position depends on the final belt surface height. Design intent: short printed or wood wedge, about 45 degrees from vertical, spanning the full inner gap in Y, no active sensor in the base design.
+3. **Final pulley alignment and belt center distance.** Motor pulley is at the motor shaft tip. Driven pulley is against the inner bearing holder face with a 2mm spacer. Final center distance and Y coplanarity check are gated on confirmed conveyor height from the teammate's servo chute. Do not tighten set screws or export the motor board drilling template until height is confirmed.
+
+4. **Exit lip.** Wedge ramp at the drive end, 5-6mm above belt surface, redirects brick downward into chute entry. Defer detailed geometry until conveyor height is confirmed, since the lip's Z position depends on the final belt surface height. Design intent: short printed or wood wedge, about 45 degrees from vertical, spanning the full inner gap in Y, no active sensor in the base design.
 
 ## Subassembly 3: Sensing Station
 
@@ -50,7 +56,7 @@ CAD work:
 Teammate is completing this subassembly. Do not edit the servo chute or bin arc guide docs.
 
 When the teammate's geometry is confirmed, the following items become unblocked:
-- Conveyor height (determines cleat/foot height and motor board Z)
+- Conveyor height (determines fixed foot height and motor board Z)
 - Exit lip final position
 - Final pulley center distance
 
@@ -111,7 +117,7 @@ Target time: 15-20 minutes after side rails are modeled.
 Print only what retires the biggest risks. In priority order:
 
 1. Short chute angle coupon (teammate's print)
-2. Motor mount L bracket and feet - after conveyor height is confirmed
+2. Motor mount printed dual-stage L bracket and fixed gusseted feet with short slot holes for one-time setup, then locked - after conveyor height is confirmed
 3. Sensing shroud - after brick clearance is verified in CAD
 4. Side rails - after shroud position is confirmed
 5. Conveyor-to-chute handoff test piece
@@ -123,7 +129,8 @@ Do not print the large frame until chute angle, handoff, and servo alignment are
 ## Risk Notes
 
 Conveyor height uncertainty:
-- Do not finalize or print motor mount feet, motor board drill template, or exit lip until teammate confirms chute entry height requirement.
+- Do not finalize or print fixed-height conveyor supports, motor board drill template, or exit lip until teammate confirms chute entry height requirement.
+- Permanent mount default: use fixed gusseted feet with short slot holes for one-time setup adjustment before final tightening. After alignment, lock the feet in place. Keep shims or washers as fallback if first fit needs minor correction.
 
 Sensing shroud geometry:
 - Shroud inner width (30mm) needs to clear the 15.8mm brick plus yaw margin. The belt runs through the open bottom, not the side walls, so belt width is not additive here. 30mm gives about 7mm per side on the brick, which is adequate.

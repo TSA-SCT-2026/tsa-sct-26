@@ -9,7 +9,7 @@ Steps 1-7 of "Do This First" are provisionally complete in Fusion. Remaining con
 - Sensing shroud and side rails (separate subassembly, not height-dependent, next to model)
 
 Modifications made during the build sprint that deviate from the original guide steps:
-- Motor mount: replaced "grounded and braced with standoffs" with a 2-stage L bracket with gussets on motor and frame sides, M3 feet on each stage
+- Motor mount: replaced "grounded and braced with standoffs" with a printed 2-stage L bracket with gussets on motor and frame sides, M3 mounting feet with short slots on each stage
 - Center belt support: extended to contact both inner side-plate faces so screws can be driven from outside through the side plates into the support ends
 - Motor pulley Y: set flush with motor shaft tip. Driven pulley Y: seated against inner bearing holder face with a 2mm printed spacer
 
@@ -63,7 +63,7 @@ Ignore the detailed reference numbers until a step asks for them. Build the CAD 
 3. Rollers
 4. Core conveyor assembly: side plates, bearings, shafts, and rollers
 5. Wood block support and crossmembers
-6. Low base plate with short conveyor mounting cleats or standoffs
+6. Low base plate with short conveyor mounting feet or standoffs
 7. Outside NEMA17 motor board, fitted after the core conveyor and low frame exist
 8. Extras after the conveyor core fits: side rails, sensing shroud, and exit lip
 
@@ -136,10 +136,10 @@ the real material. Do not change shaft centers, bearing-holder hole spacing, or 
 just because the outer plate thickness changes.
 
 This keeps the pulley frame simple while modeling. The active frame path is now a low base plate with
-short cleats, standoffs, or small brackets that locate the existing conveyor side plates, not a tall
+short feet, standoffs, or small brackets that locate the existing conveyor side plates, not a tall
 four-leg conveyor and not duplicate full-length side panels by default.
 
-The 12mm base offset is a provisional shim height, not an unsupported floating gap. It comes from two
+The 12mm base offset is a provisional starting support height, not an unsupported floating gap. It comes from two
 first-pass checks:
 - Handoff check: local belt surface is about Z=60, so a 12mm base offset puts the belt surface near
   72mm from the base. With a 5mm to 6mm exit lip, the first handoff target is around 77mm to 78mm,
@@ -150,7 +150,7 @@ first-pass checks:
 
 If either check changes, change the offset. A 6mm, 10mm, or direct-to-base conveyor is acceptable if
 the motor-board braces clear the base and the belt exit still feeds the chute. Whatever offset is
-used, support it with cleats, standoffs, or shims under the conveyor side plates.
+used, support it with fixed feet, standoffs, or short brackets under the conveyor side plates.
 
 The drive end is the chute end. The NEMA17 body sits outside the right conveyor side plate on a
 grounded motor board, the shaft points inward toward the conveyor, and the 20T GT2 pulleys remain in
@@ -339,9 +339,12 @@ plate. The motor body sits outside the conveyor, the shaft points inward toward 
 large motor cutout in the conveyor side plate and creates a rear/right service bay that can later
 carry wiring or electronics after the conveyor and chute geometry stop moving.
 
-The motor board must not float. Its lower through-bolt holes tie into base brackets or cleats. Its
+The motor board must not float. Its lower through-bolt holes tie into base brackets or short standoffs. Its
 upper through-bolt holes tie back toward the conveyor through rigid standoffs or a brace that clears
 the GT2 belt, pulley set screws, and bearing holders.
+Use fixed gusseted feet as the default once chute-entry height is confirmed. Use short slot holes in
+those feet for one-time setup adjustment before final tightening. Keep shims or washers as fallback
+for minor correction after first fit.
 
 Create the motor point in the conveyor side-view skeleton sketch before modeling the board:
 
@@ -395,6 +398,27 @@ Add motor and board holes:
    - hole diameter: 4.3mm for M4 preferred, or 3.3mm for M3 fallback
 8. Finish Sketch.
 9. Extrude Cut the center clearance hole, NEMA17 slots, and board through-bolt holes through all.
+
+Motor board drill guide (model after motor board CAD is final, blocked on conveyor height):
+
+The NEMA17 slot pattern at 26.8 degrees is nearly impossible to mark accurately by hand. After the
+motor board is finalized, create a thin printed drill guide from the same sketch:
+
+1. New Component. Name it `motor_board_drill_guide`.
+2. Create Sketch on the same vertical plane as the motor board.
+3. Copy in (or re-draw) only the hole and slot geometry: 22mm center clearance circle, four slot
+   end-point pairs, and four corner through-bolt holes. Do not include the outer board rectangle.
+4. Add a short registration lip (2mm tall, along the bottom edge of the board) so the guide sits
+   flush on the wood board bottom edge and cannot slide while drilling.
+5. Finish Sketch. Extrude 4mm. This is the full guide thickness.
+6. Print in PLA. Lay it on the wood board, clamp, and drill through it.
+
+For the NEMA17 slots: slots cannot be drilled in one pass. Drill 3.5mm round holes at both end
+points of each slot (eight holes total), then join the holes with a jigsaw, rotary tool, or file.
+The drill guide marks all eight end points and the center clearance hole center.
+
+Do not model or print this guide until the conveyor height is confirmed and the motor-board sketch
+is finalized. The Z position of every hole changes with the final support offset.
 
 Assembly placement:
 
@@ -520,18 +544,22 @@ plates flex.
 Add only the support needed to hold the conveyor low and square:
 
 1. New Component.
-2. Name it `conveyor_mount_cleats`.
-3. Sketch short cleats, standoffs, or angle brackets that touch the lower outside edges of the
+2. Name it `conveyor_mount_feet`.
+3. Sketch short gusseted feet, angle brackets, or standoffs that touch the lower outside edges of the
    conveyor side plates. Start with four small supports, one near each conveyor corner.
+   Use short slot holes for setup adjustment. Keep slot travel short so final lock-down remains rigid.
 4. In the assembly skeleton sketch, define the base top plane and a provisional conveyor-side-plate
-   bottom plane about 12mm above it. Place the cleats or standoffs between those planes.
-5. Add screw access from the outside where possible so the conveyor can be removed or shimmed.
+   bottom plane about 12mm above it. Place the feet or standoffs between those planes.
+5. Add screw access from the outside where possible so the conveyor can be removed and re-aligned if needed.
 6. Add the grounded outside motor board and its lower base brackets after the conveyor core is
    square. Do not let the motor board act as an unbraced cantilever.
 
-The cleats are not a second frame wall. They locate and fasten the conveyor side plates to the base.
+The mounting feet are not a second frame wall. They locate and fasten the conveyor side plates to the base.
 Do not add full-length duplicate side panels unless real dry-fit testing proves the side plate flexes
 enough to affect belt tracking, motor alignment, or sensor alignment.
+Default permanent method: once pulley alignment and chute handoff are correct, lock fixed feet in
+place at the chosen slot position. If first fit is slightly off, add a thin shim or washer as a
+correction and re-tighten.
 
 Do not use tall 180mm posts unless a later chute and bin layout proves the conveyor must be high.
 
@@ -670,16 +698,25 @@ Add break beam holes in the side walls:
 16. Repeat on the right side wall outer face (Y=44) with the same two hole positions.
     These holes must be exactly opposite the left wall holes so the beams cross straight.
 
-Add color sensor pocket in the roof:
+Add color sensor mount in the roof:
+
+The GY-31 PCB is 34mm x 34mm x 1.5mm. The LED assembly hangs 15.5mm below the PCB bottom face.
+The PCB cannot be recessed into the 4mm roof and reach the inner ceiling: the PCB must sit on top
+of the roof with the LED assembly passing through a clearance hole. The sensor face lands about
+7mm above brick stud tops, which is within operating range. Calibration corrects for the distance.
 
 17. Click the top face of the shroud (the Z=36 face).
 18. Create Sketch.
-19. Draw a rectangle sized for your TCS3200/GY-31 module. Measure the actual PCB before drawing.
-    Typical GY-31 PCB is about 30mm x 18mm. Center it at X=32, Y=25 (middle of the shroud length
-    and width). Leave 1mm clearance on each side.
-20. Finish Sketch.
-21. Extrude Cut deep enough for the module body plus the sensor face, about 8 to 10mm deep.
-    The sensor face should end up flush with or just inside the inner roof surface at Z=32.
+19. Draw a 35mm x 35mm rectangle centered at X=32.5, Y=25 (center of the shroud in both axes).
+    This is the PCB footprint with 0.5mm clearance per side.
+20. Inside that rectangle, draw a 26mm x 26mm rectangle centered at X=32.5, Y=25.
+    This is the LED assembly clearance hole. Verify against the real PCB before printing.
+21. Finish Sketch.
+22. Extrude Cut the inner 26mm x 26mm rectangle Through All (punches through the full 4mm roof).
+    Do not extrude the outer 35mm x 35mm rectangle - it is reference geometry only.
+23. Add four 3.3mm holes for M3 bolts at the PCB corner mounting hole positions (2.75mm from
+    each edge of the 35mm footprint). The PCB rests flat on the roof top surface and bolts down
+    with M3 x 10mm bolts, nuts accessible through the front or back shroud opening.
 
 Add entry chamfer:
 
@@ -737,7 +774,7 @@ Assembly translation:
     hub, pulley path, belt-wrap area, set screw access, exit lip, and future chute entry. Do not let a
     spacer stick outside the side plates or force the frame wider. Orient any spacer so its length
     runs between the inner faces of the side plates, with slip clearance if needed.
-11. Add the base plate and short conveyor mounting cleats or standoffs. In the assembly skeleton
+11. Add the base plate and short conveyor mounting feet or standoffs. In the assembly skeleton
     sketch, put the conveyor side-plate bottom plane about 12mm above the base as a first placement.
     The local belt surface at Z=60 will then be about 72mm above the base.
 12. Create the 20T-to-20T motor construction point in the side-view skeleton sketch: drive point at
@@ -795,6 +832,8 @@ Run these checks before sending prints:
 - Crossmembers do not force the frame wider, protrude outside the side plates, block pulley hardware,
   or limit set screw and exit-lip access
 - Bearing pockets face the side plates and bearings are captured after holders are bolted down
+- Conveyor mounting feet are accessible after assembly and can be loosened and corrected if first fit
+  needs a minor shim or washer
 - Motor board is bolted to base brackets and braced back toward the conveyor
 - Motor shaft point is projected from the side-view skeleton sketch, not hand-placed in 3D space
 - Motor shaft points inward from the outside board toward the conveyor
@@ -836,7 +875,7 @@ Run these checks before sending prints:
     drilling template, including the 22mm center clearance hole, four NEMA17 slots, and four board
     through-bolt holes.
 12. Dry-fit the full conveyor with side plates, holders, rollers, the wood block, any fitted
-    crossmembers, base plate, and conveyor mounting cleats.
+    crossmembers, base plate, and conveyor mounting feet.
 13. Measure shaft lengths from the real dry-fit. Cut the shafts with a Dremel cutoff wheel.
 14. Install the drive shaft, 20T driven pulley, drive roller, and set screw.
 15. Bolt the outside motor board to lower base brackets and upper braces or standoffs.

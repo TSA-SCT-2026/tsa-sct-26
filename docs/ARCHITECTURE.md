@@ -96,7 +96,7 @@ The orientation cue should be printed or labeled near the feed area so the evalu
 
 ## Conveyor
 
-The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and an outside grounded motor board with an inward-facing NEMA17 and accessible 20T-to-20T GT2 timing path. The base should support the existing conveyor side plates with short cleats, standoffs, or brackets rather than adding full-length duplicate side panels by default.
+The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and an outside grounded motor board with an inward-facing NEMA17 and accessible 20T-to-20T GT2 timing path. The base should support the existing conveyor side plates with short fixed feet, brackets, or standoffs. Use short slot holes for one-time setup adjustment before final tightening. Do not add full-length duplicate side panels by default.
 
 Baseline intent:
 - Usable top-run length around 300mm to 400mm

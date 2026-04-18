@@ -58,7 +58,7 @@ Assembly method:
 - Use a 20T-to-20T motor construction point around conveyor-local X=268.6mm and Z=14mm for the
   200mm GT2 path. Create it from the side-view skeleton sketch, then project it into the motor-board
   sketch before cutting the 22mm center hole and four NEMA17 adjustment slots.
-- The motor board is grounded through a 2-stage printed L bracket with gussets on both the motor side and the frame side. Each stage has feet with M3 screw holes for attachment to the board and to the base frame. The feet are currently simple blocks. If the conveyor height grows beyond the current cleat height, the feet will grow in Z and will likely need their own gussets to remain stiff.
+- The motor board is grounded through a printed 2-stage L bracket with gussets on both the motor side and the frame side. Use fixed gusseted feet with short slots as the default for one-time setup adjustment before final tightening. Keep shims or washers as fallback for minor correction.
 - Pulley Y alignment: motor pulley face set flush with the motor output shaft tip. Driven pulley seated against the inner bearing holder face with a 2mm printed spacer between the pulley and the holder. Both 20T pulleys must be coplanar in Y before tightening set screws. Final center distance and exact Y positions depend on confirmed conveyor height.
 - Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
   when the exact hole location depends on wood stock, pulley alignment, or adjustable brackets.
@@ -79,7 +79,7 @@ be picked up locally, so exact board and block thicknesses stay provisional unti
 measurement.
 
 The active frame path is a low base plate with the existing conveyor side plates fastened to short
-cleats, standoffs, or small brackets. Do not add full-length duplicate side panels by default. If the
+fixed feet, brackets, or standoffs. Do not add full-length duplicate side panels by default. If the
 extra panel is the same thin stock as the conveyor side plate, it adds cutting, drilling, and
 alignment work without much stiffness. Add only localized reinforcement where it earns its keep:
 around the NEMA17 mount, around the servo mount, or at a proven flex point.
@@ -94,7 +94,7 @@ The frame needs to:
 - Leave the bins removable
 - Leave wiring visible enough to look deliberate and clean
 
-The current cleat height places the conveyor side-plate bottoms about 12mm above the base plate, putting the belt surface around 72mm from the base. This is provisional. The teammate's servo chute geometry may require raising the conveyor 20-25mm higher, which would change the cleat or foot height, the motor board Z position, and the L bracket foot dimensions. Do not finalize or print those parts until the conveyor height is confirmed. Adjust after checking belt exit, exit lip, chute entry, chute exit, and bin catch height together.
+The current support offset places the conveyor side-plate bottoms about 12mm above the base plate, putting the belt surface around 72mm from the base. This is provisional. The teammate's servo chute geometry may require raising the conveyor 20-25mm higher, which would change foot height and the motor board Z position. Do not finalize or print those parts until the conveyor height is confirmed. Adjust after checking belt exit, exit lip, chute entry, chute exit, and bin catch height together.
 
 Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
 block is wood, not 2020 extrusion.

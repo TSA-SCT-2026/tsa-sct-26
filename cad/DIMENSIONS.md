@@ -45,10 +45,10 @@ Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISI
 |---------|-----------------------|
 | Material | Wood frame from available stock, with 3D printed brackets where useful |
 | 2020 extrusion | Not active for frame or conveyor support |
-| Belt surface height | `OPEN_DECISION` - Starting point is about 72mm from base (12mm cleats plus 60mm conveyor-local Z). Cleat height is gated on teammate's servo chute entry height requirement. If the chute needs more clearance, cleats grow to 20-25mm. Do not finalize or print motor mount feet, exit lip, or motor board drill template until confirmed. |
+| Belt surface height | `OPEN_DECISION` - Starting point is about 72mm from base (12mm conveyor support offset plus 60mm conveyor-local Z). Final support offset is gated on teammate's servo chute entry height requirement. Fixed gusseted feet with short slot holes are the default support method for one-time setup before final tightening. Do not finalize the motor board drill template or exit lip until confirmed. |
 | Minimum height check | Belt exit plus exit lip must feed the chute entry; chute exit must land in the bin funnel catch window |
 | Base plate | Start around 590mm x 590mm, adjust within the 610mm x 610mm limit after bin and chute layout |
-| Frame style | Low base plate with short cleats, standoffs, or brackets supporting the existing conveyor side plates. Do not use full-length duplicate side panels or tall 180mm conveyor legs unless testing proves they solve a real problem |
+| Frame style | Low base plate with short fixed gusseted feet, brackets, or standoffs supporting the existing conveyor side plates. Use short slot holes for one-time setup adjustment before final tightening. Do not use full-length duplicate side panels or tall 180mm conveyor legs unless testing proves they solve a real problem |
 | Stiffness target | No visible sensor or chute drift during servo motion |
 
 ## Conveyor
@@ -70,8 +70,8 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Idler shaft center | Conveyor-local X=30mm, Z=50mm |
 | Drive shaft center | Conveyor-local X=340mm, Z=50mm |
 | Roller center distance | 310mm |
-| Conveyor side plate bottom above base | 12mm starting point |
-| Upper belt surface | Conveyor-local Z=60mm, about 72mm above base with the 12mm starting support height |
+| Conveyor side plate bottom above base | 12mm starting point, then tuned by support height choice. Set once at the chosen slot position and lock. Use shims only for minor correction. |
+| Upper belt surface | Conveyor-local Z=60mm, about 72mm above base with the 12mm starting support offset |
 | Lower return nominal line | Conveyor-local Z=40mm |
 | Belt width | 25mm active neoprene strip |
 | Minimum clear brick width | 15.8mm as-fed brick width plus yaw and lateral margin. The 30mm shroud inner width gives about 7mm per side. The belt runs through the open shroud bottom, not through the horizontal channel, so the 25mm belt width does not add to the Y clearance requirement. |
@@ -91,8 +91,8 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Driven pulley Y position | Driven pulley seated against inner bearing holder face with a 2mm printed spacer between pulley and holder. Both 20T pulleys must be coplanar in Y before tightening set screws. |
 | NEMA17 package | Body outside the right-side grounded motor board, shaft pointing inward toward the conveyor, GT2 pulleys in the rear/right service bay |
 | NEMA17 20T motor point | Conveyor-local X=268.6mm, Z=14mm from the side-view skeleton sketch |
-| NEMA17 motor-board point | `OPEN_DECISION` - Base-relative Z depends on confirmed conveyor cleat height. At 12mm cleats: Z=26mm. At 20mm cleats: Z=34mm. At 25mm cleats: Z=39mm. Do not finalize until teammate's chute height is known. |
-| Motor board | Vertical board parallel to the right side plate, grounded through 2-stage L bracket with gussets on motor and frame sides, feet with M3 screw holes |
+| NEMA17 motor-board point | `OPEN_DECISION` - Base-relative Z depends on confirmed conveyor support offset. At 12mm offset: Z=26mm. At 20mm offset: Z=34mm. At 25mm offset: Z=39mm. Do not finalize until teammate's chute height is known. |
+| Motor board | Vertical board parallel to the right side plate, grounded through a printed 2-stage L bracket with gussets on motor and frame sides. Feet use short slot holes for setup before final lock-down. |
 | Motor board X span | X=220mm to X=330mm first CAD sketch |
 | Motor board height | 80mm minimum |
 | Motor board thickness | 6mm to 8mm placeholder, measured from real wood |
