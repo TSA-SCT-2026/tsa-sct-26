@@ -12,6 +12,7 @@ Status rule:
 
 | Topic | Status | Current options | Current guidance |
 |------|--------|-----------------|------------------|
+| Conveyor height (cleat / foot height) | OPEN | 12mm current, likely 20-25mm | Gated on teammate's servo chute entry height requirement. Unblocks: motor mount feet dimensions, motor board Z position, exit lip Z position, final pulley center distance. Do not print motor mount feet or exit lip before this is confirmed. |
 | Final chute angle | OPEN | 35 to 40 degrees | Start CAD at 40 degrees. With UHMW lining the angle is not the sensitive variable - verify with a short lined test segment but do not spend time iterating angle before lining the chute. |
 | Selector Z stack | OPEN | Keep Z=90mm pivot, raise pivot, reduce chute slope, side-entry funnel | Model chute entry, chute exit, and bin funnel catch height together before large prints. Do not reuse chute exit height as chute entry height. |
 | Selector sweep radius and funnel layout | OPEN | Increase radius, narrow funnels, stagger bins, increase servo spacing | At 35-degree spacing, 65mm to 75mm radius does not fit 60mm mouths without overlap. Check the arc before locking bin positions. |

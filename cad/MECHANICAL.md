@@ -26,18 +26,19 @@ Use the tutorial-style conveyor as the active states path, with the team's modif
 5mm shaft and bearing path. The tutorial is a structural guide, not a hardware spec.
 
 Build around:
-- One wood block support replacing the earlier 2020 extrusion support
+- One wood block support extended to contact both inner side-plate faces, enabling screws through the outside of each side plate into the support ends. This makes the support a structural crossmember, not a floating piece.
 - Two thin wood side plates
 - Printed bearing holders bolted to the outside faces
 - Shafts and printed rollers between the plates
-- NEMA17 motor packaged low with its shaft pointing outward through the right conveyor side plate or a local motor doubler
+- NEMA17 motor on a grounded outside board with the shaft pointing inward toward the conveyor, mounted through a 2-stage L bracket (see motor mount section below)
+- Rear/right motor service bay with accessible 20T-to-20T GT2 pulleys
 - 5mm shaft and matching 5mm-ID bearing path
 - 25mm neoprene belt sized from the real dry-fit
 
 Adjust as needed:
 - Set belt path around the current 25mm neoprene strip
 - Set usable top-run length to roughly 300mm to 400mm
-- Keep motor and tensioner serviceable with the GT2 pulleys visible outside the right conveyor side plate
+- Keep motor and tensioner serviceable with the GT2 pulleys visible between the right conveyor side plate and outside motor board
 - Mount to the wood frame without exceeding 610mm x 610mm
 - Keep the belt exit aligned with the chute entry
 
@@ -48,21 +49,28 @@ Assembly method:
 - Prefer face alignment, shaft-axis alignment, center-plane alignment, and simple belt keep-out
   envelopes when assembling conveyor parts in Fusion
 - Set the wood block support from the upper belt surface and roller flange clearance. With the
-  current roller layout, start around 295mm to 300mm long and require about 10mm or more clearance to
+  current roller layout, start around 255mm to 260mm long and require about 10mm or more clearance to
   each roller flange envelope before cutting or drilling the real block
 - Fit crossmembers only where they stiffen the side plates without blocking the drive hub, pulley
   path, belt wrap, set screw access, exit lip, or future chute entry. Do not widen the frame just to
   fit a drive-end spacer. Omit the drive-end spacer if the wood block and feed-end spacer hold the
   gap well enough.
-- Use a low-frame NEMA17 construction point around conveyor-local X=331mm and Z=18mm to 20mm for the
-  20T to 60T, 200mm GT2 path. Check the actual imported motor body against the lower belt return
-  before cutting the right conveyor side plate or any local motor doubler.
+- Use a 20T-to-20T motor construction point around conveyor-local X=268.6mm and Z=14mm for the
+  200mm GT2 path. Create it from the side-view skeleton sketch, then project it into the motor-board
+  sketch before cutting the 22mm center hole and four NEMA17 adjustment slots.
+- The motor board is grounded through a 2-stage printed L bracket with gussets on both the motor side and the frame side. Each stage has feet with M3 screw holes for attachment to the board and to the base frame. The feet are currently simple blocks. If the conveyor height grows beyond the current cleat height, the feet will grow in Z and will likely need their own gussets to remain stiff.
+- Pulley Y alignment: motor pulley face set flush with the motor output shaft tip. Driven pulley seated against the inner bearing holder face with a 2mm printed spacer between the pulley and the holder. Both 20T pulleys must be coplanar in Y before tightening set screws. Final center distance and exact Y positions depend on confirmed conveyor height.
 - Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
   when the exact hole location depends on wood stock, pulley alignment, or adjustable brackets.
 
 Downloaded conveyor models may be used as visual reference only. Do not spend the first CAD window cleaning imported geometry when the tutorial-style conveyor can be modeled and built directly.
 
 The existing NEMA17, fan, timing belt, timing pulley, bearings, and neoprene stock remain useful where they fit the chosen conveyor path.
+
+The rear/right motor bay is also the candidate future wiring and electronics area. Consider ESP32,
+stepper driver, power distribution, cable strain relief, and service loops there only after the
+conveyor, chute, and bin CAD are stable. Until then, reserve space and keep the evaluator-facing side
+clean.
 
 ## Frame
 
@@ -86,11 +94,7 @@ The frame needs to:
 - Leave the bins removable
 - Leave wiring visible enough to look deliberate and clean
 
-Start with the conveyor side-plate bottoms supported about 8mm above the base plate, which puts the
-local belt surface around 68mm from the base. That 8mm is a provisional cleat or standoff height, not
-an unsupported gap. It gives the low motor body base clearance and puts the first exit-lip height near
-the provisional chute entry. Adjust it after checking the belt exit, exit lip, chute entry, chute
-exit, and bin catch height together.
+The current cleat height places the conveyor side-plate bottoms about 12mm above the base plate, putting the belt surface around 72mm from the base. This is provisional. The teammate's servo chute geometry may require raising the conveyor 20-25mm higher, which would change the cleat or foot height, the motor board Z position, and the L bracket foot dimensions. Do not finalize or print those parts until the conveyor height is confirmed. Adjust after checking belt exit, exit lip, chute entry, chute exit, and bin catch height together.
 
 Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
 block is wood, not 2020 extrusion.
