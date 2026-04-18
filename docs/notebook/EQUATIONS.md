@@ -82,9 +82,9 @@ chute_entry_floor_z = belt_surface_z - entry_drop
 Current first CAD target:
 
 ```text
-belt_surface_z = about 68mm
+belt_surface_z = about 72mm
 entry_drop = 2mm to 4mm
-chute_entry_floor_z = about 64mm to 66mm
+chute_entry_floor_z = about 68mm to 70mm
 ```
 
 Explanation:
@@ -109,9 +109,9 @@ exit_lip_top_z = belt_surface_z + lip_height
 Current first CAD target:
 
 ```text
-belt_surface_z = about 68mm
+belt_surface_z = about 72mm
 lip_height = 5mm to 6mm
-exit_lip_top_z = about 73mm to 74mm
+exit_lip_top_z = about 77mm to 78mm
 ```
 
 Explanation:
@@ -271,3 +271,175 @@ Used in:
 - route-ready timing
 - conveyor-to-chute validation
 - future run log analysis
+
+## Conveyor Drive Belt Pull and Drag Margin
+
+Equations:
+
+```text
+pulley_ratio = driven_pulley_teeth / motor_pulley_teeth
+usable_motor_torque = holding_torque * usable_torque_fraction
+roller_torque = usable_motor_torque * pulley_ratio * timing_stage_efficiency
+available_belt_pull = roller_torque / roller_radius
+net_belt_pull = available_belt_pull - estimated_total_drag
+```
+
+Current assumptions:
+
+```text
+NEMA17 holding torque = 0.42 N m
+timing_stage_efficiency = 0.90
+roller_radius = 10mm = 0.010m
+usable_torque_fraction = 0.10 for very conservative moving estimate
+usable_torque_fraction = 0.25 for conservative normal moving estimate
+```
+
+Available belt pull:
+
+```text
+20T motor to 20T driven at 10 percent torque:
+available_belt_pull = (0.42 N m * 0.10 * (20 / 20) * 0.90) / 0.010m
+available_belt_pull = 3.8N
+
+20T motor to 20T driven at 25 percent torque:
+available_belt_pull = (0.42 N m * 0.25 * (20 / 20) * 0.90) / 0.010m
+available_belt_pull = 9.4N
+
+20T motor to 60T driven at 10 percent torque:
+available_belt_pull = (0.42 N m * 0.10 * (60 / 20) * 0.90) / 0.010m
+available_belt_pull = 11.3N
+
+20T motor to 60T driven at 25 percent torque:
+available_belt_pull = (0.42 N m * 0.25 * (60 / 20) * 0.90) / 0.010m
+available_belt_pull = 28.4N
+
+60T motor to 20T driven at 10 percent torque:
+available_belt_pull = (0.42 N m * 0.10 * (20 / 60) * 0.90) / 0.010m
+available_belt_pull = 1.3N
+
+60T motor to 20T driven at 25 percent torque:
+available_belt_pull = (0.42 N m * 0.25 * (20 / 60) * 0.90) / 0.010m
+available_belt_pull = 3.1N
+```
+
+Estimated drag budget:
+
+```text
+estimated_total_drag = belt_support_drag + bearing_drag + tracking_drag + brick_drag + splice_or_startup_margin
+```
+
+Current drag cases:
+
+```text
+good_build_drag = 1.5N
+conservative_real_build_drag = 5.0N
+bad_build_drag = 15.0N
+```
+
+Net belt pull after subtracting all estimated drag:
+
+```text
+20T motor to 20T driven, 10 percent torque:
+net after good 1.5N drag = 2.3N
+net after conservative 5.0N drag = -1.2N
+net after bad 15.0N drag = -11.2N
+
+20T motor to 20T driven, 25 percent torque:
+net after good 1.5N drag = 7.9N
+net after conservative 5.0N drag = 4.4N
+net after bad 15.0N drag = -5.6N
+
+20T motor to 60T driven, 10 percent torque:
+net after good 1.5N drag = 9.8N
+net after conservative 5.0N drag = 6.3N
+net after bad 15.0N drag = -3.7N
+
+20T motor to 60T driven, 25 percent torque:
+net after good 1.5N drag = 26.9N
+net after conservative 5.0N drag = 23.4N
+net after bad 15.0N drag = 13.4N
+
+60T motor to 20T driven, 10 percent torque:
+net after good 1.5N drag = -0.2N
+net after conservative 5.0N drag = -3.7N
+net after bad 15.0N drag = -13.7N
+
+60T motor to 20T driven, 25 percent torque:
+net after good 1.5N drag = 1.6N
+net after conservative 5.0N drag = -1.9N
+net after bad 15.0N drag = -11.9N
+```
+
+Explanation:
+
+The active first-build conveyor choice is 20T motor to 20T driven. It keeps enough torque margin for a smooth conveyor while preserving speed and simple packaging. The 20T motor to 60T driven path has much more force margin but is slower. The 60T motor to 20T driven path is a speed-up path and should not be used unless the bare conveyor proves very low drag.
+
+Used in:
+
+- conveyor timing-stage pulley choice
+- motor board and slot planning
+- conveyor hand test target
+- `docs/project/CONVEYOR_BUILD_GUIDE.md`
+- `cad/DIMENSIONS.md`
+
+## GT2 Equal-Pulley Center Distance And Motor Point
+
+Equations:
+
+```text
+pitch_diameter = tooth_count * belt_pitch / pi
+center_distance = (belt_length - pi * pitch_diameter) / 2
+vertical_drop = drive_shaft_z - motor_shaft_z
+horizontal_offset = sqrt(center_distance^2 - vertical_drop^2)
+motor_shaft_x = drive_shaft_x - horizontal_offset
+slot_angle = atan(vertical_drop / horizontal_offset)
+motor_board_z = motor_shaft_z + conveyor_side_plate_base_offset
+```
+
+Current 20T-to-20T use:
+
+```text
+tooth_count = 20
+belt_pitch = 2mm
+belt_length = 200mm
+drive_shaft_x = 340mm
+drive_shaft_z = 50mm
+motor_shaft_z = 14mm
+
+pitch_diameter = 20 * 2mm / pi
+pitch_diameter = about 12.73mm
+
+center_distance = (200mm - pi * 12.73mm) / 2
+center_distance = 80mm
+
+vertical_drop = 50mm - 14mm
+vertical_drop = 36mm
+
+horizontal_offset = sqrt(80mm^2 - 36mm^2)
+horizontal_offset = about 71.4mm
+
+motor_shaft_x = 340mm - 71.4mm
+motor_shaft_x = about 268.6mm
+
+slot_angle = atan(36mm / 71.4mm)
+slot_angle = about 26.8 degrees
+
+motor_board_z = 14mm + 12mm
+motor_board_z = 26mm
+```
+
+Explanation:
+
+The outside motor board uses the active 20T motor pulley to 20T driven pulley path with a 200mm GT2
+belt. These equations locate the motor shaft from a visible side-view skeleton sketch: drive shaft
+point, 80mm construction circle, and Z=14 construction line. Because the conveyor side-plate bottom
+starts 12mm above the base, the motor board sketch uses the projected base-relative motor point at
+X=268.6mm, Z=26mm before adding the 22mm center hole and four NEMA17 adjustment slots.
+
+Used in:
+
+- outside NEMA17 motor-board CAD
+- GT2 pulley center-distance layout
+- timing-belt adjustment slot angle
+- `docs/project/CONVEYOR_BUILD_GUIDE.md`
+- `cad/DIMENSIONS.md`

@@ -96,12 +96,12 @@ The orientation cue should be printed or labeled near the feed area so the evalu
 
 ## Conveyor
 
-The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and a low NEMA17 drive with the shaft pointing outward through the right conveyor side plate or a local motor doubler. The base should support the existing conveyor side plates with short cleats, standoffs, or brackets rather than adding full-length duplicate side panels by default.
+The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and an outside grounded motor board with an inward-facing NEMA17 and accessible 20T-to-20T GT2 timing path. The base should support the existing conveyor side plates with short cleats, standoffs, or brackets rather than adding full-length duplicate side panels by default.
 
 Baseline intent:
 - Usable top-run length around 300mm to 400mm
 - Belt width around the current 25mm neoprene strip
-- Belt surface height derived from the belt-to-chute handoff. Current low-frame CAD starts around 68mm from the base, then adjusts after chute entry and bin catch height are checked together
+- Belt surface height derived from the belt-to-chute handoff. Current low-frame CAD starts around 72mm from the base, then adjusts after chute entry and bin catch height are checked together
 - NEMA17 motor retained
 - Wood block support replacing the previous 2020 aluminum extrusion support idea
 - Belt path and motor clearance verified inside the 610mm x 610mm footprint without adding structure that does not improve stiffness, service access, or alignment
@@ -120,8 +120,8 @@ Layout along belt travel:
        break beam pair A at X=150  (size timing, leading edge detection)
        break beam pair B at X=190  (size timing, trailing edge / belt speed cross-check)
        TCS3200 in shroud roof       (color sensing under controlled lighting)
-  -> open belt run (X=200 to X=395)
-  -> exit lip (X=395 to X=410, redirects brick downward into chute entry)
+  -> open belt run (X=200 to X=355)
+  -> exit lip (X=355 to X=370, redirects brick downward into chute entry)
 ```
 
 Size:
