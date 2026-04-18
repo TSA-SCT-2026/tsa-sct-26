@@ -93,7 +93,8 @@ static uint8_t binForCat(BrickCategory cat) {
     switch (cat) {
         case BrickCategory::CAT_2x2_RED:  return 1;
         case BrickCategory::CAT_2x2_BLUE: return 2;
-        case BrickCategory::CAT_2x3_BLUE: return 3;
+        case BrickCategory::CAT_2x3_RED:  return 3;
+        case BrickCategory::CAT_2x3_BLUE: return 4;
         default:                          return 4;
     }
 }

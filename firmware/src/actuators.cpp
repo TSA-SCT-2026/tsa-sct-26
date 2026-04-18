@@ -20,8 +20,8 @@ const char* selectorPositionLabel(uint8_t binIdx) {
     switch (binIdx) {
         case 1: return "BIN1_2x2_RED";
         case 2: return "BIN2_2x2_BLUE";
-        case 3: return "BIN3_2x3_BLUE";
-        case 4: return "BIN4_2x3_RED";
+        case 3: return "BIN3_2x3_RED";
+        case 4: return "BIN4_2x3_BLUE";
         default: return "UNKNOWN";
     }
 }

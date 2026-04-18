@@ -69,7 +69,7 @@ Optional future events reserved for tighter instrumentation:
 ## Control Philosophy
 
 - Keep state names and run logs aligned with the states machine
-- Keep size sensing abstract until the sensor family is selected
+- Keep size sensing aligned with two-pair break-beam timing in the shrouded sensing station
 - Keep the color sensor shroud as a calibration requirement
 - Keep the servo chute deterministic with four recorded target angles
 - Do not add feed automation until manual one-at-a-time sorting is reliable

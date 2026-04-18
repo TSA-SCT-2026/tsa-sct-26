@@ -61,7 +61,7 @@
 #define C_MIN_VALID             100
 #define I2C_FREQ_HZ             400000
 
-// Placeholder thresholds until the size sensor family is selected
+// Initial thresholds for two-pair break-beam timing. Calibrate with shroud installed.
 #define SIZE_SENSOR_TIMEOUT_MS       80
 #define SIZE_TWO_BY_THREE_MIN_UNITS  20
 
@@ -75,8 +75,8 @@
 // Expected counts
 #define EXPECTED_BIN1           6
 #define EXPECTED_BIN2           6
-#define EXPECTED_BIN3           8
-#define EXPECTED_BIN4           4
+#define EXPECTED_BIN3           4
+#define EXPECTED_BIN4           8
 #define TOTAL_BRICKS           24
 
 // Thermal and power watch model

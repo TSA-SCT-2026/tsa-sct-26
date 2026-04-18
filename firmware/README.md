@@ -27,7 +27,7 @@ Read `firmware/EMBEDDED.md` first. The active control contract is:
 
 ## Key Constraints
 
-- Size sensor family is still undecided
+- Size sensing is break-beam timing with two pairs in the shroud
 - Color calibration is valid only with the shroud installed
 - Servo route must be ready before the brick commits to the chute
 - Manual one-at-a-time feed is the active states flow

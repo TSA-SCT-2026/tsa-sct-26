@@ -97,7 +97,7 @@ Status for this section: `PROVISIONAL_ESTIMATE`
 | Motor board height | 80mm minimum |
 | Motor board thickness | 6mm to 8mm placeholder, measured from real wood |
 | Motor board Y placement | Inner face about 25mm outboard from right side plate outside face. If left inner side plate face is Y=0, motor board inner face is about Y=83mm |
-| Motor board center clearance | 22mm diameter at the projected base-relative X=268.6mm, Z=26mm motor shaft point |
+| Motor board center clearance | 22mm diameter at the projected base-relative motor shaft point. Use X=268.6mm and derive Z from the current conveyor support height decision. |
 | NEMA17 slots | Four 12mm x 3.5mm slots on the 31mm x 31mm bolt pattern, angled about 26.8 degrees toward the drive shaft |
 | Motor board through holes | Four base-relative corner holes at X=230/Z=8, X=320/Z=8, X=230/Z=72, X=320/Z=72. Use 4.3mm for M4 preferred or 3.3mm for M3 fallback |
 | Motor clearance check | GT2 belt envelope must clear motor board, side plate, bearing holders, brace hardware, bolt heads, and pulley set screws |

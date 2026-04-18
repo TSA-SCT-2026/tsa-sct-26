@@ -899,7 +899,7 @@ Motor and belt:
 - NEMA17 center clearance: 22mm
 - 20T to 20T GT2 center distance with 200mm belt: about 80mm
 - Motor shaft construction point: local X=268.6mm, Z=14mm for the 20T-to-20T path
-- Motor board shaft point: base-relative X=268.6mm, Z=26mm after the 12mm conveyor support height
+- Motor board shaft point: base-relative X=268.6mm, with Z derived from the conveyor support height. At 12mm support height, Z=26mm. Recompute if support height changes.
 - Motor board inner face: about 25mm outboard from the right side plate outside face
 - Motor orientation: body outside the motor board, shaft pointing inward toward the conveyor
 - Motor board through holes: 4.3mm for M4 preferred, or 3.3mm for M3 fallback

@@ -3,8 +3,8 @@
 #include <Wire.h>
 #include "config.h"
 
-// Size sensor hardware is still undecided. This interface keeps the
-// classifier stable while the mechanical team chooses the sensor family.
+// Size sensing uses two-pair break-beam timing in the shrouded station.
+// Keep this interface stable while thresholds are calibrated on real hardware.
 
 enum class BrickCategory : uint8_t {
     CAT_2x2_RED  = 0,
