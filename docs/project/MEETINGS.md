@@ -1,5 +1,7 @@
 # Meeting Notes
 
+These notes are historical. Do not treat old meeting estimates as current CAD truth unless they were moved into `cad/DIMENSIONS.md` with a source.
+
 ## Meeting 1: 3/20/26 (1 hour)
 
 - Talked about how to plan the upcoming season.
@@ -68,7 +70,7 @@
   - One member owns servo chute selector CAD, one member owns conveyor and frame CAD. Chute member assists frame member when done.
   - Agreed to accept rough initial geometry and build early. Physical assembly experience will inform CAD faster than trying to resolve everything in software first.
 - Design constraints:
-  - Brick inertia at belt exit requires a curved exit lip, 5 to 6mm above belt surface, to redirect horizontal momentum into the chute entry. First validation print candidate.
+  - Brick inertia at belt exit likely requires a small exit handoff guide to redirect horizontal momentum into the chute entry. The final height must come from the tested belt and chute stack.
   - Sensing shroud needs a printed screw-in mount. Exact position resolved during conveyor and frame CAD.
 - Locked frame material as wood. Aluminum extrusion adds complexity with no performance advantage. Time saved goes to notebook, test data, and tuning.
 - Consulting an experienced engineering teacher this week for CAD positioning and assembly validation on the conveyor and pulley system.

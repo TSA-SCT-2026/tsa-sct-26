@@ -1,6 +1,6 @@
 # Easy HomeMade Projects Conveyor Mechanics Reference
 
-Use this as a mechanical reference for the tutorial-style conveyor only. The active sorter dimensions still come from `docs/project/CONVEYOR_BUILD_GUIDE.md` and `cad/DIMENSIONS.md`.
+Use this as a mechanical reference for the tutorial-style conveyor only. Do not copy exact dimensions from this file into the active sorter. Active geometry must come from source-backed values in `cad/DIMENSIONS.md`, real dry-fit measurements, or the final CAD export after physical confirmation.
 
 Source video: [How to Make 2-Way Conveyor Belt System Using Stepper Motor & Arduino](https://www.youtube.com/watch?v=qoejrZhn5XI) by Easy HomeMade Projects.
 

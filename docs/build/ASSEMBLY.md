@@ -4,7 +4,7 @@ This is the primary assembly guide for the simplified states sorter.
 
 Audience:
 - A beginner builder
-- A teammate who did not design every part
+- A teammate or builder who did not design every part
 - A first-time operator preparing the machine for validation
 
 Use this guide with:
@@ -37,149 +37,86 @@ Pipeline summary:
 6. Brick exits the belt, enters the chute, and slides into the labeled bin.
 7. System returns to READY for the next brick.
 
-## Build Sequence
+## Current Build Phase
 
-Follow this order.
+CAD is the critical path again. The active mechanical order is bins, then servo chute, then conveyor height and handoff, then permanent woodworking.
 
-1. Conveyor core Fusion assembly
-2. Conveyor import and frame layout
-3. Servo chute angle and pivot prototype
-4. Servo mount and bin arc alignment
-5. Sensing station and color shroud
-6. Bins, labels, and operator UX
-7. Wiring and power checks
-8. Calibration
-9. Full 24-brick reliability runs
+Do not start permanent woodworking or fixed-height mounting around the conveyor feet, servo feet, or exit handoff until final bin and chute geometry exists.
 
-## Stage 1: Conveyor Core Fusion Assembly
+## Mechanical Build Order
+
+1. Dry-fit conveyor core.
+2. Confirm belt tracking and support clearance.
+3. Fit sensing station after the conveyor path is believable.
+4. Confirm bin and chute geometry.
+5. Derive conveyor feet, servo feet, and exit handoff from the real stack.
+6. Cut and drill permanent wood only after the handoff stack is known.
+7. Install bins, labels, start control, display, and cable routing.
+8. Wire and power-check.
+9. Calibrate.
+10. Run full 24-brick validation.
+
+## Conveyor Core
 
 Goal:
-- Prove the conveyor core has a real belt path before detailed shroud CAD
+- Prove the conveyor has a reliable belt path before adding precision sensing and handoff details.
 
 Steps:
-1. Assemble the side plates, fixed bearing holders, slotted bearing holders, shafts, rollers, wood
-   block support, outside motor board, NEMA17, pulley placeholders, and simple belt envelope in Fusion using
-   assembly relationships and a visible skeleton sketch instead of typed global coordinates.
-2. Confirm the 50mm inner side-plate gap and 25mm belt path.
-3. Confirm the wood block support clears the lower belt return.
-4. Confirm each wood block end clears the roller flange and belt-wrap envelope by about 10mm or more.
-5. Confirm the drive roller hub is on the motor side.
-6. Confirm the drive roller set screw can be reached, even if the hole will be drilled by hand.
-7. Confirm the outside motor board slots let the NEMA17 slide a few millimeters to tension the timing belt.
-8. Fit crossmembers only where they clear the hub, pulley path, belt wrap, set screw access, exit
-   lip, and future chute entry. Start with a feed-end spacer. Add a drive-end spacer only if it fits
-   inside the side plates without widening the frame.
-9. Add the low base plate and short conveyor mounting cleats or standoffs. In the skeleton sketch,
-   start with the conveyor side-plate bottom plane about 12mm above the base top plane so the belt
-   surface is about 72mm from the base. This is a supported shim height, not a floating gap.
-10. Create the 20T-to-20T motor point from the side-view skeleton sketch: drive shaft at X=340,
-    Z=50, 80mm construction circle, Z=14 construction line, and lower-left intersection near
-    X=268.6, Z=14. With the conveyor side-plate bottom 12mm above the base, this projects to
-    base-relative X=268.6, Z=26 in the motor board sketch.
-11. Add the grounded outside motor board on a vertical plane parallel to the right conveyor side
-    plate, attached through the 2-stage L bracket printed mount with gussets on both the motor and
-    frame sides. Project the motor point into the board sketch, add the 22mm center hole, four NEMA17
-    slots, and four board through-bolt holes.
-12. Confirm the motor board is attached through the 2-stage L bracket. Each stage has feet with M3 screw holes landing on the board and on the base frame. Confirm no flex when the motor is hand-loaded.
-13. Place the NEMA17 outside the board with the shaft pointing inward. Set motor pulley face flush with the shaft tip. Set driven pulley against the inner bearing holder face with a 2mm spacer. Align both 20T pulley midplanes in Y before tightening set screws.
-14. Confirm the GT2 belt envelope clears the motor board, side plate, bearing holders, brace
-    hardware, bolt heads, and pulley set screws. Confirm the motor wire exits into the rear/right
-    service bay without crossing moving paths.
-15. Add only a placeholder sensing shroud volume near the feed side, using the reference shroud span
-   as a check rather than a typed placement command.
-16. Keep side rails as separate placeholder strips.
-17. Model holes in Fusion for printed parts and drilling templates. For final motor board, wood
-    block, crossmember, temporary rail, and first exit-lip holes, mark from the fitted real assembly
-    unless a printed bracket gives a known hole pattern.
+1. Assemble side plates, shafts, rollers, belt, support block, motor board, motor, and pulley path.
+2. Use real dry-fit alignment instead of old typed coordinates.
+3. Confirm the belt tracks without rubbing.
+4. Confirm the support block does not touch the return path.
+5. Confirm motor and pulley adjustment remain accessible.
+6. Confirm wiring exits away from moving paths.
+7. Keep exit handoff geometry as a placeholder until bin and chute geometry exists.
 
 Pass criteria:
-- Conveyor core fits without obvious interference
-- Belt path clears rollers, wood support, side plates, and likely screw heads
-- Wood block length is set from clearance, not from a fixed coordinate placement
-- Crossmembers do not force the frame wider or block drive hardware
-- Motor and timing belt tension adjustment remain serviceable
-- Outside motor board is grounded, braced, and does not float
-- Motor shaft points inward and GT2 pulleys remain accessible in the rear/right service bay
-- Matching 20T pulleys are coplanar in Y and set screws remain reachable
-- Belt exit, exit lip, chute entry, chute exit, and bin catch height have a plausible shared Z stack
-- Sensing shroud placeholder clears the belt and side plates
-- Removable shroud screw tabs or flanges have a plausible landing surface
+- Belt path clears rollers, wood support, side plates, and likely screw heads.
+- Motor and timing belt adjustment remain serviceable.
+- The assembly fits inside the footprint with chute and bin space reserved.
+- No permanent holes depend on open geometry.
 
-## Stage 2: Conveyor And Frame Layout
+## Sensing Station
 
 Goal:
-- Establish a working belt path inside the footprint
+- Mount the upstream sensing station without blocking the brick path.
 
 Steps:
-1. Import or model the NEMA17 conveyor.
-2. Set belt width around the current 25mm neoprene strip.
-3. Set usable top-run length to about 300mm to 400mm.
-4. Place the conveyor on a wood frame with printed brackets where useful.
-5. Keep the 610mm x 610mm boundary visible.
-6. Leave space under the belt exit for chute sweep and bins.
-
-Pass criteria:
-- Conveyor fits footprint with bins and chute space reserved
-- Motor and belt tension adjustment remain serviceable
-- Belt exit can hand off to the chute without a large gap
-
-## Stage 3: Servo Chute Prototype
-
-Goal:
-- Prove bricks slide reliably before designing the full selector
-
-Steps:
-1. Print a short chute section.
-2. Test real bricks at 30, 35, 40, and 45 degrees.
-3. Choose the lowest angle that slides reliably.
-4. Record the result for the inventor's log.
-
-Pass criteria:
-- Brick slides without sticking
-- No studs, corners, or edges catch in the channel
-- Chosen angle is recorded
-
-## Stage 4: Servo Mount And Bin Arc
-
-Goal:
-- Align the rotating chute with all four bin entries
-
-Steps:
-1. Fit the MG995/MG996-class servo in its mount.
-2. Align the output shaft vertically with the chute pivot.
-3. Attach the chute through a horn adapter or pivot boss.
-4. Create four construction rays from the pivot.
-5. Place the four bins and guides under the chute arc.
-6. Rotate the chute to each target position in CAD.
-
-Pass criteria:
-- Chute exit overlaps each bin guide
-- Servo horn and screws remain accessible
-- Chute clears frame and wires across the full sweep
-
-## Stage 5: Sensing Station
-
-Goal:
-- Mount the upstream sensing station without blocking the brick path
-
-Steps:
-1. Replace the placeholder shroud with a removable screw-mounted shroud near the conveyor start on
-   the wood conveyor bed or a rigid wood frame member.
+1. Mount the shroud near the conveyor start on the wood conveyor bed or a rigid frame member.
 2. Keep the first-build side rails separate from the shroud until real-brick centering is proven.
-3. Install break-beam pair A and pair B through the shroud side walls.
+3. Install both break-beam pairs through the shroud side walls.
 4. Mount the TCS3200/GY-31 color sensor in the shroud.
 5. Verify brick clearance through the shroud.
 6. Verify the shroud can be removed without disassembling the conveyor core.
 7. Route sensor wiring away from motor and servo wiring where practical.
 
 Pass criteria:
-- Size sensor has a clean measurement path
-- Color shroud has no obvious light leaks
-- Bricks do not catch on sensor brackets
-- Color calibration can be repeated without moving the sensor
-- Shroud can be unscrewed for adjustment, cleaning, or reprint
+- Size sensor has a clean measurement path.
+- Color shroud has no obvious light leaks.
+- Bricks do not catch on sensor brackets.
+- Color calibration can be repeated without moving the sensor.
+- Shroud can be unscrewed for adjustment, cleaning, or reprint.
 
-## Stage 6: Bins, Labels, And Operator UX
+## Servo Chute And Bins
+
+Goal:
+- Align the rotating chute with all four bin entries.
+
+Steps:
+1. Fit the MG995/MG996-class servo in its verified mount.
+2. Align the output shaft vertically with the chute pivot.
+3. Attach the chute through a horn adapter or pivot boss.
+4. Install the bins and funnels.
+5. Test each servo target position with real bricks.
+6. Adjust servo positions from actual catches, not old angle tables.
+
+Pass criteria:
+- Chute exit lands inside each bin funnel with margin.
+- Servo horn and screws remain accessible.
+- Chute clears frame and wires across the full sweep.
+- Bins are labeled and removable.
+
+## Operator UX
 
 Install and verify:
 1. Bin labels:
@@ -187,7 +124,7 @@ Install and verify:
 - 2x2 BLUE
 - 2x3 RED
 - 2x3 BLUE
-2. Start control label
+2. Start control label.
 3. Display states:
 - READY
 - SORTING
@@ -196,47 +133,46 @@ Install and verify:
 4. Feed orientation cue:
 - studs up
 - long side along travel
-5. Cable routing and strain relief
+5. Cable routing and strain relief.
 
 Goal:
-- A first-time evaluator can operate the system without assistance
+- A first-time evaluator can operate the system without assistance.
 
-## Stage 7: Wiring And Power Integration
+## Wiring And Power Integration
 
 Follow `wiring/ELECTRICAL.md`.
 
 Checklist:
-1. Common ground across logic and motor or servo power rails
-2. Stepper motor-input bulk capacitor installed
-3. Servo power checked for current capacity
-4. Fan installed if driver cooling needs it
-5. Safe wire routing away from moving parts
-6. Strain relief at moving interfaces
-7. Rear/right motor bay reserved as a possible later ESP32, stepper driver, and power routing area
-   after conveyor and chute geometry are stable
+1. Common ground across logic and motor or servo power rails.
+2. Stepper motor-input bulk capacitor installed.
+3. Servo power checked for current capacity.
+4. Fan installed if driver cooling needs it.
+5. Safe wire routing away from moving parts.
+6. Strain relief at moving interfaces.
+7. Electronics placement checked against final conveyor, chute, and bins before permanent mounting.
 
 Pre-power checks:
-1. No short between rails
-2. Correct connector pinouts
-3. Servo signal and power polarity verified
-4. Conveyor motor direction verified at low speed
-5. Sensor readings visible in serial output
+1. No short between rails.
+2. Correct connector pinouts.
+3. Servo signal and power polarity verified.
+4. Conveyor motor direction verified at low speed.
+5. Sensor readings visible in serial output.
 
-## Stage 8: Calibration
+## Calibration
 
 Follow `docs/build/CALIBRATION.md`.
 
 Order:
-1. Conveyor speed and handoff calibration
-2. Servo chute position calibration
-3. Break-beam size timing calibration
-4. Color threshold calibration with shroud installed
-5. Full-system validation runs
+1. Conveyor speed and handoff calibration.
+2. Servo chute position calibration.
+3. Break-beam size timing calibration.
+4. Color threshold calibration with shroud installed.
+5. Full-system validation runs.
 
 Data rule:
-- Keep run data in CSV logs for notebook use
+- Keep run data in CSV logs for notebook use.
 
-## Stage 9: Full-Run Acceptance
+## Full-Run Acceptance
 
 Before calling the system ready:
 1. Run at least 10 complete 24-brick sets.
@@ -258,9 +194,9 @@ Brick misses chute:
 - Recheck servo pivot alignment.
 
 Brick sticks in chute:
-- Increase chute angle.
+- Adjust chute angle from UHMW-lined real-brick tests.
 - Smooth the channel.
-- Recheck width and height clearance.
+- Recheck clearance.
 
 Color classification unstable:
 - Confirm the shroud is installed.

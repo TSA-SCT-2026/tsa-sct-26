@@ -1,32 +1,50 @@
 # Short TODO
 
-Updated April 11, 2026 after the states simplification pivot.
+Updated April 20, 2026 after the CAD ownership pivot.
 
-Current priority: execute the simplified states CAD plan: manual one-at-a-time feed, conveyor sensing station, MG995/MG996-class servo rotary chute selector, and four labeled bins.
+Current priority: finish the physical CAD dependency chain fast enough to print and troubleshoot. The developer owns bins to chute to conveyor. Work downstream first because the receiving bins define the chute catch geometry, the chute defines conveyor exit height, and the conveyor feet plus woodworking come last.
 
-## Next Tasks
+## Immediate CAD Sprint
 
-1. CAD weekend setup
-- Open the visual conveyor tutorial and `docs/project/CONVEYOR_BUILD_GUIDE.md`
-- Model the tutorial-style conveyor with modified measurements and wood block support
-- Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`
-- Keep the 610mm x 610mm boundary visible in Fusion
-- Use wood frame construction, with printed brackets where useful, not 2020 extrusion
+1. Receiving bins and funnel cassette
+- Design four labeled receiving bins with wide forgiving funnel mouths.
+- Keep interiors separated by category.
+- Preserve removal access and label visibility.
+- Check the 610mm x 610mm footprint early.
+- Print one bin or funnel coupon as soon as it answers a real catch question.
 
-2. Build the custom states geometry
-- Model servo mount, chute body, pivot boss or horn adapter, and bin guides
-- Model color sensor shroud
-- Model the two break-beam pairs in the sensing shroud
-- Model four labeled bins under the chute arc
+2. Servo rotary chute selector
+- Design the chute around the actual bin funnel catch zones.
+- Keep the chute short, stiff, UHMW-lined, and easy to reprint.
+- Treat servo angles as calibration outputs.
+- Print the smallest chute or horn adapter coupon that checks slide, stiffness, or fit.
 
-3. Validate the risky physical assumptions
-- Test a short chute section with real bricks at 30, 35, 40, and 45 degrees
-- Verify conveyor-to-chute handoff with real bricks before large prints
-- Verify servo position overlap with each bin guide in CAD
-- Confirm the full assembly stays under 610mm x 610mm
+3. Conveyor handoff and support
+- Set conveyor height from the chute entry, not from old conveyor coordinates.
+- Derive conveyor feet and exit handoff only after the chute entry is known.
+- Keep the sensing station near the feed end.
+- Do not optimize speed before real handoff works.
 
-4. Prepare scoring evidence
-- Capture CAD screenshots for the inventor's log
-- Record break-beam size sensing rationale and test evidence
-- Calibrate color sensing only with the shroud installed
-- Log full 24-brick runs to CSV in `docs/runs/`
+4. Woodworking
+- Cut and drill permanent wood only after bins, chute, conveyor height, and handoff stack agree.
+- Use temporary blocks, clamps, and shims while finding the stack.
+
+## Same-Day Physical Truth
+
+- Print or mock up the first funnel catch feature quickly.
+- Test real brick drop into the funnel before committing to the full bin set.
+- Test a UHMW-lined chute segment before relying on chute angle.
+- Test conveyor-to-chute handoff with one brick before permanent feet.
+
+## Parallel Non-CAD Work
+
+- Keep professor meeting prep short and focused on print orientation, wood-to-print joints, belt tracking, servo mount stiffness, and handoff geometry.
+- Keep engineering notebook decision matrices moving, but hardware CAD now wins the schedule.
+- Save run logs to CSV once hardware starts moving.
+- Wiring and firmware remain important, but physical sorting reliability is the bottleneck.
+
+## Do Not Do
+
+- Do not revive hopper, chamber, start gate, ToF sizing, NEMA11 selector, or 2020 extrusion for the states build.
+- Do not let exact draft CAD dimensions leak into tracked docs.
+- Do not cut final wood before the downstream-to-upstream stack is physically plausible.

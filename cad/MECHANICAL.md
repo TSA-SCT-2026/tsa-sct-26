@@ -1,10 +1,10 @@
 # Mechanical Design
 
-All dimensions are in `cad/DIMENSIONS.md`. This document covers design rationale, construction method, and assembly notes for the simplified states build.
+This document records mechanical intent, risks, and validation order for the simplified states build. Exact dimensions live in `cad/DIMENSIONS.md` only when they are source-backed or clearly marked as variables.
 
 ## Strategy
 
-The active mechanical plan is to follow the simple conveyor tutorial where practical, modify only what matters, and spend custom CAD time on the servo chute, sensor mounts, bins, and frame.
+The active mechanical plan is a simple conveyor, sensing station, and servo rotary chute selector. Custom CAD should support real fitting, not replace it.
 
 The previous chamber, release-gate, and NEMA11 selector design is archived for later nationals work. It should not drive current states CAD unless the user explicitly reopens that path.
 
@@ -22,93 +22,56 @@ Why:
 
 ## Conveyor
 
-Use the tutorial-style conveyor as the active states path, with the team's modified measurements and
-5mm shaft and bearing path. The tutorial is a structural guide, not a hardware spec.
+Use the tutorial-style conveyor as the active states path. The tutorial is a structural idea, not a source for final dimensions.
 
 Build around:
-- One wood block support extended to contact both inner side-plate faces, enabling screws through the outside of each side plate into the support ends. This makes the support a structural crossmember, not a floating piece.
-- Two thin wood side plates
-- Printed bearing holders bolted to the outside faces
-- Shafts and printed rollers between the plates
-- NEMA17 motor on a grounded outside board with the shaft pointing inward toward the conveyor, mounted through a 2-stage L bracket (see motor mount section below)
-- Rear/right motor service bay with accessible 20T-to-20T GT2 pulleys
-- 5mm shaft and matching 5mm-ID bearing path
-- 25mm neoprene belt sized from the real dry-fit
+- Thin side plates and a real dry-fit belt path
+- Wood support under the top belt run
+- Printed bearing holders where useful
+- NEMA17 motor on a serviceable outside motor board
+- Accessible pulley and belt tension path
+- 5mm shaft and matching bearing path from the active hardware plan
 
-Adjust as needed:
-- Set belt path around the current 25mm neoprene strip
-- Set usable top-run length to roughly 300mm to 400mm
-- Keep motor and tensioner serviceable with the GT2 pulleys visible between the right conveyor side plate and outside motor board
-- Mount to the wood frame without exceeding 610mm x 610mm
-- Keep the belt exit aligned with the chute entry
+Do not lock conveyor height, feet, motor board Z, or exit handoff placement until the bin and chute geometry exists. The belt exit, chute entry, chute exit, and bin catch height must be checked together.
 
 Assembly method:
-- Use Fusion sketch anchors for shaft centers and hole patterns, not typed Move coordinates or proof
-  of assembly fit. Assembly-level anchors should live in a visible skeleton sketch so parts can be
-  placed relative to points, axes, and planes.
-- Prefer face alignment, shaft-axis alignment, center-plane alignment, and simple belt keep-out
-  envelopes when assembling conveyor parts in Fusion
-- Set the wood block support from the upper belt surface and roller flange clearance. With the
-  current roller layout, start around 255mm to 260mm long and require about 10mm or more clearance to
-  each roller flange envelope before cutting or drilling the real block
-- Fit crossmembers only where they stiffen the side plates without blocking the drive hub, pulley
-  path, belt wrap, set screw access, exit lip, or future chute entry. Do not widen the frame just to
-  fit a drive-end spacer. Omit the drive-end spacer if the wood block and feed-end spacer hold the
-  gap well enough.
-- Use a 20T-to-20T motor construction point around conveyor-local X=268.6mm and Z=14mm for the
-  200mm GT2 path. Create it from the side-view skeleton sketch, then project it into the motor-board
-  sketch before cutting the 22mm center hole and four NEMA17 adjustment slots.
-- The motor board is grounded through a printed 2-stage L bracket with gussets on both the motor side and the frame side. Use fixed gusseted feet with short slots as the default for one-time setup adjustment before final tightening. Keep shims or washers as fallback for minor correction.
-- Pulley Y alignment: motor pulley face set flush with the motor output shaft tip. Driven pulley seated against the inner bearing holder face with a 2mm printed spacer between the pulley and the holder. Both 20T pulleys must be coplanar in Y before tightening set screws. Final center distance and exact Y positions depend on confirmed conveyor height.
-- Model holes in Fusion for printed parts and drilling templates. Mark from the fitted real assembly
-  when the exact hole location depends on wood stock, pulley alignment, or adjustable brackets.
+- Use visible sketch anchors, axes, and construction planes for CAD layout.
+- Prefer slots, shims, removable tabs, and drill-from-fit methods for hardware-facing interfaces.
+- Mark holes from the fitted real assembly when hole positions depend on wood stock, pulley alignment, or adjustable brackets.
+- Delete or generalize stale draft dimensions after physical fitting changes them.
 
-Downloaded conveyor models may be used as visual reference only. Do not spend the first CAD window cleaning imported geometry when the tutorial-style conveyor can be modeled and built directly.
+Downloaded conveyor models may be used as visual reference only. Do not spend the sprint cleaning imported geometry when the tutorial-style conveyor can be modeled, inspected, and repaired directly.
 
-The existing NEMA17, fan, timing belt, timing pulley, bearings, and neoprene stock remain useful where they fit the chosen conveyor path.
-
-The rear/right motor bay is also the candidate future wiring and electronics area. Consider ESP32,
-stepper driver, power distribution, cable strain relief, and service loops there only after the
-conveyor, chute, and bin CAD are stable. Until then, reserve space and keep the evaluator-facing side
-clean.
+The rear or right motor bay may later hold electronics and cable strain relief. Reserve space, but do not create exact electronics mounts until conveyor, chute, and bin geometry are stable.
 
 ## Frame
 
-The active frame is wood, with printed brackets where they save time or improve fit. Wood stock will
-be picked up locally, so exact board and block thicknesses stay provisional until purchase and
-measurement.
-
-The active frame path is a low base plate with the existing conveyor side plates fastened to short
-fixed feet, brackets, or standoffs. Do not add full-length duplicate side panels by default. If the
-extra panel is the same thin stock as the conveyor side plate, it adds cutting, drilling, and
-alignment work without much stiffness. Add only localized reinforcement where it earns its keep:
-around the NEMA17 mount, around the servo mount, or at a proven flex point.
-
-Tall 180mm conveyor legs are not the default states path. Use the low frame unless a later chute and
-bin layout proves the conveyor must be high.
+The active frame is wood, with printed brackets where they save time or improve fit. Wood stock will be picked up locally, so board and block thicknesses stay provisional until purchase and measurement.
 
 The frame needs to:
 - Place the belt at a height that feeds the chute entry cleanly
 - Keep the servo pivot stable
 - Keep sensing brackets from moving during operation
-- Leave the bins removable
+- Leave bins removable
 - Leave wiring visible enough to look deliberate and clean
+- Stay inside the 610mm x 610mm footprint
 
-The current support offset places the conveyor side-plate bottoms about 12mm above the base plate, putting the belt surface around 72mm from the base. This is provisional. The teammate's servo chute geometry may require raising the conveyor 20-25mm higher, which would change foot height and the motor board Z position. Do not finalize or print those parts until the conveyor height is confirmed. Adjust after checking belt exit, exit lip, chute entry, chute exit, and bin catch height together.
+Woodworking is currently downstream of final bin and chute layout. Do not cut or permanently drill around conveyor feet, servo feet, or exit handoff placement until that geometry is known.
 
-Do not design around 2020 extrusion unless the user confirms a material change. The conveyor support
-block is wood, not 2020 extrusion.
+Do not design around 2020 extrusion unless the user confirms a material change.
 
 ## Sensing Station
 
-The sensing station mounts near the start of the conveyor on the wood conveyor bed or a rigid wood frame member. It is upstream of the belt exit so classification can finish before the brick reaches the servo chute handoff.
+The sensing station mounts near the start of the conveyor on the wood conveyor bed or a rigid frame member. It is upstream of the belt exit so classification can finish before the brick reaches the servo chute handoff.
 
 Order along travel:
-1. Size sensing
-2. Color sensing with shroud
-3. Belt exit into servo chute
+1. Manual feed and orientation cue
+2. Optional low guide rails
+3. Size sensing
+4. Color sensing with shroud
+5. Belt exit into servo chute
 
-Size sensing is frozen as break-beam timing with two pairs through the sensing shroud side walls. Keep hole positions easy to adjust after real-brick belt tests, but do not reopen ToF or distance sensing unless the user explicitly changes the size sensor decision.
+Size sensing is frozen as break-beam timing with two pairs through the sensing shroud side walls. Keep the shroud removable and adjustable until real-brick belt tests confirm fit. Do not reopen ToF or distance sensing unless the user explicitly changes the size sensor decision.
 
 Color sensing uses the TCS3200/GY-31 module. The shroud is required. Open-air color calibration is not valid for this build.
 
@@ -123,50 +86,48 @@ Shroud design goals:
 
 This is the main custom mechanical subsystem.
 
-The MG995/MG996/MG996R-class heavy servo rotates an angled chute so its exit points at one of four bin guides.
+The MG995/MG996/MG996R-class heavy servo rotates an angled chute so its exit points at one of four bin funnels.
 
 Chute body:
-- Rectangular channel
-- Internal width around 30mm
-- Internal height around 15mm
-- Keep the pivot-to-exit radius as short as the bin layout allows. Shorter means less flex and less exit position error, but wide funnels may require a larger radius or staggered bins.
-- Top open or partly open at the entry
-- UHMW tape applied to interior channel surface before first use - not optional, not deferred
-- Pivot boss or adapter tied to the servo horn
+- Rectangular or gently guided channel
+- Brick clearance derived from the as-fed brick envelope plus yaw tolerance
+- Pivot-to-exit radius as short and stiff as the bin layout allows
+- UHMW tape applied to sliding surfaces before meaningful tests
+- Pivot boss or adapter tied securely to the servo horn
 
 Servo mount:
 - Servo output shaft points upward
-- Servo body sits in a pocket or cradle
+- Servo body sits in a pocket or cradle verified against the real part
 - Mount plate ties into the base plate or a stiff frame member, not the thin conveyor side plate
 - Chute pivot axis stays vertical and aligned with the horn
 - Wires leave away from the horn and chute sweep
 
 Chute angle:
-- Start CAD at 40 degrees from horizontal
-- With UHMW lining, bricks slide at 30 degrees or less. 40 degrees is conservative and reliable.
-- Print a short UHMW-lined test segment before committing to the full chute geometry
-- The angle is not the sensitivity point. Arm flex and bin funnel width are the sensitivity points.
+- Choose from UHMW-lined real-brick testing
+- Do not treat bare-plastic or open-air slide behavior as final
+- The sensitive variables are handoff, arm stiffness, and funnel catch width more than theoretical angle
 
 Bin alignment:
-- Use four construction rays from the pivot
-- Start with about 35 degrees between positions
-- Each bin has a wide funnel entry built into the bin print at the verified catch height
-- Funnel walls angle inward over 15 to 20mm, narrowing from a wide catch opening to the bin interior
-- Target funnel catch width: 50mm or wider if the sweep radius can support it. Check adjacent funnel overlap before locking the radius.
+- Use construction rays from the pivot
+- Treat servo angles as calibration outputs
+- Each bin needs a wide funnel entry at the verified catch height
 - Verify chute exit falls inside each funnel at all four positions
-- Use a revolute joint or equivalent Fusion position check before printing
+- Use CAD motion checks, then real-brick tests, before printing large parts
 
 ## Bins
 
-Use four simple open-top bins under the chute arc.
+Use four labeled receiving bins under the tested chute arc.
 
 Each bin should:
 - Hold its expected brick count with margin
 - Have a clear label on the front
 - Be removable without bumping the chute
-- Have a printed funnel entry at the verified catch height. Top-entry is preferred, but a side-entry catch is acceptable if it is intentional and tested.
+- Have a funnel or catch entry at the verified chute exit height
+- Keep category interiors separated
 
-The funnel entry is not optional. It is what allows the servo to land a brick reliably without needing exact positioning. Design the funnel as part of the bin body, not a separate part.
+The funnel entry is a reliability feature, not decoration. It allows the servo to land a brick reliably without needing exact positioning.
+
+Final bin geometry is now the first active CAD priority. Do not back-fill this file with old bin dimensions as if they are current.
 
 ## Operator-Facing Packaging
 
@@ -180,27 +141,30 @@ These features directly affect score because the evaluator operates alone:
 
 The machine should look like a finished competition device, not a temporary bench test.
 
-## CAD Build Order
+## Current CAD Build Status
 
-1. Create or import top-level assembly and 610mm x 610mm boundary.
-2. Model the tutorial-style conveyor and import the NEMA17 reference.
-3. Place conveyor on a provisional wood frame.
-4. Import the heavy servo reference from `docs/datasheet/motion/heavy_servo/`.
-5. Model servo mount, chute body, pivot interface, and first-pass bin rays.
-6. Model four bins and bin entry guides.
-7. Model the color shroud with two break-beam pairs through the side walls.
-8. Check footprint, bin access, cable keepouts, and chute sweep.
-9. Export only the print parts needed for first validation.
+Critical path:
+1. Final exit bins and funnel catch geometry.
+2. Servo chute and mount geometry.
+3. Conveyor height, support feet, and exit handoff.
+4. Wood base cuts and permanent woodworking.
+
+Still useful in parallel:
+- Engineering notebook decision matrices.
+- Validation plan.
+- Run log schema.
+- Operator instructions.
+- Logical wiring plan.
 
 ## First Physical Tests
 
 Run these before committing to large prints:
-1. Short chute angle test with real bricks at 30, 35, 40, and 45 degrees.
+1. Short UHMW-lined chute test with real bricks.
 2. Conveyor-to-chute handoff test with a real brick.
 3. Servo sweep test without a brick.
 4. Servo sweep test with chute installed.
 5. Bin alignment test for all four categories.
-6. Color sensor shroud clearance test.
+6. Color sensor shroud clearance and calibration test.
 
 ## Highest Fabrication Risks
 
@@ -208,7 +172,6 @@ Run these before committing to large prints:
 2. Servo horn or pivot slop under load
 3. Break-beam size sensor geometry after shroud fit and timing calibration
 4. Frame stiffness around the servo and sensing station
-
-Note: chute slide friction and servo positioning accuracy are mitigated by design (UHMW lining and wide bin funnels). They remain items to verify but are no longer the top risks.
+5. Bin funnel overlap or poor catch height
 
 Solve these with small prototypes and real-brick tests before making larger frame parts.

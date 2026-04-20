@@ -1,140 +1,97 @@
-# TSA LEGO Sorter CAD - Remaining Work
+# CAD Plan
 
-Deadline: May 2, 2026
-Tool: Fusion 360
+Updated April 20, 2026 after the CAD ownership pivot.
 
-The conveyor core, frame structure, motor mount, and pulley path are provisionally complete in Fusion.
-Remaining items are listed below in priority order.
+CAD is the critical path again. The developer is taking over the full downstream-to-upstream mechanical chain:
 
-## Remaining Conveyor Items
+1. Bins and funnel catch geometry.
+2. Servo rotary chute selector.
+3. Conveyor height, exit handoff, and feet.
+4. Permanent woodworking.
 
-These are blocking the physical wood assembly or the first print set.
+The goal is not perfect CAD. The goal is to create printable physical truth fast enough to leave time for troubleshooting before May 2, 2026.
 
-1. **Screw holes between side plate and center board.** The center support now contacts both inner side-plate faces. Add through-holes in the side plates and matching hole geometry in the board ends. Size to match M3 or wood screw stock.
+## CAD Truth Policy
 
-2. **Motor board drill guide.** After the motor board sketch is finalized, derive a 4mm printed
-   drill guide from the same sketch geometry. Add a registration lip along the bottom board edge.
-   The guide marks the 22mm center clearance, eight slot end-point holes for the four NEMA17 slots
-   (drill 3.5mm at each end, then file to join), and four corner through-bolt holes. Blocked on
-   conveyor height - do not model until the board sketch Z values are locked.
+Tracked docs should not store exact draft CAD geometry unless the number is source-backed.
 
-3. **Final pulley alignment and belt center distance.** Motor pulley is at the motor shaft tip. Driven pulley is against the inner bearing holder face with a 2mm spacer. Final center distance and Y coplanarity check are gated on confirmed conveyor height from the teammate's servo chute. Do not tighten set screws or export the motor board drilling template until height is confirmed.
+Safe sources:
+- Competition footprint.
+- BOM rows or exact purchased listings.
+- Datasheets for standard or exact-model parts.
+- Real hardware measurements.
+- Finalized CAD exports after physical fit confirmation.
 
-4. **Exit lip.** Wedge ramp at the drive end, 5-6mm above belt surface, redirects brick downward into chute entry. Defer detailed geometry until conveyor height is confirmed, since the lip's Z position depends on the final belt surface height. Design intent: short printed or wood wedge, about 45 degrees from vertical, spanning the full inner gap in Y, no active sensor in the base design.
+Unsafe sources:
+- Draft Fusion coordinates.
+- Old session logs.
+- Failed shroud or guide rail instructions.
+- Convenience dimensions from a previous assembly layout.
+- Any value that changed during real fitting but was not remeasured and re-justified.
 
-## Subassembly 3: Sensing Station
+Temporary working dimensions may live in `SESSION_CONTEXT.log` while sprinting. Do not promote them into tracked docs until they are validated.
 
-What it is: a single printed tunnel shroud near the feed end that integrates break-beam size sensing and overhead color sensing in one controlled-lighting enclosure. Mount to the wood conveyor bed or a rigid wood frame member, not to the belt or servo chute.
+## Dependency Order
 
-Design intent for another agent: if given the final conveyor measurements and the conveyor CAD, an agent should be able to design this. The required constraints are:
+### 1. Receiving Bins
 
-- Single printed tunnel. Front and back open for brick passage. Bottom open for belt. No internal ledges.
-- Inner width must clear the 15.8mm as-fed brick width plus yaw and lateral positioning margin. Nominal inner width target is 30mm, giving about 7mm per side. The belt runs through the open bottom, not through the horizontal channel, so the 25mm belt width does not compete with the brick width in the Y direction.
-- Inner height must clear brick body (11.4mm) plus studs (1.7mm) with margin. Nominal inner height target is 32mm above belt surface.
-- Two break-beam pairs through the side walls. Pair A is 15mm from the shroud front face. Pair B is 55mm from the shroud front face. Hole diameter 3.3mm. Height: 3mm above belt surface.
-- TCS3200/GY-31 color sensor pocket in the shroud roof. Sensor face flush with inner ceiling, approximately 19mm above brick stud tops.
-- 3mm chamfer on inner edges of front opening to guide brick entry.
-- Removable: screw tabs or mounting flanges on the shroud body that land on the wood conveyor bed or a rigid frame member. Final screw positions depend on the assembled wood frame.
-- Wall thickness approximately 4mm. Length approximately 65mm in X.
-- Entry from the rail guide: inner width should match the rail guide exit gap so bricks flow smoothly from rails into shroud.
+Design the bins first because they define the target the chute must hit.
 
-Side rails are separate screw-on pieces. Do not merge into the shroud until brick centering is proven with real bricks.
+Requirements:
+- Four separate labeled categories.
+- Wide funnel mouths or catch zones.
+- Enough capacity for the expected brick counts.
+- Easy removal without disturbing the chute.
+- Footprint checked against the 610mm x 610mm limit.
 
-Side rail design intent:
-- Low printed or wood guides from the feed end to the shroud entry.
-- Taper from a wider entry gap (approximately 38mm) down to the shroud inner width (approximately 30mm) over roughly 120mm of travel.
-- Height about 6mm above belt surface, wall thickness about 4mm.
-- First build: temporary or clamped, not bonded, so the gap can be adjusted.
+### 2. Servo Rotary Chute
 
-CAD work:
-- Build the shroud as a single printed part. Estimate 40-50 minutes.
-- Build the side rails as separate simple pieces. Estimate 15-20 minutes.
-- Both can be drafted this weekend as visual references even if not printed yet. Do not print until real brick clearance is verified on the physical conveyor.
+Design the chute from the bin catch zones back toward the conveyor.
 
-## Subassembly 4: Servo Rotary Chute Selector
+Requirements:
+- Short and stiff arm.
+- UHMW-lined sliding surface.
+- Servo mount tied to a stiff frame member.
+- Chute exit lands inside each funnel with margin.
+- Servo target angles calibrated from physical tests.
 
-Teammate is completing this subassembly. Do not edit the servo chute or bin arc guide docs.
+### 3. Conveyor Handoff
 
-When the teammate's geometry is confirmed, the following items become unblocked:
-- Conveyor height (determines fixed foot height and motor board Z)
-- Exit lip final position
-- Final pulley center distance
+Design the conveyor exit after the chute entry is known.
 
-## Subassembly 5: Bins
+Requirements:
+- Conveyor height derived from chute entry.
+- Exit handoff tested with real bricks.
+- Sensing station remains near the feed end.
+- Feet and drill patterns locked only after the handoff stack is plausible.
 
-What it is: four open-top boxes arranged under the chute arc.
+### 4. Wood Frame
 
-Geometry:
-- Internal target about 80mm x 80mm x 60mm
-- Wall thickness about 3mm
-- Funnel entry at the top as part of the bin print, not a separate part
-- Labels on the front face: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE
+Permanent woodworking comes after the mechanical stack is known.
 
-CAD steps:
-1. Model one bin with funnel entry
-2. Copy to four positions under the chute arc (positions gated on teammate's sweep radius)
-3. Add label flats
-4. Check that each bin can be removed without hitting the chute
-
-Target time: 30-45 minutes.
-
-## Subassembly 6: Manual Feed Guide
-
-What it is: a small guide that helps the evaluator place one brick consistently.
-
-Keep it simple:
-- Printed orientation cue near the feed end
-- Low side rails as described in the sensing station section above
-- Label: studs up, long side along travel
-
-Target time: 15-20 minutes after side rails are modeled.
-
-## Remaining Execution Steps
-
-### Sensing And Servo Mount
-
-- Model the removable sensing shroud after the conveyor core assembly passes its checks
-- Add two break-beam pairs in the shroud side walls
-- Add TCS3200 color sensor pocket in shroud roof
-- Verify brick clearance through shroud with a real-brick envelope
-- Place servo below belt exit (gated on teammate confirming geometry)
-- Model or import servo mount after chute geometry is confirmed
-
-### Chute Selector And Bins
-
-- Gated on teammate's servo chute. Add bins and bin guides after chute sweep is confirmed.
-- Verify chute exit falls inside each bin funnel at all four positions
-
-### Cleanup And Exports
-
-- Add missing mounting holes across all parts
-- Run Fusion interference check
-- Export first validation STLs in print priority order (see First Validation Prints below)
-- Capture isometric, top, side, and chute alignment screenshots for the inventor's log
+Requirements:
+- Stiff enough for servo and sensor alignment.
+- Accessible bins.
+- Clean wiring path.
+- Operator-facing labels and controls.
 
 ## First Validation Prints
 
-Print only what retires the biggest risks. In priority order:
+Print only what retires a specific risk.
 
-1. Short chute angle coupon (teammate's print)
-2. Motor mount printed dual-stage L bracket and fixed gusseted feet with short slot holes for one-time setup, then locked - after conveyor height is confirmed
-3. Sensing shroud - after brick clearance is verified in CAD
-4. Side rails - after shroud position is confirmed
-5. Conveyor-to-chute handoff test piece
-6. One bin guide and one bin (after chute sweep is confirmed)
-7. Exit lip - after conveyor height and handoff are proven
+Priority:
+1. One bin or funnel catch coupon.
+2. Short UHMW-lined chute segment.
+3. Servo pocket or horn adapter coupon if fit is uncertain.
+4. Conveyor-to-chute handoff coupon.
+5. Sensing shroud or shroud coupon after conveyor path is stable.
 
-Do not print the large frame until chute angle, handoff, and servo alignment are proven with real bricks.
+Do not wait for a perfect full assembly before printing the first risk coupon.
 
-## Risk Notes
+## Sprint Bias
 
-Conveyor height uncertainty:
-- Do not finalize or print fixed-height conveyor supports, motor board drill template, or exit lip until teammate confirms chute entry height requirement.
-- Permanent mount default: use fixed gusseted feet with short slot holes for one-time setup adjustment before final tightening. After alignment, lock the feet in place. Keep shims or washers as fallback if first fit needs minor correction.
-
-Sensing shroud geometry:
-- Shroud inner width (30mm) needs to clear the 15.8mm brick plus yaw margin. The belt runs through the open bottom, not the side walls, so belt width is not additive here. 30mm gives about 7mm per side on the brick, which is adequate.
-- Break-beam holes must be at the right Z height to cross the brick body, not the stud tops or belt surface.
-
-Pulley alignment:
-- Both 20T pulleys must be coplanar in Y before tightening. Misalignment causes belt walk and wears the belt edge. Verify in CAD and again on the physical assembly.
+- Prefer adjustable physical interfaces over exact theoretical placement.
+- Prefer wide funnels over precise servo aiming.
+- Prefer short stiff chute geometry over elegant long geometry.
+- Prefer fast coupons over large prints.
+- Prefer real-brick tests over CAD confidence.

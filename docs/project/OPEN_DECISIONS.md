@@ -4,35 +4,36 @@ Use this file for unresolved states-build choices that should not be treated as 
 
 Status rule:
 - `OPEN`: still undecided
-- `DECIDED`: resolved and ready to move into the main architecture docs
+- `DECIDED`: resolved and ready to move into main docs
 - `DROPPED`: no longer worth pursuing
 - `ARCHIVED`: preserved only for later nationals work
 
 ## Active Open Items
 
-| Topic | Status | Current options | Current guidance |
-|------|--------|-----------------|------------------|
-| Conveyor height (cleat / foot height) | OPEN | 12mm current, likely 20-25mm | Gated on teammate's servo chute entry height requirement. Unblocks: motor mount feet dimensions, motor board Z position, exit lip Z position, final pulley center distance. Do not print motor mount feet or exit lip before this is confirmed. |
-| Final chute angle | OPEN | 35 to 40 degrees | Start CAD at 40 degrees. With UHMW lining the angle is not the sensitive variable - verify with a short lined test segment but do not spend time iterating angle before lining the chute. |
-| Selector Z stack | OPEN | Keep Z=90mm pivot, raise pivot, reduce chute slope, side-entry funnel | Model chute entry, chute exit, and bin funnel catch height together before large prints. Do not reuse chute exit height as chute entry height. |
-| Selector sweep radius and funnel layout | OPEN | Increase radius, narrow funnels, stagger bins, increase servo spacing | At 35-degree spacing, 65mm to 75mm radius does not fit 60mm mouths without overlap. Check the arc before locking bin positions. |
-| Servo position table | OPEN | Four positions around 35 degrees apart, adjusted to real bin guides | Start near 37, 72, 107, and 142 degrees in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE. Lock only after CAD and physical bin alignment |
-| Optional feed chute | OPEN | Stay manual one-at-a-time, add simple feed guide, add simple chute | Manual feed is the base states build. Add a feed chute only after the sorter works reliably |
+| Topic | Status | Current guidance |
+|------|--------|------------------|
+| Final exit bin geometry | OPEN | Active CAD critical path. The four receiving bins determine bin footprint, funnel catch height, removal clearance, and the final chute sweep relationship. |
+| Conveyor support height and feet | OPEN | Downstream of final bin and chute handoff geometry. Do not reuse old cleat or feet dimensions. |
+| Servo feet and selector mount | OPEN | Downstream of final pivot location, bin catch height, and frame contact points. |
+| Exit lip or handoff guide | OPEN | Derive from final belt surface, chute entry, brick momentum, and real-brick tests. Do not lock from old coordinates. |
+| Permanent woodworking | OPEN | Downstream of final bin, chute, conveyor feet, and servo feet relationships. |
+| Final chute angle | OPEN | Choose from UHMW-lined real-brick tests. Bare plastic behavior is not final. |
+| Selector sweep radius and funnel layout | OPEN | Must be checked against actual bin layout and footprint. Wider funnels improve reliability but can overlap if the sweep is too tight. |
+| Servo position table | OPEN | Servo angles are calibration outputs. Start only after the bins and chute are physically aligned. |
+| Optional feed chute | OPEN | Manual feed is the base states build. Add a feed chute only after the sorter works reliably. |
 
 ## Decided For States
 
 | Topic | Status | Decision |
 |------|--------|----------|
 | Feed mode | DECIDED | Manual one-at-a-time feed is active for states |
-| Conveyor CAD source | DECIDED | Tutorial-style conveyor from `docs/project/CONVEYOR_BUILD_GUIDE.md`, modified for team measurements |
+| Conveyor approach | DECIDED | Tutorial-style conveyor logic with team hardware and real dry-fit measurements |
 | Selector actuator | DECIDED | MG995/MG996/MG996R-class heavy servo from `docs/datasheet/motion/heavy_servo/` |
 | Conveyor motor | DECIDED | NEMA17 remains active for conveyor motion |
 | Color sensor | DECIDED | TCS3200/GY-31 color sensor, calibrated only with shroud installed |
 | Size sensor family | DECIDED | Break-beam timing with two pairs in the sensing shroud |
-| Side rail feed guide | DECIDED | Low side rails from X=0 to X=120, tapering to a 30mm shroud entry gap |
 | Frame material family | DECIDED | Wood frame from available stock, with printed brackets where useful |
-| Frame style | DECIDED | Low base plate with short cleats, standoffs, or brackets supporting the existing conveyor side plates. Avoid duplicate full-length side panels unless testing proves they solve stiffness or mounting problems |
-| Conveyor support material | DECIDED | Wood block under the top belt run, replacing the 2020 extrusion support idea |
+| Conveyor support material | DECIDED | Wood support under the top belt run, replacing the 2020 extrusion support idea |
 | Footprint | DECIDED | Stay within 610mm x 610mm |
 
 ## Archived For Later Nationals Work
@@ -46,4 +47,4 @@ Status rule:
 | Dual-ToF chamber sizing | ARCHIVED | Do not reopen for states unless the user explicitly changes the size sensor decision |
 | NEMA11 selector | ARCHIVED | Purchased NEMA11 motors remain inventory, but not active selector architecture |
 | 2020 extrusion frame | ARCHIVED | Replaced by the wood frame path for states |
-| 2020 extrusion belt support | ARCHIVED | Replaced by the wood block support for the tutorial-style conveyor |
+| 2020 extrusion belt support | ARCHIVED | Replaced by the wood support path |

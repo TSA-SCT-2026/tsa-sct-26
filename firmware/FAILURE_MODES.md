@@ -14,7 +14,7 @@ Mitigation: validate conveyor-to-chute handoff with real bricks before large pri
 Cause: chute angle too shallow, rough surface, or undersized channel
 Detection: missing `BIN_CONFIRMED`
 Response: `ERROR_HALT`
-Mitigation: test 30, 35, 40, and 45 degree chute angles with real bricks
+Mitigation: test several UHMW-lined chute angles with real bricks and record the chosen angle
 
 ### FM-03: Servo chute fails to reach target
 

@@ -5,7 +5,7 @@ TSA System Control Technology 2026: LEGO brick sorter for states on May 2, 2026.
 The active states architecture sorts 24 LEGO bricks by size and color into 4 bins using:
 - Manual one-at-a-time feed onto a conveyor
 - NEMA17-driven conveyor
-- Conveyor-mounted size and color sensing station near the belt exit
+- Conveyor-mounted size and color sensing station near the feed end
 - Break-beam timing size sensor with two pairs in the sensing shroud
 - TCS3200/GY-31 color sensor with shroud
 - MG995/MG996-class servo rotary chute selector
@@ -72,7 +72,7 @@ tsa-sct-26/
 
 ## Development Notes
 
-- Numeric geometry and derived timing assumptions should trace back to `cad/DIMENSIONS.md`.
+- Exact geometry and derived timing assumptions should trace to `cad/DIMENSIONS.md` only when source-backed. Draft CAD values belong as variables, ranges, or test coefficients.
 - `docs/project/BOM.xlsx` remains the purchase source of truth.
 - Judges score reliability, clarity, and documentation heavily.
 - Operator-facing UX is not cosmetic.

@@ -16,8 +16,8 @@ The previous chamber, release-gate, and NEMA11 selector CAD work is archived for
 
 ```text
 cad/
-  DIMENSIONS.md    critical geometry source of truth
-  MECHANICAL.md    mechanism rationale and build order
+  DIMENSIONS.md    source-backed dimensions and active variable register
+  MECHANICAL.md    mechanism rationale and build status
   frame/           conveyor and frame prior work or future active parts
   bins/            future bin models
   sensing/         future size and color sensor brackets
@@ -26,50 +26,47 @@ cad/
 
 Existing directories may still contain prior work from the archived design until they are pruned or replaced. Do not treat old chamber or release files as active without checking `docs/ARCHITECTURE.md`.
 
-## CAD Priority
+## Current CAD Phase
 
-1. Top-level assembly with 610mm x 610mm boundary
-2. Tutorial-style NEMA17 conveyor with modified measurements
-3. Wood frame layout with printed brackets where useful
-4. Servo mount and rotary chute body
-5. Four bin positions and bin entry guides
-6. Sensing shroud with TCS3200 color mount and two break-beam pairs
-7. Break-beam wire routing and clearance
-8. Labels, display, start control, and cable routing keepouts
+CAD is the critical path again. The developer owns the full downstream-to-upstream stack:
+
+1. Bins and funnel catch geometry.
+2. Servo chute and mount geometry.
+3. Conveyor height, exit handoff, and feet.
+4. Permanent woodworking.
+
+## CAD Priorities
+
+1. Build a forgiving bin and funnel receiver.
+2. Design the servo rotary chute so the exit lands inside those funnels with margin.
+3. Derive conveyor height and exit handoff from the chute entry.
+4. Check the full system inside the 610mm x 610mm boundary.
+5. Reserve labels, display, start control, and cable routing keepouts.
 
 ## First Print Order
 
-1. Short chute angle coupon
-- Test 30, 35, 40, and 45 degrees with real bricks
-- Gate: bricks slide without sticking
+Print only parts that answer a physical question:
 
-2. Servo mount and chute pivot coupon
-- Gate: servo horn alignment, low slop, no wire interference
+1. One bin or funnel catch coupon.
+2. Short UHMW-lined chute coupon.
+3. Servo pocket or horn adapter coupon if fit is uncertain.
+4. Exit handoff coupon after chute entry is known.
+5. Sensing shroud or shroud coupon after conveyor path is stable.
 
-3. Conveyor-to-chute handoff prototype
-- Gate: brick exits belt and enters chute repeatably
-
-4. Color shroud fit part
-- Gate: brick clearance and no obvious light leaks
-
-5. Bin guide and one bin
-- Gate: chute exit overlaps guide at the target servo angle
-
-6. Remaining frame and bin parts
-- Gate: footprint, bin removal, and label visibility verified
+Avoid large frame prints until handoff, chute, and catch geometry are proven.
 
 ## Conventions
 
-- Export STL files alongside source files
-- Use descriptive versioned names
-- Record critical dimension deviations in docs
-- Do not freeze geometry from CAD alone
-- Validate with real bricks before large print commitments
+- Export STL files alongside source files.
+- Use descriptive versioned names.
+- Record critical dimension deviations in docs only when source-backed.
+- Do not freeze geometry from CAD alone.
+- Validate with real bricks before large print commitments.
 
 ## Tolerance Notes
 
-FDM variance is usually about 0.2mm to 0.5mm. Brick-facing paths, sensor brackets, and servo pivots need explicit clearance.
+FDM variance is real, but do not use generic tolerance numbers as a substitute for physical checks.
 
-- Undersized chutes cause jams
-- Oversized chutes allow yaw and poor bin alignment
-- Sensor mount tolerance must preserve the color shroud and the selected size sensor geometry
+- Undersized chutes cause jams.
+- Oversized chutes allow yaw and poor bin alignment.
+- Sensor mount tolerance must preserve the color shroud and the selected size sensor geometry.

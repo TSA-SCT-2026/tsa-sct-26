@@ -12,6 +12,21 @@ Success criteria:
 
 The previous chamber and release-gate architecture is preserved under `_archive/previous-chamber-release-design-2026-04/` for later nationals work. It is prior art, not the active states build.
 
+## Measurement Truth
+
+This architecture document defines system intent, not final CAD geometry.
+
+Exact dimensions belong in active docs only when they trace to a competition rule, BOM row, exact purchased listing, datasheet-backed standard part, real hardware measurement, or finalized CAD export. Draft CAD values must stay as variables, ranges, or test coefficients until physical fitting confirms them.
+
+When a mechanism is still being fit on real hardware, prefer:
+- design constraints
+- source-backed part dimensions
+- measured interfaces
+- validation tests
+- symbolic equations with variable tables
+
+Avoid copying convenience coordinates or old CAD step values into new instructions.
+
 ## Active Production Architecture
 
 The states build uses:
@@ -21,7 +36,7 @@ The states build uses:
 - Break-beam timing size sensing with two pairs in the sensing shroud
 - TCS3200/GY-31 color sensor with a light-blocking shroud
 - MG995/MG996/MG996R-class heavy servo rotary chute selector
-- Four bins arranged under the chute sweep
+- Four labeled receiving bins arranged by the tested chute sweep
 - Wood frame with 3D printed brackets where useful
 - Operator-facing labels, display states, and start control
 
@@ -88,56 +103,56 @@ Manual feed orientation target:
 - studs up
 - long side along the conveyor travel direction
 
-As-fed 2x3 brick envelope:
-- X travel length: 23.7mm
-- Y cross-belt width: 15.8mm
+Source-backed brick dimensions and derived sensing thresholds belong in `cad/DIMENSIONS.md` and `docs/notebook/EQUATIONS.md`.
 
 The orientation cue should be printed or labeled near the feed area so the evaluator does not have to infer it.
 
 ## Conveyor
 
-The conveyor should follow the simple reference-video structure as closely as practical while keeping the team's modified measurements: wood block support instead of the previous 2020 extrusion support, thin side plates, printed bearing holders, shafts and rollers between the plates, and an outside grounded motor board with an inward-facing NEMA17 and accessible 20T-to-20T GT2 timing path. The base should support the existing conveyor side plates with short fixed feet, brackets, or standoffs. Use short slot holes for one-time setup adjustment before final tightening. Do not add full-length duplicate side panels by default.
+The conveyor should follow the simple reference-video structure where practical while using source-backed purchased parts and real dry-fit measurements.
 
 Baseline intent:
-- Usable top-run length around 300mm to 400mm
-- Belt width around the current 25mm neoprene strip
-- Belt surface height derived from the belt-to-chute handoff. Current low-frame CAD starts around 72mm from the base, then adjusts after chute entry and bin catch height are checked together
 - NEMA17 motor retained
-- Wood block support replacing the previous 2020 aluminum extrusion support idea
-- Belt path and motor clearance verified inside the 610mm x 610mm footprint without adding structure that does not improve stiffness, service access, or alignment
+- Tutorial-style conveyor logic retained
+- Wood block support replacing the previous 2020 extrusion support idea
+- Side plates, rollers, belt, and bearing holders sized from the actual build path
+- Motor and belt service access kept visible
+- Conveyor height derived from the chute and bin handoff, not from old CAD coordinates
+- Belt path and motor clearance verified inside the 610mm x 610mm footprint
 
 The downloaded conveyor STEP path is no longer the default for states. It may still be used as visual or dimensional reference, but the active build path prioritizes the tutorial-style conveyor with modified measurements because it is easier to build, inspect, and debug in the remaining sprint.
 
 ## Sensing Station
 
-All sensing is integrated into one printed shroud tunnel near the feed end of the belt, mounted to the wood conveyor bed or a rigid wood frame member. It is upstream of the belt exit so the firmware has time to classify the brick and move the servo chute before handoff.
+All sensing is integrated into one printed shroud tunnel near the feed end of the belt. It mounts to the wood conveyor bed or a rigid wood frame member. It is upstream of the belt exit so the firmware has time to classify the brick and move the servo chute before handoff.
 
-Layout along belt travel:
+Layout intent along belt travel:
 
 ```text
-[feed end X=0]
-  -> sensing shroud (X=135 to X=200, single printed tunnel)
-       break beam pair A at X=150  (size timing, leading edge detection)
-       break beam pair B at X=190  (size timing, trailing edge / belt speed cross-check)
-       TCS3200 in shroud roof       (color sensing under controlled lighting)
-  -> open belt run (X=200 to X=355)
-  -> exit lip (X=355 to X=370, redirects brick downward into chute entry)
+[feed and orientation cue]
+  -> [low guide rails, if needed]
+  -> [sensing shroud with two break-beam pairs and color sensor]
+  -> [open belt run]
+  -> [exit lip or handoff guide]
+  -> [servo rotary chute selector]
 ```
 
-Size:
-- Two break beam pairs through the side walls of the sensing shroud
-- Firmware measures blocked duration at known belt speed to distinguish 15.8mm (2x2) from 23.7mm (2x3)
+Size sensing:
+- Two break-beam pairs pass through the sensing shroud side walls
+- Firmware measures blocked duration at known belt speed to distinguish 2x2 from 2x3
 - Two pairs provide redundancy and a speed cross-check without assuming step rate accuracy
 - Decision locked: break-beam timing with two pairs
 
-Color:
+Color sensing:
 - TCS3200/GY-31 module in the roof of the sensing shroud, looking straight down
-- Shroud walls block ambient light on all four sides; the only valid calibration is with the shroud installed
-- Sensor face is approximately 19mm from the top of the brick studs
+- Shroud walls block ambient light on all four sides
+- The only valid calibration is with the shroud installed in its final position
 
-Exit lip:
-- Curved ramp wedge at the drive end, 5 to 6mm above belt surface
-- Converts horizontal momentum to downward motion, guides brick into the chute entry below
+Shroud and rail geometry must be re-derived from the real conveyor, real bricks, and real sensor modules. Do not use old CAD guide dimensions as final.
+
+Exit handoff:
+- The handoff guide or lip is a testable feature at the drive end
+- Its height and placement derive from the final belt surface, chute entry, and bin catch window
 - No exit sensor in the base design; firmware uses belt transit time as the handoff timer
 - Add an exit sensor only if transit timing proves unreliable during testing
 
@@ -147,23 +162,23 @@ The selector is the main custom mechanism for the states build.
 
 It uses the heavy MG995/MG996/MG996R-class servo from `docs/datasheet/motion/heavy_servo/` to rotate an angled chute toward one of four bins.
 
-Baseline geometry:
-- chute internal width around 30mm
-- chute internal height around 15mm
-- chute arm as short as physically possible - shorter arm means less flex and less position error
-- chute angle around 35 to 40 degrees from horizontal; exact value matters less with UHMW lining
-- four servo positions spread across roughly 105 degrees total sweep
-- target position examples around 37, 72, 107, and 142 degrees in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE
+Baseline constraints:
+- Chute must clear the largest as-fed brick with yaw tolerance
+- Chute arm should be as short and stiff as the bin layout allows
+- Chute slope must be validated with a UHMW-lined real-brick slide test
+- Servo positions are calibration outputs, not architecture truth
+- Bin funnel catch zones must be checked against the actual sweep radius
+- Conveyor-to-chute entry and chute-to-bin exit heights must be checked separately
 
-Reliability approach - three layers that together remove the need for a perfect angle or precise positioning:
-1. UHMW tape lining on the chute interior - reduces friction to the point where bricks slide at 30 degrees reliably. Apply from the first build, not as a fix after testing.
-2. Wide bin entry funnels - each bin mouth is significantly wider than the brick with angled walls that guide the brick in. Servo only needs to be accurate to within about 15 degrees, not a narrow slot.
-3. Short arm - keep the chute arm under 100mm if possible. Every extra mm of arm amplifies pivot flex and servo position error at the exit.
+Reliability approach:
+1. UHMW tape lining on chute and funnel sliding surfaces.
+2. Wide bin entry funnels so the servo does not need perfect angular accuracy.
+3. Short, stiff chute arm to reduce flex and exit position error.
 
 Before final printing:
-- Test a short UHMW-lined chute with real bricks to confirm slide at chosen angle
-- Verify chute entry height and chute exit height separately. Do not reuse the exit height as the entry height.
-- Verify each servo position drops the brick into the funnel, not the bin itself
+- Test a short UHMW-lined chute with real bricks
+- Verify chute entry height and chute exit height separately
+- Verify each servo position drops the brick into the funnel, not just near the bin
 - Verify the servo mount keeps the output shaft aligned with the chute pivot
 - Keep wiring clear of the servo horn and chute sweep
 
@@ -176,15 +191,15 @@ Frame:
 - Keep cable routing clean and visible as engineered work
 
 Bins:
-- Four open-top bins arranged under the chute arc
-- Internal target around 80mm x 80mm x 60mm
-- Label each bin with its category
-- Reserve clearance so bins can be removed without hitting the chute
-- Each bin has a printed funnel entry at the verified catch height. Wide angled walls catch bricks even with several degrees of chute position error. The funnel is part of the bin print, not a separate part.
+- Four receiving bins arranged under the tested chute arc
+- Each bin has a clear front label
+- Each bin must hold its expected brick count with margin
+- Each bin needs a funnel or catch feature at the verified chute exit height
+- Exact bin geometry is now part of the active CAD critical path and should be designed before locking chute, conveyor feet, or woodworking
 
 Footprint:
 - Hard limit is 610mm x 610mm
-- Keep the boundary visible in CAD while placing the frame, conveyor, chute, and bins
+- Keep the boundary visible while placing the frame, conveyor, chute, and bins
 
 ## Operator UX
 
@@ -204,14 +219,16 @@ The system should make the sequence obvious: place brick, press or confirm start
 
 Judged documentation should show:
 - Why the team simplified from the archived architecture
-- Why the tutorial-style conveyor path with modified measurements replaced downloaded conveyor geometry as the first states path
+- Why the tutorial-style conveyor path replaced imported conveyor geometry as the first states path
 - Why the final size sensor was chosen
 - Chute angle test results
 - Servo position and bin alignment evidence
 - Color calibration data with the shroud installed
 - Full 24-brick run logs
 
-Lower-priority firmware TODO after CAD and mechanical bringup:
+Engineering notebook equations should be symbolic first and list suggested coefficients separately. Do not hard-code draft CAD numbers into derived formulas.
+
+Lower-priority firmware TODO after mechanical bringup:
 - Replace sensing stubs with calibrated two-pair break-beam timing and shrouded TCS3200 classification.
 - Align category-to-bin mapping with the bin order in this document.
 

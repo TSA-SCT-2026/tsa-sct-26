@@ -1,305 +1,100 @@
-# Critical Dimensions
+# Critical Dimensions and Variable Register
 
-Truth model:
-- `LOCKED_TRUTH`: stable, physically invariant constraints
-- `DECIDED_FOR_STATES`: active states-build choice
-- `PROVISIONAL_ESTIMATE`: best estimate before CAD import or physical testing
-- `OPEN_DECISION`: unresolved and tracked in `docs/project/OPEN_DECISIONS.md`
+This file records dimensions that are safe to use and variables that must be derived from the real build.
 
-## Bricks
+## Truth Model
 
-Status for this section: `LOCKED_TRUTH`
+- `LOCKED_TRUTH`: competition rule, LEGO brick standard, BOM row, exact purchased listing, datasheet-backed standard part, real measurement, or finalized CAD export.
+- `DECIDED_FOR_STATES`: active design choice, but exact geometry may still be open.
+- `PROVISIONAL_VARIABLE`: a value to derive from the assembly, not a number to copy.
+- `OPEN_DECISION`: unresolved and tracked in `docs/project/OPEN_DECISIONS.md`.
 
-| Dimension | 2x2 | 2x3 |
-|-----------|-----|-----|
-| Width | 15.8mm | 15.8mm |
-| Length | 15.8mm | 23.7mm |
-| Height without studs | 11.4mm | 11.4mm |
-| Stud height | 1.7mm | 1.7mm |
-| Weight | about 2g | about 3g |
+Do not promote a draft CAD coordinate into `LOCKED_TRUTH`. If physical fitting changes a dimension, update the variable source or remove the old number.
 
-Manual feed orientation target: studs up, long side along conveyor travel.
+## Locked Truth
 
-As-fed 2x3 brick envelope:
-- X travel length: 23.7mm
-- Y cross-belt width: 15.8mm
+| Item | Value | Source |
+|------|-------|--------|
+| Maximum footprint | 610mm x 610mm | Competition constraint |
+| Brick set | 6 red 2x2, 6 blue 2x2, 4 red 2x3, 8 blue 2x3 | Competition task |
+| Bin labels | 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE | Active architecture |
+| 2x2 brick footprint | 15.8mm x 15.8mm | LEGO nominal geometry |
+| 2x3 brick footprint | 15.8mm x 23.7mm | LEGO nominal geometry |
+| Brick body height | 11.4mm plus 1.7mm studs | LEGO nominal geometry |
+| Manual feed orientation | Studs up, long side along travel | Active architecture |
+| Size sensing family | Two-pair break-beam timing | Active architecture |
+| Color sensor family | TCS3200/GY-31 in installed shroud | Active architecture |
+| Conveyor motor | NEMA17 conveyor motor | Active architecture and purchased hardware |
+| Selector actuator | MG995/MG996/MG996R-class heavy servo | Active architecture and purchased hardware |
+| Frame material family | Wood frame with printed brackets where useful | Active architecture |
 
-Reason: this is easiest for an evaluator to place repeatably and gives the sensing station a predictable in-flight profile. If physical testing shows a different orientation is more reliable, update this file and the feed label together.
+Part-specific package dimensions belong in the matching datasheet folder or measured part notes. Do not duplicate them here unless the value drives an active interface.
 
-## Footprint
+## Active Variables
 
-Status for this section: `LOCKED_TRUTH`
+Use this table instead of old coordinate-heavy CAD instructions.
 
-| Feature | Dimension |
-|---------|-----------|
-| Maximum footprint | 610mm x 610mm |
-| CAD boundary | 610mm x 610mm construction rectangle |
-| Bin access | Front or front-side removal preferred |
-| Cable routing | Outside conveyor, chute, servo horn, and bin paths |
+| Variable | Status | How to derive it |
+|----------|--------|------------------|
+| `belt_surface_z` | `OPEN_DECISION` | Measure from the final supported conveyor assembly after bin and chute entry requirements are known. |
+| `conveyor_support_height` | `OPEN_DECISION` | Derived from `belt_surface_z`, side plate geometry, and final handoff stack. |
+| `motor_board_z` | `OPEN_DECISION` | Project from the final conveyor shaft and pulley path after support height is locked. |
+| `conveyor_foot_height` | `OPEN_DECISION` | Derived from the final supported conveyor, not from old cleat values. |
+| `servo_foot_height` | `OPEN_DECISION` | Derived from final servo pivot, bin funnel height, and frame contact points after the bin and chute stack is modeled. |
+| `exit_lip_z` | `OPEN_DECISION` | Derived from `belt_surface_z`, chute entry height, and real-brick handoff tests. |
+| `chute_entry_z` | `OPEN_DECISION` | Derived from belt exit trajectory and exit lip test. Do not copy chute exit height. |
+| `chute_exit_z` | `OPEN_DECISION` | Derived from chute slope, chute length, and bin funnel catch height. |
+| `servo_pivot_xyz` | `OPEN_DECISION` | Derived from final conveyor exit, chute sweep, and frame member locations. |
+| `sweep_radius` | `OPEN_DECISION` | Derived from bin funnel width, servo spacing, and footprint. |
+| `funnel_mouth_width` | `OPEN_DECISION` | Derived from servo repeatability, chute exit scatter, and available arc spacing. |
+| `bin_body_geometry` | `OPEN_DECISION` | Active CAD critical path. Must preserve four separate categories, wide catch geometry, removable access, and label visibility. |
+| `shroud_inner_width` | `PROVISIONAL_VARIABLE` | Brick width plus yaw and lateral margin, verified with real bricks and guide rails. |
+| `shroud_inner_height` | `PROVISIONAL_VARIABLE` | Brick height plus stud clearance, sensor clearance, and print tolerance. |
+| `break_beam_spacing` | `PROVISIONAL_VARIABLE` | Large enough for speed cross-check, fitted to the final shroud and sensor modules. |
+| `rail_entry_gap` | `PROVISIONAL_VARIABLE` | Wide enough for easy manual placement, then tapered or guided to reliable sensing alignment. |
+| `rail_exit_gap` | `PROVISIONAL_VARIABLE` | Matched to measured shroud entry after real-brick fit. |
+| `wood_block_length` | `PROVISIONAL_VARIABLE` | Cut from dry-fit clearance between roller and belt-wrap keep-out zones. |
+| `wood_block_width` | `PROVISIONAL_VARIABLE` | Measured from actual stock and final side-plate gap. |
 
-## Frame
+## Derived Equations
 
-Status for this section: `DECIDED_FOR_STATES` for wood frame direction, `PROVISIONAL_ESTIMATE` for exact dimensions
+Non-trivial equations belong in `docs/notebook/EQUATIONS.md`. They must be written symbolically first, with suggested coefficients listed separately.
 
-| Feature | Dimension or guidance |
-|---------|-----------------------|
-| Material | Wood frame from available stock, with 3D printed brackets where useful |
-| 2020 extrusion | Not active for frame or conveyor support |
-| Belt surface height | `OPEN_DECISION` - Starting point is about 72mm from base (12mm conveyor support offset plus 60mm conveyor-local Z). Final support offset is gated on teammate's servo chute entry height requirement. Fixed gusseted feet with short slot holes are the default support method for one-time setup before final tightening. Do not finalize the motor board drill template or exit lip until confirmed. |
-| Minimum height check | Belt exit plus exit lip must feed the chute entry; chute exit must land in the bin funnel catch window |
-| Base plate | Start around 590mm x 590mm, adjust within the 610mm x 610mm limit after bin and chute layout |
-| Frame style | Low base plate with short fixed gusseted feet, brackets, or standoffs supporting the existing conveyor side plates. Use short slot holes for one-time setup adjustment before final tightening. Do not use full-length duplicate side panels or tall 180mm conveyor legs unless testing proves they solve a real problem |
-| Stiffness target | No visible sensor or chute drift during servo motion |
+Key formulas currently used:
+- `measured_brick_length = belt_speed * beam_blocked_time`
+- `belt_speed = beam_spacing / time_between_beams`
+- `travel_time = travel_distance / belt_speed`
+- `arc_spacing = 2 * sweep_radius * sin(angle_spacing / 2)`
+- `chute_vertical_drop = chute_path_length * sin(chute_angle)`
+- `exit_lip_top_z = belt_surface_z + lip_height_above_belt`
 
-## Conveyor
-
-Status for this section: `PROVISIONAL_ESTIMATE`
-
-| Feature | Dimension or guidance |
-|---------|-----------------------|
-| CAD source | Tutorial-style conveyor from `docs/project/CONVEYOR_BUILD_GUIDE.md`, modified for team measurements |
-| Motor | NEMA17 17HS4401S reference |
-| Shaft and bearing path | 5mm shaft with matching 5mm-ID bearings |
-| Usable top-run length | 300mm to 400mm target |
-| Side plate length | 370mm |
-| Side plate height | 80mm |
-| Side plate thickness placeholder | 8mm |
-| Side plate inner gap | 50mm |
-| Conveyor belt centerline | Y=25mm within the 50mm inner side-plate gap |
-| Side plate outside width | 66mm from two 8mm plates plus 50mm gap |
-| Idler shaft center | Conveyor-local X=30mm, Z=50mm |
-| Drive shaft center | Conveyor-local X=340mm, Z=50mm |
-| Roller center distance | 310mm |
-| Conveyor side plate bottom above base | 12mm starting point, then tuned by support height choice. Set once at the chosen slot position and lock. Use shims only for minor correction. |
-| Upper belt surface | Conveyor-local Z=60mm, about 72mm above base with the 12mm starting support offset |
-| Lower return nominal line | Conveyor-local Z=40mm |
-| Belt width | 25mm active neoprene strip |
-| Minimum clear brick width | 15.8mm as-fed brick width plus yaw and lateral margin. The 30mm shroud inner width gives about 7mm per side. The belt runs through the open shroud bottom, not through the horizontal channel, so the 25mm belt width does not add to the Y clearance requirement. |
-| Wood block support | Wood block under top belt run, not 2020 extrusion |
-| Wood block length | About 255mm to 260mm with current rollers, adjusted from dry-fit to clear both roller flange envelopes by about 10mm or more |
-| Wood block width | About 20mm to 50mm, measured from Home Depot stock and kept inside side plate gap |
-| Wood block thickness | About 10mm to 12mm with the current 20mm roller diameter, or revised after lower-return clearance check |
-| Wood block top height | About 2mm below upper belt surface. Conveyor-local Z=58 is only the current layout anchor |
-| Crossmember spacers | Optional 49.5mm to 50mm inside-gap spacers. Fit only where they clear drive hardware, belt wrap, set screw access, exit lip, and chute entry. Do not widen the frame to fit a spacer |
-| Side plate material | Thin wood, hardboard, or plywood, measured after local purchase |
-| Belt speed phase 1 | Start slow enough for reliable sensing, then tune |
-| Belt exit | Direct handoff into servo chute entry |
-| Tension method | Slotted idler bearing holders plus NEMA17 slots in the outside motor board |
-| Timing belt and pulley | Active first-build path is 20T motor pulley to 20T driven pulley with a 200mm GT2 belt |
-| 20T-to-20T center distance | 80mm nominal. Final check pending confirmed conveyor height. |
-| Motor pulley Y position | Motor pulley face flush with motor output shaft tip |
-| Driven pulley Y position | Driven pulley seated against inner bearing holder face with a 2mm printed spacer between pulley and holder. Both 20T pulleys must be coplanar in Y before tightening set screws. |
-| NEMA17 package | Body outside the right-side grounded motor board, shaft pointing inward toward the conveyor, GT2 pulleys in the rear/right service bay |
-| NEMA17 20T motor point | Conveyor-local X=268.6mm, Z=14mm from the side-view skeleton sketch |
-| NEMA17 motor-board point | `OPEN_DECISION` - Base-relative Z depends on confirmed conveyor support offset. At 12mm offset: Z=26mm. At 20mm offset: Z=34mm. At 25mm offset: Z=39mm. Do not finalize until teammate's chute height is known. |
-| Motor board | Vertical board parallel to the right side plate, grounded through a printed 2-stage L bracket with gussets on motor and frame sides. Feet use short slot holes for setup before final lock-down. |
-| Motor board X span | X=220mm to X=330mm first CAD sketch |
-| Motor board height | 80mm minimum |
-| Motor board thickness | 6mm to 8mm placeholder, measured from real wood |
-| Motor board Y placement | Inner face about 25mm outboard from right side plate outside face. If left inner side plate face is Y=0, motor board inner face is about Y=83mm |
-| Motor board center clearance | 22mm diameter at the projected base-relative motor shaft point. Use X=268.6mm and derive Z from the current conveyor support height decision. |
-| NEMA17 slots | Four 12mm x 3.5mm slots on the 31mm x 31mm bolt pattern, angled about 26.8 degrees toward the drive shaft |
-| Motor board through holes | Four base-relative corner holes at X=230/Z=8, X=320/Z=8, X=230/Z=72, X=320/Z=72. Use 4.3mm for M4 preferred or 3.3mm for M3 fallback |
-| Motor clearance check | GT2 belt envelope must clear motor board, side plate, bearing holders, brace hardware, bolt heads, and pulley set screws |
-| 25mm neoprene strip | Active first belt material |
-| 15mm neoprene strip | Spare stock unless testing shows a use |
-
-## Sensing Station
-
-Status for this section: `DECIDED_FOR_STATES` for size and color sensors
-
-| Feature | Dimension or guidance |
-|---------|-----------------------|
-| Size sensor family | Break-beam timing, two pairs inside sensing shroud |
-| Break beam pair A location | X=150 in assembly (15mm into shroud front) |
-| Break beam pair B location | X=190 in assembly (55mm into shroud front) |
-| Break beam height | Z=63, 3mm above belt surface |
-| Break beam hole diameter | 3.3mm through shroud side walls |
-| Size timing logic | Blocked duration at known belt speed; 15.8mm vs 23.7mm brick length |
-| Color sensor | TCS3200/GY-31 module in sensing shroud roof |
-| Color sensor face distance to brick | About 19mm from sensor face to top of brick studs |
-| Sensing shroud location | X=135 to X=200 in assembly |
-| Sensing shroud mount | Removable screw-mounted tabs or flanges to the wood conveyor bed or rigid wood frame member near the feed side, not to the belt or chute |
-| Sensing shroud outer width | 38mm in Y |
-| Sensing shroud outer Y span | Y=6mm to Y=44mm when centered in the 50mm side-plate gap |
-| Sensing shroud outer height | 36mm above belt surface |
-| Sensing shroud inner width | 30mm in Y |
-| Sensing shroud inner Y span | Y=10mm to Y=40mm when centered in the 50mm side-plate gap |
-| Sensing shroud inner height | 32mm above belt surface |
-| Sensing shroud length | 65mm in X |
-| Sensing shroud wall thickness | 4mm |
-| Sensing shroud entry chamfer | 3mm on inner edges of front opening |
-| Color sensor pocket depth | 8 to 10mm into roof, sensor face flush with inner ceiling |
-| Side rail guide entry gap | 38mm at X=0 |
-| Side rail guide exit gap | 30mm at X=120 |
-| Side rail height above belt | 6mm |
-| Side rail thickness | 4mm |
-| Side rail first build | Separate screw-on, taped, or clamped rails until brick centering is proven. Do not merge into the shroud until the rail gap is verified with real bricks |
-| Exit lip location | X=355 to X=370 in assembly |
-| Exit lip height above belt | First test top at conveyor-local Z=65 to Z=66, 5 to 6mm above belt surface |
-| Exit lip ramp angle | About 45 degrees from vertical; optional 3mm fillet to soften |
-| Exit lip span | 50mm in Y, fills inner gap |
-| Exit sensor | Not in base design; use transit time timer. Add only if testing requires it. |
-
-Color calibration is valid only with the shroud installed in the final screw-mounted position.
-
-## Servo Rotary Chute Selector Geometry
-
-Status for this section: `DECIDED_FOR_STATES` for actuator family and selector concept; `PROVISIONAL_ESTIMATE` for pivot height, chute radius, funnel geometry, and belt handoff until frame CAD and real-brick tests confirm the stack.
-
-Coordinate warning: the conveyor CAD currently uses a local belt-surface datum around Z=60mm in some files, while the low-frame assembly may place that surface around 72mm from the machine base. Do not mix those datums. Use construction points, axes, and planes in a visible assembly skeleton sketch, then convert conveyor-local Z values into the final machine-base coordinate system before locking the selector position.
-
-### Servo Mount and Pivot
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Servo family | MG995/MG996/MG996R-class heavy servo | See `docs/datasheet/motion/heavy_servo/` |
-| Servo reference path | `docs/datasheet/motion/heavy_servo/` | Use reference CAD, then verify against the real servo |
-| Servo pivot axis height | Start at Z=90mm | Working machine-base datum, not final until chute entry, exit, and bin funnel heights agree |
-| Servo rotation axis | Vertical | Output shaft points up, chute rotates in horizontal plane |
-| Servo mount type | Pocket or cradle | Must match real servo body footprint and fastener pattern |
-| Frame attachment | To be determined | CAD around the working pivot first, then adapt the mount to the final frame |
-
-### Chute Arm and Channel
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Sweep radius, pivot to exit in plan view | 65mm to 75mm only if funnels are narrowed or staggered | At 35-degree spacing, 50mm mouths need about 83mm radius and 60mm mouths need about 100mm radius to avoid overlap |
-| Arm design | Rigid servo horn adapter or 3D-printed extension from pivot boss | Servo horn bolts to arm; minimize flex |
-| Chute internal width | 30mm | Clears the 15.8mm as-fed width and gives tolerance for yaw or partial rotation during handoff |
-| Chute internal height | 15mm | Accommodates 11.4mm brick body plus 1.7mm studs with 1.9mm clearance |
-| Chute wall thickness | 3mm | Structural, accounts for print tolerances |
-| Chute length, entry to exit | 100mm to 150mm | Smooth ramp, no sharp edges or steps |
-
-### Chute Slope and Exit Position
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Chute angle from horizontal | Start at 40 degrees | Test 30, 35, 40, and 45 degrees with UHMW and real bricks |
-| Old 65mm centerline drop check | About 42mm drop | Z=90mm pivot gives about Z=48mm centerline before wall offsets |
-| Old 75mm centerline drop check | About 48mm drop | Z=90mm pivot gives about Z=42mm centerline before wall offsets, so longer is lower, not higher |
-| Chute entry height | Derived from belt exit trajectory | Do not reuse the chute exit height for the entry |
-| Chute exit height | Derived from chute slope and bin funnel catch window | Must be checked in CAD against the final bin and funnel geometry |
-| Chute exit XY position | Derived from sweep radius and servo angle | Exact offset depends on frame geometry and pivot location |
-
-### Bin Funnel and Receiving
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Funnel mouth opening | Start 50mm to 60mm | 70mm only if the bin layout is staggered or the sweep radius is increased |
-| Funnel vertical catch window | Align to measured chute exit height | Do not use the old Z=78-83mm mouth height unless the full Z stack is re-derived |
-| Funnel narrowing height | 15mm to 20mm | Guides brick from catch mouth into bin |
-| Funnel internal width at base | 30mm | Matches chute internal width; linear transition in 15-20mm height |
-| Funnel wall angle | 35 to 45 degrees | Inward from vertical; optimize for UHMW slide friction and real-brick validation |
-| Bin internal width | 80mm | Four bins total, fits four 30mm-wide chute ports |
-| Bin internal depth | 80mm | Front-to-back, allows brick settling and stable stacking |
-| Bin internal height | 60mm | Total depth from base (Z=0) to top (Z=60) |
-| Bin base height | Z=0mm | Ground level, machine frame reference |
-| Bin top opening | Z=60mm | If the funnel catches above this, model it as an added top funnel; if it catches below this, model a side-entry catch and verify unloading clearance |
-
-### Bin Positioning and Servo Sweep
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Total servo sweep | 105 degrees | Covers all four bin positions with tolerance |
-| Servo positions | Start at 37, 72, 107, 142 degrees | Starting table in bin order: 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE. Lock after bin layout and real servo testing |
-| Position spacing | Start at 35 degrees | Increase spacing, increase radius, narrow funnels, or stagger bins if catch zones overlap |
-| Servo positioning accuracy required | Design for several degrees of tolerance | Do not assume plus or minus 2 degrees until measured on the real frame |
-| Bin arrangement | Under chute arc, likely staggered if radius stays short | Four bins positioned to catch each servo position without funnel overlap |
-
-Verification in Fusion: use a revolute joint at the working Z=90mm pivot, then check two things separately: the chute exit XY sweep clears adjacent funnels, and the chute entry/exit Z stack matches the conveyor exit and bin catch window. Test with real bricks before final print.
-
-### Servo-to-Conveyor Handoff
-
-| Feature | Dimension | Notes |
-|---------|-----------|-------|
-| Belt surface height | Derived from final frame CAD | Current low-frame start is about 72mm from base, but global height is not locked until handoff is tested |
-| Chute entry height | Derived from the belt exit and exit lip | Entry height must be near the incoming brick path, not copied from chute exit height |
-| Conveyor-to-chute connection | Gravity handoff or close-guided handoff | Choose after final belt height and exit-lip test |
-| Exit lip position | 5 to 6mm above belt surface | Separate belt-mounted feature, not servo-mounted |
-| Handoff validation | Required before large prints | Test with real bricks at the selected belt speed |
-
-### UHMW Lining (mandatory material, not CAD geometry)
-
-| Feature | Specification | Notes |
-|---------|---------------|-------|
-| Material | Ultra-high-molecular-weight polyethylene (UHMW) | Applied by physical adhesive or mechanical press-fit before first run |
-| Applied to | Chute interior walls and funnel interior walls | Reduces friction, improves slide reliability and brick speed control |
-| Installation timing | Before first run | Glued or pressed into final CAD parts after printing and quality check |
-| Slide angle validation | 30 to 40 degrees | Empirical test with real brick + UHMW surface; angle determines brick velocity |
-| Validation method | Physical test with real bricks, not simulation | Slide test before locking in funnel angle |
-| Expected outcome | Brick slides steadily without sticking or accelerating excessively | Adjust funnel angle or UHMW surface if needed after test |
-
-## Bins
-
-Status for this section: `PROVISIONAL_ESTIMATE`
-
-| Bin label | Count target | Internal target |
-|-----------|--------------|-----------------|
-| 2x2 RED | 6 bricks | 80mm x 80mm x 60mm |
-| 2x2 BLUE | 6 bricks | 80mm x 80mm x 60mm |
-| 2x3 RED | 4 bricks | 80mm x 80mm x 60mm |
-| 2x3 BLUE | 8 bricks | 80mm x 80mm x 60mm |
-
-Arrangement: four bins under the chute arc. Exact positions are derived from the final pivot point, chute length, and tested servo angles.
-
-## Manual Feed Guide
-
-Status for this section: `DECIDED_FOR_STATES`
-
-| Feature | Dimension or guidance |
-|---------|-----------------------|
-| Base feed mode | One brick at a time |
-| Optional later feature | Simple feed chute only after the base sorter works |
-| Orientation label | Studs up, long side along travel |
-| Guide width | Belt width or narrower guide that still clears the 15.8mm as-fed brick width, with tolerance for yaw before the shroud |
-| Anti-wander guide | Low side rails from X=0 to X=120, tapering toward the shroud |
-
-## Operator-Facing Packaging
-
-Status for this section: `DECIDED_FOR_STATES`
-
-| Feature | Requirement |
-|---------|-------------|
-| Start button label | Printed or engraved, visible at arm's length |
-| Display viewing distance | Arm's length readable from front of machine |
-| Display state words | READY, SORTING, SORT COMPLETE, ERROR |
-| Bin labels | 2x2 RED, 2x2 BLUE, 2x3 RED, 2x3 BLUE |
-| Label flats | Reserved on bin faces and control area |
-| Cable routing | Clean and strain-relieved |
-| Fan | Keep if needed for electronics cooling |
-
-## Validation Checklists
-
-These checks apply to `PROVISIONAL_ESTIMATE` and `OPEN_DECISION` values above.
+## Validation Gates
 
 ### Conveyor
 
-- Import or model the chosen conveyor
-- Verify belt width and brick clearance
-- Verify motor and pulley clearance
-- Verify handoff from belt exit to chute entry
-- Verify footprint with frame and bins visible
+- Verify belt tracks without rubbing the shroud, rails, side plates, or support block.
+- Verify motor, pulleys, set screws, and belt path remain accessible.
+- Verify handoff from belt exit to chute entry with real bricks before locking feet or lip geometry.
+- Verify the full assembly stays inside the 610mm x 610mm footprint.
 
 ### Sensing
 
-- Fit the two break-beam pairs without blocking brick travel
-- Verify break-beam timing separates 2x2 from 2x3 at the selected belt speed
-- Fit the color sensor shroud and verify no light leaks
-- Verify shroud clearance with real bricks
-- Record calibration with the final shroud installed
+- Fit the two break-beam pairs without blocking brick travel.
+- Verify break-beam timing separates 2x2 from 2x3 at the selected belt speed.
+- Fit the color sensor shroud and verify no light leaks.
+- Calibrate color only with the final shroud installed.
 
 ### Servo Chute
 
-- Measure or import the actual servo model
-- Test chute angle with real bricks
-- Verify four servo angles in CAD
-- Verify bin guide overlap at each position
-- Verify servo power and wiring clearance
+- Verify the real servo body and horn before locking a pocket.
+- Test chute angle with UHMW and real bricks.
+- Verify four servo angles on the real frame.
+- Verify each bin funnel catches the chute exit with margin.
+- Verify servo power and wiring clearance.
 
 ### Frame And UX
 
-- Verify 610mm x 610mm footprint
-- Verify bin removal clearance
-- Verify labels are visible
-- Verify the start control and display are readable from arm's length
+- Verify bin removal clearance.
+- Verify labels are visible.
+- Verify the start control and display are readable from arm's length.
+- Verify cable routing is clean and strain-relieved.
