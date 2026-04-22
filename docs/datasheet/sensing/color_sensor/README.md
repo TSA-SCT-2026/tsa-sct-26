@@ -32,7 +32,10 @@ Active status: active color sensor for the states build.
 | Best detection distance | 10mm |
 | Input voltage | 3V to 5V |
 | Output | Light intensity to frequency |
-| Module size | 33.2mm x 33.2mm x 25mm |
+| Module size | 34mm x 34mm x 25mm (25mm is LED tip to pin tip) |
+| PCB size | 34mm x 34mm x 1.5mm |
+| LED assembly below PCB | 15.5mm (sensor face to PCB bottom face) |
+| Pins above PCB | 8mm |
 | Calibration condition | Final shroud installed, final belt geometry installed |
 
 ## Pins
