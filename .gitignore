@@ -12,6 +12,9 @@ firmware/.vscode/
 .DS_Store
 **/.DS_Store
 
+# Temporarily gitignored CAD; final version will be published
+cad/printing/*
+
 # CAD swap files and autosave
 *.~lock.*
 *.bak
