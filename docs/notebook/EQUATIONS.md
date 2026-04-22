@@ -99,7 +99,7 @@ Used in:
 - Servo move timing.
 - Handoff scheduling.
 
-## Servo Funnel Arc Spacing
+## Servo Chute Arc Spacing
 
 Equation:
 
@@ -114,17 +114,63 @@ Variables:
 | `sweep_radius` | mm | `open`: derived from final bin and chute layout |
 | `angle_spacing` | degrees | `test_coefficient` until real servo positions are calibrated |
 | `arc_spacing` | mm | derived |
-| `funnel_mouth_width` | mm | `open`: derived from catch tests and available footprint |
+| `bin_arc_catch_width` | mm | `open`: derived from swept brick envelope, catch tests, and available footprint |
 
 Suggested coefficients:
-- Start with generous funnel width if footprint allows.
-- Increase sweep radius or stagger bins if adjacent catch zones overlap.
-- Do not shrink funnels first if reliability margin is still needed.
+- Sweep the 2x3 brick envelope, not only the chute centerline.
+- Include brick width, yaw margin, divider clearance, and servo error before locking bin dividers.
+- Use the bin arc as the catch feature for the current sprint instead of separate per-bin funnels.
 
 Used in:
-- Bin funnel layout.
+- Sweep-defined bin arc layout.
 - Servo chute selector geometry.
-- Decision matrix rationale for wide catch funnels.
+- Decision matrix rationale for chute-first catch geometry.
+
+## Equal-Pulley GT2 Belt Center Distance
+
+General open-belt equation:
+
+```text
+L_belt = 2 * C + pi * (D1 + D2) / 2 + (D1 - D2)^2 / (4 * C)
+```
+
+Equal-pulley form:
+
+```text
+C = (L_belt - pi * D) / 2
+```
+
+GT2 pulley pitch diameter:
+
+```text
+D = tooth_count * belt_pitch / pi
+```
+
+Equal GT2 pulley shortcut:
+
+```text
+C = (L_belt - tooth_count * belt_pitch) / 2
+```
+
+Variables:
+
+| Variable | Unit | Source |
+|----------|------|--------|
+| `L_belt` | mm | `locked`: purchased closed-loop belt length when confirmed from BOM or physical part |
+| `C` | mm | derived center distance between pulley shafts |
+| `D1`, `D2`, `D` | mm | derived pitch diameter |
+| `tooth_count` | teeth | `locked`: pulley specification when confirmed from purchased part |
+| `belt_pitch` | mm/tooth | `locked`: GT2 standard pitch |
+
+Suggested coefficients:
+- Current sprint uses a 200mm closed-loop GT2 belt and equal 16T GT2 pulleys.
+- With equal 16T GT2 pulleys, `tooth_count * belt_pitch = 32mm`, so nominal `C = 84mm`.
+- Put the motor mount slightly inside nominal and allow 1mm to 3mm outward adjustment for belt tension.
+
+Used in:
+- Motor mount horizontal spacing.
+- GT2 belt placeholder.
+- Pulley alignment and tension setup.
 
 ## Chute Vertical Drop
 
@@ -156,7 +202,7 @@ Suggested coefficients:
 
 Used in:
 - Chute entry and exit stack.
-- Bin funnel catch height.
+- Bin arc catch height.
 
 ## Exit Lip Height
 
@@ -176,7 +222,9 @@ Variables:
 
 Suggested coefficients:
 - Start with a small lift above the belt and test real handoff behavior.
-- Final value must be derived from the final belt surface and chute entry.
+- Current sprint skips a static ramp on the first pass.
+- Leave physical room for a small add-on lip if real-brick tests show nose dive or short fall.
+- Final value must be derived from the final belt surface, chute entry, and real-brick handoff behavior.
 
 Used in:
 - Conveyor-to-chute handoff.
@@ -217,7 +265,7 @@ Variables:
 
 Suggested coefficients:
 - Use generous capacity because falling bricks do not pack perfectly.
-- Validate that the funnel does not clog before validating storage volume.
+- Validate that the bin arc catches cleanly before treating storage volume as solved.
 
 Used in:
 - Bin sizing rationale.
