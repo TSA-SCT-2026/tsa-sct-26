@@ -12,13 +12,13 @@ Status rule:
 
 | Topic | Status | Current guidance |
 |------|--------|------------------|
-| Final exit bin geometry | OPEN | Active CAD critical path. The four receiving bins determine bin footprint, funnel catch height, removal clearance, and the final chute sweep relationship. |
+| Final exit bin geometry | OPEN | Active CAD critical path. The four receiving bins are derived from the swept chute and brick envelope, then checked for footprint, catch height, removal clearance, and label visibility. |
 | Conveyor support height and feet | OPEN | Downstream of final bin and chute handoff geometry. Do not reuse old cleat or feet dimensions. |
-| Servo feet and selector mount | OPEN | Downstream of final pivot location, bin catch height, and frame contact points. |
-| Exit lip or handoff guide | OPEN | Derive from final belt surface, chute entry, brick momentum, and real-brick tests. Do not lock from old coordinates. |
+| Servo feet and selector mount | OPEN | Downstream of final pivot location, bin catch height, and frame contact points. Use slotted feet so small alignment corrections do not require reprinting. |
+| Exit lip or handoff guide | OPEN | First pass skips a static ramp. Leave physical room for a small add-on lip only if final belt surface, chute entry, brick momentum, and real-brick tests prove it is needed. |
 | Permanent woodworking | OPEN | Downstream of final bin, chute, conveyor feet, and servo feet relationships. |
 | Final chute angle | OPEN | Choose from UHMW-lined real-brick tests. Bare plastic behavior is not final. |
-| Selector sweep radius and funnel layout | OPEN | Must be checked against actual bin layout and footprint. Wider funnels improve reliability but can overlap if the sweep is too tight. |
+| Selector sweep radius and bin arc layout | OPEN | Must be checked against the swept chute exit and 2x3 brick envelope, including yaw margin, divider clearance, servo error, and footprint. |
 | Servo position table | OPEN | Servo angles are calibration outputs. Start only after the bins and chute are physically aligned. |
 | Optional feed chute | OPEN | Manual feed is the base states build. Add a feed chute only after the sorter works reliably. |
 

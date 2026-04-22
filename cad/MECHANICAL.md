@@ -86,7 +86,7 @@ Shroud design goals:
 
 This is the main custom mechanical subsystem.
 
-The MG995/MG996/MG996R-class heavy servo rotates an angled chute so its exit points at one of four bin funnels.
+The MG995/MG996/MG996R-class heavy servo rotates an angled chute so its exit points into one of four arc-defined bin catch windows.
 
 Chute body:
 - Rectangular or gently guided channel
@@ -99,19 +99,20 @@ Servo mount:
 - Servo output shaft points upward
 - Servo body sits in a pocket or cradle verified against the real part
 - Mount plate ties into the base plate or a stiff frame member, not the thin conveyor side plate
+- Servo feet should use slots for small physical alignment corrections after belt, chute, and bin arc placement
 - Chute pivot axis stays vertical and aligned with the horn
 - Wires leave away from the horn and chute sweep
 
 Chute angle:
 - Choose from UHMW-lined real-brick testing
 - Do not treat bare-plastic or open-air slide behavior as final
-- The sensitive variables are handoff, arm stiffness, and funnel catch width more than theoretical angle
+- The sensitive variables are handoff, arm stiffness, and swept catch margin more than theoretical angle
 
 Bin alignment:
 - Use construction rays from the pivot
 - Treat servo angles as calibration outputs
-- Each bin needs a wide funnel entry at the verified catch height
-- Verify chute exit falls inside each funnel at all four positions
+- Each bin needs an arc-defined catch window at the verified catch height
+- Verify the swept 2x3 brick envelope clears dividers and falls inside the matching bin at all four positions
 - Use CAD motion checks, then real-brick tests, before printing large parts
 
 ## Bins
@@ -122,10 +123,10 @@ Each bin should:
 - Hold its expected brick count with margin
 - Have a clear label on the front
 - Be removable without bumping the chute
-- Have a funnel or catch entry at the verified chute exit height
+- Have an arc-defined catch entry at the verified chute exit height
 - Keep category interiors separated
 
-The funnel entry is a reliability feature, not decoration. It allows the servo to land a brick reliably without needing exact positioning.
+The bin arc and fixed locator platform are reliability features, not decoration. They let the removable bin shell return to the same position after dumping and give the chute a repeatable catch target.
 
 Final bin geometry is now the first active CAD priority. Do not back-fill this file with old bin dimensions as if they are current.
 
@@ -144,8 +145,8 @@ The machine should look like a finished competition device, not a temporary benc
 ## Current CAD Build Status
 
 Critical path:
-1. Final exit bins and funnel catch geometry.
-2. Servo chute and mount geometry.
+1. Middle support clearance and servo chute placement.
+2. Sweep-defined bin arc and fixed locator platform.
 3. Conveyor height, support feet, and exit handoff.
 4. Wood base cuts and permanent woodworking.
 
@@ -172,6 +173,6 @@ Run these before committing to large prints:
 2. Servo horn or pivot slop under load
 3. Break-beam size sensor geometry after shroud fit and timing calibration
 4. Frame stiffness around the servo and sensing station
-5. Bin funnel overlap or poor catch height
+5. Bin divider overlap or poor catch height
 
 Solve these with small prototypes and real-brick tests before making larger frame parts.

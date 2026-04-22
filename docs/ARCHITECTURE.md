@@ -167,18 +167,19 @@ Baseline constraints:
 - Chute arm should be as short and stiff as the bin layout allows
 - Chute slope must be validated with a UHMW-lined real-brick slide test
 - Servo positions are calibration outputs, not architecture truth
-- Bin funnel catch zones must be checked against the actual sweep radius
+- Bin catch windows must be checked against the actual swept chute and brick envelope
 - Conveyor-to-chute entry and chute-to-bin exit heights must be checked separately
 
 Reliability approach:
-1. UHMW tape lining on chute and funnel sliding surfaces.
-2. Wide bin entry funnels so the servo does not need perfect angular accuracy.
-3. Short, stiff chute arm to reduce flex and exit position error.
+1. UHMW tape lining on chute sliding surfaces.
+2. Rounded high-wall chute end so overshoot stays contained without a separate static ramp.
+3. Sweep-defined bin arc with enough divider clearance for brick width, yaw margin, and servo error.
+4. Short, stiff chute arm to reduce flex and exit position error.
 
 Before final printing:
 - Test a short UHMW-lined chute with real bricks
 - Verify chute entry height and chute exit height separately
-- Verify each servo position drops the brick into the funnel, not just near the bin
+- Verify each servo position drops the brick into the matching bin arc catch window
 - Verify the servo mount keeps the output shaft aligned with the chute pivot
 - Keep wiring clear of the servo horn and chute sweep
 
@@ -194,7 +195,7 @@ Bins:
 - Four receiving bins arranged under the tested chute arc
 - Each bin has a clear front label
 - Each bin must hold its expected brick count with margin
-- Each bin needs a funnel or catch feature at the verified chute exit height
+- Each bin needs an arc-defined catch opening at the verified chute exit height
 - Exact bin geometry is now part of the active CAD critical path and should be designed before locking chute, conveyor feet, or woodworking
 
 Footprint:

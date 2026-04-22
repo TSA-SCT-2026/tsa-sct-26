@@ -40,14 +40,15 @@ Use this table instead of old coordinate-heavy CAD instructions.
 | `conveyor_support_height` | `OPEN_DECISION` | Derived from `belt_surface_z`, side plate geometry, and final handoff stack. |
 | `motor_board_z` | `OPEN_DECISION` | Project from the final conveyor shaft and pulley path after support height is locked. |
 | `conveyor_foot_height` | `OPEN_DECISION` | Derived from the final supported conveyor, not from old cleat values. |
-| `servo_foot_height` | `OPEN_DECISION` | Derived from final servo pivot, bin funnel height, and frame contact points after the bin and chute stack is modeled. |
+| `servo_foot_height` | `OPEN_DECISION` | Derived from final servo pivot, bin arc catch height, and frame contact points after the bin and chute stack is modeled. |
+| `servo_foot_slot_range` | `PROVISIONAL_VARIABLE` | Starting slot range for physical selector alignment after belt, chute, and bin arc placement. |
 | `exit_lip_z` | `OPEN_DECISION` | Derived from `belt_surface_z`, chute entry height, and real-brick handoff tests. |
 | `chute_entry_z` | `OPEN_DECISION` | Derived from belt exit trajectory and exit lip test. Do not copy chute exit height. |
-| `chute_exit_z` | `OPEN_DECISION` | Derived from chute slope, chute length, and bin funnel catch height. |
+| `chute_exit_z` | `OPEN_DECISION` | Derived from chute slope, chute length, and bin arc catch height. |
 | `servo_pivot_xyz` | `OPEN_DECISION` | Derived from final conveyor exit, chute sweep, and frame member locations. |
-| `sweep_radius` | `OPEN_DECISION` | Derived from bin funnel width, servo spacing, and footprint. |
-| `funnel_mouth_width` | `OPEN_DECISION` | Derived from servo repeatability, chute exit scatter, and available arc spacing. |
-| `bin_body_geometry` | `OPEN_DECISION` | Active CAD critical path. Must preserve four separate categories, wide catch geometry, removable access, and label visibility. |
+| `sweep_radius` | `OPEN_DECISION` | Derived from chute length, servo clearance, swept brick envelope, and footprint. |
+| `bin_arc_catch_width` | `OPEN_DECISION` | Derived from servo repeatability, chute exit scatter, brick yaw margin, divider clearance, and available arc spacing. |
+| `bin_body_geometry` | `OPEN_DECISION` | Active CAD critical path. Must preserve four separate categories, sweep-defined catch geometry, removable access, and label visibility. |
 | `shroud_inner_width` | `PROVISIONAL_VARIABLE` | Brick width plus yaw and lateral margin, verified with real bricks and guide rails. |
 | `shroud_inner_height` | `PROVISIONAL_VARIABLE` | Brick height plus stud clearance, sensor clearance, and print tolerance. |
 | `break_beam_spacing` | `PROVISIONAL_VARIABLE` | Large enough for speed cross-check, fitted to the final shroud and sensor modules. |
@@ -67,6 +68,7 @@ Key formulas currently used:
 - `arc_spacing = 2 * sweep_radius * sin(angle_spacing / 2)`
 - `chute_vertical_drop = chute_path_length * sin(chute_angle)`
 - `exit_lip_top_z = belt_surface_z + lip_height_above_belt`
+- `equal_pulley_center_distance = (belt_length - pulley_tooth_count * belt_pitch) / 2`
 
 ## Validation Gates
 
@@ -89,7 +91,7 @@ Key formulas currently used:
 - Verify the real servo body and horn before locking a pocket.
 - Test chute angle with UHMW and real bricks.
 - Verify four servo angles on the real frame.
-- Verify each bin funnel catches the chute exit with margin.
+- Verify each bin arc catch window receives the swept brick envelope with margin.
 - Verify servo power and wiring clearance.
 
 ### Frame And UX
