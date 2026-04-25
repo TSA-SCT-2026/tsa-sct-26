@@ -14,6 +14,8 @@
 - Bins installed and removable.
 - Bin labels installed.
 - Feed orientation cue installed.
+- Electronics board installed.
+- Electronics board feet installed and stable.
 - Footprint under 610mm x 610mm.
 - No fixed-height feet, exit lip, or wood cuts depend on unresolved bin geometry.
 
@@ -21,6 +23,7 @@
 
 - LiPo connected with inline fuse installed.
 - Stepper VM bulk capacitor installed.
+- Electronics board mounting keeps the ESP32, driver, and power path clear of belt, chute sweep, and bin access.
 - Servo power polarity verified.
 - Servo power rail can handle load.
 - Fan connected if used for driver cooling.

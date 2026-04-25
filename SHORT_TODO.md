@@ -20,6 +20,8 @@ Goal: Conveyor spinning manually by end of Saturday. Motor + sensing live by end
 3. side_plate_drill_jig (design today)
 4. outside_motor_board_v7 (top part only, defer foot)
 5. sensing_shroud
+6. electronics_board
+7. electronics_foot
 
 Defer until after conveyor height is known from dry-fit: all feet (conveyor_foot, motor_mount_foot,
 servo feet, bins_foot_v2). Defer bins: bins_v2.

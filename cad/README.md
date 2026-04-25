@@ -18,6 +18,7 @@ The previous chamber, release-gate, and NEMA11 selector CAD work is archived for
 cad/
   DIMENSIONS.md    source-backed dimensions and active variable register
   MECHANICAL.md    mechanism rationale and build status
+  printing/        local print exports organized by active, deferred, staging, and archive use
   frame/           conveyor and frame prior work or future active parts
   bins/            future bin models
   sensing/         future size and color sensor brackets

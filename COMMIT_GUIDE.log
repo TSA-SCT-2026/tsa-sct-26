@@ -19,7 +19,6 @@ Message style
 - Optional body may explain why the change was needed and user impact.
 - Brief high-level bullets in the body are good when a commit has a few related concerns.
 - Keep those bullets short, useful for someone scrolling history, and light on technical detail.
-- Bullets should be concise action phrases, not full sentences. Start with a verb or noun phrase.
 - Use bullets sparingly.
 
 Good subject examples
