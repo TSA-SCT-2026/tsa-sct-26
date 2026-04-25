@@ -12,7 +12,7 @@ Read [SPRINT.log](/Users/joeroche/Developer/tsa-sct-26/SPRINT.log) for the live 
 cad/printing/
   active/          current exports that are valid for immediate or near-term printing
   deferred/        valid exports that should wait for a measurement or geometry lock
-  staging/         USB and slicer batching workspace
+  staging/         USB input workspace
   archive/         superseded exports kept only for rollback or reference
 ```
 
@@ -43,11 +43,15 @@ Current buckets:
 
 ### `staging/`
 
-Temporary print-prep workspace. This is for copies prepared for USB transfer, slicer import, or plate batching. Do not treat `staging/` as source-of-truth design history.
+Temporary print-prep workspace. This is for copies prepared for USB transfer and slicer import. Do not treat `staging/` as source-of-truth design history.
 
 Current buckets:
 - `staging/usb_input/`: single-part exports copied over for handoff to Cura or external media
-- `staging/plates/`: per-plate batches such as `plate1_spacers_jig`
+
+Current sprint rule:
+- Do not maintain separate one-printer, two-printer, or three-printer folders.
+- Do not maintain Cura plate files on this computer.
+- Copy single-part `.3mf` files to `staging/usb_input/`, then arrange plates on the library computer based on printer availability.
 
 ### `archive/`
 
