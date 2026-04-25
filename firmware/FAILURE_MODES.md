@@ -5,14 +5,14 @@
 ### FM-01: Brick misses chute entry
 
 Cause: belt exit gap, chute entry height, or servo position error
-Detection: missing or wrong `BIN_CONFIRMED`
+Detection: handoff test failure, wrong final bin count, or optional future bin confirmation
 Response: `ERROR_HALT`
 Mitigation: validate conveyor-to-chute handoff with real bricks before large prints
 
 ### FM-02: Brick sticks in chute
 
 Cause: chute angle too shallow, rough surface, or undersized channel
-Detection: missing `BIN_CONFIRMED`
+Detection: handoff timeout, visible jam, wrong final bin count, or optional future bin confirmation
 Response: `ERROR_HALT`
 Mitigation: test several UHMW-lined chute angles with real bricks and record the chosen angle
 

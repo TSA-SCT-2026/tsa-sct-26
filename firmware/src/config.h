@@ -21,7 +21,7 @@
 #define PIN_SIZE_SENSOR_A    33
 #define PIN_SIZE_SENSOR_B    15
 
-// Bin confirmation beams, optional for early bringup
+// Bin confirmation beams are deferred for states and reserved for future instrumentation.
 #define PIN_BIN1_BEAM        16
 #define PIN_BIN2_BEAM        17
 #define PIN_BIN3_BEAM        5
@@ -88,7 +88,7 @@
 
 // Display
 #define DISPLAY_WIDTH   240
-#define DISPLAY_HEIGHT  280
+#define DISPLAY_HEIGHT  320
 
 #define TFT_RED     0xF800
 #define TFT_BLUE    0x001F

@@ -7,6 +7,7 @@
 - `route ready`: the target servo angle has been reached or the current stub has accepted the route command
 - `handoff window`: the bounded time where the brick leaves the belt and enters the chute
 - `manual feed`: one brick at a time from the evaluator or tester
+- `timed confirmation`: states-build confirmation after the handoff window completes
 
 ## State Machine
 
@@ -25,13 +26,13 @@ Required events:
 - `SENSING_DONE`
 - `ROUTE_READY`
 - `HANDOFF_DONE`
-- `BIN_CONFIRMED`
 - `RESET`
 
 Optional future events reserved for tighter instrumentation:
 - `ENCODER_PULSE`
 - `SIZE_SENSOR_READY`
 - `COLOR_SENSOR_READY`
+- `BIN_CONFIRMED`
 
 ## State Definitions
 
@@ -59,8 +60,9 @@ Optional future events reserved for tighter instrumentation:
 - Wait for `HANDOFF_DONE`
 
 **CONFIRM**
-- Wait for `BIN_CONFIRMED` in instrumented or test mode
-- Wrong bin or timeout: `ERROR_HALT`
+- States build: auto-confirm after the timed handoff window
+- Future instrumented mode may wait for `BIN_CONFIRMED`
+- Wrong bin detection is deferred unless optional bin beams are added later
 
 **COMPLETE**
 - All 24 bricks processed
@@ -72,6 +74,7 @@ Optional future events reserved for tighter instrumentation:
 - Keep size sensing aligned with two-pair break-beam timing in the shrouded sensing station
 - Keep the color sensor shroud as a calibration requirement
 - Keep the servo chute deterministic with four recorded target angles
+- Skip bin confirmation beams for states unless the base sorter is already reliable
 - Do not add feed automation until manual one-at-a-time sorting is reliable
 
 ## Config Focus

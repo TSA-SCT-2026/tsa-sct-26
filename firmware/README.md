@@ -15,13 +15,14 @@ ESP32 firmware for the simplified states LEGO sorter. Build with PlatformIO.
 - `servo chute`: the MG995/MG996-class rotary chute that aims at one of four bins
 - `route ready`: the servo has reached the target chute angle
 - `handoff`: the brick leaves the belt and enters the chute
-- `bin confirmed`: the expected bin received the brick or the test harness confirmed the bin
+- `timed confirmation`: states-build confirmation after the handoff window completes
+- `bin confirmed`: optional future instrumentation for bin beams
 
 ## Architecture
 
 Read `firmware/EMBEDDED.md` first. The active control contract is:
 
-`START_BUTTON -> BRICK_DETECTED -> SENSING_DONE -> ROUTE_READY -> HANDOFF_DONE -> BIN_CONFIRMED`
+`START_BUTTON -> BRICK_DETECTED -> SENSING_DONE -> ROUTE_READY -> HANDOFF_DONE -> timed confirmation`
 
 `RESET` returns the machine from COMPLETE or ERROR to READY.
 
@@ -31,6 +32,7 @@ Read `firmware/EMBEDDED.md` first. The active control contract is:
 - Color calibration is valid only with the shroud installed
 - Servo route must be ready before the brick commits to the chute
 - Manual one-at-a-time feed is the active states flow
+- Bin confirmation beams are deferred for states unless the base sorter is already reliable
 - Logging should stay CSV-first so notebook data can be captured directly from serial
 
 ## Logging

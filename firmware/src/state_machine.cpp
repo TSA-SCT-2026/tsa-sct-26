@@ -30,7 +30,7 @@ void StateMachine::poll() {
             }
             break;
         case S_CONFIRM:
-            if (now > _deadlineMs) haltOnError(ERR_MISS_BIN);
+            if (_deadlineMs > 0 && now > _deadlineMs) haltOnError(ERR_MISS_BIN);
             break;
         default:
             break;
@@ -114,7 +114,8 @@ void StateMachine::onHandoff(const Event& e) {
     _brick.handoffMs = e.timestamp_ms;
     gLogger.handoffDone(_brick.number, _brick.targetBin);
     transition(S_CONFIRM);
-    _deadlineMs = e.timestamp_ms + BIN_CONFIRM_TIMEOUT_MS;
+    _deadlineMs = 0;
+    pushEventBinConfirmed(_brick.targetBin);
 }
 
 void StateMachine::onConfirm(const Event& e) {

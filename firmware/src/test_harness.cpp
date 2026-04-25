@@ -77,26 +77,17 @@ static void drainEvents() {
     }
 }
 
-static bool waitForState(SystemState target, uint32_t timeoutMs) {
+static bool waitForTimedConfirmation(uint32_t timeoutMs) {
     uint32_t startMs = millis();
     while (millis() - startMs <= timeoutMs) {
         gStateMachine.poll();
         drainEvents();
-        if (gStateMachine.currentState() == target) return true;
-        if (gStateMachine.currentState() == S_ERROR_HALT) return false;
+        SystemState state = gStateMachine.currentState();
+        if (state == S_FEED || state == S_COMPLETE) return true;
+        if (state == S_ERROR_HALT) return false;
         delay(1);
     }
     return false;
-}
-
-static uint8_t binForCat(BrickCategory cat) {
-    switch (cat) {
-        case BrickCategory::CAT_2x2_RED:  return 1;
-        case BrickCategory::CAT_2x2_BLUE: return 2;
-        case BrickCategory::CAT_2x3_RED:  return 3;
-        case BrickCategory::CAT_2x3_BLUE: return 4;
-        default:                          return 4;
-    }
 }
 
 static bool simulateBrick(BrickCategory cat) {
@@ -104,10 +95,7 @@ static bool simulateBrick(BrickCategory cat) {
     pushEvent(EventType::BRICK_DETECTED);
     drainEvents();
 
-    if (!waitForState(S_CONFIRM, HANDOFF_WINDOW_MS + 20)) return false;
-
-    pushEventBinConfirmed(binForCat(cat));
-    drainEvents();
+    if (!waitForTimedConfirmation(HANDOFF_WINDOW_MS + 20)) return false;
     return gStateMachine.currentState() != S_ERROR_HALT;
 }
 
