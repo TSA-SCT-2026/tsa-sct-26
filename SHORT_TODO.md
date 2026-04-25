@@ -1,63 +1,58 @@
 # Short TODO
 
-Updated April 21, 2026 after the sweep-defined bin arc pivot.
+Updated April 25, 2026. See SPRINT.log for full sprint plan and print queue details.
 
-Current priority: finish the physical CAD dependency chain fast enough to print and troubleshoot. The chute, servo clearance, and swept brick envelope now define the bin catch geometry. Wider and more adjustable is better than a compact transition that jams at speed.
+## This Weekend (Apr 25-26)
 
-## Immediate CAD Sprint
+Goal: Conveyor spinning manually by end of Saturday. Motor + sensing live by end of Sunday.
 
-1. Widen middle support and place selector
-- Widen the middle support block enough for servo rotation clearance.
-- Place the real MG995/MG996-class servo body with horn face up.
-- Give the servo feet slotted adjustment so belt, chute, and bin arc alignment can be tuned physically.
-- Keep the full assembly inside the 610mm x 610mm footprint.
+### Before Leaving for Library (do now)
 
-2. Build the rounded high-wall servo chute
-- Skip the static belt-to-chute ramp for the first pass.
-- Set the chute floor slightly below belt top with a small horizontal gap.
-- Round both exit-side chute walls and raise the side walls so they act as the containment lip.
-- Leave screw access or physical room for a tiny add-on handoff lip if real-brick tests prove it is needed.
-- Sweep the 2x3 brick envelope through the chute exit, not just the chute centerline.
+- CAD the side plate drill jig (5mm shaft bore + two M3.2 screw guide holes per bearing holder spec)
+- Slice all parts below into Cura and save to USB
+- Organize USB into three Cura project folders (1, 2, or 3 printers)
 
-3. Derive bins from the chute sweep
-- Sketch the chute end rotation arc from the actual pivot and four selector positions.
-- Expand the arc into the bin cavity and divider layout.
-- Create the removable bin shell from the swept arc.
-- Create a fixed bin platform from projected bin edges, with asymmetric locator features so the bin shell re-indexes after dumping.
-- Preserve clear labels for 2x2 RED, 2x2 BLUE, 2x3 RED, and 2x3 BLUE.
+### Print Queue - Critical Path First
 
-4. Align conveyor motor and belt path
-- Elevate and slot the motor mount feet across Y for pulley alignment.
-- Laterally align the driven pulley and motor pulley before finalizing the print.
-- Use equal GT2 16T pulleys and the 200mm belt starting center distance: 84mm.
-- Add 1 to 3mm outward motor adjustment for belt tension.
-- Extrude a simple GT2 belt placeholder for visual checks.
+1. Spacers (all four reprinted due to bearing holder redesign):
+   spacer_drive_far, spacer_driver_hub, spacer_idler_left, spacer_idler_right
+2. spacer_gt2_driver
+3. side_plate_drill_jig (design today)
+4. outside_motor_board_v7 (top part only, defer foot)
+5. sensing_shroud
 
-5. Hard stop and print
-- Export the rounded chute first.
-- Print the servo mount or pocket next if fit is uncertain.
-- Print the bin platform before the larger bin shell when possible.
-- Keep the printer running while later CAD details continue.
+Defer until after conveyor height is known from dry-fit: all feet (conveyor_foot, motor_mount_foot,
+servo feet, bins_foot_v2). Defer bins: bins_v2.
 
-## Same-Day Physical Truth
+### Saturday Assembly Sequence
 
-- Dry-fit the chute on the servo horn and test sweep by hand.
-- Run real 2x2 and 2x3 brick envelopes through the belt-to-chute gap.
-- Drop real bricks from the chute exit into the bin arc and watch for bounce-outs.
-- Check that the removable bin shell drops back onto the fixed platform in exactly one position.
-- Confirm pulleys line up with a straightedge before tensioning the belt.
+1. Cut side plates and center support block
+2. Drill 5mm shaft holes from measurement
+3. Use drill jig to locate bearing holder screw holes
+4. Dry-fit shafts, rollers, bearings, bearing holders
+5. Assemble side plates + center support
+6. Fit belt, spin by hand - this is the pass gate
 
-## Parallel Non-CAD Work
+### Sunday
 
-- Keep professor meeting prep short and focused on print orientation, wood-to-print joints, belt tracking, servo mount stiffness, and handoff geometry.
-- Keep engineering notebook equations current when a CAD dimension depends on them.
-- Save run logs to CSV once hardware starts moving.
-- Wiring and firmware remain important, but physical sorting reliability is the bottleneck.
+1. Mount outside_motor_board_v7 top, align GT2 pulleys with straightedge
+2. Install 200mm GT2 belt, tension, run motor at low speed
+3. Mount sensing_shroud, install break-beams and color sensor
+4. Wire and confirm readings in serial output
+
+## This Week
+
+- Measure final conveyor height from dry-fit, print and fit feet
+- CAD and print servo feet
+- Physical chute-to-bin alignment with real bricks
+- Firmware: full sort pipeline
+- Calibration: break-beam timing, color thresholds (shroud installed)
+- Operator UX: labels, display states, cable routing
+- Full 24-brick accuracy runs
 
 ## Do Not Do
 
-- Do not design per-bin funnels for the current sprint.
-- Do not design a static belt-to-chute ramp unless real tests prove the direct gap fails.
-- Do not revive hopper, chamber, start gate, ToF sizing, NEMA11 selector, or 2020 extrusion for the states build.
-- Do not let exact draft CAD dimensions leak into tracked docs.
-- Do not cut final wood before the chute, bin arc, conveyor height, and motor alignment agree.
+- Do not print feet before conveyor height is known from the real assembly
+- Do not cut final wood before side plate geometry is confirmed
+- Do not calibrate color in open air
+- Do not revive hopper, chamber, NEMA11 selector, ToF sizing, or 2020 extrusion
