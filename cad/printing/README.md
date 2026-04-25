@@ -46,12 +46,12 @@ Current buckets:
 Temporary print-prep workspace. This is for copies prepared for USB transfer and slicer import. Do not treat `staging/` as source-of-truth design history.
 
 Current buckets:
-- `staging/usb_input/`: single-part exports copied over for handoff to Cura or external media
+- `staging/usb_input/`: logical plate folders copied over for handoff to Cura or external media
 
 Current sprint rule:
 - Do not maintain separate one-printer, two-printer, or three-printer folders.
-- Do not maintain Cura plate files on this computer.
-- Copy single-part `.3mf` files to `staging/usb_input/`, then arrange plates on the library computer based on printer availability.
+- Do not maintain Cura project files on this computer.
+- Keep logical plate folders under `staging/usb_input/`, then open those folders on the library computer based on printer availability.
 
 ### `archive/`
 
