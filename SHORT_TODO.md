@@ -8,7 +8,7 @@ Goal: Conveyor spinning manually by end of Saturday. Motor + sensing live by end
 
 ### Before Leaving for Library (do now)
 
-- CAD the side plate drill jig (5mm shaft bore + two M3.2 screw guide holes per bearing holder spec)
+- CAD the bearing-holder screw-hole drill jig for the current external holder pattern
 - Slice all parts below into Cura and save to USB
 - Organize USB into three Cura project folders (1, 2, or 3 printers)
 
@@ -29,8 +29,8 @@ servo feet, bins_foot_v2). Defer bins: bins_v2.
 ### Saturday Assembly Sequence
 
 1. Cut side plates and center support block
-2. Drill 5mm shaft holes from measurement
-3. Use drill jig to locate bearing holder screw holes
+2. Mark external bearing-holder screw locations from CAD or the drill jig
+3. Drill M3 clearance or pilot holes for the external bearing holders
 4. Dry-fit shafts, rollers, bearings, bearing holders
 5. Assemble side plates + center support
 6. Fit belt, spin by hand - this is the pass gate
@@ -55,6 +55,6 @@ servo feet, bins_foot_v2). Defer bins: bins_v2.
 ## Do Not Do
 
 - Do not print feet before conveyor height is known from the real assembly
-- Do not cut final wood before side plate geometry is confirmed
+- Do not drill final mounting holes before side plate and holder geometry is confirmed
 - Do not calibrate color in open air
 - Do not revive hopper, chamber, NEMA11 selector, ToF sizing, or 2020 extrusion

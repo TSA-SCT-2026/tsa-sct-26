@@ -27,10 +27,15 @@ Use the tutorial-style conveyor as the active states path. The tutorial is a str
 Build around:
 - Thin side plates and a real dry-fit belt path
 - Wood support under the top belt run
-- Printed bearing holders where useful
+- External printed bearing holders for the 5mm shafts
 - NEMA17 motor on a serviceable outside motor board
 - Accessible pulley and belt tension path
 - 5mm shaft and matching bearing path from the active hardware plan
+
+Current side-plate note:
+- The active design does not drill 5mm shaft holes through the wood side plates.
+- Shaft alignment comes from the external printed bearing holders and their mounting holes.
+- Treat older shaft-through-wood instructions as stale sprint notes unless the user explicitly reopens that approach.
 
 Do not lock conveyor height, feet, motor board Z, or exit handoff placement until the bin and chute geometry exists. The belt exit, chute entry, chute exit, and bin catch height must be checked together.
 

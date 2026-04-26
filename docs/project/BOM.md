@@ -151,6 +151,21 @@ Do not add NEMA11 selector hubs, release-gate parts, or chamber switches for the
 | Small SG90-class hobby servo | User-confirmed on hand, optional accessory only |
 | MG995 or MG996R-class servo | User-confirmed on hand, active servo chute selector actuator |
 | 608ZZ bearings | Spare inventory only if the user changes to a larger shaft and bearing path |
+| 0.25in x 3-4in side plate wood stock | User-confirmed on hand |
+| 0.75in wood stock for center support | User-confirmed on hand, can be cut down if 0.5in support is still needed |
+| 3.2mm or 1/8in drill bits | User-confirmed on hand for M3 clearance and transfer holes |
+| Foam for bin bounce-out fixes | User-confirmed on hand, can be taped or glued |
+| 12V inline fuse holders | User-confirmed on hand, two available |
+| Black foam and black electrical tape | User-confirmed on hand for color-shroud light leak fixes |
+| Paper and tape labels | User-confirmed acceptable for wire, bin, feed, and operator labels |
+| M3 screws, nuts, and washers | User-confirmed on hand for base plate mounting and through-bolted joints |
+
+## Local Hardware Store Buy List
+
+| Item | Status | Why |
+|------|--------|-----|
+| M3 self-tapping or thread-forming screws for printed plastic | Buy on next hardware store trip | Useful where printed parts should mount quickly without through-bolting. |
+| 5-minute epoxy | Buy only if not already on hand | Best sprint adhesive for locking the servo horn to the selector chute after the M2 screw sets the pivot. |
 
 ## Spreadsheet Totals
 

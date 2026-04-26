@@ -66,7 +66,7 @@ Use the same general shape, but change the hardware path for the states sorter:
 
 Model only the parts needed for drilling, printing, and fit checks:
 
-- Side plates with shaft holes and idler adjustment slots
+- Side plates with external bearing-holder mounting holes and idler adjustment slots
 - Fixed and slotted bearing holders
 - Idler roller
 - Drive roller with a simple hub

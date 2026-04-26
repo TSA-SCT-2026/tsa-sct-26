@@ -37,7 +37,7 @@ Use this table instead of old coordinate-heavy CAD instructions.
 | Variable | Status | How to derive it |
 |----------|--------|------------------|
 | `belt_surface_z` | `OPEN_DECISION` | Measure from the final supported conveyor assembly after bin and chute entry requirements are known. |
-| `conveyor_support_height` | `OPEN_DECISION` | Derived from `belt_surface_z`, side plate geometry, and final handoff stack. |
+| `conveyor_support_height` | `OPEN_DECISION` | Derived from `belt_surface_z`, external bearing-holder geometry, side plate geometry, and final handoff stack. |
 | `motor_board_z` | `OPEN_DECISION` | Project from the final conveyor shaft and pulley path after support height is locked. |
 | `conveyor_foot_height` | `OPEN_DECISION` | Derived from the final supported conveyor, not from old cleat values. |
 | `servo_foot_height` | `OPEN_DECISION` | Derived from final servo pivot, bin arc catch height, and frame contact points after the bin and chute stack is modeled. |
