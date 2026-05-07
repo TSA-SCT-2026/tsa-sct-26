@@ -12,7 +12,7 @@ firmware/.vscode/
 .DS_Store
 **/.DS_Store
 
-# Temporarily gitignored CAD; final version will be published
+# Printable CAD working area
 cad/printing/**
 !cad/printing/**/
 !cad/printing/README.md
@@ -41,13 +41,13 @@ cad/printing/**
 # Excel temp files
 ~$*
 
-# Logs (keep CSVs in docs/runs, not scattered elsewhere)
+# Logs
 *.log
 
 # Secrets / environment
 .env
 
-# Local developer notes and memory (not for repo)
+# Local instruction files
 CLAUDE.md
 AGENTS.md
 .claude/
@@ -55,5 +55,5 @@ AGENTS.md
 # Downloaded conveyor reference prototypes (binary, not authored)
 cad/frame/prototype*/
 
-# Archived / superseded CAD parts (kept for rollback, not for build)
+# Archived material
 **/_archive/

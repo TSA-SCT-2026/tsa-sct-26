@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSA SCT 2026 Brick Sorter Simulation</title>
+%%INLINE_CSS%%
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Brick Sorter Simulation</h1>
+      <p>Firmware-aligned conveyor, sensing station, servo chute, route guard, and timed confirmation model</p>
+    </div>
+    <div class="run-controls">
+      <button id="run-btn" class="primary">Run Full Set</button>
+      <button id="reset-btn">Reset</button>
+      <button id="csv-btn">CSV Log</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls-panel">
+      <h2>Inputs</h2>
+      <div id="controls"></div>
+      <div class="harness">
+        <div class="harness-row">
+          <input id="harness-input" value="status" aria-label="Harness command">
+          <button id="harness-send">Send</button>
+        </div>
+        <pre id="harness-output"></pre>
+      </div>
+    </section>
+
+    <section class="main-panel">
+      <canvas id="sim-canvas" width="980" height="420"></canvas>
+      <div class="metrics-grid" id="metrics"></div>
+      <section class="table-panel">
+        <h2>Brick Log</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Category</th>
+                <th>Detected</th>
+                <th>Length</th>
+                <th>Speed</th>
+                <th>Color</th>
+                <th>Bin</th>
+                <th>Route</th>
+                <th>Confirm</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="brick-log"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+%%INLINE_JS%%
+</body>
+</html>

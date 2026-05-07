@@ -1,48 +1,31 @@
-# Electrical System Documentation
+# Electrical
 
-Status date: April 11, 2026
+Use a fused 3S LiPo input. Share ground across the ESP32, stepper driver, servo power, buck converter, sensors, and display.
 
-## Power Architecture
+## Power
 
-- Main supply: LiPo pack for all meaningful runs
-- Logic rail: regulated 3.3V for ESP32 and sensors
-- Servo rail: voltage and current appropriate for the MG995/MG996-class chute servo
-- Motor rail: conveyor stepper driver motor supply
-- Common ground across logic, servo, and motor rails
+- 3S LiPo: main input through inline fuse.
+- 12V motor rail: NEMA17 stepper driver motor input.
+- 5V buck output: servo, sensors, display as current allows.
+- 3.3V ESP32 rail: ESP32 logic only.
 
-## Non-Negotiable Protection
+Do not run sorting tests from a bench supply. Use the LiPo setup intended for the machine.
 
-- Bulk capacitor at the stepper driver motor power input
-- Shared ground return sized for conveyor and servo current
-- Strain relief at moving interfaces
-- Flyback diode on any coil used in experimental or accessory wiring
+## Required Protection
 
-## Motion Drivers
+- Inline fuse on LiPo input
+- Bulk capacitor at the stepper driver motor input
+- Common ground between logic and motor control
+- Flyback diode on any coil load
+- Strain relief on LiPo, motor, and servo wiring
 
-- Conveyor feed axis: NEMA17 stepper with dedicated driver
-- Sorting mechanism: MG995/MG996-class servo rotary chute selector
-- Fan remains available for driver or electronics cooling
-- Do not wire a NEMA11 selector as part of the active states build
+## Pin Map
 
-## Sensor Wiring Notes
-
-- Size sensor family is two-pair break-beam timing in the sensing shroud
-- Wire break-beam pair A and pair B as the active size hardware
-- Distance or ToF sensing is archived for states unless the size sensor decision is explicitly reopened
-- Color sensor wiring must be kept away from motor and servo leads where possible
-- Keep the color shroud installed for all calibration and validation runs
-
-## Routing Constraints
-
-- Separate motor-current paths from signal paths where practical
-- Keep high-current loop areas small on motor and servo wiring
-- Add strain relief near the servo and any moving harness
-- Keep belt tension access and pulley guards serviceable if the chosen conveyor uses them
-
-## Pre-Power Checks
-
-- Verify no shorts between motor, servo, and logic rails
-- Verify connector pinout matches the current hardware map
-- Verify servo power polarity before plugging into the servo
-- Verify conveyor direction at low speed
-- Verify sensor values appear in serial output before a full run
+- Stepper STEP: set in firmware config.
+- Stepper DIR: set in firmware config.
+- Chute servo PWM: set in firmware config.
+- Break-beam A: set in firmware config.
+- Break-beam B: set in firmware config.
+- TCS3200 S0 to S3: set in firmware config.
+- TCS3200 OUT: set in firmware config.
+- Display SPI: set in firmware config.

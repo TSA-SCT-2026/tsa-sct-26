@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "scripts": {
+    "build": "bash build.sh",
+    "test": "node tests/simulator.test.js"
+  }
+}

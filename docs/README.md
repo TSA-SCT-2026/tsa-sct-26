@@ -1,35 +1,17 @@
-# Docs Index
+# Documentation
 
-This directory is organized by purpose.
+Start here:
 
-Read first:
-1. `docs/ARCHITECTURE.md`
-2. Subsystem docs (`cad/`, `firmware/`, `wiring/`) for the area you are touching
-3. `docs/project/GLOSSARY.md` for term definitions
+- [Architecture](ARCHITECTURE.md)
+- [Assembly](build/ASSEMBLY.md)
+- [Calibration](build/CALIBRATION.md)
+- [BOM](project/BOM.md)
+- [Datasheets](datasheet/README.md)
+- [Run log format](runs/README.md)
 
-## Build and validation docs
+Subsystem references:
 
-- `docs/build/ASSEMBLY.md`: full system assembly flow
-- `docs/build/CALIBRATION.md`: calibration procedures
-- `docs/build/CHECKLIST.md`: build and validation checklist
-- `docs/build/TEST_PROTOCOL.md`: pass/fail test protocol
-- `docs/project/OPTIMIZE_PLAN.md`: states optimization order after accuracy is proven
-
-## Project docs
-
-- `docs/project/BOM.md`: ordered items and remaining purchase gaps
-- `docs/project/BOM.xlsx`: purchase source of truth
-- `docs/project/CAD_PLAN.md`: active states CAD execution plan
-- `docs/project/COMPETITION_INFO.md`: TSA event references
-- `docs/project/GLOSSARY.md`: shared terminology
-- `docs/project/MEETINGS.md`: meeting notes and status updates
-- `docs/project/OPEN_DECISIONS.md`: unresolved design choices that should not leak into core architecture docs
-
-## Notebook and runs
-
-- `docs/notebook/README.md`: engineering notebook structure
-- `docs/runs/README.md`: run log format and expectations
-
-## Datasheets
-
-- `docs/datasheet/README.md`: datasheet storage rules and category map
+- [CAD](../cad/README.md)
+- [Firmware](../firmware/README.md)
+- [Wiring](../wiring/ELECTRICAL.md)
+- [Simulation](../simulation/README.md)
