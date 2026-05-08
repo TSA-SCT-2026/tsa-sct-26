@@ -25,7 +25,7 @@ enum ErrorCode : uint8_t {
 };
 
 struct BrickRecord {
-    uint8_t      number          = 0;
+    uint16_t     number          = 0;
     uint32_t     detectedMs      = 0;
     uint32_t     routeReadyMs    = 0;
     uint32_t     handoffMs       = 0;
@@ -40,7 +40,7 @@ struct BrickRecord {
 
 struct PipelineRecord {
     uint16_t id = 0;
-    uint8_t brickNumber = 0;
+    uint16_t brickNumber = 0;
     uint8_t targetBin = 0;
     uint16_t servoAngle = 0;
     uint32_t routeReadyMs = 0;
@@ -58,10 +58,10 @@ public:
     void process(const Event& e);
 
     SystemState currentState() const { return _state; }
-    uint8_t brickCount() const { return _brickCount; }
-    uint8_t issuedBrickCount() const { return _issuedBrickCount; }
+    uint16_t brickCount() const { return _brickCount; }
+    uint16_t issuedBrickCount() const { return _issuedBrickCount; }
     uint8_t inFlightCount() const { return _inFlightCount; }
-    uint8_t binCount(uint8_t bin) const;
+    uint16_t binCount(uint8_t bin) const;
     bool hasToken() const { return _token; }
     ErrorCode errorCode() const { return _errorCode; }
 
@@ -74,9 +74,9 @@ private:
     SystemState _state = S_IDLE;
     bool _token = true;
     BrickRecord _brick;
-    uint8_t _brickCount = 0;
-    uint8_t _issuedBrickCount = 0;
-    uint8_t _binCounts[4] = {0, 0, 0, 0};
+    uint16_t _brickCount = 0;
+    uint16_t _issuedBrickCount = 0;
+    uint16_t _binCounts[4] = {0, 0, 0, 0};
     uint32_t _runStartMs = 0;
     uint32_t _deadlineMs = 0;
     uint32_t _routeProtectedUntilMs = 0;

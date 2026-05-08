@@ -34,10 +34,10 @@ namespace actuators {
     const char* selectorPositionLabel(uint8_t binIdx);
 
     void displayReady();
-    void displaySorting(uint8_t brickNum, uint8_t total, uint8_t targetBin,
-                        const uint8_t binCounts[4]);
-    void displayComplete(uint32_t totalMs, const uint8_t binCounts[4]);
-    void displayError(uint8_t brickNum, uint8_t expectedBin, const char* errorCode);
+    void displaySorting(uint16_t brickNum, uint16_t total, uint8_t targetBin,
+                        const uint16_t binCounts[4]);
+    void displayComplete(uint32_t totalMs, const uint16_t binCounts[4]);
+    void displayError(uint16_t brickNum, uint8_t expectedBin, const char* errorCode);
     void buzzerError();
 
 }  // namespace actuators

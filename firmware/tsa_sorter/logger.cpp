@@ -28,7 +28,7 @@ void Logger::printHumanPrefix(const char* label) {
 }
 
 void Logger::printCsvRow(const char* eventName,
-                         uint8_t brickNum,
+                         uint16_t brickNum,
                          const char* stateName,
                          const char* category,
                          uint8_t targetBin,
@@ -69,7 +69,7 @@ void Logger::stateChange(const char* from, const char* to) {
     printCsvRow("state_change", 0, to, "", 0, 0, 0, 0, "", "", msg);
 }
 
-void Logger::classified(uint8_t brickNum, BrickCategory cat, uint8_t targetBin, uint8_t samples) {
+void Logger::classified(uint16_t brickNum, BrickCategory cat, uint8_t targetBin, uint8_t samples) {
     const char* category = sensors::categoryName(cat);
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("CLASSIFIED");
@@ -80,7 +80,7 @@ void Logger::classified(uint8_t brickNum, BrickCategory cat, uint8_t targetBin, 
     printCsvRow("classified", brickNum, "SENSING", category, targetBin, 0, 0, samples, "1", "", "");
 }
 
-void Logger::routeReady(uint8_t brickNum, uint8_t targetBin, uint16_t servoAngle, bool ok,
+void Logger::routeReady(uint16_t brickNum, uint8_t targetBin, uint16_t servoAngle, bool ok,
                         const char* positionLabel) {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("ROUTE_READY");
@@ -92,7 +92,7 @@ void Logger::routeReady(uint8_t brickNum, uint8_t targetBin, uint16_t servoAngle
                 ok ? "1" : "0", ok ? "" : "ROUTE_FAIL", positionLabel);
 }
 
-void Logger::handoffDone(uint8_t brickNum, uint8_t targetBin) {
+void Logger::handoffDone(uint16_t brickNum, uint8_t targetBin) {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("HANDOFF");
         Serial.printf("brick=%u target_bin=%u\n", brickNum, targetBin);
@@ -101,7 +101,7 @@ void Logger::handoffDone(uint8_t brickNum, uint8_t targetBin) {
     printCsvRow("handoff_done", brickNum, "CONFIRM", "", targetBin, 0, 0, 0, "1", "", "");
 }
 
-void Logger::binConfirm(uint8_t brickNum, uint8_t expectedBin, uint8_t actualBin,
+void Logger::binConfirm(uint16_t brickNum, uint8_t expectedBin, uint8_t actualBin,
                         uint32_t transitMs, bool ok) {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("BIN_CONFIRM");
@@ -125,7 +125,7 @@ void Logger::thermal() {
     printCsvRow("thermal", 0, "", "", 0, 0, 0, 0, "", "", gThermal.stateName());
 }
 
-void Logger::runComplete(uint32_t totalMs, const uint8_t counts[4], bool countsMatch) {
+void Logger::runComplete(uint32_t totalMs, const uint16_t counts[4], bool countsMatch) {
     if (_mode == LogMode::HUMAN) {
         Serial.println();
         Serial.println("=== RUN COMPLETE ================================================");
@@ -146,7 +146,7 @@ void Logger::runComplete(uint32_t totalMs, const uint8_t counts[4], bool countsM
                 countsMatch ? "1" : "0", countsMatch ? "" : "COUNT_MISMATCH", msg);
 }
 
-void Logger::errorHalt(uint8_t brickNum, uint8_t expectedBin, const char* reason) {
+void Logger::errorHalt(uint16_t brickNum, uint8_t expectedBin, const char* reason) {
     if (_mode == LogMode::HUMAN) {
         printHumanPrefix("ERROR_HALT");
         Serial.printf("brick=%u target_bin=%u reason=%s\n", brickNum, expectedBin, reason);
@@ -155,7 +155,7 @@ void Logger::errorHalt(uint8_t brickNum, uint8_t expectedBin, const char* reason
     printCsvRow("error_halt", brickNum, "ERROR_HALT", "", expectedBin, 0, 0, 0, "0", reason, "");
 }
 
-void Logger::senseVerbose(uint8_t brickNum, const SenseResult& s) {
+void Logger::senseVerbose(uint16_t brickNum, const SenseResult& s) {
     float colorThresh = sensors::activeColorThreshold();
     float sizeThresh  = sensors::activeSizeThresholdMm();
     Serial.printf("[sense] brick=%u  result=%s\n",

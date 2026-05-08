@@ -89,7 +89,7 @@ void StateMachine::process(const Event& e) {
     }
 }
 
-uint8_t StateMachine::binCount(uint8_t bin) const {
+uint16_t StateMachine::binCount(uint8_t bin) const {
     if (bin < 1 || bin > 4) return 0;
     return _binCounts[bin - 1];
 }
@@ -487,7 +487,7 @@ uint8_t StateMachine::remainingForBin(uint8_t bin) const {
         case 4: expected = EXPECTED_BIN4; break;
         default: return 0;
     }
-    uint8_t actual = _binCounts[bin - 1];
+    uint16_t actual = _binCounts[bin - 1];
     return actual >= expected ? 0 : (uint8_t)(expected - actual);
 }
 

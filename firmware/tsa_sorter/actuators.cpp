@@ -327,22 +327,22 @@ void displayReady() {
     gLogger.info("state: READY");
 }
 
-void displaySorting(uint8_t brickNum, uint8_t total, uint8_t targetBin,
-                    const uint8_t binCounts[4]) {
+void displaySorting(uint16_t brickNum, uint16_t total, uint8_t targetBin,
+                    const uint16_t binCounts[4]) {
     (void)binCounts;
     char buf[64];
     snprintf(buf, sizeof(buf), "state: SORTING brick=%u/%u bin=%u", brickNum, total, targetBin);
     gLogger.info(buf);
 }
 
-void displayComplete(uint32_t totalMs, const uint8_t binCounts[4]) {
+void displayComplete(uint32_t totalMs, const uint16_t binCounts[4]) {
     (void)binCounts;
     char buf[64];
     snprintf(buf, sizeof(buf), "state: COMPLETE time_ms=%lu", totalMs);
     gLogger.info(buf);
 }
 
-void displayError(uint8_t brickNum, uint8_t expectedBin, const char* errorCode) {
+void displayError(uint16_t brickNum, uint8_t expectedBin, const char* errorCode) {
     char buf[64];
     snprintf(buf, sizeof(buf), "state: ERROR brick=%u bin=%u code=%s", brickNum, expectedBin, errorCode);
     gLogger.info(buf);
