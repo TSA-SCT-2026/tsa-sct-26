@@ -48,7 +48,7 @@ export const FULL_RUN_SEQUENCE = [
 export const DEFAULTS = {
   totalBricks: 24,
   entrySpacingMs: 520,
-  beltSpeedMms: 230,
+  beltSpeedMms: 268,
   speedMode: 'balanced',
   sequence: 'firmware_fullrun',
   colorThreshold: 0.49,
