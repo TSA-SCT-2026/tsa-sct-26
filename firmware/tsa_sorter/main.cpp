@@ -38,6 +38,7 @@ void setup() {
 
 void loop() {
     gThermal.update();
+    actuators::poll();
     gStateMachine.poll();
     sensors::pollInputs();
 

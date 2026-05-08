@@ -10,6 +10,7 @@ namespace actuators {
     };
 
     void begin();
+    void poll();
 
     void startConveyorFeed();
     void stopConveyorFeed();
@@ -26,6 +27,7 @@ namespace actuators {
 
     bool homeSelector();
     bool routeServoToBin(uint8_t binIdx);
+    void stopSelectorJiggle();
     void stopSelector();
     void unloadPosition();
     void readySelector();

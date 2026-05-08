@@ -115,6 +115,7 @@ void StateMachine::onFeed(const Event& e) {
         gLogger.info(buf);
     }
     _lastDetectMs = _brick.detectedMs;
+    actuators::stopSelectorJiggle();
     transition(S_SENSING);
     actuators::setConveyorSlow();
     pushEventSensingDone(sensors::senseBrickAtStation());

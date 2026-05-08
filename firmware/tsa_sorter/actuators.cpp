@@ -34,6 +34,10 @@ static void writeStepPwm(uint32_t duty) {
 
 // Servo state.
 static Servo gServo;
+static bool gSelectorJiggleActive = false;
+static bool gSelectorJigglePositive = true;
+static uint16_t gSelectorJiggleTarget = SELECTOR_UNLOAD_ANGLE_DEG;
+static uint32_t gSelectorJiggleNextMs = 0;
 static bool gFirstConveyorStart = true;
 static ConveyorSpeedMode gConveyorMode = ConveyorSpeedMode::BALANCED;
 static uint32_t gConveyorFastSps = CONVEYOR_BALANCED_FAST_SPS;
@@ -63,20 +67,32 @@ static void applyConveyorSpeedMode(ConveyorSpeedMode mode) {
     }
 }
 
-static void jiggleSelectorAt(uint16_t targetAngle) {
+static void startSelectorJiggle(uint16_t targetAngle) {
 #if SELECTOR_JIGGLE_ENABLED
     const uint16_t amplitude = SELECTOR_JIGGLE_AMPLITUDE_DEG;
-    if (amplitude == 0 || SELECTOR_JIGGLE_PULSES == 0) return;
+    if (amplitude == 0) return;
 
-    for (uint8_t i = 0; i < SELECTOR_JIGGLE_PULSES; i++) {
-        int direction = (i % 2 == 0) ? 1 : -1;
-        gServo.write(clampServoAngle((int)targetAngle + direction * (int)amplitude));
-        delay(SELECTOR_JIGGLE_STEP_MS);
-    }
-    gServo.write(targetAngle);
-    delay(SELECTOR_JIGGLE_STEP_MS);
+    gSelectorJiggleTarget = targetAngle;
+    gSelectorJigglePositive = true;
+    gSelectorJiggleNextMs = millis();
+    gSelectorJiggleActive = true;
 #else
     (void)targetAngle;
+#endif
+}
+
+static void serviceSelectorJiggle() {
+#if SELECTOR_JIGGLE_ENABLED
+    if (!gSelectorJiggleActive) return;
+    uint32_t now = millis();
+    if ((int32_t)(now - gSelectorJiggleNextMs) < 0) return;
+
+    int direction = gSelectorJigglePositive ? 1 : -1;
+    gServo.write(clampServoAngle((int)gSelectorJiggleTarget +
+                                 direction * (int)SELECTOR_JIGGLE_AMPLITUDE_DEG));
+    gThermal.onServoMove();
+    gSelectorJigglePositive = !gSelectorJigglePositive;
+    gSelectorJiggleNextMs = now + SELECTOR_JIGGLE_STEP_MS;
 #endif
 }
 
@@ -148,6 +164,10 @@ void begin() {
              (unsigned long)gConveyorFastSps,
              (unsigned long)gConveyorSlowSps);
     gLogger.info(buf);
+}
+
+void poll() {
+    serviceSelectorJiggle();
 }
 
 // Conveyor.
@@ -268,6 +288,7 @@ void tuneConveyorProfile(uint8_t profile) {
 
 bool homeSelector() {
     ensureServoAttached();
+    stopSelectorJiggle();
     uint16_t angle = servoAngleForBin(SELECTOR_DEFAULT_BIN);
     gServo.write(angle);
     delay(SERVO_SETTLE_MS);
@@ -286,7 +307,7 @@ bool routeServoToBin(uint8_t binIdx) {
     uint16_t angle = servoAngleForBin(binIdx);
     gServo.write(angle);
     delay(SERVO_SETTLE_MS);
-    jiggleSelectorAt(angle);
+    startSelectorJiggle(angle);
     char buf[48];
     snprintf(buf, sizeof(buf), "servo: bin%u -> %u deg jiggle=%u", binIdx, angle,
              SELECTOR_JIGGLE_ENABLED ? 1 : 0);
@@ -294,12 +315,24 @@ bool routeServoToBin(uint8_t binIdx) {
     return true;
 }
 
+void stopSelectorJiggle() {
+#if SELECTOR_JIGGLE_ENABLED
+    if (!gSelectorJiggleActive) return;
+    gSelectorJiggleActive = false;
+    if (gServo.attached()) {
+        gServo.write(gSelectorJiggleTarget);
+    }
+#endif
+}
+
 void stopSelector() {
+    stopSelectorJiggle();
     // Servo holds position; nothing to stop.
 }
 
 void unloadPosition() {
     ensureServoAttached();
+    stopSelectorJiggle();
     gServo.write(SELECTOR_UNLOAD_ANGLE_DEG);
     delay(SERVO_SETTLE_MS);
     gLogger.info("servo: unload position (90 deg)");
@@ -307,6 +340,7 @@ void unloadPosition() {
 
 void readySelector() {
     ensureServoAttached();
+    stopSelectorJiggle();
     gServo.write(servoAngleForBin(SELECTOR_DEFAULT_BIN));
 }
 
