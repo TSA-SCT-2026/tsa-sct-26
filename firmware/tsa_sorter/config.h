@@ -45,11 +45,11 @@
 // aggressive: highest throughput profile intended to remain accurate
 // accuracy: conservative profile with maximum accuracy margin
 #define CONVEYOR_BALANCED_FAST_SPS     7000UL
-#define CONVEYOR_BALANCED_SLOW_SPS     3000UL
+#define CONVEYOR_BALANCED_SLOW_SPS     2100UL
 #define CONVEYOR_AGGRESSIVE_FAST_SPS   8500UL
-#define CONVEYOR_AGGRESSIVE_SLOW_SPS   3500UL
+#define CONVEYOR_AGGRESSIVE_SLOW_SPS   2100UL
 #define CONVEYOR_ACCURACY_FAST_SPS     5000UL
-#define CONVEYOR_ACCURACY_SLOW_SPS     2600UL
+#define CONVEYOR_ACCURACY_SLOW_SPS     1500UL
 // 0=balanced, 1=aggressive, 2=accuracy
 #define CONVEYOR_DEFAULT_MODE_ID       0
 #define CONVEYOR_FEED_SPS              CONVEYOR_BALANCED_FAST_SPS

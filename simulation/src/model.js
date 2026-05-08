@@ -77,9 +77,9 @@ export const DEFAULTS = {
 };
 
 export const SPEED_MODES = {
-  balanced: { fastSps: 7000, slowSps: 3000 },
-  aggressive: { fastSps: 8500, slowSps: 3500 },
-  accuracy: { fastSps: 5000, slowSps: 2600 },
+  balanced: { fastSps: 7000, slowSps: 2100 },
+  aggressive: { fastSps: 8500, slowSps: 2100 },
+  accuracy: { fastSps: 5000, slowSps: 1500 },
 };
 
 export const SERVO_ANGLES = {
