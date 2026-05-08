@@ -91,7 +91,7 @@
 // Moving-pass calibration: blue ~0.467, red ~0.512. Midpoint 0.489.
 #define COLOR_RED_THRESHOLD     0.490f
 #define COLOR_PASS_SAMPLE_INTERVAL_US   70000UL
-#define COLOR_PASS_MIN_SAMPLES          2
+#define COLOR_PASS_MIN_SAMPLES          3
 #define COLOR_BELT_MIN_NET_SUM_HZ       0.5f
 #define COLOR_BELT_MIN_NET_CLEAR_HZ     0.0f
 #define COLOR_MIN_REASONABLE_RATIO      0.05f

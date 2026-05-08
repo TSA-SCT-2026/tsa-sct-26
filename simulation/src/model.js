@@ -56,7 +56,7 @@ export const DEFAULTS = {
   beamSpacingMm: 40.436,
   beamBToServoMm: 50.0,
   colorSampleIntervalUs: 70000,
-  colorPassMinSamples: 2,
+  colorPassMinSamples: 3,
   beltSubtraction: true,
   colorNoisePct: 1.5,
   sizeNoisePct: 1.0,

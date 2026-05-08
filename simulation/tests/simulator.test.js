@@ -47,6 +47,7 @@ function countByCategory(sequence) {
   assert.ok(red.beam.bEnterMs > red.beam.aEnterMs);
   assert.ok(red.beam.bExitMs > red.beam.bEnterMs);
   assert.ok(red.beltSpeedAvgMms > 0);
+  assert.ok(red.sampleCount >= params.colorPassMinSamples);
 }
 
 {
