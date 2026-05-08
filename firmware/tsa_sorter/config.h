@@ -59,7 +59,7 @@
 #define CONVEYOR_REVERSE_DIR_LEVEL     LOW
 #define CONVEYOR_RETRY_REVERSE_SPS     2600UL
 #define CONVEYOR_RETRY_REVERSE_MS      450
-#define SENSING_RETRY_LIMIT            1
+#define SENSING_RETRY_LIMIT            0
 #define CONVEYOR_ACCEL_SPS             80
 #define CONVEYOR_HOLD_CURRENT          250
 
