@@ -83,10 +83,10 @@ export const SPEED_MODES = {
 };
 
 export const SERVO_ANGLES = {
-  1: 45,
-  2: 75,
-  3: 110,
-  4: 135,
+  1: 60,
+  2: 90,
+  3: 130,
+  4: 155,
 };
 
 export const EXPECTED_BINS = [6, 4, 8, 6];
