@@ -14,14 +14,28 @@ namespace actuators {
 static constexpr uint8_t  STEP_LEDC_CHANNEL  = 4;
 static constexpr uint8_t  STEP_LEDC_RES_BITS = 8;
 static constexpr uint32_t STEP_LEDC_DUTY_50  = 128;  // 50% duty at 8-bit
+static bool gStepPwmAttached = false;
+static uint32_t gStepPwmRateSps = 0;
 
 static void setupStepPwm(uint32_t stepRateSps) {
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
-    ledcAttach(PIN_CONVEYOR_STEP, stepRateSps, STEP_LEDC_RES_BITS);
+    if (!gStepPwmAttached) {
+        ledcAttach(PIN_CONVEYOR_STEP, stepRateSps, STEP_LEDC_RES_BITS);
+        gStepPwmAttached = true;
+    } else {
+        ledcChangeFrequency(PIN_CONVEYOR_STEP, stepRateSps, STEP_LEDC_RES_BITS);
+    }
 #else
-    ledcSetup(STEP_LEDC_CHANNEL, stepRateSps, STEP_LEDC_RES_BITS);
-    ledcAttachPin(PIN_CONVEYOR_STEP, STEP_LEDC_CHANNEL);
+    if (!gStepPwmAttached) {
+        ledcSetup(STEP_LEDC_CHANNEL, stepRateSps, STEP_LEDC_RES_BITS);
+        ledcAttachPin(PIN_CONVEYOR_STEP, STEP_LEDC_CHANNEL);
+        gStepPwmAttached = true;
+    } else if (ledcChangeFrequency(STEP_LEDC_CHANNEL, stepRateSps, STEP_LEDC_RES_BITS) == 0) {
+        ledcSetup(STEP_LEDC_CHANNEL, stepRateSps, STEP_LEDC_RES_BITS);
+        ledcAttachPin(PIN_CONVEYOR_STEP, STEP_LEDC_CHANNEL);
+    }
 #endif
+    gStepPwmRateSps = stepRateSps;
 }
 
 static void writeStepPwm(uint32_t duty) {
