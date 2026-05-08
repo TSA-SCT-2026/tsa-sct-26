@@ -127,11 +127,11 @@
 #define SELECTOR_JIGGLE_TIME_MS        (SELECTOR_JIGGLE_ENABLED ? ((SELECTOR_JIGGLE_PULSES + 1) * SELECTOR_JIGGLE_STEP_MS) : 0)
 #define SELECTOR_ROUTE_READY_MS        (SERVO_SETTLE_MS + SELECTOR_JIGGLE_TIME_MS)
 
-// Expected counts: BIN1=2x2_RED(6), BIN2=2x2_BLUE(6), BIN3=2x3_BLUE(8), BIN4=2x3_RED(4)
+// Expected counts: BIN1=2x2_RED(6), BIN2=2x3_RED(4), BIN3=2x3_BLUE(8), BIN4=2x2_BLUE(6)
 #define EXPECTED_BIN1           6
-#define EXPECTED_BIN2           6
+#define EXPECTED_BIN2           4
 #define EXPECTED_BIN3           8
-#define EXPECTED_BIN4           4
+#define EXPECTED_BIN4           6
 #define TOTAL_BRICKS           24
 
 // Thermal and power watch model

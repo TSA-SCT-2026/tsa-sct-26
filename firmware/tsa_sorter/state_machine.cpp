@@ -562,10 +562,10 @@ bool StateMachine::expectedCountsMatch() const {
 
 uint8_t StateMachine::binFor(BrickCategory cat) {
     switch (cat) {
-        case BrickCategory::CAT_2x2_RED:  return 1;  // outer, 37 deg
-        case BrickCategory::CAT_2x2_BLUE: return 2;  // inner, 72 deg
-        case BrickCategory::CAT_2x3_BLUE: return 3;  // inner, 107 deg (default)
-        case BrickCategory::CAT_2x3_RED:  return 4;  // outer, 142 deg
+        case BrickCategory::CAT_2x2_RED:  return 1;
+        case BrickCategory::CAT_2x2_BLUE: return 4;
+        case BrickCategory::CAT_2x3_BLUE: return 3;
+        case BrickCategory::CAT_2x3_RED:  return 2;
         default:                          return SELECTOR_DEFAULT_BIN;
     }
 }
@@ -573,9 +573,9 @@ uint8_t StateMachine::binFor(BrickCategory cat) {
 BrickCategory StateMachine::categoryForBin(uint8_t bin) {
     switch (bin) {
         case 1: return BrickCategory::CAT_2x2_RED;
-        case 2: return BrickCategory::CAT_2x2_BLUE;
+        case 2: return BrickCategory::CAT_2x3_RED;
         case 3: return BrickCategory::CAT_2x3_BLUE;
-        case 4: return BrickCategory::CAT_2x3_RED;
+        case 4: return BrickCategory::CAT_2x2_BLUE;
         default: return BrickCategory::UNCERTAIN;
     }
 }

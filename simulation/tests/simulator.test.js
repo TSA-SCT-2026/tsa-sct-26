@@ -113,9 +113,9 @@ function countByCategory(sequence) {
 
 {
   assert.equal(CATEGORY_TO_BIN['2x2_RED'], 1);
-  assert.equal(CATEGORY_TO_BIN['2x2_BLUE'], 2);
+  assert.equal(CATEGORY_TO_BIN['2x2_BLUE'], 4);
   assert.equal(CATEGORY_TO_BIN['2x3_BLUE'], 3);
-  assert.equal(CATEGORY_TO_BIN['2x3_RED'], 4);
+  assert.equal(CATEGORY_TO_BIN['2x3_RED'], 2);
   assert.equal(sum(EXPECTED_BINS), DEFAULTS.totalBricks);
 }
 

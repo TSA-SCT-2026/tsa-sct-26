@@ -18,7 +18,7 @@ Bricks are fed studs up with the long side along the conveyor travel direction.
 - Two IR break-beam pairs for size sensing
 - TCS3200/GY-31 color sensor in a light-blocking shroud
 - MG995/MG996-class servo rotary chute selector
-- Four labeled bins: `2x2 RED`, `2x2 BLUE`, `2x3 BLUE`, `2x3 RED`
+- Four labeled bins: `2x2 RED`, `2x3 RED`, `2x3 BLUE`, `2x2 BLUE`
 - Wood frame with printed brackets
 - 3S LiPo power with fused input and 5V buck converter
 

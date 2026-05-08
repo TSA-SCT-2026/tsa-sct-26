@@ -2,20 +2,20 @@
 
 export const CATEGORIES = ['2x2_RED', '2x2_BLUE', '2x3_BLUE', '2x3_RED'];
 
-export const BIN_LABELS = ['2x2 RED', '2x2 BLUE', '2x3 BLUE', '2x3 RED'];
+export const BIN_LABELS = ['2x2 RED', '2x3 RED', '2x3 BLUE', '2x2 BLUE'];
 
 export const CATEGORY_TO_BIN = {
   '2x2_RED': 1,
-  '2x2_BLUE': 2,
+  '2x2_BLUE': 4,
   '2x3_BLUE': 3,
-  '2x3_RED': 4,
+  '2x3_RED': 2,
 };
 
 export const BIN_TO_CATEGORY = {
   1: '2x2_RED',
-  2: '2x2_BLUE',
+  2: '2x3_RED',
   3: '2x3_BLUE',
-  4: '2x3_RED',
+  4: '2x2_BLUE',
 };
 
 export const FULL_RUN_SEQUENCE = [
@@ -89,7 +89,7 @@ export const SERVO_ANGLES = {
   4: 135,
 };
 
-export const EXPECTED_BINS = [6, 6, 8, 4];
+export const EXPECTED_BINS = [6, 4, 8, 6];
 
 const LENGTH_MM = {
   '2x2_RED': 16.0,

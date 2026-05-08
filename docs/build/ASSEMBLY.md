@@ -26,7 +26,7 @@ Build from the conveyor outward. Keep the full machine inside a 610mm x 610mm fo
 ## 4. Bins And Labels
 
 1. Place four bins under the chute sweep.
-2. Add front labels: `2x2 RED`, `2x2 BLUE`, `2x3 BLUE`, `2x3 RED`.
+2. Add front labels in bin order: `2x2 RED`, `2x3 RED`, `2x3 BLUE`, `2x2 BLUE`.
 3. Add a feed orientation cue at the conveyor entrance.
 4. Add a clear start button label.
 

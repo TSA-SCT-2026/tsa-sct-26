@@ -38,9 +38,9 @@ Display states are `READY`, `SORTING`, `SORT COMPLETE`, and `ERROR`.
 ## Bin Map
 
 - Bin 1: `2x2 RED`
-- Bin 2: `2x2 BLUE`
+- Bin 2: `2x3 RED`
 - Bin 3: `2x3 BLUE`
-- Bin 4: `2x3 RED`
+- Bin 4: `2x2 BLUE`
 
 ## Design Notes
 
