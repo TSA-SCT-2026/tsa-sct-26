@@ -145,7 +145,9 @@ void begin() {
     ESP32PWM::allocateTimer(1);
     delay(SERVO_STARTUP_ATTACH_DELAY_MS);
     gServo.attach(PIN_SELECTOR_SERVO);
-    // No write here. Hold movement until first brick is routed.
+    gServo.write(SELECTOR_UNLOAD_ANGLE_DEG);
+    delay(SERVO_SETTLE_MS);
+    gLogger.info("servo: startup center (90 deg)");
 
     // Stepper
     pinMode(PIN_CONVEYOR_ENABLE, OUTPUT);
