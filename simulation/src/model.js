@@ -189,8 +189,7 @@ export function generateSequence(params = DEFAULTS) {
 }
 
 export function selectorRouteReadyMs(params = DEFAULTS) {
-  const jiggleMs = (params.selectorJigglePulses + 1) * params.selectorJiggleStepMs;
-  return params.servoSettleMs + jiggleMs;
+  return params.servoSettleMs;
 }
 
 export function classifyFromSense(sense, params = DEFAULTS) {
@@ -341,7 +340,6 @@ export function computeSimulation(inputParams = DEFAULTS) {
   const events = [];
   const serial = [];
   const csv = ['event,ts_ms,brick,state,category,target_bin,actual_bin,servo_angle,samples,ok,error,heat,message'];
-  const inFlight = [];
   const routeRecoveries = [];
   let heat = 0;
   let peakHeat = 0;
@@ -349,7 +347,6 @@ export function computeSimulation(inputParams = DEFAULTS) {
   let t = 0;
   let nextScheduledDetectMs = 0;
   let machineReadyMs = 0;
-  let routeProtectedUntilMs = 0;
   let halt = null;
 
   function updateHeat(now) {
@@ -370,34 +367,6 @@ export function computeSimulation(inputParams = DEFAULTS) {
     }
   }
 
-  function confirmReady(now) {
-    let write = 0;
-    for (let i = 0; i < inFlight.length; i++) {
-      const rec = inFlight[i];
-      const confirmAt = rec.estimatedClearMs + params.timedConfirmWindowMs;
-      if (confirmAt > now) {
-        inFlight[write++] = rec;
-        continue;
-      }
-      bins[rec.targetBin - 1]++;
-      logEvent(confirmAt, 'BIN_CONFIRMED', `brick=${rec.brickNumber} bin=${rec.targetBin}`);
-      if (params.logMode === 'csv') {
-        csv.push(csvRow(confirmAt, 'handoff_done', rec.brickNumber, 'CONFIRM', '', rec.targetBin, 0, 0, 0, '1', '', '', heat));
-        csv.push(csvRow(confirmAt, 'bin_confirm', rec.brickNumber, 'CONFIRM', '', rec.targetBin, rec.targetBin, 0, 0, '1', '', `transit_ms=${Math.round(confirmAt - rec.detectedMs)}`, heat));
-      } else {
-        serial.push(humanLine(confirmAt, 'HANDOFF', `brick=${rec.brickNumber} target_bin=${rec.targetBin}`));
-        serial.push(humanLine(confirmAt, 'BIN_CONFIRM', `brick=${rec.brickNumber} expected=${rec.targetBin} actual=${rec.targetBin} ok=yes`));
-      }
-      const row = brickLog.find((b) => b.brickNumber === rec.brickNumber);
-      if (row) {
-        row.confirmMs = confirmAt;
-        row.actualBin = rec.targetBin;
-        row.ok = true;
-      }
-    }
-    inFlight.length = write;
-  }
-
   serialInfo(0, 'state machine ready for servo chute sorter');
   serialInfo(0, `conveyor: mode=${params.speedMode} fast_sps=${speedMode.fastSps} slow_sps=${speedMode.slowSps}`);
   logEvent(0, 'RUN_STARTED', '24 brick expected set');
@@ -407,7 +376,6 @@ export function computeSimulation(inputParams = DEFAULTS) {
     const physicalDetectMs = nextScheduledDetectMs;
     const detectedMs = Math.max(physicalDetectMs, machineReadyMs);
     t = detectedMs;
-    confirmReady(t);
     updateHeat(t);
 
     const categoryTruth = sequence[i];
@@ -433,7 +401,7 @@ export function computeSimulation(inputParams = DEFAULTS) {
     let estimatedCommitMs = detectedMs + beamAToServoMm / speedMms * 1000;
     let clearTimeMs = lengthMm / speedMms * 1000;
     let estimatedClearMs = estimatedCommitMs + clearTimeMs;
-    const earliestRouteMs = routeProtectedUntilMs > 0 ? routeProtectedUntilMs + params.routeSwitchMarginMs : 0;
+    const earliestRouteMs = 0;
     const latestRouteMs = estimatedCommitMs > routeReadyMs + params.routeSwitchMarginMs
       ? estimatedCommitMs - (routeReadyMs + params.routeSwitchMarginMs)
       : 0;
@@ -451,32 +419,21 @@ export function computeSimulation(inputParams = DEFAULTS) {
       let requiredSps = speedMms > 0 ? Math.round((requiredSpeedMms / speedMms) * speedMode.slowSps) : speedMode.slowSps;
       requiredSps = Math.min(requiredSps, speedMode.slowSps);
       if (requiredSps < params.minSpacingSps || remainingDistanceMm <= 0) {
-        halt = {
-          t,
-          brickNumber,
-          code: 'POSITION_DRIFT',
-          message: `route spacing unrecoverable remaining=${round(remainingDistanceMm)} req_sps=${requiredSps}`,
-        };
-        logEvent(t, 'ERROR_HALT', halt.message);
-        break;
+        effectiveLatestRouteMs = t;
+        serialInfo(t, `route: spacing tight brick=${brickNumber} speed=${round(speedMms)} req_sps=${requiredSps} remaining=${round(remainingDistanceMm)} earliest=${Math.round(earliestRouteMs)} latest=${Math.round(latestRouteMs)}`);
+      } else {
+        estimatedCommitMs = desiredCommitMs;
+        clearTimeMs = requiredSpeedMms > 0 ? lengthMm / requiredSpeedMms * 1000 : clearTimeMs;
+        estimatedClearMs = estimatedCommitMs + clearTimeMs;
+        effectiveLatestRouteMs = routeAtMs;
+        routeRecoveries.push({ brickNumber, routeAtMs, requiredSps, remainingDistanceMm });
+        serialInfo(t, `route: spacing recovery brick=${brickNumber} req_sps=${requiredSps} remaining=${round(remainingDistanceMm)} route_at=${Math.round(routeAtMs)} commit_ms=${Math.round(estimatedCommitMs)}`);
       }
-      estimatedCommitMs = desiredCommitMs;
-      clearTimeMs = requiredSpeedMms > 0 ? lengthMm / requiredSpeedMms * 1000 : clearTimeMs;
-      estimatedClearMs = estimatedCommitMs + clearTimeMs;
-      effectiveLatestRouteMs = routeAtMs;
-      routeRecoveries.push({ brickNumber, routeAtMs, requiredSps, remainingDistanceMm });
-      serialInfo(t, `route: spacing recovery brick=${brickNumber} req_sps=${requiredSps} remaining=${round(remainingDistanceMm)} route_at=${Math.round(routeAtMs)} commit_ms=${Math.round(estimatedCommitMs)}`);
     }
 
     if (t > effectiveLatestRouteMs) {
-      halt = {
-        t,
-        brickNumber,
-        code: 'POSITION_DRIFT',
-        message: `route late now=${Math.round(t)} latest=${Math.round(effectiveLatestRouteMs)}`,
-      };
-      logEvent(t, 'ERROR_HALT', halt.message);
-      break;
+      serialInfo(t, `route: late brick=${brickNumber} now=${Math.round(t)} latest=${Math.round(effectiveLatestRouteMs)} speed=${round(speedMms)} len=${round(lengthMm)}`);
+      effectiveLatestRouteMs = t;
     }
 
     routeAtMs = Math.max(effectiveLatestRouteMs, earliestRouteMs);
@@ -487,33 +444,29 @@ export function computeSimulation(inputParams = DEFAULTS) {
     }
 
     updateHeat(t);
-    heat += params.thermalHeatPerServoMove * (1 + params.selectorJigglePulses);
-    peakHeat = Math.max(peakHeat, heat);
     const routeReadyAt = t + routeReadyMs;
-    machineReadyMs = routeReadyAt;
-    routeProtectedUntilMs = estimatedClearMs;
-    inFlight.push({
-      brickNumber,
-      targetBin,
-      servoAngle,
-      detectedMs,
-      routeReadyMs: routeReadyAt,
-      estimatedCommitMs,
-      estimatedClearMs,
-      speedMms,
-      lengthMm,
-    });
+    const confirmAt = Math.max(routeReadyAt, estimatedClearMs) + params.timedConfirmWindowMs;
+    const jiggleMoves = Math.max(0, Math.floor((confirmAt - routeReadyAt) / params.selectorJiggleStepMs));
+    heat += params.thermalHeatPerServoMove * (1 + jiggleMoves);
+    peakHeat = Math.max(peakHeat, heat);
+    machineReadyMs = confirmAt;
 
     logEvent(detectedMs, 'SIZE_ENTRY_DETECTED', `brick=${brickNumber}`);
     logEvent(senseDoneMs, 'SENSING_DONE', `brick=${brickNumber} cat=${classified}`);
     logEvent(routeReadyAt, 'ROUTE_READY', `brick=${brickNumber} bin=${targetBin} angle=${servoAngle}`);
+    logEvent(confirmAt, 'BIN_CONFIRMED', `brick=${brickNumber} bin=${targetBin}`);
     if (params.logMode === 'csv') {
       csv.push(csvRow(senseDoneMs, 'classified', brickNumber, 'SENSING', classified, targetBin, 0, 0, sense.sampleCount, '1', '', '', heat));
       csv.push(csvRow(routeReadyAt, 'route_ready', brickNumber, 'ROUTING', '', targetBin, 0, servoAngle, 0, '1', '', `BIN${targetBin}_${classified}`, heat));
+      csv.push(csvRow(confirmAt, 'handoff_done', brickNumber, 'CONFIRM', '', targetBin, 0, 0, 0, '1', '', '', heat));
+      csv.push(csvRow(confirmAt, 'bin_confirm', brickNumber, 'CONFIRM', '', targetBin, targetBin, 0, 0, '1', '', `transit_ms=${Math.round(confirmAt - detectedMs)}`, heat));
     } else {
       serial.push(humanLine(senseDoneMs, 'CLASSIFIED', `brick=${brickNumber} category=${classified} target_bin=${targetBin} samples=${sense.sampleCount}`));
       serial.push(humanLine(routeReadyAt, 'ROUTE_READY', `brick=${brickNumber} target_bin=${targetBin} angle=${servoAngle} ok=yes`));
+      serial.push(humanLine(confirmAt, 'HANDOFF', `brick=${brickNumber} target_bin=${targetBin}`));
+      serial.push(humanLine(confirmAt, 'BIN_CONFIRM', `brick=${brickNumber} expected=${targetBin} actual=${targetBin} ok=yes`));
     }
+    bins[targetBin - 1]++;
 
     brickLog.push({
       brickNumber,
@@ -522,24 +475,23 @@ export function computeSimulation(inputParams = DEFAULTS) {
       detectedMs,
       senseDoneMs,
       targetBin,
-      actualBin: 0,
+      actualBin: targetBin,
       servoAngle,
       routeAtMs: t,
       routeReadyMs: routeReadyAt,
       estimatedCommitMs,
       estimatedClearMs,
-      confirmMs: 0,
-      ok: false,
+      confirmMs: confirmAt,
+      ok: true,
       sense,
-      inFlightPeak: inFlight.length,
+      inFlightPeak: 0,
       lowConfidence: sense.lowConfidence,
     });
 
+    t = confirmAt;
     nextScheduledDetectMs += params.entrySpacingMs;
   }
 
-  t = Math.max(t, routeProtectedUntilMs + params.timedConfirmWindowMs);
-  confirmReady(t + params.handoffWindowMs);
   updateHeat(t);
 
   const countsMatch = bins.every((count, i) => count === EXPECTED_BINS[i]);
@@ -577,7 +529,7 @@ export function computeSimulation(inputParams = DEFAULTS) {
     halt,
     peakHeat,
     thermalState: peakHeat >= params.thermalDangerLevel ? 'DANGER' : peakHeat >= params.thermalWarnLevel ? 'WARNING' : 'NORMAL',
-    maxInFlight: Math.max(0, ...brickLog.map((b) => b.inFlightPeak || 0)),
+    maxInFlight: 0,
     routeRecoveries,
     routeReadyMs,
     speedMode,

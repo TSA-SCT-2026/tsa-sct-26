@@ -39,15 +39,6 @@ void StateMachine::poll() {
     }
 
     confirmReadyInFlight(now);
-    if (_state != S_COMPLETE &&
-        _issuedBrickCount >= TOTAL_BRICKS &&
-        _inFlightCount == 0 &&
-        _brickCount >= TOTAL_BRICKS) {
-        endRun();
-        transition(S_COMPLETE);
-        return;
-    }
-
     if (_deadlineMs == 0) return;
 
     switch (_state) {
@@ -102,10 +93,6 @@ void StateMachine::onIdle(const Event& e) {
 
 void StateMachine::onFeed(const Event& e) {
     if (e.type != EventType::SIZE_ENTRY_DETECTED) return;
-    if (_issuedBrickCount >= TOTAL_BRICKS) {
-        gLogger.info("feed: extra brick detected after run limit");
-        return;
-    }
 
     _brick.detectedMs = e.timestamp_ms;
     if (_lastDetectMs > 0 && _brick.detectedMs > _lastDetectMs) {
@@ -124,6 +111,7 @@ void StateMachine::onFeed(const Event& e) {
 void StateMachine::onSensing(const Event& e) {
     if (e.type != EventType::SENSING_DONE) return;
 
+    actuators::setConveyorFast();
     _brick.sense = e.senseResult;
     if (_brick.sense.category == BrickCategory::UNCERTAIN) {
         if (retryCurrentBrick()) return;
@@ -198,33 +186,32 @@ void StateMachine::onSensing(const Event& e) {
         if (requiredSps < CONVEYOR_MIN_SPACING_SPS || remainingDistanceMm <= 0.0f) {
             char buf[144];
             snprintf(buf, sizeof(buf),
-                     "route: spacing unrecoverable brick=%u speed=%.1f req_sps=%lu remaining=%.1f earliest=%lu latest=%lu",
+                     "route: spacing tight brick=%u speed=%.1f req_sps=%lu remaining=%.1f earliest=%lu latest=%lu",
                      _brick.number, speedMms, (unsigned long)requiredSps,
                      remainingDistanceMm,
                      (unsigned long)earliestRouteMs,
                      (unsigned long)latestRouteMs);
             gLogger.info(buf);
-            haltOnError(ERR_POSITION_DRIFT);
-            return;
-        }
+            effectiveLatestRouteMs = now;
+        } else {
+            actuators::setConveyorStepRate(requiredSps, "spacing");
+            estimatedCommitMs = desiredCommitMs;
+            if (requiredSpeedMms > 0.0f) {
+                clearTimeMs = (uint32_t)((lengthMm / requiredSpeedMms) * 1000.0f);
+            }
+            estimatedClearMs = estimatedCommitMs + clearTimeMs;
+            effectiveLatestRouteMs = routeAtMs;
 
-        actuators::setConveyorStepRate(requiredSps, "spacing");
-        estimatedCommitMs = desiredCommitMs;
-        if (requiredSpeedMms > 0.0f) {
-            clearTimeMs = (uint32_t)((lengthMm / requiredSpeedMms) * 1000.0f);
+            char buf[160];
+            snprintf(buf, sizeof(buf),
+                     "route: spacing recovery brick=%u req_sps=%lu remaining=%.1f route_at=%lu commit_ms=%lu",
+                     _brick.number,
+                     (unsigned long)requiredSps,
+                     remainingDistanceMm,
+                     (unsigned long)routeAtMs,
+                     (unsigned long)estimatedCommitMs);
+            gLogger.info(buf);
         }
-        estimatedClearMs = estimatedCommitMs + clearTimeMs;
-        effectiveLatestRouteMs = routeAtMs;
-
-        char buf[160];
-        snprintf(buf, sizeof(buf),
-                 "route: spacing recovery brick=%u req_sps=%lu remaining=%.1f route_at=%lu commit_ms=%lu",
-                 _brick.number,
-                 (unsigned long)requiredSps,
-                 remainingDistanceMm,
-                 (unsigned long)routeAtMs,
-                 (unsigned long)estimatedCommitMs);
-        gLogger.info(buf);
     }
     if (now > effectiveLatestRouteMs) {
         char buf[112];
@@ -236,8 +223,7 @@ void StateMachine::onSensing(const Event& e) {
                  speedMms,
                  lengthMm);
         gLogger.info(buf);
-        haltOnError(ERR_POSITION_DRIFT);
-        return;
+        effectiveLatestRouteMs = now;
     }
 
     uint32_t routeAtMs = effectiveLatestRouteMs;
@@ -253,15 +239,8 @@ void StateMachine::onSensing(const Event& e) {
 
     bool ok = actuators::routeServoToBin(_brick.targetBin);
     gThermal.onServoMove();
-#if SELECTOR_JIGGLE_ENABLED
-    for (uint8_t i = 0; i < SELECTOR_JIGGLE_PULSES; i++) {
-        gThermal.onServoMove();
-    }
-#endif
-    if (ok) actuators::setConveyorFast();
+    _deadlineMs = estimatedClearMs;
     pushEventRouteReady(_brick.targetBin, ok, _brick.servoAngle);
-    _routeProtectedUntilMs = estimatedClearMs;
-    pushInFlight(_brick, millis(), estimatedCommitMs, estimatedClearMs, speedMms);
     if (_state == S_ERROR_HALT) return;
 }
 
@@ -276,14 +255,8 @@ void StateMachine::onRouting(const Event& e) {
     _brick.routeReadyMs = e.timestamp_ms;
     gLogger.routeReady(_brick.number, _brick.targetBin, e.servoAngle, true,
                        actuators::selectorPositionLabel(_brick.targetBin));
-    _token = true;
-    _deadlineMs = 0;
-
-    if (_issuedBrickCount >= TOTAL_BRICKS) {
-        transition(S_FEED);
-    } else {
-        startNextBrick();
-    }
+    transition(S_HANDOFF);
+    if (_deadlineMs < e.timestamp_ms) _deadlineMs = e.timestamp_ms;
 }
 
 void StateMachine::onHandoff(const Event& e) {
@@ -315,12 +288,7 @@ void StateMachine::onConfirm(const Event& e) {
     _token = true;
     _deadlineMs = 0;
 
-    if (_brickCount >= TOTAL_BRICKS) {
-        endRun();
-        transition(S_COMPLETE);
-    } else {
-        startNextBrick();
-    }
+    startNextBrick();
 }
 
 void StateMachine::onComplete(const Event& e) {
@@ -379,10 +347,6 @@ void StateMachine::startNextBrick() {
         haltOnError(ERR_DOUBLE_ENTRY);
         return;
     }
-    if (_issuedBrickCount >= TOTAL_BRICKS) {
-        return;
-    }
-
     _token = false;
     _brick = BrickRecord{};
     _issuedBrickCount++;

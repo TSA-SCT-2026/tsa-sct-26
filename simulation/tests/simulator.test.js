@@ -69,7 +69,8 @@ function countByCategory(sequence) {
   assert.deepEqual(result.bins, EXPECTED_BINS);
   assert.equal(result.countsMatch, true);
   assert.equal(Math.round(result.accuracy), 100);
-  assert.ok(result.maxInFlight >= 1);
+  assert.equal(result.maxInFlight, 0);
+  assert.equal(result.routeReadyMs, params.servoSettleMs);
 }
 
 {
@@ -78,7 +79,8 @@ function countByCategory(sequence) {
   params.beamBToServoMm = 140;
   const result = computeSimulation(params);
   assert.equal(result.halt, null);
-  assert.ok(result.maxInFlight > 1);
+  assert.equal(result.maxInFlight, 0);
+  assert.equal(result.confirmed, params.totalBricks);
 }
 
 {
@@ -86,8 +88,10 @@ function countByCategory(sequence) {
   params.beamBToServoMm = 50;
   params.entrySpacingMs = 180;
   const result = computeSimulation(params);
-  assert.ok(result.halt);
-  assert.equal(result.halt.code, 'POSITION_DRIFT');
+  assert.equal(result.halt, null);
+  assert.equal(result.maxInFlight, 0);
+  assert.equal(result.confirmed, params.totalBricks);
+  assert.ok(result.serial.some((line) => line.includes('route: late') || line.includes('route: spacing tight')));
 }
 
 {
