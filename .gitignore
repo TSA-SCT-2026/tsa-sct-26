@@ -12,13 +12,6 @@ firmware/.vscode/
 .DS_Store
 **/.DS_Store
 
-# Printable CAD working area
-cad/printing/**
-!cad/printing/**/
-!cad/printing/README.md
-!cad/printing/**/.gitkeep
-!cad/printing/**/*.md
-
 # CAD swap files and autosave
 *.~lock.*
 *.bak
@@ -51,9 +44,6 @@ cad/printing/**
 CLAUDE.md
 AGENTS.md
 .claude/
-
-# Downloaded conveyor reference prototypes (binary, not authored)
-cad/frame/prototype*/
 
 # Archived material
 **/_archive/
