@@ -16,11 +16,9 @@ void StateMachine::begin() {
     _issuedBrickCount = 0;
     _routeProtectedUntilMs = 0;
     _lastDetectMs = 0;
-    _nextPipelineId = 1;
     gEventQueue.clearOverflow();
     sensors::resetPassCapture();
     memset(_binCounts, 0, sizeof(_binCounts));
-    clearInFlight();
     _deadlineMs = 0;
     actuators::displayReady();
     gLogger.info("state machine ready for servo chute sorter");
@@ -38,7 +36,6 @@ void StateMachine::poll() {
         return;
     }
 
-    confirmReadyInFlight(now);
     if (_deadlineMs == 0) return;
 
     switch (_state) {
@@ -298,7 +295,6 @@ void StateMachine::onComplete(const Event& e) {
     _routeProtectedUntilMs = 0;
     _lastDetectMs = 0;
     gEventQueue.clearOverflow();
-    clearInFlight();
     memset(_binCounts, 0, sizeof(_binCounts));
     _token = true;
     transition(S_IDLE);
@@ -312,7 +308,6 @@ void StateMachine::onErrorHalt(const Event& e) {
     _routeProtectedUntilMs = 0;
     _lastDetectMs = 0;
     gEventQueue.clearOverflow();
-    clearInFlight();
     memset(_binCounts, 0, sizeof(_binCounts));
     _token = true;
     _deadlineMs = 0;
@@ -325,11 +320,9 @@ void StateMachine::startRun() {
     _issuedBrickCount = 0;
     _routeProtectedUntilMs = 0;
     _lastDetectMs = 0;
-    _nextPipelineId = 1;
     gEventQueue.clearOverflow();
     sensors::resetPassCapture();
     memset(_binCounts, 0, sizeof(_binCounts));
-    clearInFlight();
     _runStartMs = millis();
     _token = true;
     gLogger.info("run started");
@@ -357,73 +350,6 @@ void StateMachine::startNextBrick() {
     actuators::startConveyorFeed();
     _deadlineMs = millis() + FEED_TIMEOUT_MS;
     transition(S_FEED);
-}
-
-void StateMachine::pushInFlight(const BrickRecord& brick,
-                                uint32_t routeReadyMs,
-                                uint32_t estimatedCommitMs,
-                                uint32_t estimatedClearMs,
-                                float speedMms) {
-    uint32_t startMs = millis();
-    while (_inFlightCount >= MAX_IN_FLIGHT) {
-        confirmReadyInFlight(millis());
-        if (_inFlightCount < MAX_IN_FLIGHT) break;
-        if (millis() - startMs > HANDOFF_WINDOW_MS) break;
-        delay(1);
-    }
-    if (_inFlightCount >= MAX_IN_FLIGHT) {
-        haltOnError(ERR_POSITION_DRIFT);
-        return;
-    }
-
-    PipelineRecord rec;
-    rec.id = _nextPipelineId++;
-    rec.brickNumber = brick.number;
-    rec.targetBin = brick.targetBin;
-    rec.servoAngle = brick.servoAngle;
-    rec.routeReadyMs = routeReadyMs;
-    rec.detectedMs = brick.detectedMs;
-    rec.estimatedCommitMs = estimatedCommitMs;
-    rec.estimatedClearMs = estimatedClearMs;
-    rec.speedMms = speedMms;
-    rec.lengthMm = brick.sense.measuredLengthAvgMm > 0.0f
-                     ? brick.sense.measuredLengthAvgMm
-                     : (brick.sense.isTwoByThree ? ROUTE_FALLBACK_2X3_LENGTH_MM
-                                                 : ROUTE_FALLBACK_2X2_LENGTH_MM);
-    _inFlight[_inFlightCount++] = rec;
-
-    char buf[128];
-    snprintf(buf, sizeof(buf),
-             "pipeline: queued id=%u brick=%u bin=%u commit_ms=%lu clear_ms=%lu in_flight=%u",
-             rec.id, rec.brickNumber, rec.targetBin,
-             (unsigned long)rec.estimatedCommitMs,
-             (unsigned long)rec.estimatedClearMs,
-             _inFlightCount);
-    gLogger.info(buf);
-}
-
-void StateMachine::confirmReadyInFlight(uint32_t nowMs) {
-    uint8_t writeIdx = 0;
-    for (uint8_t i = 0; i < _inFlightCount; i++) {
-        PipelineRecord rec = _inFlight[i];
-        uint32_t confirmAtMs = rec.estimatedClearMs + TIMED_CONFIRM_WINDOW_MS;
-        if (nowMs < confirmAtMs) {
-            _inFlight[writeIdx++] = rec;
-            continue;
-        }
-
-        uint32_t transitMs = nowMs - rec.detectedMs;
-        gLogger.handoffDone(rec.brickNumber, rec.targetBin);
-        gLogger.binConfirm(rec.brickNumber, rec.targetBin, rec.targetBin, transitMs, true);
-        _binCounts[rec.targetBin - 1]++;
-        _brickCount++;
-    }
-    _inFlightCount = writeIdx;
-}
-
-void StateMachine::clearInFlight() {
-    memset(_inFlight, 0, sizeof(_inFlight));
-    _inFlightCount = 0;
 }
 
 bool StateMachine::retryCurrentBrick() {
@@ -509,7 +435,6 @@ uint8_t StateMachine::chooseBestGuessBin(const SenseResult& sense) const {
 void StateMachine::haltOnError(ErrorCode code) {
     _errorCode = code;
     _deadlineMs = 0;
-    clearInFlight();
     actuators::stopConveyorFeed();
     actuators::stopSelector();
     actuators::displayError(_brick.number, _brick.targetBin, errorName(code));

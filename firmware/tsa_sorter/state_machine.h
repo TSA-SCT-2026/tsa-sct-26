@@ -38,19 +38,6 @@ struct BrickRecord {
     bool         confirmed       = false;
 };
 
-struct PipelineRecord {
-    uint16_t id = 0;
-    uint16_t brickNumber = 0;
-    uint8_t targetBin = 0;
-    uint16_t servoAngle = 0;
-    uint32_t routeReadyMs = 0;
-    uint32_t detectedMs = 0;
-    uint32_t estimatedCommitMs = 0;
-    uint32_t estimatedClearMs = 0;
-    float speedMms = 0.0f;
-    float lengthMm = 0.0f;
-};
-
 class StateMachine {
 public:
     void begin();
@@ -60,7 +47,9 @@ public:
     SystemState currentState() const { return _state; }
     uint16_t brickCount() const { return _brickCount; }
     uint16_t issuedBrickCount() const { return _issuedBrickCount; }
-    uint8_t inFlightCount() const { return _inFlightCount; }
+    // Retained for serial-status compatibility. The sequential controller
+    // never queues a second brick, so the legacy in_flight field is always 0.
+    uint8_t inFlightCount() const { return 0; }
     uint16_t binCount(uint8_t bin) const;
     bool hasToken() const { return _token; }
     ErrorCode errorCode() const { return _errorCode; }
@@ -69,8 +58,6 @@ public:
     const char* errorName(ErrorCode code) const;
 
 private:
-    static constexpr uint8_t MAX_IN_FLIGHT = 8;
-
     SystemState _state = S_IDLE;
     bool _token = true;
     BrickRecord _brick;
@@ -81,22 +68,12 @@ private:
     uint32_t _deadlineMs = 0;
     uint32_t _routeProtectedUntilMs = 0;
     uint32_t _lastDetectMs = 0;
-    uint16_t _nextPipelineId = 1;
-    PipelineRecord _inFlight[MAX_IN_FLIGHT];
-    uint8_t _inFlightCount = 0;
     ErrorCode _errorCode = ERR_FEED_TIMEOUT;
 
     void transition(SystemState next);
     void startRun();
     void endRun();
     void startNextBrick();
-    void pushInFlight(const BrickRecord& brick,
-                      uint32_t routeReadyMs,
-                      uint32_t estimatedCommitMs,
-                      uint32_t estimatedClearMs,
-                      float speedMms);
-    void confirmReadyInFlight(uint32_t nowMs);
-    void clearInFlight();
     void haltOnError(ErrorCode code);
     bool retryCurrentBrick();
     uint8_t chooseBestGuessBin(const SenseResult& sense) const;
