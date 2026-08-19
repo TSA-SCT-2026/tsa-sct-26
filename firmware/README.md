@@ -1,30 +1,47 @@
 # Firmware
 
-ESP32 firmware for the LEGO brick sorter.
+PlatformIO firmware for the ESP32-controlled LEGO brick sorter.
 
-## Build And Flash
+## Build
 
 ```sh
-cd firmware
 pio run
-pio run -t upload
-pio device monitor
+pio run -e servo_tuning
 ```
 
-The main firmware lives in `tsa_sorter/`.
+The default `esp32dev` environment builds `tsa_sorter/`. The
+`servo_tuning` environment builds `tools/servo_tuning/main.cpp`.
 
-## Commands
+## Flash and monitor
 
-Use the serial monitor for:
+```sh
+pio run -t upload
+pio device monitor -b 115200
+```
 
-- servo angle tuning
-- break-beam size logging
-- color sensor sampling
-- full 24-brick run logging
+The serial harness supports component checks, human-readable or CSV logging,
+operator-assisted calibration, speed-profile selection, and simulated events.
+Run `help` in the monitor for the current command list.
 
-Capture calibration runs as CSV with `tools/capture_serial_log.sh`.
+Common calibration commands:
+
+```text
+cal show
+cal belt 8
+set color <ratio>
+set size <millimeters>
+cal save
+```
+
+`cal belt` captures a belt baseline. The operator must still choose the color
+and size thresholds from physical-run evidence; the firmware does not derive
+them automatically.
+
+Use `tools/capture_serial_log.sh` to retain calibration or acceptance evidence.
+See [BUILD.md](../BUILD.md) for the full procedure.
 
 ## Structure
 
-- `tsa_sorter/`: sorter firmware.
-- `tools/`: serial logging helpers.
+- `tsa_sorter/`: production controller, sensing, routing, logging, and harness.
+- `tools/servo_tuning/`: independent servo-position utility.
+- `tools/capture_serial_log.sh`: serial log capture helper.
