@@ -23,6 +23,23 @@ machine before applying power.
 4. Confirm both beam transitions and all three color-filter readings over
    serial before continuing.
 
+### Component fit checks
+
+The following are manual measurements from the preserved April 2026 build
+notes. They are fit-check evidence, not precision metrology:
+
+| Component | Manual measurement | Build implication |
+| --- | --- | --- |
+| NEMA17 | 38.1 mm body; 20.54 mm observed shaft stickout; 5 mm D-shaft class | Verify the actual motor before cutting the mount: the retained supplier drawing shows a 23.5 +/- 0.5 mm shaft envelope, so the archived sources disagree. |
+| TCS3200/GY-31 module | 33.34 x 33.34 mm board; 25.4 mm overall height including pins and LEDs | Leave shroud roof and underside pin clearance; do not dimension from the bare sensor package. |
+| IR break-beam bodies | 19.05 mm long and 9.53 mm thick in the manual note | Check both sides of the shroud for body and cable clearance after setting the measured beam spacing. |
+| TMC2209 carrier | 20.64 x 14.29 mm board; 23.81 mm overall height with pins and heatsink | Reserve vertical cooling and connector clearance around the driver carrier. |
+
+The original NEMA17 supplier schematic, color-sensor module manual, and related
+reference files are indexed in [docs/datasheet/README.md](docs/datasheet/README.md).
+The manual document also measured NEMA11 and solenoid parts from abandoned
+architectures; those dimensions are intentionally not carried into this guide.
+
 ### 3. Chute and bins
 
 1. Rigidly mount the MG995/MG996-class servo at the belt exit.
@@ -160,6 +177,11 @@ Run the configured set of 24 bricks in the documented orientation and retain:
 
 Do not label the run `24/24`, publish an accuracy percentage, or publish a
 throughput number until those artifacts have been reviewed together.
+
+For still photography, capture the full machine, a mid-build conveyor/frame
+view, the sensing station, the final wiring, and at least one CAD-to-physical
+comparison. These photos demonstrate construction and integration; they do not
+substitute for the uninterrupted run and matching log.
 
 ## Remaining verification
 

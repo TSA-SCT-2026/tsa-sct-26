@@ -1,27 +1,27 @@
-part,quantity,purpose,model_or_supplier,source_url,notes
-ESP32 development board,1,Main controller,Hosyond ESP32 USB-C CP2102,,Exact board revision not recorded
-Stepper motor driver,1,Conveyor motor control,TMC2209,,Active architecture
-Stepper motor,1,Conveyor drive,NEMA17 17HS4401S,,NEMA11 purchase omitted as stale architecture
-Servo,1,Rotary chute positioning,MG995 or MG996 class,,Confirm exact installed model
-Color sensor,1,Red and blue frequency sampling,TCS3200 GY-31,,Mounted in light-blocking shroud
-IR break-beam pair,2,Brick timing and length estimation,3 mm emitter and receiver pair,,Two sensing positions required
-LiPo battery,1,Main power source,3S 11.1 V 2200 mAh XT60,,Validate pack condition before use
-Buck converter,1,Regulated peripheral rail,LM2596,,Set and verify output before connecting loads
-Inline fuse holder,1,Battery input protection,Mini ATC or ATO 18 AWG,,Confirm fitted fuse rating
-Bulk capacitor,1,Stepper input transient support,4700 uF 25 V electrolytic,,Confirm polarity
-GT2 belt and pulley set,1,Conveyor transmission,GT2,,Confirm installed lengths and bore sizes
-MR85ZZ bearings,1 set,Conveyor shaft support,5 x 8 x 2.5 mm,,Confirm installed count
-608ZZ bearings,1 set,Roller support,8 x 22 x 7 mm,,Confirm installed count
-Wood frame stock,1 set,Machine structure,Final stock unspecified,,Record final dimensions
-Printed brackets and guides,1 set,Mounting alignment and feed control,Project-specific printed parts,,Editable CAD not included
-Printed shroud,1,Ambient-light control around color sensor,Project-specific printed part,,Final geometry not documented
-Printed rotary chute,1,Route bricks into four bins,Project-specific printed part,,Final geometry not documented
-Low-friction tape,1 roll,Reduce chute drag,UHMW or PTFE tape,,Confirm installed material
-Black foam and electrical tape,1 set,Light blocking and bounce control,Build material,,
-M3 mounting hardware,1 set,Printed-part and electronics mounting,M3 fasteners,,Confirm lengths and quantities
-18 AWG red and black wire,1 set,Power distribution,Stranded wire,,Confirm gauge for actual current
-Braided cable sleeve and cable ties,1 set,Cable routing and strain management,PET or nylon sleeve,,
-XT60 pigtail,1,Battery connection,XT60,,Confirm polarity before power-up
-Lever connectors,1 set,Power distribution,5-port WAGO class,,Confirm current rating and installed model
-Wood screws,1 set,Frame and bracket fastening,Size unspecified,,Record installed sizes
-Operator display,1,Planned status display,Waveshare 2 inch Mini LCD,,Firmware display path is currently log-only
+part,system_quantity,purpose,model_or_specification,authentic_source,procurement_record,notes
+ESP32 development board,1,Main controller,Hosyond ESP32 USB-C CP2102,BOM.xlsx,3-pack purchased,Exact board revision not recorded
+Stepper motor driver,1,Conveyor motor control,TMC2209,BOM.xlsx,3 purchased,Reference pin and microstep map retained under docs/datasheet
+Stepper motor,1,Conveyor drive,NEMA17 17HS4401S 42BYGH 1.5 A 42 N.cm 4-lead XH2.54,BOM.xlsx,1 purchased,NEMA11 purchase omitted because it is not the final architecture
+Servo,1,Rotary chute positioning,MG995 or MG996 class,BOM.md,Not in purchase workbook,Confirm exact installed model before attributing its reference geometry
+Color sensor,1,Red and blue frequency sampling,TCS3200 GY-31,BOM.xlsx,2 purchased,Mounted in a light-blocking shroud
+IR break-beam pair,2,Brick timing and length estimation,3 mm emitter and receiver pair,BOM.xlsx,2 sets of 4 pairs purchased,The archived 5 mm CAD does not match this purchase record
+LiPo battery,1,Main power source,3S 11.1 V 2200 mAh 50C XT60,BOM.xlsx,2-pack purchased,Validate pack condition before use
+Buck converter,1,Regulated peripheral rail,LM2596 3.0-40 V input 1.5-35 V output,BOM.xlsx,5-pack purchased,Set and verify output before connecting loads
+Inline fuse holder,1,Battery input protection,Mini ATC or ATO 12 V 5 A 18 AWG,BOM.xlsx,2-pack purchased,Confirm the fuse actually fitted to the machine
+Bulk capacitor,1,Stepper input transient support,4700 uF 25 V 16 x 25 mm electrolytic,BOM.xlsx,10-pack purchased,Confirm polarity
+GT2 belt and pulley set,1,Conveyor transmission,GT2,BOM.md,Not in purchase workbook,Confirm installed lengths and bore sizes
+MR85ZZ bearings,1 set,Conveyor shaft support,5 x 8 x 2.5 mm,BOM.xlsx,10-pack purchased,Reference STEP retained under docs/datasheet
+608ZZ bearings,1 set,Roller support,8 x 22 x 7 mm,BOM.xlsx,5-pack purchased,Confirm installed count
+Wood frame stock,1 set,Machine structure,Final stock unspecified,BOM.md,Not in purchase workbook,Record final dimensions
+Printed brackets and guides,1 set,Mounting alignment and feed control,Project-specific printed parts,BOM.md,Not in purchase workbook,Editable CAD is not included
+Printed shroud,1,Ambient-light control around color sensor,Project-specific printed part,BOM.md,Not in purchase workbook,Final geometry is not documented
+Printed rotary chute,1,Route bricks into four bins,Project-specific printed part,BOM.md,Not in purchase workbook,Final geometry is not documented
+Low-friction tape,1 roll,Reduce chute drag,UHMW or PTFE tape,BOM.md,PTFE thread-seal tape appears in BOM.xlsx,Confirm the material actually installed
+Black foam and electrical tape,1 set,Light blocking and bounce control,Build material,BOM.md,Black foam purchased,Electrical tape purchase is not recorded
+M3 mounting hardware,1 set,Printed-part and electronics mounting,M3 fasteners,BOM.md,Not in purchase workbook,The workbook records an M2 kit instead; confirm final lengths and quantities
+18 AWG red and black wire,1 set,Power distribution,25 ft per color stranded automotive wire,BOM.xlsx,1 red-black pack purchased,Workbook specifies copper-clad aluminum; validate current capacity on the machine
+Braided cable sleeve and cable ties,1 set,Cable routing and strain management,2 mm 4 mm and 6 mm PET or nylon sleeve plus 3 x 100 mm ties,BOM.xlsx,Multiple sleeve rolls and 100 ties purchased,Use only where clear of moving parts
+XT60 pigtail,1,Battery connection,XT60,BOM.md user-supplied addition,Outside purchase workbook,Confirm polarity before power-up
+Lever connectors,1 set,Power distribution,5-port WAGO class,BOM.md user-supplied addition,Outside purchase workbook,Confirm current rating and installed model
+Wood screws,1 set,Frame and bracket fastening,Size unspecified,BOM.md user-supplied addition,Outside purchase workbook,Record installed sizes
+Operator display,1,Planned status display,Waveshare 2 inch Mini LCD 240 x 320 ST7789VW SPI,BOM.xlsx,1 purchased,Firmware display functions are currently log-only

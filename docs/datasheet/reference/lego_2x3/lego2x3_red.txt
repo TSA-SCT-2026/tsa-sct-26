@@ -1,0 +1,8 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"10-20122010-069842";"";
+"TraceParts.PartTitle";"LEGO® brick 2x3";"";
+"TraceParts.InstanceId";"10-20122010-06984210UFQ9W313DGN2O2A8ITDW7CR";"";
+"SUPPLIER";"LEGO®";"";
+"DESIGN";"LEGO® brick 2x3, color Red";"";
+"TraceParts.PartVersion";"1.0.7";"";
+"TraceParts.PartLanguage";"en";"";

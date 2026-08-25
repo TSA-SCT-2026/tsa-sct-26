@@ -5,15 +5,22 @@ bricks, then positions a servo-driven chute over one of four bins. The project
 was built for the 2026 TSA System Control Technology event.
 
 This repository is the compact technical record: buildable firmware, an
-operator-assisted calibration workflow, a reconstruction guide, a normalized
-bill of materials, and a conveyor CAD export.
+operator-assisted calibration workflow, a reconstruction guide, an
+authentic-source bill of materials, selected component references, and a
+conveyor CAD export.
 
-> **Media placeholder:** add a final-system hero image here after the team
-> selects an approved photo.
+> **Media placeholder:** add a final-system hero image showing the full
+> conveyor, sensing shroud, rotary chute, and four labeled bins in one frame.
 
 > **Demo placeholder:** add the best uninterrupted sorting-run video here. Do
 > not publish an accuracy or throughput number until it is reproduced from the
 > recorded run or a new evidence-producing test.
+
+Useful supporting photos are: an early frame/conveyor build, a close view of
+the two break-beams and shrouded color sensor, the finished power and signal
+wiring, and a CAD-to-physical comparison of the conveyor/chute geometry. Remove
+location metadata and check for faces, school identifiers, credentials, and
+unrelated personal material before publishing.
 
 ## System overview
 
@@ -62,6 +69,7 @@ See [BUILD.md](BUILD.md#calibration) for the procedure and commands.
 | Physical 24-brick result | TODO: add an uninterrupted run and its serial log |
 | Accuracy and throughput | TODO: calculate only from a documented physical run |
 | Wiring diagram | TODO: add `hardware/wiring.png` after validating it against the machine |
+| Procurement and component constraints | Active-system BOM plus selected original datasheets and CAD references |
 | CAD provenance | TODO: confirm authorship, finality, and redistribution approval for the conveyor STEP export |
 
 No browser simulator is included in this portfolio tree. It was useful during
@@ -81,7 +89,9 @@ public artifacts.
    calibration.
 2. Read [ARCHITECTURE.md](ARCHITECTURE.md) for the data and control flow.
 3. Review [hardware/BOM.csv](hardware/BOM.csv) for the active-system parts.
-4. Build the firmware with the commands in [firmware/README.md](firmware/README.md).
+4. Review [docs/datasheet/README.md](docs/datasheet/README.md) for the retained
+   component constraints and why each reference is present.
+5. Build the firmware with the commands in [firmware/README.md](firmware/README.md).
 
 The conveyor export is at
 [`cad/exports/conveyor-assembly.step`](cad/exports/conveyor-assembly.step).
