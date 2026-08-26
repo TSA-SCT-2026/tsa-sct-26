@@ -9,12 +9,17 @@ operator-assisted calibration workflow, a reconstruction guide, an
 authentic-source bill of materials, selected component references, and a
 conveyor CAD export.
 
+Joe Roche physically built the sorter and worked across its mechanical/CAD,
+electrical, and firmware systems over approximately 200 hours of development.
+The working machine reached a firsthand-observed peak of approximately 0.3
+bricks/second (about 18 bricks/minute); no accuracy percentage is claimed.
+
 > **Media placeholder:** add a final-system hero image showing the full
 > conveyor, sensing shroud, rotary chute, and four labeled bins in one frame.
 
-> **Demo placeholder:** add the best uninterrupted sorting-run video here. Do
-> not publish an accuracy or throughput number until it is reproduced from the
-> recorded run or a new evidence-producing test.
+> **Demo placeholder:** add the best existing operating video here. The sorter
+> is now disassembled, so the clip should be described as historical physical
+> evidence rather than a newly reproduced benchmark.
 
 Useful supporting photos are: an early frame/conveyor build, a close view of
 the two break-beams and shrouded color sensor, the finished power and signal
@@ -67,7 +72,8 @@ See [BUILD.md](BUILD.md#calibration) for the procedure and commands.
 | Main ESP32 firmware | PlatformIO build passes |
 | Servo-tuning utility | PlatformIO `servo_tuning` build passes |
 | Physical 24-brick result | TODO: add an uninterrupted run and its serial log |
-| Accuracy and throughput | TODO: calculate only from a documented physical run |
+| Throughput | Firsthand peak estimate: approximately 0.3 bricks/s (18 bricks/min) |
+| Accuracy | No percentage claimed; add only if supported by a documented run |
 | Wiring diagram | TODO: add `hardware/wiring.png` after validating it against the machine |
 | Procurement and component constraints | Active-system BOM plus selected original datasheets and CAD references |
 | CAD provenance | TODO: confirm authorship, finality, and redistribution approval for the conveyor STEP export |
@@ -100,11 +106,11 @@ Editable source CAD and final-system renders are not included yet.
 ## Team and authorship
 
 This was a team TSA project, and the Git history contains multiple
-contributors. The repository does not establish a reliable division of the
-mechanical, electrical, firmware, assembly, calibration, and testing work.
+contributors. Joe physically built the machine and contributed across the
+mechanical/CAD, electrical, and firmware work. The repository does not assign
+contribution percentages or fabricate teammate role splits.
 
 - TODO: confirm each contributor's public name and role wording.
-- TODO: confirm who authored the conveyor CAD export before attributing it.
 - TODO: confirm that the current license is appropriate for all team-authored
   code and any future CAD or media.
 
