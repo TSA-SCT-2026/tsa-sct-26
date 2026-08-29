@@ -55,7 +55,7 @@ is missed. Interrupt service routines retain the edge timestamps while the
 
 ## Size measurement
 
-Let the active center-to-center beam spacing be \(d\) (40.436 mm by default),
+Let the active center-to-center beam spacing be $d$ (40.436 mm by default),
 and define entry/exit timestamps from the active-low beam transitions. The
 implemented estimates are:
 
@@ -73,8 +73,8 @@ $$
 When only a positive leading-edge delta is available, `v_avg` uses `v_lead`.
 If no dynamic estimate is available, length calculation uses the configured
 230 mm/s fallback. Beam occlusion durations
-\(\tau_A=t_{A,out}-t_{A,in}\) and
-\(\tau_B=t_{B,out}-t_{B,in}\) produce:
+$\tau_A=t_{A,out}-t_{A,in}$ and
+$\tau_B=t_{B,out}-t_{B,in}$ produce:
 
 $$
 L_A=v\tau_A,\qquad L_B=v\tau_B
@@ -172,7 +172,11 @@ compiled with a limit of zero, and no independent bin beam is installed.
 - `S_COMPLETE` exists, but the current confirmation path starts another brick
   instead of automatically ending after `TOTAL_BRICKS`; runs require operator
   control to stop at the intended set size.
-- The repository has no validated wiring image or physical acceptance log.
-- TODO: confirm the final mechanical geometry and conveyor CAD provenance.
-- TODO: document any verified power, ambient-light, or routing failure lessons
-  from the physical build rather than reconstructing them from memory.
+- Low-confidence `chooseBestGuessBin()` routing currently maps 2x3 red to bin 4
+  and 2x2 blue to bin 2; the normal confident category mapping is correct.
+- The repository has pre-build wiring sketches, but no validated as-built wiring
+  diagram or physical acceptance log.
+- Final mechanical geometry and conveyor CAD provenance remain reconstruction
+  checks rather than verified as-built measurements.
+- Power, ambient-light, and routing failure lessons should only be documented
+  from verified physical evidence rather than reconstructed from memory.

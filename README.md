@@ -68,7 +68,7 @@ fit notes](BUILD.md#constraint-driven-mechanical-design).
 
 ### Dynamic two-beam size sensing
 
-With active beam spacing \(d=40.436\text{ mm}\), the firmware timestamps the
+With active beam spacing $d=40.436\text{ mm}$, the firmware timestamps the
 leading and trailing edges at both beams and computes:
 
 $$
@@ -77,8 +77,8 @@ v_{trail}=\frac{d}{t_{B,out}-t_{A,out}},\qquad
 v=\frac{v_{lead}+v_{trail}}{2}
 $$
 
-It then estimates \(L_A=v(t_{A,out}-t_{A,in})\) and
-\(L_B=v(t_{B,out}-t_{B,in})\), combining or selecting them according to edge
+It then estimates $L_A=v(t_{A,out}-t_{A,in})$ and
+$L_B=v(t_{B,out}-t_{B,in})$, combining or selecting them according to edge
 counts and speed/length skew. Measuring velocity on each pass keeps the size
 threshold tied to millimeters instead of a fixed beam-occlusion time, so belt
 tension, friction, and firmware speed changes do not automatically invalidate
@@ -91,7 +91,7 @@ I established the red/blue reference behavior through repeated passes of known
 bricks. During each pass the TCS3200 cycles red, blue, and clear filters,
 averages multiple pulse-period readings, subtracts the operator-captured belt
 baseline channel-by-channel, rejects low-signal samples, and classifies the
-averaged net ratio \(R_{net}/(R_{net}+B_{net})\). Threshold selection remains
+averaged net ratio $R_{net}/(R_{net}+B_{net})$. Threshold selection remains
 operator-assisted and is persisted with the belt baseline in ESP32 NVS.
 
 ### Event-driven control
