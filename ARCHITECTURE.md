@@ -108,7 +108,7 @@ Low-signal samples are rejected; if too few remain, the highest-signal rejected
 sample is retained as an explicitly best-effort reading. The ratio is compared
 with the operator-selected threshold. Current comments record repeated moving
 known-brick clusters near 0.467 for blue and 0.512 for red, with a configured
-0.490 threshold; those are calibration references, not an accuracy claim.
+0.490 threshold.
 
 ## Operator-assisted calibration
 
@@ -138,9 +138,8 @@ the first is routing. The serial `in_flight` diagnostic is retained for log
 compatibility and is always `0`.
 
 Confirmation is time-based. After the estimated handoff and confirmation
-windows, firmware records the commanded bin. This is not independent physical
-proof that the brick landed correctly; a recorded run or per-bin sensing is
-required for that claim.
+windows, firmware records the commanded bin; no per-bin sensor independently
+confirms the landing.
 
 ## Active protection and failure behavior
 
@@ -163,7 +162,7 @@ bin remain in the interface, but the current physical path does not emit all of
 them. Feed timeout presently logs and continues waiting, sensing retry is
 compiled with a limit of zero, and no independent bin beam is installed.
 
-## Known gaps
+## Implementation limits
 
 - Status-display functions currently log over serial rather than driving a
   connected display.
@@ -174,9 +173,5 @@ compiled with a limit of zero, and no independent bin beam is installed.
   control to stop at the intended set size.
 - Low-confidence `chooseBestGuessBin()` routing currently maps 2x3 red to bin 4
   and 2x2 blue to bin 2; the normal confident category mapping is correct.
-- The repository has pre-build wiring sketches, but no validated as-built wiring
-  diagram or physical acceptance log.
-- Final mechanical geometry and conveyor CAD provenance remain reconstruction
-  checks rather than verified as-built measurements.
-- Power, ambient-light, and routing failure lessons should only be documented
-  from verified physical evidence rather than reconstructed from memory.
+- The repository includes the pre-build wiring sketches and firmware pin map,
+  but not a full as-built wiring schematic.

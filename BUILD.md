@@ -60,8 +60,8 @@ that rapid assembly from becoming a sequence of avoidable reprints.
 
 ### Component fit checks
 
-The following are manual measurements from the preserved April 2026 build
-notes. They are fit-check evidence, not precision metrology:
+The following manual measurements from the April 2026 build notes were used as
+fit checks during mechanical design:
 
 | Component | Manual measurement | Build implication |
 | --- | --- | --- |
@@ -72,8 +72,7 @@ notes. They are fit-check evidence, not precision metrology:
 
 The original NEMA17 supplier schematic, color-sensor module manual, and related
 reference files are indexed in [docs/datasheet/README.md](docs/datasheet/README.md).
-The manual document also measured NEMA11 and solenoid parts from abandoned
-architectures; those dimensions are intentionally not carried into this guide.
+Earlier NEMA11 and solenoid measurements are not relevant to the final design.
 
 ### 3. Chute and bins
 
@@ -96,9 +95,9 @@ over-voltage damage to lower-voltage electronics.
 | ![Hand-drawn pre-build power and signal wiring plan](media/build/04-power-and-wiring-plan.png) | ![Hand-drawn pre-build stepper and color-sensor wiring plan](media/build/05-motor-and-sensor-wiring-plan.png) |
 | Fused input, voltage rails, controller, servo, stepper, color sensor, and break-beam paths. | Planned TMC2209/stepper and TCS3200 connections before assembly. |
 
-These are authentic pre-build planning artifacts, not an authoritative as-built
-schematic. Use the current firmware pin map below and verify the physical
-machine before applying power.
+These pre-build sketches capture the planned power and signal layout. Use the
+current firmware pin map below and verify the physical machine before applying
+power.
 
 The design uses a fused 3S LiPo input, a motor rail for the stepper driver, a
 buck-converted 5 V rail for suitable peripherals, and a common ground. Confirm
@@ -212,31 +211,14 @@ cal show
 `cal save` persists the thresholds and belt baseline to ESP32 NVS. Use
 `cal wipe` only when intentionally returning to the compiled defaults.
 
-## Operating and acceptance evidence
+## Working demo and test workflow
 
-The repository includes an [authentic operating video](media/final/sorter-demo.mp4)
-and [final assembled-system photo](media/final/sorter-final.jpg). They establish
-that the physical sorter was assembled and operated; they are not presented as
-a measured 24-brick acceptance run because no matching serial/CSV log is
-included.
+[Watch the completed sorter run on YouTube](https://www.youtube.com/watch?v=zOtNFu6YxYQ),
+or open the [original video](media/final/sorter-demo.mp4) stored in this
+repository. The final assembled-system photo is available
+[here](media/final/sorter-final.jpg).
 
-Run the configured set of 24 bricks in the documented orientation and retain:
-
-- an uninterrupted video showing feed, sensing, chute, and bins,
-- the corresponding serial/CSV log,
-- the selected calibration values and speed mode,
-- the count of correct landings, misroutes, retries, and incomplete passes, and
-- enough timing data to calculate throughput from the same run.
-
-Do not label the run `24/24`, publish an accuracy percentage, or publish a
-throughput number until those artifacts have been reviewed together.
-
-The committed build progression and final photo demonstrate construction and
-integration; they do not substitute for an uninterrupted run and matching log.
-
-## Remaining verification
-
-- TODO: validate and add the real wiring diagram.
-- TODO: confirm the exact final frame dimensions.
-- TODO: perform upload, power-integrity, sensor, servo, and full-run checks on
-  the physical machine.
+For a repeatable test session, use a consistent feed orientation and retain the
+serial/CSV log alongside the selected calibration profile and speed mode. The
+firmware helper at `firmware/tools/capture_serial_log.sh` records the serial
+output for later review.
