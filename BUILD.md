@@ -4,6 +4,41 @@ This guide consolidates the active assembly, electrical, and calibration
 instructions. Verify every dimension and connection against the physical
 machine before applying power.
 
+## Constraint-driven mechanical design
+
+I worked outward from the ground-truth objects and components the sorter had to
+handle. LEGO brick width and travel orientation constrained the usable belt
+width and guide clearance. That conveyor envelope constrained the sensing
+station and the chute mouth; the chute sweep then set the four-bin arc, spacing,
+and required collection volume. The servo foot placed the chute at a reliable
+drop point, which set the conveyor height, NEMA17 support height, and reserved
+electronics-underbody envelope.
+
+The CAD therefore formed one dependency chain:
+
+```text
+brick geometry -> belt/guides -> sensing + chute mouth -> bin arc/volume
+               -> servo support -> conveyor height -> motor + electronics envelope
+```
+
+Major interfaces were aligned before fabrication, reducing unnecessary
+reprints and assembly rework. Slots and extra clearance were retained at real
+mounting interfaces so the physical system could absorb millimeter-scale build,
+belt-tension, and placement error.
+
+## Build progression
+
+The first two to three weeks combined sketches, dimensional calculations,
+component selection, ordering, and CAD with work on another project. Most
+fabrication, electronics integration, firmware, calibration, and debugging then
+landed in a concentrated final two-week sprint; the constraint chain above kept
+that rapid assembly from becoming a sequence of avoidable reprints.
+
+| 1. Frame and rollers | 2. Belt curing and alignment | 3. Electronics integration |
+| --- | --- | --- |
+| ![Wooden frame with 3D-printed conveyor rollers](media/build/01-frame-and-rollers.jpg) | ![Dumbbell holding the stapled and taped belt assembly while epoxy cures](media/build/02-belt-curing-and-alignment.jpg) | ![Conveyor after wiring and electronics integration](media/build/03-electronics-integration.jpg) |
+| Wooden boards and printed rollers establish the conveyor frame. | The dumbbell is intentional temporary curing weight, not unrelated clutter. | Later integration stage after the wiring was completed. |
+
 ## Mechanical assembly
 
 ### 1. Frame and conveyor
@@ -165,7 +200,13 @@ cal show
 `cal save` persists the thresholds and belt baseline to ESP32 NVS. Use
 `cal wipe` only when intentionally returning to the compiled defaults.
 
-## Acceptance evidence
+## Operating and acceptance evidence
+
+The repository includes an [authentic operating video](media/final/sorter-demo.mp4)
+and [final assembled-system photo](media/final/sorter-final.jpg). They establish
+that the physical sorter was assembled and operated; they are not presented as
+a measured 24-brick acceptance run because no matching serial/CSV log is
+included.
 
 Run the configured set of 24 bricks in the documented orientation and retain:
 
@@ -178,10 +219,8 @@ Run the configured set of 24 bricks in the documented orientation and retain:
 Do not label the run `24/24`, publish an accuracy percentage, or publish a
 throughput number until those artifacts have been reviewed together.
 
-For still photography, capture the full machine, a mid-build conveyor/frame
-view, the sensing station, the final wiring, and at least one CAD-to-physical
-comparison. These photos demonstrate construction and integration; they do not
-substitute for the uninterrupted run and matching log.
+The committed build progression and final photo demonstrate construction and
+integration; they do not substitute for an uninterrupted run and matching log.
 
 ## Remaining verification
 

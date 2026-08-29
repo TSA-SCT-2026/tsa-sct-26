@@ -14,18 +14,23 @@ electrical, and firmware systems over approximately 200 hours of development.
 The working machine reached a firsthand-observed peak of approximately 0.3
 bricks/second (about 18 bricks/minute); no accuracy percentage is claimed.
 
-> **Media placeholder:** add a final-system hero image showing the full
-> conveyor, sensing shroud, rotary chute, and four labeled bins in one frame.
+Over roughly one month, I moved from dimensional sketches and component
+selection to a working multidisciplinary machine. Early planning and CAD made
+it possible to concentrate fabrication, wiring, firmware integration,
+calibration, and debugging into an intensive final two-week build sprint.
 
-> **Demo placeholder:** add the best existing operating video here. The sorter
-> is now disassembled, so the clip should be described as historical physical
-> evidence rather than a newly reproduced benchmark.
+## Physical proof
 
-Useful supporting photos are: an early frame/conveyor build, a close view of
-the two break-beams and shrouded color sensor, the finished power and signal
-wiring, and a CAD-to-physical comparison of the conveyor/chute geometry. Remove
-location metadata and check for faces, school identifiers, credentials, and
-unrelated personal material before publishing.
+[![Watch the physical sorter operate](media/final/sorter-demo-poster.jpg)](media/final/sorter-demo.mp4)
+
+**[Watch the 32-second operating demo](media/final/sorter-demo.mp4).** This is
+authentic physical evidence from the completed project, not a reconstructed
+simulation or a quantified acceptance run.
+
+![Final assembled LEGO sorter after mechanical alignment and bin placement](media/final/sorter-final.jpg)
+
+The final assembly shows the conveyor, sensing region, servo-driven chute, and
+four-bin output arc after mechanical alignment. The machine is now disassembled.
 
 ## System overview
 
@@ -42,8 +47,57 @@ The firmware measures each beam's blocked duration and the transit time
 between beams. From those timings it estimates belt speed and brick length.
 The color sensor samples red, blue, and clear channels; when a belt baseline is
 available, it subtracts that baseline before computing `red / (red + blue)`.
-The current controller handles one brick at a time so the chute is committed
-before the brick reaches the belt exit.
+The current controller deliberately owns one `BrickRecord` at a time so the
+chute is committed before that brick reaches the belt exit.
+
+### Constraint-driven mechanical design
+
+I designed the machine as a chain of dimensional constraints instead of sizing
+parts independently: LEGO geometry set the belt and chute-mouth envelope; the
+chute set the bin arc, clearance, and servo support; chute entry height then set
+the conveyor, NEMA17 mount, and electronics-underbody envelopes. Adjustment
+slots preserved millimeter-scale alignment tolerance for the physical build.
+This upfront dependency planning reduced avoidable reprints and rework without
+pretending the machine required no iteration. See the [build progression and
+fit notes](BUILD.md#constraint-driven-mechanical-design).
+
+### Dynamic two-beam size sensing
+
+With active beam spacing \(d=40.436\text{ mm}\), the firmware timestamps the
+leading and trailing edges at both beams and computes:
+
+$$
+v_{lead}=\frac{d}{t_{B,in}-t_{A,in}},\qquad
+v_{trail}=\frac{d}{t_{B,out}-t_{A,out}},\qquad
+v=\frac{v_{lead}+v_{trail}}{2}
+$$
+
+It then estimates \(L_A=v(t_{A,out}-t_{A,in})\) and
+\(L_B=v(t_{B,out}-t_{B,in})\), combining or selecting them according to edge
+counts and speed/length skew. Measuring velocity on each pass keeps the size
+threshold tied to millimeters instead of a fixed beam-occlusion time, so belt
+tension, friction, and firmware speed changes do not automatically invalidate
+classification. The exact fallback gates are documented in
+[ARCHITECTURE.md](ARCHITECTURE.md#size-measurement).
+
+### Color sensing and calibration
+
+I established the red/blue reference behavior through repeated passes of known
+bricks. During each pass the TCS3200 cycles red, blue, and clear filters,
+averages multiple pulse-period readings, subtracts the operator-captured belt
+baseline channel-by-channel, rejects low-signal samples, and classifies the
+averaged net ratio \(R_{net}/(R_{net}+B_{net})\). Threshold selection remains
+operator-assisted and is persisted with the belt baseline in ESP32 NVS.
+
+### Event-driven control
+
+Interrupts timestamp beam edges into a 64-slot event queue; the controller then
+moves one brick through `FEED -> SENSING -> ROUTING -> HANDOFF -> CONFIRM`.
+Measured speed and length schedule the chute before the brick reaches the belt
+exit, while startup output clamps, queue-overflow detection, route validation,
+and a single-record token guard stop unsafe control paths. The current firmware
+is sequential rather than multi-brick: a second brick must not enter the sensing
+window until the previous timed confirmation starts the next cycle.
 
 | Bin | Classification | Target count in the event set |
 | --- | --- | ---: |
@@ -71,7 +125,8 @@ See [BUILD.md](BUILD.md#calibration) for the procedure and commands.
 | --- | --- |
 | Main ESP32 firmware | PlatformIO build passes |
 | Servo-tuning utility | PlatformIO `servo_tuning` build passes |
-| Physical 24-brick result | TODO: add an uninterrupted run and its serial log |
+| Physical operation | Authentic 32-second sorter demo committed above |
+| Physical 24-brick result | No matching uninterrupted video + serial-log evidence claimed |
 | Throughput | Firsthand peak estimate: approximately 0.3 bricks/s (18 bricks/min) |
 | Accuracy | No percentage claimed; add only if supported by a documented run |
 | Wiring diagram | TODO: add `hardware/wiring.png` after validating it against the machine |
