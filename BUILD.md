@@ -85,6 +85,21 @@ architectures; those dimensions are intentionally not carried into this guide.
 
 ## Electrical
 
+I planned the power distribution and signal paths before physical wiring. The
+design places a fuse immediately after the 3S LiPo, keeps the stepper driver on
+the 12 V motor path, and uses buck conversion for the 5 V ESP32/peripheral path;
+the fuse limits fault current while rail separation reduces the risk of
+over-voltage damage to lower-voltage electronics.
+
+| Power and system plan | Motor and sensor detail |
+| --- | --- |
+| ![Hand-drawn pre-build power and signal wiring plan](media/build/04-power-and-wiring-plan.png) | ![Hand-drawn pre-build stepper and color-sensor wiring plan](media/build/05-motor-and-sensor-wiring-plan.png) |
+| Fused input, voltage rails, controller, servo, stepper, color sensor, and break-beam paths. | Planned TMC2209/stepper and TCS3200 connections before assembly. |
+
+These are authentic pre-build planning artifacts, not an authoritative as-built
+schematic. Use the current firmware pin map below and verify the physical
+machine before applying power.
+
 The design uses a fused 3S LiPo input, a motor rail for the stepper driver, a
 buck-converted 5 V rail for suitable peripherals, and a common ground. Confirm
 the real regulator rating, servo current path, fuse, wire gauge, polarity, and
@@ -113,9 +128,6 @@ actual sensor board and wiring before use.
 Pins 21/22 and PCF8574 address `0x20` remain reserved in configuration, but the
 current display functions are log-only. Do not treat a display wiring plan as
 implemented firmware.
-
-> **Wiring placeholder:** add `hardware/wiring.png` only after checking it
-> wire-by-wire against both the assembled sorter and `firmware/tsa_sorter/config.h`.
 
 ## Firmware
 

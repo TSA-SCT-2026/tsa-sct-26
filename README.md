@@ -50,6 +50,11 @@ available, it subtracts that baseline before computing `red / (red + blue)`.
 The current controller deliberately owns one `BrickRecord` at a time so the
 chute is committed before that brick reaches the belt exit.
 
+I also sketched the full power and signal layout before wiring: a fused battery
+input limits fault current, while separate 12 V motor and buck-converted 5 V
+paths protect lower-voltage electronics from the motor rail. The original
+planning sketches and current pin map are in [BUILD.md](BUILD.md#electrical).
+
 ### Constraint-driven mechanical design
 
 I designed the machine as a chain of dimensional constraints instead of sizing
