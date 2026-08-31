@@ -37,7 +37,7 @@ that rapid assembly from becoming a sequence of avoidable reprints.
 | 1. Frame and rollers | 2. Belt curing and alignment | 3. Electronics integration |
 | --- | --- | --- |
 | ![Wooden frame with 3D-printed conveyor rollers](media/build/01-frame-and-rollers.jpg) | ![Dumbbell holding the stapled and taped belt assembly while epoxy cures](media/build/02-belt-curing-and-alignment.jpg) | ![Conveyor after wiring and electronics integration](media/build/03-electronics-integration.jpg) |
-| Wooden boards and printed rollers establish the conveyor frame. | The dumbbell is intentional temporary curing weight, not unrelated clutter. | Later integration stage after the wiring was completed. |
+| Wooden boards and printed rollers establish the conveyor frame. | The dumbbell is used to cure the epoxy+staple joint | Later integration stage after the wiring was completed. |
 
 ## Mechanical assembly
 
