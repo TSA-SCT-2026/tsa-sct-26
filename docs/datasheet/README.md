@@ -17,17 +17,9 @@ specific final-system constraint.
 
 ## Deliberate exclusions
 
-- The archived 5 mm break-beam STEP is excluded because the authentic purchase
-  record identifies 3 mm emitter/receiver pairs. Restore it only if the
-  installed sensor is physically verified to match.
-- MG995/MG996-class servo models are excluded until the installed servo model is
-  confirmed.
-- Generic product photos, alternate horn models, duplicate source CAD, and GT2
+- Generic product photos, branded
   belt/pulley vendor models are excluded because the system-level conveyor STEP
-  already carries the useful assembled geometry.
-- The 12 MB color-module STEP and duplicate SolidWorks source are excluded; the
-  retained module manual plus manual build measurements provide the relevant
-  envelope without the bloat.
+  already carries the useful assembled geometry. Other parts, such as the IR break beams, may require modifications to CAD depending on size. Cross check parts to order with CAD models.
 
 These files remain third-party references. Their presence does not imply
 project authorship or grant redistribution rights beyond their original terms.
