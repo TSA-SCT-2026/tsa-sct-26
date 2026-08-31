@@ -213,9 +213,7 @@ cal show
 
 ## Working demo and test workflow
 
-[Watch the completed sorter run on YouTube](https://www.youtube.com/watch?v=zOtNFu6YxYQ),
-or open the [original video](media/final/sorter-demo.mp4) stored in this
-repository. The final assembled-system photo is available
+[Watch the completed sorter run on YouTube](https://www.youtube.com/watch?v=zOtNFu6YxYQ). The final assembled-system photo is available
 [here](media/final/sorter-final.jpg).
 
 For a repeatable test session, use a consistent feed orientation and retain the
