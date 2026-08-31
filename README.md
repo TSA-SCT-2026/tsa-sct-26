@@ -136,14 +136,6 @@ two-week build sprint.
 | Active-system parts list | [`hardware/BOM.csv`](hardware/BOM.csv) |
 | Component references | [`docs/datasheet/`](docs/datasheet/) |
 
-Build both PlatformIO environments from the repository root:
-
-```sh
-cd firmware
-pio run
-pio run -e servo_tuning
-```
-
 The main firmware is organized by responsibility:
 
 - [`sensors.cpp`](firmware/tsa_sorter/sensors.cpp) — beam timing, TCS3200
