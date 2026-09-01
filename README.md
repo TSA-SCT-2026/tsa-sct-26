@@ -22,16 +22,11 @@ layout running as an integrated system.
 
 ## System at a glance
 
-```text
-brick feed
-  -> NEMA17 + GT2 conveyor
-  -> break-beam A
-  -> shrouded TCS3200 color sensor
-  -> break-beam B
-  -> size + color classification
-  -> servo-driven rotary chute
-  -> one of four bins
-```
+A NEMA17 motor drives each brick along the GT2 conveyor and through two break
+beams. Between them, a shrouded TCS3200 sensor samples the brick's color. The
+ESP32 combines the color reading with timing from the break beams to classify
+the brick by size and color, then turns the servo-driven rotary chute toward
+the corresponding bin.
 
 - **Mechanics:** dimension-driven conveyor, adjustable sensor mounts, rotary
   chute, and four-bin collection arc
@@ -42,9 +37,9 @@ brick feed
   machine
 - **Output classes:** 2x2 red, 2x3 red, 2x3 blue, and 2x2 blue
 
-The controller processes one brick at a time through
-`FEED -> SENSING -> ROUTING -> HANDOFF -> CONFIRM`, committing the chute before
-the brick reaches the end of the belt.
+The controller processes one brick at a time across five states: `FEED`,
+`SENSING`, `ROUTING`, `HANDOFF`, and `CONFIRM`. It commits the chute position
+before the brick reaches the end of the belt.
 
 ## Engineering highlights
 
