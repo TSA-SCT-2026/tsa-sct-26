@@ -46,18 +46,11 @@ before the brick reaches the end of the belt.
 ### Designing from physical constraints
 
 The machine was designed as a connected chain of dimensions rather than a set
-of independent parts:
-
-```text
-LEGO geometry -> belt and guides -> sensing geometry + chute opening
-              -> bin arc and spacing -> conveyor height -> motor, electronics,
-                 and support geometry
-```
-
-Starting with the brick envelope established the usable belt width and sensing
-region. That constrained the chute mouth and sweep, which set the bin arc and
-the height of the conveyor assembly. Adjustment slots at key interfaces gave
-the physical build room for belt tension, print variation, and alignment.
+of independent parts. Starting with the brick envelope established the usable
+belt width and sensing region. Those dimensions constrained the chute mouth and
+sweep, which set the bin arc, conveyor height, and the remaining motor,
+electronics, and support geometry. Adjustment slots at key interfaces gave the
+physical build room for belt tension, print variation, and alignment.
 
 The full dimensional reasoning and build sequence are documented in
 [BUILD.md](BUILD.md#constraint-driven-mechanical-design).
