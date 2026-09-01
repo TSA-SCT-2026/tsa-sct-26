@@ -57,23 +57,32 @@ The full dimensional reasoning and build sequence are documented in
 
 ### Measuring size as the belt moves
 
-The two break beams are separated by **40.436 mm**. Instead of classifying a
-brick from a fixed obstruction time, the firmware estimates belt velocity from
-each brick's transit between the beams:
+The two break beams are separated by $d = 40.436\ \text{mm}$. Instead of
+classifying a brick from a fixed obstruction time, the firmware estimates belt
+velocity from each brick's transit between the beams:
 
-```text
-v_lead  = d / (t_B,in  - t_A,in)
-v_trail = d / (t_B,out - t_A,out)
-```
+$$
+v_{\text{lead}} = \frac{d}{t_{B,\text{in}} - t_{A,\text{in}}}
+\qquad
+v_{\text{trail}} = \frac{d}{t_{B,\text{out}} - t_{A,\text{out}}}
+$$
 
-When both estimates are valid, they are averaged. Brick length is then
-estimated from velocity multiplied by the time each beam remains blocked. This
-keeps the size threshold tied to physical length even as belt tension, friction,
-or motor speed changes. The firmware also compares the two length estimates and
-handles incomplete or noisy edge sequences explicitly.
+When both estimates are valid, the firmware averages them and converts each
+beam's blocked duration into a physical length:
 
-[Read the implemented timing and fallback logic](ARCHITECTURE.md#size-measurement)
-or inspect [`sensors.cpp`](firmware/tsa_sorter/sensors.cpp).
+$$
+\bar{v} = \frac{v_{\text{lead}} + v_{\text{trail}}}{2}
+\qquad
+L_A = \bar{v}\left(t_{A,\text{out}} - t_{A,\text{in}}\right)
+\qquad
+L_B = \bar{v}\left(t_{B,\text{out}} - t_{B,\text{in}}\right)
+$$
+
+This keeps the size threshold tied to physical length even as belt tension,
+friction, or motor speed changes. The firmware also compares $L_A$ and $L_B$
+and handles incomplete or noisy edge sequences explicitly. See the
+[full timing and fallback logic](ARCHITECTURE.md#size-measurement) or its
+[`sensors.cpp` implementation](firmware/tsa_sorter/sensors.cpp).
 
 ### Separating brick color from the moving belt
 
